@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -59,8 +58,10 @@ const funcionarios: Funcionario[] = [
   }
 ];
 
-// Filtrar apenas funcionários ativos
-const funcionariosAtivos = funcionarios.filter(funcionario => funcionario.status === "ativo");
+// Filtrar funcionários ativos e em experiência
+const funcionariosDisponiveis = funcionarios.filter(funcionario => 
+  funcionario.status === "ativo" || funcionario.status === "experiencia"
+);
 
 const pecasUniforme = [
   { value: "camisa", label: "👔 Camisa", icon: "👔" },
@@ -97,7 +98,7 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
       return;
     }
 
-    const funcionario = funcionariosAtivos.find(f => f.id.toString() === formData.funcionarioId);
+    const funcionario = funcionariosDisponiveis.find(f => f.id.toString() === formData.funcionarioId);
     const peca = pecasUniforme.find(p => p.value === formData.peca);
 
     toast({
@@ -129,13 +130,13 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="funcionario">Funcionário Ativo *</Label>
+            <Label htmlFor="funcionario">Funcionário Disponível *</Label>
             <Select onValueChange={(value) => handleInputChange("funcionarioId", value)}>
               <SelectTrigger>
-                <SelectValue placeholder="👤 Selecione o funcionário ativo" />
+                <SelectValue placeholder="👤 Selecione o funcionário" />
               </SelectTrigger>
               <SelectContent>
-                {funcionariosAtivos.map((funcionario) => (
+                {funcionariosDisponiveis.map((funcionario) => (
                   <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
                     👤 {funcionario.nome} - {funcionario.cargo}
                   </SelectItem>
