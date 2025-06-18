@@ -5,15 +5,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Upload, Search, Download, Eye } from "lucide-react";
+import { ChevronLeft, Upload, Search, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { DocumentCard } from "@/components/DocumentCard";
 
 interface DocumentosSubsectionProps {
   onBack: () => void;
 }
 
-// Documentos mockados
-const documentos = [
+// Lista de funcionários (mesma da página de funcionários)
+const funcionarios = [
+  { id: 1, nome: "Ana Silva", cargo: "Analista de Sistemas", status: "ativo" },
+  { id: 2, nome: "João Santos", cargo: "Desenvolvedor", status: "ferias" },
+  { id: 3, nome: "Maria Costa", cargo: "Gerente de Vendas", status: "ativo" },
+  { id: 4, nome: "Carlos Oliveira", cargo: "Analista Financeiro", status: "experiencia" },
+  { id: 5, nome: "Patricia Fernandes", cargo: "Assistente Administrativo", status: "aviso" }
+];
+
+// Documentos mockados expandidos
+const documentosMock = [
   {
     id: 1,
     nome: "Contrato_Ana_Silva.pdf",
@@ -49,19 +59,31 @@ const documentos = [
     dataUpload: "2024-06-05",
     tamanho: "3.1 MB",
     thumbnail: "📋"
+  },
+  {
+    id: 5,
+    nome: "Contrato_Maria_Costa.pdf",
+    tipo: "Contrato",
+    funcionario: "Maria Costa",
+    dataUpload: "2024-06-12",
+    tamanho: "2.1 MB",
+    thumbnail: "📄"
+  },
+  {
+    id: 6,
+    nome: "Exame_Carlos.pdf",
+    tipo: "Exame Médico",
+    funcionario: "Carlos Oliveira",
+    dataUpload: "2024-06-07",
+    tamanho: "1.9 MB",
+    thumbnail: "🏥"
   }
-];
-
-const funcionarios = [
-  { id: 1, nome: "Ana Silva" },
-  { id: 2, nome: "João Santos" },
-  { id: 3, nome: "Maria Costa" },
-  { id: 4, nome: "Carlos Oliveira" }
 ];
 
 export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [documentos, setDocumentos] = useState(documentosMock);
   const [uploadData, setUploadData] = useState({
     arquivo: null as File | null,
     tipo: "",
@@ -78,6 +100,15 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Verificar tamanho do arquivo (máx 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "Arquivo muito grande ❌",
+          description: "O arquivo deve ter no máximo 10MB",
+          variant: "destructive"
+        });
+        return;
+      }
       setUploadData(prev => ({ ...prev, arquivo: file }));
     }
   };
@@ -94,11 +125,24 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
 
     const funcionario = uploadData.funcionarioId 
       ? funcionarios.find(f => f.id.toString() === uploadData.funcionarioId)?.nome 
-      : "Documento geral";
+      : null;
+
+    // Criar novo documento
+    const novoDocumento = {
+      id: documentos.length + 1,
+      nome: uploadData.arquivo.name,
+      tipo: uploadData.tipo.charAt(0).toUpperCase() + uploadData.tipo.slice(1),
+      funcionario: funcionario,
+      dataUpload: new Date().toLocaleDateString('pt-BR'),
+      tamanho: (uploadData.arquivo.size / (1024 * 1024)).toFixed(1) + " MB",
+      thumbnail: "📄"
+    };
+
+    setDocumentos(prev => [novoDocumento, ...prev]);
 
     toast({
       title: "Upload Realizado! 📄",
-      description: `${uploadData.arquivo.name} foi adicionado ${funcionario !== "Documento geral" ? `para ${funcionario}` : 'como documento geral'}`,
+      description: `${uploadData.arquivo.name} foi adicionado${funcionario ? ` para ${funcionario}` : ' como documento geral'}`,
     });
 
     // Reset form
@@ -108,17 +152,39 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       funcionarioId: "",
       descricao: ""
     });
+
+    // Reset file input
+    const fileInput = document.getElementById('arquivo') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   };
 
-  const getDocumentIcon = (tipo: string) => {
-    switch (tipo.toLowerCase()) {
-      case 'contrato': return '📝';
-      case 'manual': return '📚';
-      case 'exame médico': return '🏥';
-      case 'política': return '📋';
-      default: return '📄';
-    }
+  const handleViewDocument = (id: number) => {
+    const doc = documentos.find(d => d.id === id);
+    toast({
+      title: "Visualizar Documento 👁️",
+      description: `Abrindo ${doc?.nome}...`,
+    });
   };
+
+  const handleDownloadDocument = (id: number) => {
+    const doc = documentos.find(d => d.id === id);
+    toast({
+      title: "Download Iniciado 📥",
+      description: `Baixando ${doc?.nome}...`,
+    });
+  };
+
+  const handleDeleteDocument = (id: number) => {
+    const doc = documentos.find(d => d.id === id);
+    setDocumentos(prev => prev.filter(d => d.id !== id));
+    toast({
+      title: "Documento Excluído 🗑️",
+      description: `${doc?.nome} foi removido`,
+    });
+  };
+
+  const documentosPorFuncionario = documentos.filter(d => d.funcionario).length;
+  const documentosGerais = documentos.filter(d => !d.funcionario).length;
 
   return (
     <div className="space-y-6">
@@ -147,18 +213,14 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
         <Card>
           <CardContent className="text-center p-4">
             <div className="text-3xl mb-2">👥</div>
-            <div className="text-2xl font-bold text-green-600">
-              {documentos.filter(d => d.funcionario).length}
-            </div>
+            <div className="text-2xl font-bold text-green-600">{documentosPorFuncionario}</div>
             <div className="text-sm text-gray-600">Por Funcionário</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="text-center p-4">
             <div className="text-3xl mb-2">🏢</div>
-            <div className="text-2xl font-bold text-purple-600">
-              {documentos.filter(d => !d.funcionario).length}
-            </div>
+            <div className="text-2xl font-bold text-purple-600">{documentosGerais}</div>
             <div className="text-sm text-gray-600">Documentos Gerais</div>
           </CardContent>
         </Card>
@@ -176,12 +238,13 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              📤 Upload de Documento
+              <Plus className="w-5 h-5" />
+              Anexar Documento
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="arquivo">Arquivo</Label>
+              <Label htmlFor="arquivo">Selecionar Arquivo *</Label>
               <Input
                 id="arquivo"
                 type="file"
@@ -192,11 +255,16 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
               <p className="text-xs text-gray-500 mt-1">
                 PDF, DOC, DOCX, JPG, PNG (máx. 10MB)
               </p>
+              {uploadData.arquivo && (
+                <p className="text-sm text-green-600 mt-1">
+                  ✅ {uploadData.arquivo.name}
+                </p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="tipo">Tipo de Documento</Label>
-              <Select onValueChange={(value) => setUploadData(prev => ({ ...prev, tipo: value }))}>
+              <Label htmlFor="tipo">Tipo de Documento *</Label>
+              <Select value={uploadData.tipo} onValueChange={(value) => setUploadData(prev => ({ ...prev, tipo: value }))}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
@@ -205,22 +273,23 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
                   <SelectItem value="exame">🏥 Exame Médico</SelectItem>
                   <SelectItem value="manual">📚 Manual</SelectItem>
                   <SelectItem value="politica">📋 Política</SelectItem>
+                  <SelectItem value="certificado">🏆 Certificado</SelectItem>
                   <SelectItem value="outros">📄 Outros</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="funcionario">Funcionário (Opcional)</Label>
-              <Select onValueChange={(value) => setUploadData(prev => ({ ...prev, funcionarioId: value }))}>
+              <Label htmlFor="funcionario">Associar ao Funcionário</Label>
+              <Select value={uploadData.funcionarioId} onValueChange={(value) => setUploadData(prev => ({ ...prev, funcionarioId: value }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="👤 Documento geral ou selecione funcionário" />
+                  <SelectValue placeholder="🏢 Documento geral ou selecione funcionário" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">🏢 Documento Geral</SelectItem>
                   {funcionarios.map((funcionario) => (
                     <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
-                      👤 {funcionario.nome}
+                      👤 {funcionario.nome} - {funcionario.cargo}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -240,9 +309,10 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
             <Button 
               onClick={handleSubmitUpload}
               className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={!uploadData.arquivo || !uploadData.tipo}
             >
               <Upload className="w-4 h-4 mr-2" />
-              Fazer Upload
+              Anexar Documento
             </Button>
           </CardContent>
         </Card>
@@ -253,42 +323,23 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Buscar documentos..."
+              placeholder="Buscar documentos por nome, tipo ou funcionário..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
 
-          {/* Grid de Documentos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Grid de Documentos como Miniaturas */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredDocumentos.map((documento) => (
-              <Card key={documento.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="text-4xl">{getDocumentIcon(documento.tipo)}</div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium truncate">{documento.nome}</h3>
-                      <p className="text-sm text-gray-600">{documento.tipo}</p>
-                      {documento.funcionario && (
-                        <p className="text-xs text-blue-600">👤 {documento.funcionario}</p>
-                      )}
-                      <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                        <span>{documento.dataUpload}</span>
-                        <span>{documento.tamanho}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2 mt-3">
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-3 h-3" />
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Download className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <DocumentCard
+                key={documento.id}
+                documento={documento}
+                onView={handleViewDocument}
+                onDownload={handleDownloadDocument}
+                onDelete={handleDeleteDocument}
+              />
             ))}
           </div>
 
@@ -296,7 +347,7 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📄</div>
               <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum documento encontrado</h3>
-              <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+              <p className="text-gray-500">Tente ajustar os filtros de busca ou anexe um novo documento</p>
             </div>
           )}
         </div>
