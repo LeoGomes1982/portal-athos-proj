@@ -123,7 +123,7 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       return;
     }
 
-    const funcionario = uploadData.funcionarioId 
+    const funcionario = uploadData.funcionarioId && uploadData.funcionarioId !== "geral"
       ? funcionarios.find(f => f.id.toString() === uploadData.funcionarioId)?.nome 
       : null;
 
@@ -286,7 +286,7 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
                   <SelectValue placeholder="🏢 Documento geral ou selecione funcionário" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">🏢 Documento Geral</SelectItem>
+                  <SelectItem value="geral">🏢 Documento Geral</SelectItem>
                   {funcionarios.map((funcionario) => (
                     <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
                       👤 {funcionario.nome} - {funcionario.cargo}
