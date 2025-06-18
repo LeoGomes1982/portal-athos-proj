@@ -12,15 +12,55 @@ interface UniformeModalProps {
   onClose: () => void;
 }
 
-// Funcionários mockados
-const funcionarios = [
-  { id: 1, nome: "Ana Silva" },
-  { id: 2, nome: "João Santos" },
-  { id: 3, nome: "Maria Costa" },
-  { id: 4, nome: "Carlos Oliveira" },
-  { id: 5, nome: "Patricia Lima" },
-  { id: 6, nome: "Roberto Silva" }
+interface Funcionario {
+  id: number;
+  nome: string;
+  cargo: string;
+  setor: string;
+  status: "ativo" | "ferias" | "experiencia" | "aviso" | "inativo";
+}
+
+// Dados dos funcionários (mesma estrutura da página de funcionários)
+const funcionarios: Funcionario[] = [
+  {
+    id: 1,
+    nome: "Ana Silva",
+    cargo: "Analista de Sistemas",
+    setor: "TI",
+    status: "ativo"
+  },
+  {
+    id: 2,
+    nome: "João Santos",
+    cargo: "Desenvolvedor",
+    setor: "TI",
+    status: "ferias"
+  },
+  {
+    id: 3,
+    nome: "Maria Costa",
+    cargo: "Gerente de Vendas",
+    setor: "Comercial",
+    status: "ativo"
+  },
+  {
+    id: 4,
+    nome: "Carlos Oliveira",
+    cargo: "Analista Financeiro",
+    setor: "Financeiro",
+    status: "experiencia"
+  },
+  {
+    id: 5,
+    nome: "Patricia Fernandes",
+    cargo: "Assistente Administrativo",
+    setor: "Administrativo",
+    status: "aviso"
+  }
 ];
+
+// Filtrar apenas funcionários ativos
+const funcionariosAtivos = funcionarios.filter(funcionario => funcionario.status === "ativo");
 
 const pecasUniforme = [
   { value: "camisa", label: "👔 Camisa", icon: "👔" },
@@ -57,7 +97,7 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
       return;
     }
 
-    const funcionario = funcionarios.find(f => f.id.toString() === formData.funcionarioId);
+    const funcionario = funcionariosAtivos.find(f => f.id.toString() === formData.funcionarioId);
     const peca = pecasUniforme.find(p => p.value === formData.peca);
 
     toast({
@@ -89,15 +129,15 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="funcionario">Funcionário *</Label>
+            <Label htmlFor="funcionario">Funcionário Ativo *</Label>
             <Select onValueChange={(value) => handleInputChange("funcionarioId", value)}>
               <SelectTrigger>
-                <SelectValue placeholder="👤 Selecione o funcionário" />
+                <SelectValue placeholder="👤 Selecione o funcionário ativo" />
               </SelectTrigger>
               <SelectContent>
-                {funcionarios.map((funcionario) => (
+                {funcionariosAtivos.map((funcionario) => (
                   <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
-                    👤 {funcionario.nome}
+                    👤 {funcionario.nome} - {funcionario.cargo}
                   </SelectItem>
                 ))}
               </SelectContent>
