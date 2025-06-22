@@ -1,13 +1,16 @@
-
 import { useState, useEffect, useRef } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { RHSection } from "@/components/sections/RHSection";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('rh');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,6 +62,19 @@ const Index = () => {
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <div className="min-h-screen flex w-full relative">
+        {/* Header with Home button */}
+        <div className="fixed top-4 right-4 z-50">
+          <Button
+            onClick={() => navigate('/')}
+            variant="outline"
+            size="sm"
+            className="bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white shadow-lg"
+          >
+            <Home size={16} className="mr-2" />
+            Home
+          </Button>
+        </div>
+
         {/* Floating Sidebar */}
         <div 
           ref={sidebarRef}
