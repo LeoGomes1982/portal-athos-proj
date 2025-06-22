@@ -17,50 +17,45 @@ const sections = [
     title: "Recursos Humanos",
     icon: "👥",
     shortTitle: "RH",
-    color: "bg-blue-500",
-    hoverColor: "hover:bg-blue-50",
-    textColor: "text-blue-600",
-    activeColor: "bg-blue-500"
+    gradient: "from-blue-500 to-blue-600",
+    lightBg: "bg-blue-50",
+    darkText: "text-blue-700"
   },
   {
     id: "dp",
     title: "Departamento Pessoal",
     icon: "📊",
     shortTitle: "DP",
-    color: "bg-green-500",
-    hoverColor: "hover:bg-green-50",
-    textColor: "text-green-600",
-    activeColor: "bg-green-500"
+    gradient: "from-emerald-500 to-emerald-600",
+    lightBg: "bg-emerald-50",
+    darkText: "text-emerald-700"
   },
   {
     id: "operacoes",
     title: "Operações",
     icon: "⚙️",
     shortTitle: "Operações",
-    color: "bg-orange-500",
-    hoverColor: "hover:bg-orange-50",
-    textColor: "text-orange-600",
-    activeColor: "bg-orange-500"
+    gradient: "from-orange-500 to-orange-600",
+    lightBg: "bg-orange-50",
+    darkText: "text-orange-700"
   },
   {
     id: "comercial",
     title: "Comercial",
     icon: "📈",
     shortTitle: "Comercial",
-    color: "bg-purple-500",
-    hoverColor: "hover:bg-purple-50",
-    textColor: "text-purple-600",
-    activeColor: "bg-purple-500"
+    gradient: "from-purple-500 to-purple-600",
+    lightBg: "bg-purple-50",
+    darkText: "text-purple-700"
   },
   {
     id: "financeiro",
     title: "Financeiro",
     icon: "💰",
     shortTitle: "Financeiro",
-    color: "bg-emerald-500",
-    hoverColor: "hover:bg-emerald-50",
-    textColor: "text-emerald-600",
-    activeColor: "bg-emerald-500"
+    gradient: "from-teal-500 to-teal-600",
+    lightBg: "bg-teal-50",
+    darkText: "text-teal-700"
   }
 ];
 
@@ -71,43 +66,49 @@ interface AppSidebarProps {
 
 export function AppSidebar({ activeSection, setActiveSection }: AppSidebarProps) {
   return (
-    <Sidebar className="border-r-0 shadow-xl bg-white">
-      <SidebarHeader className="p-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-            S
+    <Sidebar className="border-none h-full">
+      <SidebarHeader className="p-6 border-b border-gray-100/50">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+            <span className="text-white font-bold text-lg">⚡</span>
           </div>
-          <div>
-            <h1 className="font-bold text-base text-gray-800">Sistema</h1>
-            <p className="text-xs text-gray-500">Gestão Empresarial</p>
-          </div>
+          <h1 className="font-bold text-lg text-gray-800">Sistema</h1>
+          <p className="text-xs text-gray-500 font-medium">Gestão Inteligente</p>
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="p-3">
+      <SidebarContent className="p-4">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-2">
+          <SidebarGroupLabel className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 px-2">
             Módulos
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="space-y-2">
               {sections.map((section) => (
                 <SidebarMenuItem key={section.id}>
                   <SidebarMenuButton
                     onClick={() => setActiveSection(section.id)}
-                    className={`w-full p-3 rounded-lg transition-all duration-200 ${
+                    className={`w-full p-4 rounded-xl transition-all duration-300 border-2 ${
                       activeSection === section.id
-                        ? `${section.activeColor} text-white shadow-md`
-                        : `bg-white ${section.hoverColor} ${section.textColor} border border-gray-100 hover:border-gray-200 hover:shadow-sm`
+                        ? `bg-gradient-to-r ${section.gradient} text-white shadow-lg border-transparent transform scale-105`
+                        : `bg-white hover:${section.lightBg} ${section.darkText} border-gray-100 hover:border-gray-200 hover:shadow-md hover:scale-102`
                     }`}
                   >
-                    <div className="flex items-center gap-3 w-full">
-                      <span className="text-lg">{section.icon}</span>
-                      <div className="flex flex-col items-start">
-                        <span className="font-medium text-sm">{section.shortTitle}</span>
-                        {activeSection !== section.id && (
-                          <span className="text-xs opacity-70">{section.title}</span>
-                        )}
+                    <div className="flex items-center gap-4 w-full">
+                      <div className={`text-2xl p-2 rounded-xl ${
+                        activeSection === section.id 
+                          ? 'bg-white/20' 
+                          : section.lightBg
+                      }`}>
+                        {section.icon}
+                      </div>
+                      <div className="flex flex-col items-start text-left">
+                        <span className="font-semibold text-sm">{section.shortTitle}</span>
+                        <span className={`text-xs opacity-80 ${
+                          activeSection === section.id ? 'text-white/80' : 'text-gray-500'
+                        }`}>
+                          {section.title}
+                        </span>
                       </div>
                     </div>
                   </SidebarMenuButton>
@@ -116,6 +117,14 @@ export function AppSidebar({ activeSection, setActiveSection }: AppSidebarProps)
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Status indicator */}
+        <div className="mt-auto p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
+          <div className="flex items-center gap-2 text-green-700">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs font-medium">Sistema Online</span>
+          </div>
+        </div>
       </SidebarContent>
     </Sidebar>
   );

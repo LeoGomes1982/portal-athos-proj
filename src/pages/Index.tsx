@@ -6,11 +6,9 @@ import { RHSection } from "@/components/sections/RHSection";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('rh');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const mainRef = useRef<HTMLDivElement>(null);
 
-  // Auto-hide sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
@@ -19,8 +17,7 @@ const Index = () => {
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      // Show sidebar when mouse is near the left edge
-      if (event.clientX <= 20 && !sidebarOpen) {
+      if (event.clientX <= 15 && !sidebarOpen) {
         setSidebarOpen(true);
       }
     };
@@ -40,11 +37,11 @@ const Index = () => {
         return <RHSection />;
       default:
         return (
-          <div className="flex items-center justify-center h-full bg-white rounded-2xl shadow-sm border border-gray-100">
-            <div className="text-center p-8">
-              <div className="text-5xl mb-4">🔧</div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">Em Desenvolvimento</h2>
-              <p className="text-gray-500 text-sm">Esta seção estará disponível em breve</p>
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center p-12 bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-lg border">
+              <div className="text-6xl mb-6 animate-bounce">🚀</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Em Breve</h2>
+              <p className="text-gray-600 max-w-md">Estamos preparando esta seção com muito carinho para você!</p>
             </div>
           </div>
         );
@@ -53,38 +50,48 @@ const Index = () => {
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 to-blue-50/30 relative">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full opacity-30"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-100 rounded-full opacity-20"></div>
+        </div>
+
+        {/* Floating Sidebar */}
         <div 
           ref={sidebarRef}
-          className={`transition-transform duration-300 ease-in-out ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } fixed left-0 top-0 z-50 h-full`}
+          className={`fixed left-4 top-4 bottom-4 z-50 transition-all duration-500 ease-out ${
+            sidebarOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
+          }`}
         >
-          <AppSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+          <div className="h-full backdrop-blur-lg bg-white/90 rounded-2xl shadow-2xl border border-white/20">
+            <AppSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+          </div>
         </div>
         
-        {/* Show sidebar indicator when hidden */}
+        {/* Sidebar trigger when hidden */}
         {!sidebarOpen && (
-          <div 
-            className="fixed left-0 top-1/2 transform -translate-y-1/2 bg-white text-blue-600 p-3 rounded-r-xl shadow-lg cursor-pointer hover:shadow-xl transition-all duration-200 z-40 border border-l-0 border-blue-100"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <div className="flex flex-col items-center gap-1">
-              <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-              <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-              <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+          <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40">
+            <div 
+              className="bg-white/80 backdrop-blur-sm p-3 rounded-r-2xl shadow-lg cursor-pointer hover:bg-white/90 transition-all duration-300 border-r border-t border-b border-gray-200"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <div className="flex flex-col gap-1">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
+                <div className="w-1 h-1 bg-blue-400 rounded-full opacity-60"></div>
+              </div>
             </div>
           </div>
         )}
         
-        <main 
-          ref={mainRef}
-          className={`flex-1 p-4 md:p-6 transition-all duration-300 ease-in-out ${
-            sidebarOpen ? 'ml-64' : 'ml-0'
-          }`}
-        >
-          <div className="max-w-7xl mx-auto">
-            {renderSection()}
+        {/* Main content area */}
+        <main className={`transition-all duration-500 ease-out min-h-screen ${
+          sidebarOpen ? 'ml-80' : 'ml-0'
+        }`}>
+          <div className="p-6 md:p-8 lg:p-12 relative z-10">
+            <div className="max-w-7xl mx-auto">
+              {renderSection()}
+            </div>
           </div>
         </main>
       </div>
