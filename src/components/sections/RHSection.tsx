@@ -1,57 +1,61 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { AdmissaoSubsection } from "../subsections/AdmissaoSubsection";
 import { FuncionariosSubsection } from "../subsections/FuncionariosSubsection";
 import { UniformesSubsection } from "../subsections/UniformesSubsection";
 import { DocumentosSubsection } from "../subsections/DocumentosSubsection";
 import { ArquivoRHSubsection } from "../subsections/ArquivoRHSubsection";
+import { 
+  UserPlus, 
+  Users, 
+  Shirt, 
+  FileText, 
+  Archive,
+  ArrowLeft 
+} from "lucide-react";
 
 const subsections = [
   {
     id: "admissao",
     title: "Admissão",
-    icon: "🎯",
-    description: "Novos talentos",
-    gradient: "from-blue-400 to-blue-600",
-    pattern: "bg-blue-50",
-    stats: "12 este mês"
+    icon: UserPlus,
+    description: "Contratação de novos funcionários",
+    stats: "12 este mês",
+    color: "blue"
   },
   {
     id: "funcionarios",
     title: "Funcionários",
-    icon: "👨‍💼",
-    description: "Equipe ativa",
-    gradient: "from-emerald-400 to-emerald-600",
-    pattern: "bg-emerald-50",
-    stats: "147 colaboradores"
+    icon: Users,
+    description: "Gerenciar equipe ativa",
+    stats: "147 ativos",
+    color: "emerald"
   },
   {
     id: "uniformes",
     title: "Uniformes",
-    icon: "👔",
-    description: "Controle de EPI",
-    gradient: "from-purple-400 to-purple-600",
-    pattern: "bg-purple-50",
-    stats: "23 pendentes"
+    icon: Shirt,
+    description: "Controle de equipamentos",
+    stats: "23 pendentes",
+    color: "purple"
   },
   {
     id: "documentos",
     title: "Documentos",
-    icon: "📋",
-    description: "Arquivos digitais",
-    gradient: "from-orange-400 to-orange-600",
-    pattern: "bg-orange-50",
-    stats: "1.2k documentos"
+    icon: FileText,
+    description: "Arquivos e contratos",
+    stats: "1.2k docs",
+    color: "orange"
   },
   {
     id: "arquivo",
     title: "Arquivo",
-    icon: "🗃️",
-    description: "Histórico completo",
-    gradient: "from-gray-400 to-gray-600",
-    pattern: "bg-gray-50",
-    stats: "85 arquivados"
+    icon: Archive,
+    description: "Histórico e backup",
+    stats: "85 arquivos",
+    color: "gray"
   }
 ];
 
@@ -78,102 +82,102 @@ export function RHSection() {
   if (activeSubsection) {
     return (
       <div className="animate-fade-in">
+        <div className="mb-6">
+          <Button
+            onClick={() => setActiveSubsection(null)}
+            variant="outline"
+            size="lg"
+            className="text-base font-medium px-6 py-3 shadow-md hover:shadow-lg"
+          >
+            <ArrowLeft size={20} className="mr-2" />
+            Voltar para RH
+          </Button>
+        </div>
         {renderSubsection()}
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Hero Header */}
-      <div className="text-center py-8">
-        <div className="inline-flex items-center gap-3 bg-white/60 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-white/20 mb-4">
-          <span className="text-3xl">👥</span>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Recursos Humanos
-          </h1>
+    <div className="space-y-8 animate-fade-in max-w-6xl mx-auto">
+      {/* Header mais limpo */}
+      <div className="text-center py-6">
+        <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-8 py-4 rounded-3xl shadow-lg border border-gray-200 mb-4">
+          <Users size={36} className="text-blue-600" />
+          <h1 className="text-3xl font-bold text-gray-800">Recursos Humanos</h1>
         </div>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Gerencie sua equipe com inteligência e eficiência
-        </p>
+        <p className="text-gray-600 text-lg">Gerencie sua equipe de forma simples e eficiente</p>
       </div>
 
-      {/* Quick Stats Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/20 text-center">
-          <div className="text-2xl font-bold text-blue-600">147</div>
-          <div className="text-sm text-gray-600">Colaboradores</div>
-        </div>
-        <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/20 text-center">
-          <div className="text-2xl font-bold text-emerald-600">12</div>
-          <div className="text-sm text-gray-600">Admissões</div>
-        </div>
-        <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/20 text-center">
-          <div className="text-2xl font-bold text-purple-600">23</div>
-          <div className="text-sm text-gray-600">Uniformes</div>
-        </div>
-        <div className="bg-white/70 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/20 text-center">
-          <div className="text-2xl font-bold text-orange-600">1.2k</div>
-          <div className="text-sm text-gray-600">Documentos</div>
+      {/* Estatísticas agrupadas */}
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 mb-8">
+        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">Resumo Atual</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-blue-50 rounded-2xl border border-blue-200">
+            <div className="text-3xl font-bold text-blue-600 mb-1">147</div>
+            <div className="text-sm text-gray-600 font-medium">Funcionários</div>
+          </div>
+          <div className="text-center p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+            <div className="text-3xl font-bold text-emerald-600 mb-1">12</div>
+            <div className="text-sm text-gray-600 font-medium">Admissões</div>
+          </div>
+          <div className="text-center p-4 bg-purple-50 rounded-2xl border border-purple-200">
+            <div className="text-3xl font-bold text-purple-600 mb-1">23</div>
+            <div className="text-sm text-gray-600 font-medium">Uniformes</div>
+          </div>
+          <div className="text-center p-4 bg-orange-50 rounded-2xl border border-orange-200">
+            <div className="text-3xl font-bold text-orange-600 mb-1">1.2k</div>
+            <div className="text-sm text-gray-600 font-medium">Documentos</div>
+          </div>
         </div>
       </div>
 
-      {/* Module Cards */}
+      {/* Cards dos módulos organizados */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subsections.map((subsection, index) => (
           <Card 
             key={subsection.id}
-            className={`group cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl bg-white/80 backdrop-blur-sm border-0 shadow-lg overflow-hidden relative ${
-              index === 0 ? 'md:col-span-2 lg:col-span-1' : ''
-            }`}
+            className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-white border-2 border-gray-200 hover:border-gray-300 overflow-hidden"
             onClick={() => setActiveSubsection(subsection.id)}
-            style={{
-              animationDelay: `${index * 100}ms`
-            }}
           >
-            {/* Background gradient */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${subsection.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
-            
-            <CardHeader className="relative pb-3">
-              <div className="flex items-center justify-between">
-                <div className={`w-14 h-14 ${subsection.pattern} rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                  {subsection.icon}
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-gray-500 font-medium">{subsection.stats}</div>
-                </div>
+            <CardHeader className="pb-4 text-center">
+              <div className={`w-20 h-20 bg-${subsection.color}-50 border-2 border-${subsection.color}-200 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <subsection.icon size={32} className={`text-${subsection.color}-600`} />
               </div>
-              <CardTitle className="text-xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
+              <CardTitle className="text-xl font-bold text-gray-800 mb-2">
                 {subsection.title}
               </CardTitle>
+              <div className={`inline-block px-4 py-2 bg-${subsection.color}-100 text-${subsection.color}-700 rounded-full text-sm font-semibold`}>
+                {subsection.stats}
+              </div>
             </CardHeader>
             
-            <CardContent className="relative pt-0">
-              <p className="text-gray-600 mb-4 group-hover:text-gray-700 transition-colors">
+            <CardContent className="pt-0 text-center">
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">
                 {subsection.description}
               </p>
               
-              <div className="flex items-center justify-between">
-                <div className={`inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r ${subsection.gradient} text-white rounded-full text-xs font-medium shadow-sm`}>
-                  <span>Acessar</span>
-                  <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
-                </div>
-              </div>
+              <Button 
+                className={`w-full bg-${subsection.color}-600 hover:bg-${subsection.color}-700 text-white font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-200`}
+              >
+                Acessar {subsection.title}
+              </Button>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Bottom info */}
-      <div className="text-center pt-8">
-        <div className="inline-flex items-center gap-6 text-sm text-gray-500 bg-white/50 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
+      {/* Status do sistema mais visível */}
+      <div className="text-center pt-6">
+        <div className="inline-flex items-center gap-4 text-base text-gray-600 bg-white/90 backdrop-blur-sm px-8 py-4 rounded-2xl border border-gray-200 shadow-md">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span>Sistema Atualizado</span>
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="font-medium">Sistema Atualizado</span>
           </div>
+          <div className="w-px h-6 bg-gray-300"></div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span>Dados Seguros</span>
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <span className="font-medium">Dados Seguros</span>
           </div>
         </div>
       </div>
