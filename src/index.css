@@ -152,11 +152,11 @@
   
   /* Section cards */
   .section-card {
-    @apply modern-card-hover p-8 text-center group;
+    @apply modern-card-hover p-8 text-center;
   }
   
   .section-icon {
-    @apply w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-2xl transition-transform duration-300 group-hover:scale-110;
+    @apply w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-2xl transition-transform duration-300;
   }
   
   .section-title {
