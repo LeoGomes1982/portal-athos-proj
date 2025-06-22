@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design System Moderno - Clean e Uniforme */
+/* Sistema de Design Moderno - Ultra Clean */
 
 @layer base {
   :root {
@@ -35,7 +35,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 220 100% 54%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -87,6 +87,7 @@
     @apply bg-background text-foreground antialiased;
     font-size: 16px;
     line-height: 1.6;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   html {
@@ -94,99 +95,135 @@
   }
 }
 
-/* Componentes do Design System */
+/* Componentes do Novo Design System */
 @layer components {
-  /* Container padrão */
-  .container-page {
-    @apply max-w-7xl mx-auto px-4 lg:px-8 py-8;
+  
+  /* Fundação do Sistema */
+  .system-background {
+    @apply min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30;
   }
   
-  /* Background padrão das páginas */
-  .page-background {
-    @apply min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50;
+  .system-page {
+    @apply min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden;
   }
   
-  /* Cards modernos */
-  .modern-card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300;
+  .system-page::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full pointer-events-none;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
   }
   
-  .modern-card-hover {
-    @apply modern-card hover:shadow-xl hover:-translate-y-1 cursor-pointer;
+  .system-container {
+    @apply relative z-10 max-w-7xl mx-auto px-4 lg:px-8 py-8;
   }
   
-  /* Botões modernos */
-  .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-medium rounded-xl px-6 py-3 transition-all duration-200 shadow-sm hover:shadow-md;
+  /* Tipografia Moderna */
+  .system-title {
+    @apply text-2xl lg:text-3xl font-bold text-slate-800 leading-tight;
   }
   
-  .btn-secondary {
-    @apply bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium rounded-xl px-6 py-3 transition-all duration-200 shadow-sm hover:shadow-md;
-  }
-  
-  /* Headers padronizados */
-  .page-header {
-    @apply text-center mb-12;
-  }
-  
-  .page-title {
-    @apply text-3xl lg:text-4xl font-bold text-slate-800 mb-4;
-  }
-  
-  .page-subtitle {
-    @apply text-lg text-slate-600 max-w-2xl mx-auto;
-  }
-  
-  /* Stats cards */
-  .stats-card {
-    @apply modern-card p-6 text-center;
-  }
-  
-  .stats-value {
-    @apply text-3xl font-bold mb-2;
-  }
-  
-  .stats-label {
-    @apply text-sm font-medium text-slate-600;
-  }
-  
-  /* Section cards */
-  .section-card {
-    @apply modern-card-hover p-8 text-center;
-  }
-  
-  .section-icon {
-    @apply w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-2xl transition-transform duration-300;
+  .system-subtitle {
+    @apply text-base lg:text-lg text-slate-600 leading-relaxed;
   }
   
   .section-title {
-    @apply text-xl font-bold text-slate-800 mb-3;
+    @apply text-xl font-bold text-slate-800 mb-3 leading-tight;
   }
   
   .section-description {
-    @apply text-slate-600 mb-6 leading-relaxed;
+    @apply text-slate-600 leading-relaxed;
   }
   
-  /* Status indicators */
+  /* Cards Modernos com Glass Effect */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg hover:shadow-xl rounded-3xl transition-all duration-300;
+  }
+  
+  .section-card {
+    @apply glass-card p-6 text-center hover:scale-105 cursor-pointer transition-all duration-300;
+  }
+  
+  .section-icon {
+    @apply w-16 h-16 mx-auto mb-6 rounded-3xl border-2 flex items-center justify-center text-2xl transition-all duration-300;
+  }
+  
+  /* Cards de Estatísticas */
+  .stat-card {
+    @apply glass-card p-4 lg:p-6 text-center transition-all duration-300 hover:scale-105;
+  }
+  
+  .stat-card-blue {
+    @apply bg-gradient-to-br from-blue-50/80 to-blue-100/50 border-blue-200/50 text-blue-700;
+  }
+  
+  .stat-card-emerald {
+    @apply bg-gradient-to-br from-emerald-50/80 to-emerald-100/50 border-emerald-200/50 text-emerald-700;
+  }
+  
+  .stat-card-purple {
+    @apply bg-gradient-to-br from-purple-50/80 to-purple-100/50 border-purple-200/50 text-purple-700;
+  }
+  
+  .stat-card-orange {
+    @apply bg-gradient-to-br from-orange-50/80 to-orange-100/50 border-orange-200/50 text-orange-700;
+  }
+  
+  .stat-card-slate {
+    @apply bg-gradient-to-br from-slate-50/80 to-slate-100/50 border-slate-200/50 text-slate-700;
+  }
+  
+  /* Botões Modernos */
+  .glass-button {
+    @apply bg-white/70 backdrop-blur-sm border border-white/30 hover:bg-white/80 transition-all duration-200 shadow-md hover:shadow-lg rounded-2xl;
+  }
+  
+  .action-button {
+    @apply font-semibold rounded-2xl px-6 py-3 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105;
+  }
+  
+  .action-button-blue {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700;
+  }
+  
+  .action-button-emerald {
+    @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700;
+  }
+  
+  .action-button-purple {
+    @apply bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700;
+  }
+  
+  .action-button-orange {
+    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700;
+  }
+  
+  .action-button-slate {
+    @apply bg-gradient-to-r from-slate-500 to-slate-600 text-white hover:from-slate-600 hover:to-slate-700;
+  }
+  
+  /* Status e Indicadores */
   .status-online {
-    @apply flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-full border border-green-200;
+    @apply flex items-center gap-2 text-green-600 bg-green-50/80 px-4 py-2 rounded-full border border-green-200/50;
   }
   
-  /* Navigation improvements */
+  /* Navegação moderna */
   .nav-link {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium;
+    @apply flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 font-medium;
   }
   
   .nav-link-active {
-    @apply nav-link bg-primary text-primary-foreground shadow-lg;
+    @apply nav-link bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg;
   }
   
   .nav-link-inactive {
-    @apply nav-link text-slate-600 hover:bg-slate-100 hover:text-slate-800;
+    @apply nav-link text-slate-600 hover:bg-white/60 hover:text-slate-800;
   }
 }
 
-/* Animações suaves */
+/* Animações Suaves e Modernas */
 @layer utilities {
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
@@ -194,6 +231,10 @@
   
   .animate-slide-up {
     animation: slideUp 0.6s ease-out;
+  }
+  
+  .animate-bounce-gentle {
+    animation: bounceGentle 2s ease-in-out infinite;
   }
   
   @keyframes fadeIn {
@@ -216,5 +257,45 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+  
+  @keyframes bounceGentle {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  /* Efeitos de hover modernos */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-2;
+  }
+  
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-2xl hover:shadow-blue-500/20;
+  }
+}
+
+/* Responsividade aprimorada */
+@media (max-width: 768px) {
+  .system-container {
+    @apply px-4 py-6;
+  }
+  
+  .system-title {
+    @apply text-xl;
+  }
+  
+  .section-card {
+    @apply p-4;
+  }
+  
+  .section-icon {
+    @apply w-12 h-12 mb-4;
   }
 }
