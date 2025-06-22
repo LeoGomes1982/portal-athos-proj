@@ -4,7 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { RHSection } from "@/components/sections/RHSection";
 import { Button } from "@/components/ui/button";
-import { Home, Menu, Bell, Search, User } from "lucide-react";
+import { Home, Menu, Bell, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
@@ -30,14 +30,12 @@ const Index = () => {
         return <RHSection />;
       default:
         return (
-          <div className="app-container">
-            <div className="content-wrapper">
-              <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="modern-card p-12 text-center max-w-md">
-                  <div className="text-6xl mb-6">🚧</div>
-                  <h2 className="page-title mb-4">Em Desenvolvimento</h2>
-                  <p className="text-gray-600">Esta seção será disponibilizada em breve!</p>
-                </div>
+          <div className="content-wrapper">
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="text-center max-w-md">
+                <div className="text-6xl mb-6">🚧</div>
+                <h2 className="text-2xl font-bold text-slate-800 mb-4">Em Desenvolvimento</h2>
+                <p className="text-slate-600">Esta seção será disponibilizada em breve!</p>
               </div>
             </div>
           </div>
@@ -47,9 +45,9 @@ const Index = () => {
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <div className="min-h-screen flex w-full app-container">
-        {/* Header Moderno */}
-        <div className="fixed top-0 left-0 right-0 z-40 modern-header">
+      <div className="min-h-screen flex w-full bg-slate-50">
+        {/* Header */}
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-slate-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -62,30 +60,22 @@ const Index = () => {
               </Button>
               
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">S</span>
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">GA</span>
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900">Sistema Integrado</h1>
-                  <p className="text-sm text-gray-500">Gestão Empresarial</p>
+                  <h1 className="text-lg font-bold text-slate-900">Portal Grupo Athos</h1>
+                  <p className="text-sm text-slate-500">Sistema Integrado</p>
                 </div>
               </div>
             </div>
             
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden md:flex"
-              >
+              <Button variant="ghost" size="sm" className="hidden md:flex">
                 <Search size={16} />
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden md:flex"
-              >
+              <Button variant="ghost" size="sm" className="hidden md:flex">
                 <Bell size={16} />
               </Button>
               
@@ -112,7 +102,7 @@ const Index = () => {
           <AppSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
         </div>
         
-        {/* Overlay para mobile */}
+        {/* Overlay */}
         {sidebarOpen && (
           <div 
             className="fixed inset-0 bg-black/20 z-20 lg:hidden"
@@ -120,8 +110,8 @@ const Index = () => {
           />
         )}
         
-        {/* Conteúdo Principal */}
-        <main className={`flex-1 pt-16 transition-all duration-300 ${sidebarOpen ? 'lg:ml-0' : ''}`}>
+        {/* Main Content */}
+        <main className="flex-1 pt-16 min-h-screen">
           {renderSection()}
         </main>
       </div>

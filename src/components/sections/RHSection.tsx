@@ -10,176 +10,132 @@ import { ArquivoRHSubsection } from "../subsections/ArquivoRHSubsection";
 import { 
   UserPlus, 
   Users, 
-  Shirt, 
+  Briefcase, 
   FileText, 
   Archive,
-  ArrowRight 
+  Target,
+  UserCheck,
+  X
 } from "lucide-react";
 
 const subsections = [
   {
-    id: "admissao",
-    title: "Admissão",
-    icon: UserPlus,
-    description: "Processo de contratação",
-    stats: "12 este mês",
-    color: "emerald"
+    id: "vagas",
+    title: "Vagas",
+    description: "Gestão de vagas disponíveis",
+    icon: Briefcase,
+    bgColor: "bg-green-100",
+    textColor: "text-green-700"
   },
   {
-    id: "funcionarios",
-    title: "Funcionários",
-    icon: Users,
-    description: "Gestão da equipe",
-    stats: "147 ativos",
-    color: "blue"
+    id: "banco-talentos",
+    title: "Banco de Talentos",
+    description: "Candidatos e talentos",
+    icon: Target,
+    bgColor: "bg-green-100",
+    textColor: "text-green-700"
   },
   {
-    id: "uniformes",
-    title: "Uniformes",
-    icon: Shirt,
-    description: "Controle de equipamentos",
-    stats: "23 pendentes",
-    color: "purple"
+    id: "processo-seletivo",
+    title: "Processo Seletivo",
+    description: "Gestão de seleções",
+    icon: UserCheck,
+    bgColor: "bg-green-100",
+    textColor: "text-green-700"
   },
   {
-    id: "documentos",
-    title: "Documentos",
-    icon: FileText,
-    description: "Arquivos e contratos",
-    stats: "1.2k docs",
-    color: "orange"
-  },
-  {
-    id: "arquivo",
-    title: "Arquivo",
+    id: "geladeira",
+    title: "Geladeira",
+    description: "Arquivo do RH",
     icon: Archive,
-    description: "Histórico e dados",
-    stats: "85 registros",
-    color: "gray"
+    bgColor: "bg-green-100",
+    textColor: "text-green-700"
   }
 ];
 
 export function RHSection() {
-  const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
-
-  const renderSubsection = () => {
-    switch (activeSubsection) {
-      case 'admissao':
-        return <AdmissaoSubsection onBack={() => setActiveSubsection(null)} />;
-      case 'funcionarios':
-        return <FuncionariosSubsection onBack={() => setActiveSubsection(null)} />;
-      case 'uniformes':
-        return <UniformesSubsection onBack={() => setActiveSubsection(null)} />;
-      case 'documentos':
-        return <DocumentosSubsection onBack={() => setActiveSubsection(null)} />;
-      case 'arquivo':
-        return <ArquivoRHSubsection onBack={() => setActiveSubsection(null)} />;
-      default:
-        return null;
-    }
-  };
-
-  if (activeSubsection) {
-    return renderSubsection();
-  }
+  const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
-        {/* Header da Seção */}
-        <div className="mb-8 animate-fade-in">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center">
-              <Users size={32} className="text-white" />
-            </div>
-            <div>
-              <h1 className="page-title">Recursos Humanos</h1>
-              <p className="page-subtitle mb-0">Gestão completa de pessoas e processos</p>
-            </div>
+    <>
+      <div className="content-wrapper animate-fade-in">
+        <div className="section-title-header">
+          <div className="section-icon-header bg-blue-600">
+            <Users size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">RH</h1>
+            <p className="text-slate-600">Recursos Humanos</p>
           </div>
         </div>
 
-        {/* Estatísticas Rápidas */}
-        <div className="stats-grid animate-slide-up">
-          <div className="stat-card">
-            <div className="text-3xl font-bold text-emerald-600 mb-1">147</div>
-            <div className="text-sm text-gray-600">Funcionários Ativos</div>
-          </div>
-          <div className="stat-card">
-            <div className="text-3xl font-bold text-blue-600 mb-1">12</div>
-            <div className="text-sm text-gray-600">Admissões/Mês</div>
-          </div>
-          <div className="stat-card">
-            <div className="text-3xl font-bold text-purple-600 mb-1">23</div>
-            <div className="text-sm text-gray-600">Uniformes Pendentes</div>
-          </div>
-          <div className="stat-card">
-            <div className="text-3xl font-bold text-orange-600 mb-1">1.2k</div>
-            <div className="text-sm text-gray-600">Documentos</div>
-          </div>
-        </div>
-
-        {/* Módulos Principais */}
-        <div className="responsive-grid animate-fade-in">
+        <div className="subsections-grid">
           {subsections.map((subsection) => (
-            <Card 
+            <div 
               key={subsection.id}
-              className="feature-card group"
-              onClick={() => setActiveSubsection(subsection.id)}
+              className="subsection-card"
+              onClick={() => setShowModal(true)}
             >
-              <CardHeader className="text-center pb-4">
-                <div className={`icon-btn mx-auto mb-4 ${
-                  subsection.color === 'emerald' ? 'bg-emerald-100 text-emerald-600' :
-                  subsection.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                  subsection.color === 'purple' ? 'bg-purple-100 text-purple-600' :
-                  subsection.color === 'orange' ? 'bg-orange-100 text-orange-600' :
-                  'bg-gray-100 text-gray-600'
-                }`}>
-                  <subsection.icon size={24} />
-                </div>
-                <CardTitle className="card-title">
-                  {subsection.title}
-                </CardTitle>
-                <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                  subsection.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                  subsection.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                  subsection.color === 'purple' ? 'bg-purple-100 text-purple-700' :
-                  subsection.color === 'orange' ? 'bg-orange-100 text-orange-700' :
-                  'bg-gray-100 text-gray-700'
-                }`}>
-                  {subsection.stats}
-                </div>
-              </CardHeader>
-              
-              <CardContent className="text-center pt-0">
-                <p className="text-gray-600 mb-6">
-                  {subsection.description}
-                </p>
-                
-                <Button className="primary-btn w-full group-hover:shadow-md">
-                  <span>Acessar</span>
-                  <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                </Button>
-              </CardContent>
-            </Card>
+              <div className={`subsection-icon ${subsection.bgColor}`}>
+                <subsection.icon size={24} className={subsection.textColor} />
+              </div>
+              <h3 className="subsection-title">{subsection.title}</h3>
+              <p className="subsection-description">{subsection.description}</p>
+            </div>
           ))}
         </div>
+      </div>
 
-        {/* Status Final */}
-        <div className="text-center mt-12 animate-fade-in">
-          <div className="inline-flex items-center gap-6 modern-card px-6 py-3">
-            <div className="flex items-center gap-2 text-emerald-600">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Sistema Atualizado</span>
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <Users size={24} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="modal-title">RH</h2>
+                    <p className="text-slate-600">Recursos Humanos</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowModal(false)}
+                >
+                  <X size={20} />
+                </Button>
+              </div>
             </div>
-            <div className="w-px h-4 bg-gray-300"></div>
-            <div className="flex items-center gap-2 text-blue-600">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span className="text-sm font-medium">Dados Seguros</span>
+            
+            <div className="modal-body">
+              <div className="subsections-grid">
+                {subsections.map((subsection) => (
+                  <div key={subsection.id} className="subsection-card">
+                    <div className={`subsection-icon ${subsection.bgColor}`}>
+                      <subsection.icon size={20} className={subsection.textColor} />
+                    </div>
+                    <h3 className="text-sm font-semibold text-slate-800 mb-2">
+                      {subsection.title}
+                    </h3>
+                    <p className="text-xs text-slate-600">
+                      {subsection.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="text-center mt-6">
+                <Button onClick={() => setShowModal(false)} className="btn-primary">
+                  Fechar
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
