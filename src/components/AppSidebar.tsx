@@ -22,36 +22,31 @@ const sections = [
     id: "rh",
     title: "Recursos Humanos",
     icon: Users,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50"
+    description: "Gestão de pessoas"
   },
   {
     id: "dp",
-    title: "Departamento Pessoal",
+    title: "Depto. Pessoal",
     icon: FileText,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50"
+    description: "Folha e benefícios"
   },
   {
     id: "operacoes",
     title: "Operações",
     icon: Settings,
-    color: "text-orange-600",
-    bgColor: "bg-orange-50"
+    description: "Processos internos"
   },
   {
     id: "comercial",
     title: "Comercial",
     icon: TrendingUp,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50"
+    description: "Vendas e marketing"
   },
   {
     id: "financeiro",
     title: "Financeiro",
     icon: DollarSign,
-    color: "text-teal-600",
-    bgColor: "bg-teal-50"
+    description: "Controle financeiro"
   }
 ];
 
@@ -62,38 +57,39 @@ interface AppSidebarProps {
 
 export function AppSidebar({ activeSection, setActiveSection }: AppSidebarProps) {
   return (
-    <Sidebar className="border-none h-full bg-transparent">
-      <SidebarHeader className="p-4 border-b border-slate-200/50">
-        <div className="text-center">
-          <h2 className="font-bold text-lg text-slate-800 mb-1">Módulos</h2>
-          <p className="text-sm text-slate-500">Selecione um setor</p>
+    <Sidebar className="sidebar-modern">
+      <SidebarHeader className="p-6 border-b border-gray-200">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">Módulos</h2>
+          <p className="text-sm text-gray-500">Selecione uma área</p>
         </div>
       </SidebarHeader>
       
       <SidebarContent className="p-4">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-3">
+            <SidebarMenu className="space-y-2">
               {sections.map((section) => (
                 <SidebarMenuItem key={section.id}>
                   <SidebarMenuButton
                     onClick={() => setActiveSection(section.id)}
-                    className={`w-full p-4 rounded-2xl transition-all duration-300 text-left ${
+                    className={`sidebar-item ${
                       activeSection === section.id
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-102'
-                        : 'bg-white/60 hover:bg-white/80 text-slate-700 hover:shadow-md'
+                        ? 'sidebar-item-active bg-emerald-50 text-emerald-700 border-l-4 border-emerald-600'
+                        : 'sidebar-item-inactive'
                     }`}
                   >
-                    <div className="flex items-center gap-3 w-full">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    <div className="flex items-center gap-3 w-full p-2">
+                      <div className={`icon-btn ${
                         activeSection === section.id 
-                          ? 'bg-white/20 text-white' 
-                          : `${section.bgColor} ${section.color}`
+                          ? 'bg-emerald-100 text-emerald-600' 
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         <section.icon size={20} />
                       </div>
-                      <div>
-                        <span className="font-semibold text-sm">{section.title}</span>
+                      <div className="flex-1 text-left">
+                        <div className="font-medium text-sm">{section.title}</div>
+                        <div className="text-xs opacity-70">{section.description}</div>
                       </div>
                     </div>
                   </SidebarMenuButton>
@@ -103,10 +99,10 @@ export function AppSidebar({ activeSection, setActiveSection }: AppSidebarProps)
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Status indicator */}
-        <div className="mt-auto p-4 bg-green-50/80 rounded-2xl border border-green-200/50">
-          <div className="flex items-center justify-center gap-2 text-green-700">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        {/* Status do Sistema */}
+        <div className="mt-auto p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+          <div className="flex items-center justify-center gap-2 text-emerald-700">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">Sistema Online</span>
           </div>
         </div>

@@ -13,7 +13,7 @@ import {
   Shirt, 
   FileText, 
   Archive,
-  ArrowLeft 
+  ArrowRight 
 } from "lucide-react";
 
 const subsections = [
@@ -21,17 +21,17 @@ const subsections = [
     id: "admissao",
     title: "Admissão",
     icon: UserPlus,
-    description: "Processo de contratação e integração",
+    description: "Processo de contratação",
     stats: "12 este mês",
-    color: "blue"
+    color: "emerald"
   },
   {
     id: "funcionarios",
     title: "Funcionários",
     icon: Users,
-    description: "Gestão da equipe ativa",
+    description: "Gestão da equipe",
     stats: "147 ativos",
-    color: "emerald"
+    color: "blue"
   },
   {
     id: "uniformes",
@@ -53,9 +53,9 @@ const subsections = [
     id: "arquivo",
     title: "Arquivo",
     icon: Archive,
-    description: "Histórico e backup",
-    stats: "85 arquivos",
-    color: "slate"
+    description: "Histórico e dados",
+    stats: "85 registros",
+    color: "gray"
   }
 ];
 
@@ -80,103 +80,99 @@ export function RHSection() {
   };
 
   if (activeSubsection) {
-    return (
-      <div className="system-page animate-fade-in">
-        <div className="system-container">
-          <div className="mb-6">
-            <Button
-              onClick={() => setActiveSubsection(null)}
-              variant="outline"
-              size="lg"
-              className="glass-button"
-            >
-              <ArrowLeft size={20} className="mr-2" />
-              Voltar para RH
-            </Button>
-          </div>
-          {renderSubsection()}
-        </div>
-      </div>
-    );
+    return renderSubsection();
   }
 
   return (
-    <div className="system-page">
-      <div className="system-container">
-        {/* Header da seção */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center gap-4 glass-card px-8 py-6 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-              <Users size={28} className="text-white" />
+    <div className="app-container">
+      <div className="content-wrapper">
+        {/* Header da Seção */}
+        <div className="mb-8 animate-fade-in">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center">
+              <Users size={32} className="text-white" />
             </div>
-            <div className="text-left">
-              <h1 className="system-title mb-0">Recursos Humanos</h1>
-              <p className="system-subtitle mb-0">Gestão completa de pessoas e talentos</p>
+            <div>
+              <h1 className="page-title">Recursos Humanos</h1>
+              <p className="page-subtitle mb-0">Gestão completa de pessoas e processos</p>
             </div>
           </div>
         </div>
 
-        {/* Cards de estatísticas */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 animate-slide-up">
-          <div className="stat-card stat-card-blue">
-            <div className="text-2xl font-bold mb-1">147</div>
-            <div className="text-sm">Funcionários</div>
+        {/* Estatísticas Rápidas */}
+        <div className="stats-grid animate-slide-up">
+          <div className="stat-card">
+            <div className="text-3xl font-bold text-emerald-600 mb-1">147</div>
+            <div className="text-sm text-gray-600">Funcionários Ativos</div>
           </div>
-          <div className="stat-card stat-card-emerald">
-            <div className="text-2xl font-bold mb-1">12</div>
-            <div className="text-sm">Admissões</div>
+          <div className="stat-card">
+            <div className="text-3xl font-bold text-blue-600 mb-1">12</div>
+            <div className="text-sm text-gray-600">Admissões/Mês</div>
           </div>
-          <div className="stat-card stat-card-purple">
-            <div className="text-2xl font-bold mb-1">23</div>
-            <div className="text-sm">Uniformes</div>
+          <div className="stat-card">
+            <div className="text-3xl font-bold text-purple-600 mb-1">23</div>
+            <div className="text-sm text-gray-600">Uniformes Pendentes</div>
           </div>
-          <div className="stat-card stat-card-orange">
-            <div className="text-2xl font-bold mb-1">1.2k</div>
-            <div className="text-sm">Documentos</div>
+          <div className="stat-card">
+            <div className="text-3xl font-bold text-orange-600 mb-1">1.2k</div>
+            <div className="text-sm text-gray-600">Documentos</div>
           </div>
         </div>
 
-        {/* Cards dos módulos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
+        {/* Módulos Principais */}
+        <div className="responsive-grid animate-fade-in">
           {subsections.map((subsection) => (
             <Card 
               key={subsection.id}
-              className="section-card cursor-pointer"
+              className="feature-card group"
               onClick={() => setActiveSubsection(subsection.id)}
             >
-              <CardHeader className="pb-4 text-center">
-                <div className={`section-icon bg-${subsection.color}-50 text-${subsection.color}-600 border-${subsection.color}-200`}>
-                  <subsection.icon size={28} />
+              <CardHeader className="text-center pb-4">
+                <div className={`icon-btn mx-auto mb-4 ${
+                  subsection.color === 'emerald' ? 'bg-emerald-100 text-emerald-600' :
+                  subsection.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                  subsection.color === 'purple' ? 'bg-purple-100 text-purple-600' :
+                  subsection.color === 'orange' ? 'bg-orange-100 text-orange-600' :
+                  'bg-gray-100 text-gray-600'
+                }`}>
+                  <subsection.icon size={24} />
                 </div>
-                <CardTitle className="section-title">
+                <CardTitle className="card-title">
                   {subsection.title}
                 </CardTitle>
-                <div className={`inline-block px-4 py-2 bg-${subsection.color}-100 text-${subsection.color}-700 rounded-full text-sm font-semibold`}>
+                <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                  subsection.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
+                  subsection.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                  subsection.color === 'purple' ? 'bg-purple-100 text-purple-700' :
+                  subsection.color === 'orange' ? 'bg-orange-100 text-orange-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
                   {subsection.stats}
                 </div>
               </CardHeader>
               
-              <CardContent className="pt-0 text-center">
-                <p className="section-description mb-6">
+              <CardContent className="text-center pt-0">
+                <p className="text-gray-600 mb-6">
                   {subsection.description}
                 </p>
                 
-                <Button className={`action-button action-button-${subsection.color} w-full`}>
-                  Acessar {subsection.title}
+                <Button className="primary-btn w-full group-hover:shadow-md">
+                  <span>Acessar</span>
+                  <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Status do sistema */}
-        <div className="text-center mt-8 animate-fade-in">
-          <div className="inline-flex items-center gap-4 glass-card px-6 py-3">
-            <div className="flex items-center gap-2 text-green-600">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        {/* Status Final */}
+        <div className="text-center mt-12 animate-fade-in">
+          <div className="inline-flex items-center gap-6 modern-card px-6 py-3">
+            <div className="flex items-center gap-2 text-emerald-600">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
               <span className="text-sm font-medium">Sistema Atualizado</span>
             </div>
-            <div className="w-px h-4 bg-slate-300"></div>
+            <div className="w-px h-4 bg-gray-300"></div>
             <div className="flex items-center gap-2 text-blue-600">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span className="text-sm font-medium">Dados Seguros</span>

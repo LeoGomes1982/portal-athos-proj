@@ -4,7 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { RHSection } from "@/components/sections/RHSection";
 import { Button } from "@/components/ui/button";
-import { Home, Menu } from "lucide-react";
+import { Home, Menu, Bell, Search, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
@@ -20,19 +20,8 @@ const Index = () => {
       }
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
-      if (event.clientX <= 15 && !sidebarOpen) {
-        setSidebarOpen(true);
-      }
-    };
-
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [sidebarOpen]);
 
   const renderSection = () => {
@@ -41,12 +30,14 @@ const Index = () => {
         return <RHSection />;
       default:
         return (
-          <div className="system-page">
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <div className="text-center p-8 lg:p-12 glass-card max-w-md mx-4">
-                <div className="text-6xl mb-6 animate-bounce">🚀</div>
-                <h2 className="system-title mb-4">Em Desenvolvimento</h2>
-                <p className="system-subtitle">Esta seção está sendo preparada com muito cuidado para você!</p>
+          <div className="app-container">
+            <div className="content-wrapper">
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="modern-card p-12 text-center max-w-md">
+                  <div className="text-6xl mb-6">🚧</div>
+                  <h2 className="page-title mb-4">Em Desenvolvimento</h2>
+                  <p className="text-gray-600">Esta seção será disponibilizada em breve!</p>
+                </div>
               </div>
             </div>
           </div>
@@ -56,11 +47,11 @@ const Index = () => {
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <div className="min-h-screen flex w-full relative system-background">
-        {/* Header moderno */}
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
-          <div className="flex items-center justify-between px-4 lg:px-6 py-3">
-            <div className="flex items-center gap-3">
+      <div className="min-h-screen flex w-full app-container">
+        {/* Header Moderno */}
+        <div className="fixed top-0 left-0 right-0 z-40 modern-header">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="sm"
@@ -69,54 +60,68 @@ const Index = () => {
               >
                 <Menu size={20} />
               </Button>
+              
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">GM</span>
+                <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">S</span>
                 </div>
-                <h1 className="font-bold text-lg text-slate-800">Sistema Integrado</h1>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">Sistema Integrado</h1>
+                  <p className="text-sm text-gray-500">Gestão Empresarial</p>
+                </div>
               </div>
             </div>
             
-            <Button
-              onClick={() => navigate('/')}
-              variant="outline"
-              size="sm"
-              className="glass-button"
-            >
-              <Home size={16} className="mr-2" />
-              Home
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden md:flex"
+              >
+                <Search size={16} />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden md:flex"
+              >
+                <Bell size={16} />
+              </Button>
+              
+              <Button
+                onClick={() => navigate('/')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Home size={16} />
+                <span className="hidden md:inline">Início</span>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Sidebar flutuante */}
+        {/* Sidebar */}
         <div 
           ref={sidebarRef}
-          className={`fixed left-4 top-20 bottom-4 z-50 transition-all duration-300 ease-out w-64 ${
-            sidebarOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
-          }`}
+          className={`fixed left-0 top-16 bottom-0 z-30 w-64 transition-transform duration-300 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:relative lg:translate-x-0 lg:top-0`}
         >
-          <div className="h-full glass-card">
-            <AppSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-          </div>
+          <AppSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
         </div>
         
-        {/* Trigger da sidebar quando escondida */}
-        {!sidebarOpen && (
-          <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40 hidden lg:block">
-            <div 
-              className="glass-button p-2 rounded-r-xl cursor-pointer"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
-            </div>
-          </div>
+        {/* Overlay para mobile */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/20 z-20 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
         )}
         
-        {/* Área de conteúdo principal */}
-        <main className={`flex-1 transition-all duration-300 pt-16 ${
-          sidebarOpen ? 'lg:pl-72' : 'pl-0'
-        }`}>
+        {/* Conteúdo Principal */}
+        <main className={`flex-1 pt-16 transition-all duration-300 ${sidebarOpen ? 'lg:ml-0' : ''}`}>
           {renderSection()}
         </main>
       </div>
