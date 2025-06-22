@@ -151,75 +151,94 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Background Decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-600/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-slate-400/20 to-blue-600/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-indigo-400/10 to-purple-600/10 rounded-full blur-2xl"></div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full opacity-30"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-100 rounded-full opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-100 rounded-full opacity-20"></div>
       </div>
 
-      <div className="relative z-10 py-8">
+      <div className="relative z-10 py-6 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
-          {/* Header - sem botão voltar */}
-          <div className="text-center">
-            <div className="inline-flex items-center gap-4 bg-white/80 backdrop-blur-md px-8 py-6 rounded-3xl shadow-xl border border-white/50">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center">
-                <span className="text-white text-2xl">👥</span>
+          {/* Header */}
+          <div className="text-center py-8">
+            <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-gray-200 mb-6">
+              <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-blue-600 text-2xl">👥</span>
               </div>
               <div className="text-left">
-                <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                  Funcionários Ativos
-                </h1>
-                <p className="text-lg text-gray-600 font-medium">Gerencie sua equipe</p>
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-800">Funcionários Ativos</h1>
+                <p className="text-lg text-gray-600">Gerencie sua equipe</p>
               </div>
             </div>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Visualize e gerencie todos os funcionários da empresa
+            </p>
           </div>
 
           {/* Resumo com contadores */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-center mb-8 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
               📊 Resumo da Equipe
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <span className="text-white text-2xl font-bold">{contadores.total}</span>
-                </div>
-                <div className="text-lg font-bold text-gray-800 mb-1">Total</div>
-                <div className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-                  Funcionários
-                </div>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-blue-600 text-2xl font-bold">{contadores.total}</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.total}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Total de Funcionários</div>
+                  <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                    Equipe
+                  </div>
+                </CardContent>
+              </Card>
               
-              <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <span className="text-white text-2xl">🏖️</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.ferias}</div>
-                <div className="text-sm font-medium text-blue-600">Em Férias</div>
-              </div>
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-blue-600 text-2xl">🏖️</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.ferias}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Em Férias</div>
+                  <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                    Status
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <span className="text-white text-2xl">🆕</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.experiencia}</div>
-                <div className="text-sm font-medium text-yellow-600">Em Experiência</div>
-              </div>
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-yellow-100 border-2 border-yellow-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-yellow-600 text-2xl">🆕</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.experiencia}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Em Experiência</div>
+                  <div className="text-xs font-semibold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full">
+                    Novatos
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl border border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <span className="text-white text-2xl">⚠️</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.aviso}</div>
-                <div className="text-sm font-medium text-orange-600">Em Aviso Prévio</div>
-              </div>
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-orange-100 border-2 border-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-orange-600 text-2xl">⚠️</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.aviso}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Em Aviso Prévio</div>
+                  <div className="text-xs font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+                    Saídas
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
           {/* Controles */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6">
             <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -258,23 +277,23 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           </div>
 
           {/* Grid/Lista de Funcionários */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-center mb-8 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
               👨‍💼 Equipe Ativa
             </h2>
             
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                 {filteredFuncionarios.map((funcionario) => {
                   const statusInfo = statusConfig[funcionario.status];
                   return (
                     <Card 
                       key={funcionario.id} 
-                      className="group cursor-pointer bg-white/90 backdrop-blur-sm border border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl overflow-hidden"
+                      className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105"
                       onClick={() => handleFuncionarioClick(funcionario)}
                     >
                       <CardHeader className="text-center pb-4 pt-6">
-                        <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <div className="w-20 h-20 bg-gray-100 border-2 border-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                           <span className="text-4xl">{funcionario.foto}</span>
                         </div>
                         <CardTitle className="text-lg font-bold text-gray-800 mb-1">{funcionario.nome}</CardTitle>
@@ -322,7 +341,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                       onClick={() => handleFuncionarioClick(funcionario)}
                     >
                       <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center shadow-lg">
+                        <div className="w-16 h-16 bg-gray-100 border-2 border-gray-200 rounded-3xl flex items-center justify-center shadow-lg">
                           <span className="text-2xl">{funcionario.foto}</span>
                         </div>
                         <div>
@@ -349,9 +368,9 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             )}
 
             {filteredFuncionarios.length === 0 && (
-              <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
-                <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-4xl">🔍</span>
+              <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-lg border border-gray-200">
+                <div className="w-24 h-24 bg-gray-100 border-2 border-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <span className="text-gray-400 text-4xl">🔍</span>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-600 mb-3">Nenhum funcionário encontrado</h3>
                 <p className="text-gray-500 font-medium">Tente ajustar os filtros de busca</p>
@@ -361,15 +380,20 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
 
           {/* Status do sistema */}
           <div className="text-center">
-            <div className="inline-flex items-center gap-6 text-base text-gray-600 bg-white/80 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/50 shadow-lg">
+            <div className="inline-flex items-center gap-6 text-base text-gray-600 bg-white/90 backdrop-blur-sm px-8 py-4 rounded-2xl border border-gray-200 shadow-md">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse shadow-sm"></div>
+                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="font-medium">Dados Atualizados</span>
               </div>
               <div className="w-px h-6 bg-gray-300"></div>
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-blue-500 rounded-full shadow-sm"></div>
+                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                 <span className="font-medium">Sistema Online</span>
+              </div>
+              <div className="w-px h-6 bg-gray-300"></div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                <span className="font-medium">Backup Seguro</span>
               </div>
             </div>
           </div>
