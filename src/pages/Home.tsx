@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -101,8 +102,12 @@ const Home = () => {
           {/* Header Principal */}
           <div className="text-center py-8">
             <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-gray-200 mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-2xl">⚡</span>
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden bg-white">
+                <img 
+                  src="/lovable-uploads/effff35e-ae72-47e6-afa2-40c4b365fbde.png" 
+                  alt="GM Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="text-left">
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-800">Sistema Integrado</h1>
