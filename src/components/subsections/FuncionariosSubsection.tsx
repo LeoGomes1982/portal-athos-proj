@@ -151,167 +151,228 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onBack}
-          className="flex items-center gap-2"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Voltar
-        </Button>
-        <h1 className="text-3xl font-bold text-blue-600">👥 Funcionários Ativos</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full opacity-30"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-100 rounded-full opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-100 rounded-full opacity-20"></div>
       </div>
 
-      {/* Resumo com novos contadores */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-2xl font-bold text-blue-600">{contadores.total}</div>
-            <div className="text-sm text-gray-600">Total Funcionários</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-2xl font-bold text-blue-600">{contadores.ferias}</div>
-            <div className="text-sm text-gray-600">🏖️ Em Férias</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-2xl font-bold text-yellow-600">{contadores.experiencia}</div>
-            <div className="text-sm text-gray-600">🆕 Em Experiência</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-2xl font-bold text-orange-600">{contadores.aviso}</div>
-            <div className="text-sm text-gray-600">⚠️ Em Aviso Prévio</div>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="relative z-10 py-6 lg:py-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
+          {/* Header */}
+          <div className="text-center py-6">
+            <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-8 py-4 rounded-3xl shadow-lg border border-gray-200 mb-4">
+              <div className="text-4xl">👥</div>
+              <div className="text-left">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">Funcionários Ativos</h1>
+                <p className="text-lg text-gray-600">Gerencie sua equipe</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={onBack}
+              className="bg-white/90 backdrop-blur-sm border-gray-300 hover:bg-white shadow-lg font-medium px-6 py-3"
+            >
+              <ChevronLeft className="w-5 h-5 mr-2" />
+              Voltar para RH
+            </Button>
+          </div>
 
-      {/* Controles */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Buscar funcionário..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("grid")}
-          >
-            📱 Quadros
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-          >
-            📋 Lista
-          </Button>
-        </div>
-      </div>
-
-      {/* Grid de Funcionários */}
-      {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredFuncionarios.map((funcionario) => {
-            const statusInfo = statusConfig[funcionario.status];
-            return (
-              <Card 
-                key={funcionario.id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleFuncionarioClick(funcionario)}
-              >
-                <CardHeader className="text-center pb-4">
-                  <div className="text-6xl mb-2">{funcionario.foto}</div>
-                  <CardTitle className="text-lg">{funcionario.nome}</CardTitle>
-                  <p className="text-sm text-gray-600">{funcionario.cargo}</p>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">Setor:</span>
-                    <Badge variant="secondary">{funcionario.setor}</Badge>
+          {/* Resumo com contadores */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
+              📊 Resumo da Equipe
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-blue-600 text-2xl font-bold">{contadores.total}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">Status:</span>
-                    <Badge className={`${statusInfo.color} text-white text-xs`}>
-                      {statusInfo.label}
-                    </Badge>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    📅 {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    📞 {funcionario.telefone}
-                  </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    📧 {funcionario.email}
+                  <div className="text-sm font-medium text-gray-600 mb-1">Total</div>
+                  <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                    Funcionários
                   </div>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
-      ) : (
-        /* Lista de Funcionários */
-        <Card>
-          <CardContent className="p-0">
-            <div className="space-y-0">
-              {filteredFuncionarios.map((funcionario, index) => {
-                const statusInfo = statusConfig[funcionario.status];
-                return (
-                  <div
-                    key={funcionario.id}
-                    className={`flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer ${
-                      index !== filteredFuncionarios.length - 1 ? 'border-b' : ''
-                    }`}
-                    onClick={() => handleFuncionarioClick(funcionario)}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-3xl">{funcionario.foto}</div>
-                      <div>
-                        <div className="font-medium">{funcionario.nome}</div>
-                        <div className="text-sm text-gray-600">{funcionario.cargo}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge className={`${statusInfo.color} text-white`}>
-                        {statusInfo.label}
-                      </Badge>
-                      <Badge variant="secondary">{funcionario.setor}</Badge>
-                      <div className="text-sm text-gray-500 hidden md:block">
-                        {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-                      </div>
-                      <div className="text-sm text-gray-500 hidden lg:block">
-                        {funcionario.telefone}
-                      </div>
-                    </div>
+              
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-blue-600 text-2xl">🏖️</span>
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.ferias}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Em Férias</div>
+                </CardContent>
+              </Card>
 
-      {filteredFuncionarios.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
-          <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-yellow-100 border-2 border-yellow-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-yellow-600 text-2xl">🆕</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.experiencia}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Em Experiência</div>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
+                <CardContent className="text-center p-6">
+                  <div className="w-16 h-16 bg-orange-100 border-2 border-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span className="text-orange-600 text-2xl">⚠️</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.aviso}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Em Aviso Prévio</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Controles */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Buscar funcionário..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-white border-gray-300"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  📱 Quadros
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  📋 Lista
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid/Lista de Funcionários */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
+            <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-6 text-center">
+              👨‍💼 Equipe Ativa
+            </h2>
+            
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                {filteredFuncionarios.map((funcionario) => {
+                  const statusInfo = statusConfig[funcionario.status];
+                  return (
+                    <Card 
+                      key={funcionario.id} 
+                      className="hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:scale-105 group"
+                      onClick={() => handleFuncionarioClick(funcionario)}
+                    >
+                      <CardHeader className="text-center pb-4">
+                        <div className="text-6xl mb-2 group-hover:scale-110 transition-transform duration-300">{funcionario.foto}</div>
+                        <CardTitle className="text-lg font-bold text-gray-800">{funcionario.nome}</CardTitle>
+                        <p className="text-sm text-gray-600">{funcionario.cargo}</p>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">Setor:</span>
+                          <Badge variant="secondary" className="bg-gray-100 text-gray-700">{funcionario.setor}</Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">Status:</span>
+                          <Badge className={`${statusInfo.color} text-white text-xs`}>
+                            {statusInfo.label}
+                          </Badge>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          📅 {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          📞 {funcionario.telefone}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">
+                          📧 {funcionario.email}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Lista de Funcionários */
+              <div className="space-y-0">
+                {filteredFuncionarios.map((funcionario, index) => {
+                  const statusInfo = statusConfig[funcionario.status];
+                  return (
+                    <div
+                      key={funcionario.id}
+                      className={`flex items-center justify-between p-4 hover:bg-blue-50 cursor-pointer transition-colors ${
+                        index !== filteredFuncionarios.length - 1 ? 'border-b border-gray-200' : ''
+                      }`}
+                      onClick={() => handleFuncionarioClick(funcionario)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-3xl">{funcionario.foto}</div>
+                        <div>
+                          <div className="font-medium text-gray-800">{funcionario.nome}</div>
+                          <div className="text-sm text-gray-600">{funcionario.cargo}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Badge className={`${statusInfo.color} text-white`}>
+                          {statusInfo.label}
+                        </Badge>
+                        <Badge variant="secondary" className="bg-gray-100 text-gray-700">{funcionario.setor}</Badge>
+                        <div className="text-sm text-gray-500 hidden md:block">
+                          {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
+                        </div>
+                        <div className="text-sm text-gray-500 hidden lg:block">
+                          {funcionario.telefone}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {filteredFuncionarios.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
+                <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+              </div>
+            )}
+          </div>
+
+          {/* Status do sistema */}
+          <div className="text-center">
+            <div className="inline-flex items-center gap-6 text-base text-gray-600 bg-white/90 backdrop-blur-sm px-8 py-4 rounded-2xl border border-gray-200 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="font-medium">Dados Atualizados</span>
+              </div>
+              <div className="w-px h-6 bg-gray-300"></div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                <span className="font-medium">Sistema Online</span>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Modal de Detalhes */}
       {selectedFuncionario && (
