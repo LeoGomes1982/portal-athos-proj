@@ -28,7 +28,8 @@ const Home = () => {
       fullTitle: "Departamento Pessoal",
       icon: FileText,
       className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
-      iconColor: "text-green-600"
+      iconColor: "text-green-600",
+      onClick: () => navigate("/dp")
     },
     {
       id: "operacoes",
