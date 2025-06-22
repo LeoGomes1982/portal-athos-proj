@@ -8,8 +8,7 @@ import {
   Briefcase, 
   Target,
   UserCheck,
-  Archive,
-  X
+  Archive
 } from "lucide-react";
 
 const subsections = [
