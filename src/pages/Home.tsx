@@ -7,8 +7,11 @@ import {
   DollarSign,
   Building2
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   const sections = [
     {
       id: "rh",
@@ -16,7 +19,8 @@ const Home = () => {
       fullTitle: "Recursos Humanos",
       icon: Users,
       className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
-      iconColor: "text-blue-600"
+      iconColor: "text-blue-600",
+      onClick: () => navigate("/rh")
     },
     {
       id: "dp",
@@ -82,6 +86,7 @@ const Home = () => {
             <div 
               key={section.id}
               className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
+              onClick={section.onClick}
             >
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
