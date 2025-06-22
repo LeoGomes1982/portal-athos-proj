@@ -2,17 +2,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AdmissaoSubsection } from "../subsections/AdmissaoSubsection";
-import { FuncionariosSubsection } from "../subsections/FuncionariosSubsection";
-import { UniformesSubsection } from "../subsections/UniformesSubsection";
-import { DocumentosSubsection } from "../subsections/DocumentosSubsection";
-import { ArquivoRHSubsection } from "../subsections/ArquivoRHSubsection";
 import { 
-  UserPlus, 
   Users, 
   Briefcase, 
-  FileText, 
-  Archive,
   Target,
   UserCheck,
   X
@@ -24,8 +16,8 @@ const subsections = [
     title: "Vagas",
     description: "Gestão de vagas disponíveis",
     icon: Briefcase,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-700"
   },
   {
     id: "banco-talentos",
@@ -40,16 +32,8 @@ const subsections = [
     title: "Processo Seletivo",
     description: "Gestão de seleções",
     icon: UserCheck,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
-  },
-  {
-    id: "geladeira",
-    title: "Geladeira",
-    description: "Arquivo do RH",
-    icon: Archive,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-700"
   }
 ];
 
