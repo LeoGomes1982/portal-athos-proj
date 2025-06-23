@@ -1,9 +1,9 @@
-
 import { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Template } from "@/types/template";
 import { useImageHandling } from "@/hooks/useImageHandling";
 import { useCanvasDimensions } from "@/hooks/useCanvasDimensions";
+import { useDynamicFields } from "@/hooks/useDynamicFields";
 import TextFormattingToolbar from "./TextFormattingToolbar";
 
 interface TemplateCanvasProps {
@@ -39,6 +39,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { handleImageUpload, addResizeHandles, removeResizeHandles } = useImageHandling();
   const { calculateCanvasDimensions } = useCanvasDimensions();
+  const { fields } = useDynamicFields();
 
   useEffect(() => {
     if (!editorRef.current || !activeTemplate) return;
@@ -153,17 +154,69 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
-          const field = document.createElement('span');
-          field.style.cssText = `
+          
+          // Criar um dropdown com os campos disponíveis
+          const fieldSelect = document.createElement('select');
+          fieldSelect.style.cssText = `
             background: #e3f2fd;
             border: 1px solid #2196f3;
-            padding: 2px 8px;
+            padding: 4px 8px;
             border-radius: 4px;
             color: #1976d2;
             font-family: monospace;
+            margin: 2px;
           `;
-          field.textContent = '{{campo.dinamico}}';
-          range.insertNode(field);
+          
+          // Adicionar opção padrão
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Selecione um campo...';
+          fieldSelect.appendChild(defaultOption);
+          
+          // Adicionar campos dinâmicos agrupados por categoria
+          const categories = ['cliente', 'fornecedor', 'empresa'] as const;
+          
+          categories.forEach(category => {
+            const categoryFields = fields.filter(field => field.category === category);
+            if (categoryFields.length > 0) {
+              const optgroup = document.createElement('optgroup');
+              optgroup.label = category.charAt(0).toUpperCase() + category.slice(1);
+              
+              categoryFields.forEach(field => {
+                const option = document.createElement('option');
+                option.value = `{{${field.key}}}`;
+                option.textContent = field.label;
+                optgroup.appendChild(option);
+              });
+              
+              fieldSelect.appendChild(optgroup);
+            }
+          });
+          
+          // Adicionar evento de mudança
+          fieldSelect.addEventListener('change', (e) => {
+            const target = e.target as HTMLSelectElement;
+            if (target.value) {
+              const fieldSpan = document.createElement('span');
+              fieldSpan.style.cssText = `
+                background: #e3f2fd;
+                border: 1px solid #2196f3;
+                padding: 2px 8px;
+                border-radius: 4px;
+                color: #1976d2;
+                font-family: monospace;
+                margin: 2px;
+                display: inline-block;
+              `;
+              fieldSpan.textContent = target.value;
+              fieldSpan.contentEditable = 'false';
+              
+              target.parentNode?.replaceChild(fieldSpan, target);
+            }
+          });
+          
+          range.insertNode(fieldSelect);
+          fieldSelect.focus();
         }
       }
     },

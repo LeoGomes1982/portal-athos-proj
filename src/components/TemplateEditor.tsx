@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Template } from "@/types/template";
+import { templateStorage } from "@/services/templateStorage";
 import TemplateManager from "./TemplateManager";
 import TemplateToolbar from "./TemplateToolbar";
 import TemplateCanvas, { TemplateCanvasRef } from "./TemplateCanvas";
@@ -14,15 +15,22 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const { toast } = useToast();
   const canvasRef = useRef<TemplateCanvasRef>(null);
   
-  const [templates, setTemplates] = useState<Template[]>([
-    {
-      id: '1',
-      name: `Template Padrão - ${tipo === 'proposta' ? 'Proposta' : 'Contrato'}`,
-      elements: [],
-      orientation: 'portrait',
-      totalPages: 1
+  const [templates, setTemplates] = useState<Template[]>(() => {
+    const savedTemplates = templateStorage.getByType(tipo);
+    if (savedTemplates.length > 0) {
+      return savedTemplates;
     }
-  ]);
+    
+    return [
+      {
+        id: '1',
+        name: `Template Padrão - ${tipo === 'proposta' ? 'Proposta' : 'Contrato'}`,
+        elements: [],
+        orientation: 'portrait',
+        totalPages: 1
+      }
+    ];
+  });
   
   const [activeTemplateId, setActiveTemplateId] = useState('1');
   const [selectedElement, setSelectedElement] = useState<any>(null);
@@ -33,6 +41,22 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const [canvasWidth, setCanvasWidth] = useState(800);
 
   const activeTemplate = templates.find(t => t.id === activeTemplateId);
+
+  const handleSaveAll = () => {
+    try {
+      templateStorage.saveAll(templates, tipo);
+      toast({
+        title: "Templates salvos!",
+        description: `Todos os templates de ${tipo} foram salvos com sucesso.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar os templates.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleOrientationChange = (orientation: 'portrait' | 'landscape') => {
     if (!activeTemplate) return;
@@ -263,7 +287,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
         templates={templates}
         activeTemplateId={activeTemplateId}
         onTemplateSelect={setActiveTemplateId}
-        onSaveAll={() => {}}
+        onSaveAll={handleSaveAll}
         tipo={tipo}
       />
 
