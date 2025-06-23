@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,20 +135,18 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
   };
 
   // Atualizar progresso quando formData mudar
-  useState(() => {
+  useEffect(() => {
     calculateProgress();
-  });
+  }, [formData]);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    setTimeout(calculateProgress, 100);
   };
 
   const handleFileUpload = (field: keyof FormData, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setFormData(prev => ({ ...prev, [field]: file }));
-      setTimeout(calculateProgress, 100);
     }
   };
 
@@ -164,7 +162,6 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
       ...prev,
       dependentes: prev.dependentes.filter((_, i) => i !== index)
     }));
-    setTimeout(calculateProgress, 100);
   };
 
   const updateDependente = (index: number, field: string, value: string | File | null) => {
@@ -174,7 +171,6 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
         i === index ? { ...dep, [field]: value } : dep
       )
     }));
-    setTimeout(calculateProgress, 100);
   };
 
   const handleSubmit = () => {
