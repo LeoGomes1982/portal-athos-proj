@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,19 +125,30 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       const newDimensions = calculateCanvasDimensions();
       setCanvasWidth(newDimensions.width);
       
-      if (fabricCanvas) {
-        fabricCanvas.setDimensions({
-          width: newDimensions.width,
-          height: newDimensions.height * (activeTemplate?.totalPages || 1)
-        });
-        fabricCanvas.renderAll();
+      // Verificar se o canvas está totalmente inicializado antes de redimensionar
+      if (fabricCanvas && fabricCanvas.getElement() && activeTemplate) {
+        try {
+          const totalHeight = newDimensions.height * activeTemplate.totalPages;
+          fabricCanvas.setDimensions({
+            width: newDimensions.width,
+            height: totalHeight
+          });
+          fabricCanvas.renderAll();
+        } catch (error) {
+          console.error('Erro ao redimensionar canvas:', error);
+        }
       }
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Executar imediatamente
+    
+    // Usar setTimeout para garantir que o DOM esteja pronto
+    const timeoutId = setTimeout(handleResize, 100);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
   }, [fabricCanvas, activeTemplate?.orientation, activeTemplate?.totalPages]);
 
   // Inicializar Fabric Canvas
@@ -151,6 +163,11 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       height: totalHeight,
       backgroundColor: "#ffffff",
       selection: true,
+    });
+
+    // Aguardar inicialização completa do canvas
+    canvas.on('after:render', () => {
+      console.log('Canvas renderizado completamente');
     });
 
     // Adicionar separadores de página
@@ -288,17 +305,23 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     
     setTemplates(updatedTemplates);
 
-    // Recriar o canvas com as novas dimensões
-    if (fabricCanvas) {
-      const dimensions = calculateCanvasDimensions();
-      const totalHeight = (orientation === 'portrait' ? dimensions.height : dimensions.width) * activeTemplate.totalPages;
-      
-      fabricCanvas.setDimensions({
-        width: orientation === 'portrait' ? dimensions.width : dimensions.height,
-        height: totalHeight
-      });
-      fabricCanvas.renderAll();
-    }
+    // Recriar o canvas com as novas dimensões - aguardar o próximo render
+    setTimeout(() => {
+      if (fabricCanvas && fabricCanvas.getElement()) {
+        try {
+          const dimensions = calculateCanvasDimensions();
+          const totalHeight = (orientation === 'portrait' ? dimensions.height : dimensions.width) * activeTemplate.totalPages;
+          
+          fabricCanvas.setDimensions({
+            width: orientation === 'portrait' ? dimensions.width : dimensions.height,
+            height: totalHeight
+          });
+          fabricCanvas.renderAll();
+        } catch (error) {
+          console.error('Erro ao alterar orientação:', error);
+        }
+      }
+    }, 100);
 
     toast({
       title: "Orientação alterada",
@@ -318,60 +341,66 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     
     setTemplates(updatedTemplates);
 
-    // Redimensionar canvas
-    if (fabricCanvas) {
-      const dimensions = calculateCanvasDimensions();
-      const newTotalHeight = dimensions.height * (activeTemplate.totalPages + 1);
-      
-      fabricCanvas.setDimensions({
-        width: dimensions.width,
-        height: newTotalHeight
-      });
+    // Redimensionar canvas - aguardar o próximo render
+    setTimeout(() => {
+      if (fabricCanvas && fabricCanvas.getElement()) {
+        try {
+          const dimensions = calculateCanvasDimensions();
+          const newTotalHeight = dimensions.height * (activeTemplate.totalPages + 1);
+          
+          fabricCanvas.setDimensions({
+            width: dimensions.width,
+            height: newTotalHeight
+          });
 
-      // Adicionar separador para a nova página
-      const pageBreakY = dimensions.height * activeTemplate.totalPages;
-      
-      const pageBreakLine = new Line([0, pageBreakY, dimensions.width, pageBreakY], {
-        stroke: '#ff6b35',
-        strokeWidth: 3,
-        strokeDashArray: [15, 8],
-        selectable: false,
-        evented: false,
-        excludeFromExport: false,
-      });
+          // Adicionar separador para a nova página
+          const pageBreakY = dimensions.height * activeTemplate.totalPages;
+          
+          const pageBreakLine = new Line([0, pageBreakY, dimensions.width, pageBreakY], {
+            stroke: '#ff6b35',
+            strokeWidth: 3,
+            strokeDashArray: [15, 8],
+            selectable: false,
+            evented: false,
+            excludeFromExport: false,
+          });
 
-      const pageLabel = new FabricText(`PÁGINA ${activeTemplate.totalPages + 1}`, {
-        left: 20,
-        top: pageBreakY + 10,
-        fontSize: Math.max(14, dimensions.width * 0.018),
-        fill: '#ff6b35',
-        fontFamily: 'Arial',
-        fontWeight: 'bold',
-        selectable: false,
-        evented: false,
-        excludeFromExport: false,
-      });
+          const pageLabel = new FabricText(`PÁGINA ${activeTemplate.totalPages + 1}`, {
+            left: 20,
+            top: pageBreakY + 10,
+            fontSize: Math.max(14, dimensions.width * 0.018),
+            fill: '#ff6b35',
+            fontFamily: 'Arial',
+            fontWeight: 'bold',
+            selectable: false,
+            evented: false,
+            excludeFromExport: false,
+          });
 
-      const pageIcon = new Rect({
-        left: dimensions.width - 60,
-        top: pageBreakY + 5,
-        width: 40,
-        height: 30,
-        fill: 'transparent',
-        stroke: '#ff6b35',
-        strokeWidth: 2,
-        rx: 4,
-        ry: 4,
-        selectable: false,
-        evented: false,
-        excludeFromExport: false,
-      });
+          const pageIcon = new Rect({
+            left: dimensions.width - 60,
+            top: pageBreakY + 5,
+            width: 40,
+            height: 30,
+            fill: 'transparent',
+            stroke: '#ff6b35',
+            strokeWidth: 2,
+            rx: 4,
+            ry: 4,
+            selectable: false,
+            evented: false,
+            excludeFromExport: false,
+          });
 
-      fabricCanvas.add(pageBreakLine);
-      fabricCanvas.add(pageLabel);
-      fabricCanvas.add(pageIcon);
-      fabricCanvas.renderAll();
-    }
+          fabricCanvas.add(pageBreakLine);
+          fabricCanvas.add(pageLabel);
+          fabricCanvas.add(pageIcon);
+          fabricCanvas.renderAll();
+        } catch (error) {
+          console.error('Erro ao adicionar página:', error);
+        }
+      }
+    }, 100);
 
     toast({
       title: "Página adicionada",
@@ -391,28 +420,34 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     
     setTemplates(updatedTemplates);
 
-    // Redimensionar canvas
-    if (fabricCanvas) {
-      const dimensions = calculateCanvasDimensions();
-      const newTotalHeight = dimensions.height * (activeTemplate.totalPages - 1);
-      
-      fabricCanvas.setDimensions({
-        width: dimensions.width,
-        height: newTotalHeight
-      });
+    // Redimensionar canvas - aguardar o próximo render
+    setTimeout(() => {
+      if (fabricCanvas && fabricCanvas.getElement()) {
+        try {
+          const dimensions = calculateCanvasDimensions();
+          const newTotalHeight = dimensions.height * (activeTemplate.totalPages - 1);
+          
+          fabricCanvas.setDimensions({
+            width: dimensions.width,
+            height: newTotalHeight
+          });
 
-      // Remover elementos da última página (separadores)
-      const objects = fabricCanvas.getObjects();
-      const pageBreakY = dimensions.height * (activeTemplate.totalPages - 1);
-      
-      objects.forEach(obj => {
-        if (obj.top && obj.top >= pageBreakY) {
-          fabricCanvas.remove(obj);
+          // Remover elementos da última página (separadores)
+          const pageBreakY = dimensions.height * (activeTemplate.totalPages - 1);
+          
+          const objects = fabricCanvas.getObjects();
+          objects.forEach(obj => {
+            if (obj.top && obj.top >= pageBreakY) {
+              fabricCanvas.remove(obj);
+            }
+          });
+
+          fabricCanvas.renderAll();
+        } catch (error) {
+          console.error('Erro ao remover página:', error);
         }
-      });
-
-      fabricCanvas.renderAll();
-    }
+      }
+    }, 100);
 
     // Ajustar página atual se necessário
     if (currentPage > activeTemplate.totalPages - 1) {
