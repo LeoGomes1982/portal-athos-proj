@@ -1,21 +1,10 @@
-import { useRef, useEffect, forwardRef, useImperativeHandle, useState } from "react";
+
+import { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Template } from "@/types/template";
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Type,
-  Palette
-} from "lucide-react";
+import { useImageHandling } from "@/hooks/useImageHandling";
+import { useCanvasDimensions } from "@/hooks/useCanvasDimensions";
+import TextFormattingToolbar from "./TextFormattingToolbar";
 
 interface TemplateCanvasProps {
   activeTemplate: Template | undefined;
@@ -48,337 +37,22 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 }, ref) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null);
-  const [isResizing, setIsResizing] = useState(false);
-  const [resizeHandle, setResizeHandle] = useState<string>('');
-  
-  // Estados para a formatação
-  const [fontSize, setFontSize] = useState(16);
-  const [fontFamily, setFontFamily] = useState('Arial');
-  const [textColor, setTextColor] = useState('#000000');
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
-
-  const calculateCanvasDimensions = () => {
-    if (!canvasContainerRef.current) {
-      return { width: 800, height: 1131 };
-    }
-
-    const containerWidth = canvasContainerRef.current.clientWidth - 48;
-    const maxWidth = Math.min(containerWidth, 1200);
-    
-    let width, height;
-    
-    if (activeTemplate?.orientation === 'landscape') {
-      width = maxWidth;
-      height = Math.round(maxWidth / 1.414);
-    } else {
-      width = maxWidth;
-      height = Math.round(maxWidth * 1.414);
-    }
-    
-    return { width, height };
-  };
-
-  const handleImageUpload = (file: File, x = 100, y = 100) => {
-    console.log('Starting image upload process:', file.name, file.type);
-    
-    if (!file.type.startsWith('image/')) {
-      console.error('File is not an image:', file.type);
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      console.log('File read successfully, creating image element');
-      if (editorRef.current && e.target?.result) {
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          const img = document.createElement('img');
-          img.src = e.target.result as string;
-          img.style.cssText = `
-            max-width: 300px;
-            height: auto;
-            margin: 10px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            display: inline-block;
-          `;
-          img.alt = file.name;
-          
-          // Add click handler for selection
-          img.addEventListener('click', (event) => {
-            event.stopPropagation();
-            console.log('Image clicked, adding resize handles');
-            addResizeHandles(img);
-          });
-          
-          range.insertNode(img);
-          console.log('Image inserted into editor');
-          
-          // Auto-select the newly inserted image
-          setTimeout(() => {
-            addResizeHandles(img);
-          }, 100);
-        } else {
-          // If no selection, append to the end of the editor
-          console.log('No selection found, appending image to editor');
-          const img = document.createElement('img');
-          img.src = e.target.result as string;
-          img.style.cssText = `
-            max-width: 300px;
-            height: auto;
-            margin: 10px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            display: block;
-          `;
-          img.alt = file.name;
-          
-          img.addEventListener('click', (event) => {
-            event.stopPropagation();
-            addResizeHandles(img);
-          });
-          
-          editorRef.current.appendChild(img);
-          addResizeHandles(img);
-        }
-      }
-    };
-    
-    reader.onerror = (error) => {
-      console.error('Error reading file:', error);
-    };
-    
-    reader.readAsDataURL(file);
-  };
-
-  const applyFormatting = (command: string, value?: string) => {
-    document.execCommand(command, false, value);
-    
-    // Trigger selection change to update the toolbar
-    setTimeout(() => {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        // Force update of selection
-        const event = new Event('selectionchange');
-        document.dispatchEvent(event);
-      }
-    }, 10);
-  };
-
-  const handleFontSizeChange = (newSize: string) => {
-    setFontSize(Number(newSize));
-    applyFormatting('fontSize', '7'); // Use fontSize command with size
-    // Then apply the actual size via CSS
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      if (!range.collapsed) {
-        const span = document.createElement('span');
-        span.style.fontSize = newSize + 'px';
-        try {
-          range.surroundContents(span);
-        } catch (e) {
-          // If surroundContents fails, extract and wrap
-          const contents = range.extractContents();
-          span.appendChild(contents);
-          range.insertNode(span);
-        }
-      }
-    }
-  };
-
-  const handleFontFamilyChange = (family: string) => {
-    setFontFamily(family);
-    applyFormatting('fontName', family);
-  };
-
-  const handleTextColorChange = (color: string) => {
-    setTextColor(color);
-    applyFormatting('foreColor', color);
-  };
-
-  const handleBackgroundColorChange = (color: string) => {
-    setBackgroundColor(color);
-    applyFormatting('backColor', color);
-  };
-
-  const addResizeHandles = (img: HTMLImageElement) => {
-    // Remove existing handles
-    removeResizeHandles();
-    
-    const wrapper = document.createElement('div');
-    wrapper.className = 'image-resize-wrapper';
-    wrapper.style.cssText = `
-      position: relative;
-      display: inline-block;
-      border: 2px solid #007bff;
-      cursor: move;
-    `;
-    
-    // Wrap the image
-    img.parentNode?.insertBefore(wrapper, img);
-    wrapper.appendChild(img);
-    
-    // Create resize handles
-    const handles = ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'];
-    handles.forEach(handle => {
-      const handleElement = document.createElement('div');
-      handleElement.className = `resize-handle resize-${handle}`;
-      handleElement.style.cssText = `
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        background: #007bff;
-        border: 1px solid white;
-        cursor: ${handle.includes('n') || handle.includes('s') ? 
-          (handle.includes('e') || handle.includes('w') ? 
-            (handle.includes('nw') || handle.includes('se') ? 'nw-resize' : 'ne-resize') 
-            : 'ns-resize') 
-          : (handle.includes('e') || handle.includes('w') ? 'ew-resize' : 'move')};
-        z-index: 10;
-      `;
-      
-      // Position handles
-      if (handle.includes('n')) handleElement.style.top = '-4px';
-      if (handle.includes('s')) handleElement.style.bottom = '-4px';
-      if (handle.includes('e')) handleElement.style.right = '-4px';
-      if (handle.includes('w')) handleElement.style.left = '-4px';
-      if (handle === 'n' || handle === 's') {
-        handleElement.style.left = '50%';
-        handleElement.style.transform = 'translateX(-50%)';
-      }
-      if (handle === 'e' || handle === 'w') {
-        handleElement.style.top = '50%';
-        handleElement.style.transform = 'translateY(-50%)';
-      }
-      
-      // Add resize functionality
-      handleElement.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        startResize(img, handle, e);
-      });
-      
-      wrapper.appendChild(handleElement);
-    });
-    
-    setSelectedImage(img);
-  };
-
-  const removeResizeHandles = () => {
-    const wrappers = document.querySelectorAll('.image-resize-wrapper');
-    wrappers.forEach(wrapper => {
-      const img = wrapper.querySelector('img');
-      if (img && wrapper.parentNode) {
-        wrapper.parentNode.insertBefore(img, wrapper);
-        wrapper.remove();
-      }
-    });
-    setSelectedImage(null);
-  };
-
-  const startResize = (img: HTMLImageElement, handle: string, e: MouseEvent) => {
-    setIsResizing(true);
-    setResizeHandle(handle);
-    
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startWidth = img.offsetWidth;
-    const startHeight = img.offsetHeight;
-    const aspectRatio = startWidth / startHeight;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaX = e.clientX - startX;
-      const deltaY = e.clientY - startY;
-      
-      let newWidth = startWidth;
-      let newHeight = startHeight;
-      
-      // Handle horizontal resizing
-      if (handle.includes('e')) {
-        newWidth = Math.max(20, startWidth + deltaX);
-      } else if (handle.includes('w')) {
-        newWidth = Math.max(20, startWidth - deltaX);
-      }
-      
-      // Handle vertical resizing
-      if (handle.includes('s')) {
-        newHeight = Math.max(20, startHeight + deltaY);
-      } else if (handle.includes('n')) {
-        newHeight = Math.max(20, startHeight - deltaY);
-      }
-      
-      // For corner handles, maintain aspect ratio
-      if (handle.length === 2) {
-        // Use the dimension that changed more to determine the primary resize direction
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-        
-        if (absX > absY) {
-          // Horizontal drag is primary, calculate height from width
-          newHeight = newWidth / aspectRatio;
-        } else {
-          // Vertical drag is primary, calculate width from height
-          newWidth = newHeight * aspectRatio;
-        }
-      }
-      
-      // For side handles (not corners), only resize in one direction
-      if (handle === 'e' || handle === 'w') {
-        // Only horizontal resize, keep original height
-        newHeight = startHeight;
-      } else if (handle === 'n' || handle === 's') {
-        // Only vertical resize, keep original width
-        newWidth = startWidth;
-      }
-      
-      // Apply the new dimensions
-      img.style.width = newWidth + 'px';
-      img.style.height = newHeight + 'px';
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-      setResizeHandle('');
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  const fontFamilies = [
-    'Arial',
-    'Times New Roman',
-    'Helvetica',
-    'Georgia',
-    'Verdana',
-    'Calibri',
-    'Roboto',
-    'Open Sans'
-  ];
-
-  const fontSizes = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72];
+  const { handleImageUpload, addResizeHandles, removeResizeHandles } = useImageHandling();
+  const { calculateCanvasDimensions } = useCanvasDimensions();
 
   useEffect(() => {
     if (!editorRef.current || !activeTemplate) return;
 
-    const dimensions = calculateCanvasDimensions();
+    const dimensions = calculateCanvasDimensions(canvasContainerRef, activeTemplate);
     const totalHeight = dimensions.height * activeTemplate.totalPages;
 
-    // Configurar o editor como contentEditable
     const editor = editorRef.current;
     editor.style.width = `${dimensions.width}px`;
     editor.style.height = `${totalHeight}px`;
     editor.style.minHeight = `${totalHeight}px`;
 
-    // Focar no editor automaticamente
     editor.focus();
 
-    // Configurar eventos do editor
     const handleInput = () => {
       console.log('Editor input event triggered');
       onSelectionChange('text-editor');
@@ -396,7 +70,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       console.log('Editor clicked');
       const target = e.target as HTMLElement;
       
-      // Check if clicked on an image
       if (target.tagName === 'IMG') {
         addResizeHandles(target as HTMLImageElement);
       } else {
@@ -422,7 +95,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         const file = files[0];
         if (file.type.startsWith('image/')) {
           console.log('Dropped file is an image, processing...');
-          handleImageUpload(file);
+          handleImageUpload(file, editorRef);
         } else {
           console.log('Dropped file is not an image:', file.type);
         }
@@ -442,11 +115,10 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       editor.removeEventListener('drop', handleDrop);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
-  }, [activeTemplate?.orientation, activeTemplate?.totalPages, onSelectionChange]);
+  }, [activeTemplate?.orientation, activeTemplate?.totalPages, onSelectionChange, handleImageUpload, addResizeHandles, removeResizeHandles, calculateCanvasDimensions]);
 
   useImperativeHandle(ref, () => ({
     addTextElement: () => {
-      // Focar no editor
       if (editorRef.current) {
         editorRef.current.focus();
         onSelectionChange('text-editor');
@@ -454,7 +126,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     },
 
     addImagePlaceholder: () => {
-      // Inserir placeholder de imagem no cursor
       if (editorRef.current) {
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {
@@ -478,7 +149,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     },
 
     addFieldElement: () => {
-      // Inserir campo dinâmico no cursor
       if (editorRef.current) {
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {
@@ -498,7 +168,9 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       }
     },
 
-    handleImageUpload,
+    handleImageUpload: (file: File) => {
+      handleImageUpload(file, editorRef);
+    },
 
     deleteSelectedElement: () => {
       const selection = window.getSelection();
@@ -517,7 +189,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 
   if (!activeTemplate) return null;
 
-  const dimensions = calculateCanvasDimensions();
+  const dimensions = calculateCanvasDimensions(canvasContainerRef, activeTemplate);
   const totalHeight = dimensions.height * activeTemplate.totalPages;
 
   return (
@@ -533,7 +205,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* CSS Styles */}
         <style dangerouslySetInnerHTML={{
           __html: `
             .text-editor-placeholder:empty:before {
@@ -551,130 +222,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           `
         }} />
 
-        {/* Barra de Ferramentas Permanente */}
-        <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm mb-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Fonte */}
-            <div className="flex items-center gap-2">
-              <Type size={16} className="text-gray-600" />
-              <Select value={fontFamily} onValueChange={handleFontFamilyChange}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {fontFamilies.map((font) => (
-                    <SelectItem key={font} value={font} style={{ fontFamily: font }}>
-                      {font}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Tamanho da fonte */}
-            <div className="flex items-center gap-1">
-              <Select value={fontSize.toString()} onValueChange={handleFontSizeChange}>
-                <SelectTrigger className="w-16">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {fontSizes.map((size) => (
-                    <SelectItem key={size} value={size.toString()}>
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            {/* Formatação */}
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('bold')}
-              >
-                <Bold size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('italic')}
-              >
-                <Italic size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('underline')}
-              >
-                <Underline size={16} />
-              </Button>
-            </div>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            {/* Cores */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <Palette size={16} className="text-gray-600" />
-                <Input
-                  type="color"
-                  value={textColor}
-                  onChange={(e) => handleTextColorChange(e.target.value)}
-                  className="w-12 h-8 p-1 border rounded"
-                  title="Cor do texto"
-                />
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-gray-600">Fundo:</span>
-                <Input
-                  type="color"
-                  value={backgroundColor}
-                  onChange={(e) => handleBackgroundColorChange(e.target.value)}
-                  className="w-12 h-8 p-1 border rounded"
-                  title="Cor de fundo"
-                />
-              </div>
-            </div>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            {/* Alinhamento */}
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('justifyLeft')}
-              >
-                <AlignLeft size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('justifyCenter')}
-              >
-                <AlignCenter size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('justifyRight')}
-              >
-                <AlignRight size={16} />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => applyFormatting('justifyFull')}
-              >
-                <AlignJustify size={16} />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <TextFormattingToolbar />
 
         <div 
           ref={canvasContainerRef}
@@ -695,7 +243,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
             suppressContentEditableWarning={true}
           />
           
-          {/* Indicadores de página */}
           {activeTemplate.totalPages > 1 && Array.from({ length: activeTemplate.totalPages - 1 }, (_, index) => (
             <div
               key={index}
