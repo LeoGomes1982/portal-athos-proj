@@ -140,38 +140,69 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       onSelectionChange(null);
     });
 
-    // Evento para edição inline de texto - usando a API correta do Fabric.js v6
+    // Implementação correta da edição inline para Fabric.js v6
     canvas.on('mouse:dblclick', (e) => {
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject as any).elementType === 'text') {
-        if (activeObject instanceof FabricText) {
-          // No Fabric.js v6, definimos o texto como editável e focamos
-          activeObject.set('editable', true);
-          canvas.setActiveObject(activeObject);
+      if (activeObject && (activeObject as any).elementType === 'text' && activeObject instanceof FabricText) {
+        // Habilitar modo de edição inline diretamente no Fabric.js v6
+        activeObject.set({
+          editable: true,
+          selectable: true
+        });
+        
+        // Entrar no modo de edição inline nativo do Fabric.js
+        canvas.setActiveObject(activeObject);
+        
+        // Simular clique triplo para selecionar todo o texto e iniciar edição
+        setTimeout(() => {
+          const canvasElement = canvas.getElement();
+          const rect = canvasElement.getBoundingClientRect();
+          const objCoords = activeObject.getCoords();
           
-          // Simular o comportamento de edição inline
-          const currentText = activeObject.text || '';
-          onTextDoubleClick(currentText);
-        }
+          // Calcular posição do objeto no canvas
+          const objX = objCoords[0].x;
+          const objY = objCoords[0].y;
+          
+          // Criar evento de clique para iniciar edição
+          const clickEvent = new MouseEvent('mousedown', {
+            clientX: rect.left + objX,
+            clientY: rect.top + objY,
+            bubbles: true
+          });
+          
+          canvasElement.dispatchEvent(clickEvent);
+          
+          // Forçar o modo de edição
+          if (activeObject.set) {
+            activeObject.set('isEditing', true);
+            canvas.renderAll();
+          }
+        }, 50);
       }
     });
 
-    // Evento quando o texto sai do modo de edição
+    // Eventos para controlar a edição de texto
+    canvas.on('text:editing:entered', () => {
+      console.log('Entrada no modo de edição');
+    });
+
     canvas.on('text:editing:exited', (e) => {
       const textObject = e.target;
       if (textObject && textObject instanceof FabricText) {
+        console.log('Saída do modo de edição');
         canvas.renderAll();
       }
     });
 
-    // Evento quando o texto está sendo editado
     canvas.on('text:changed', (e) => {
       const textObject = e.target;
       if (textObject && textObject instanceof FabricText) {
+        console.log('Texto alterado:', textObject.text);
         canvas.renderAll();
       }
     });
 
+    // Eventos de drag and drop
     canvas.on('drop', (e) => {
       const event = e.e as DragEvent;
       event.preventDefault();
@@ -190,7 +221,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
-  }, [activeTemplate?.orientation, activeTemplate?.totalPages, onTextDoubleClick]);
+  }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
 
   useImperativeHandle(ref, () => ({
     addTextElement: () => {
@@ -397,7 +428,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
             </span>
           </div>
-          <span>Canvas responsivo • Clique duas vezes no texto para editar • Linhas laranjas separam as páginas</span>
+          <span>Canvas responsivo • Clique duas vezes no texto para editar inline • Linhas laranjas separam as páginas</span>
         </div>
       </CardContent>
     </Card>
