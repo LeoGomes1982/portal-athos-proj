@@ -79,6 +79,80 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     return { width, height };
   };
 
+  const handleImageUpload = (file: File, x = 100, y = 100) => {
+    console.log('Starting image upload process:', file.name, file.type);
+    
+    if (!file.type.startsWith('image/')) {
+      console.error('File is not an image:', file.type);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      console.log('File read successfully, creating image element');
+      if (editorRef.current && e.target?.result) {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const img = document.createElement('img');
+          img.src = e.target.result as string;
+          img.style.cssText = `
+            max-width: 300px;
+            height: auto;
+            margin: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: inline-block;
+          `;
+          img.alt = file.name;
+          
+          // Add click handler for selection
+          img.addEventListener('click', (event) => {
+            event.stopPropagation();
+            console.log('Image clicked, adding resize handles');
+            addResizeHandles(img);
+          });
+          
+          range.insertNode(img);
+          console.log('Image inserted into editor');
+          
+          // Auto-select the newly inserted image
+          setTimeout(() => {
+            addResizeHandles(img);
+          }, 100);
+        } else {
+          // If no selection, append to the end of the editor
+          console.log('No selection found, appending image to editor');
+          const img = document.createElement('img');
+          img.src = e.target.result as string;
+          img.style.cssText = `
+            max-width: 300px;
+            height: auto;
+            margin: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: block;
+          `;
+          img.alt = file.name;
+          
+          img.addEventListener('click', (event) => {
+            event.stopPropagation();
+            addResizeHandles(img);
+          });
+          
+          editorRef.current.appendChild(img);
+          addResizeHandles(img);
+        }
+      }
+    };
+    
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+    };
+    
+    reader.readAsDataURL(file);
+  };
+
   const applyFormatting = (command: string, value?: string) => {
     document.execCommand(command, false, value);
     
