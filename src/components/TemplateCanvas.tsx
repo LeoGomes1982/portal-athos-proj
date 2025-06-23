@@ -216,7 +216,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           <div
             ref={editorRef}
             contentEditable
-            className="w-full min-h-full p-6 outline-none focus:outline-none relative"
+            className="w-full min-h-full p-6 outline-none focus:outline-none relative editor-placeholder"
             style={{
               lineHeight: '1.6',
               fontSize: '16px',
@@ -255,13 +255,16 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           <span>✍️ Editor de texto livre - Digite diretamente para escrever</span>
         </div>
 
-        <style jsx>{`
-          [contenteditable][data-placeholder]:empty::before {
-            content: attr(data-placeholder);
-            color: #9ca3af;
-            pointer-events: none;
-          }
-        `}</style>
+        {/* CSS para o placeholder */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .editor-placeholder[data-placeholder]:empty::before {
+              content: attr(data-placeholder);
+              color: #9ca3af;
+              pointer-events: none;
+            }
+          `
+        }} />
       </CardContent>
     </Card>
   );
