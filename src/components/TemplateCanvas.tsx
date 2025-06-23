@@ -140,14 +140,18 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       onSelectionChange(null);
     });
 
-    // Evento para edição inline de texto
+    // Evento para edição inline de texto - usando a API correta do Fabric.js v6
     canvas.on('mouse:dblclick', (e) => {
       const activeObject = canvas.getActiveObject();
       if (activeObject && (activeObject as any).elementType === 'text') {
         if (activeObject instanceof FabricText) {
-          // Entrar no modo de edição inline
-          activeObject.enterEditing();
-          activeObject.hiddenTextarea?.focus();
+          // No Fabric.js v6, definimos o texto como editável e focamos
+          activeObject.set('editable', true);
+          canvas.setActiveObject(activeObject);
+          
+          // Simular o comportamento de edição inline
+          const currentText = activeObject.text || '';
+          onTextDoubleClick(currentText);
         }
       }
     });
@@ -156,7 +160,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     canvas.on('text:editing:exited', (e) => {
       const textObject = e.target;
       if (textObject && textObject instanceof FabricText) {
-        // Atualizar o conteúdo após a edição
         canvas.renderAll();
       }
     });
@@ -165,7 +168,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     canvas.on('text:changed', (e) => {
       const textObject = e.target;
       if (textObject && textObject instanceof FabricText) {
-        // Renderizar mudanças em tempo real
         canvas.renderAll();
       }
     });
@@ -188,7 +190,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
-  }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
+  }, [activeTemplate?.orientation, activeTemplate?.totalPages, onTextDoubleClick]);
 
   useImperativeHandle(ref, () => ({
     addTextElement: () => {
@@ -204,7 +206,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         fontSize: Math.max(16, dimensions.width * 0.02),
         fill: '#000000',
         fontFamily: 'Arial',
-        editable: true, // Permitir edição inline
+        editable: true,
         selectable: true,
       });
 
