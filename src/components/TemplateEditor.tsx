@@ -21,7 +21,6 @@ import {
   AlignCenter,
   AlignRight,
   Move,
-  RotateCw,
   ZoomIn,
   ZoomOut,
   Edit3
@@ -126,30 +125,37 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     // Configurar eventos do canvas
     canvas.on('selection:created', (e) => {
+      console.log('Selection created:', e);
       const activeObject = e.selected?.[0];
-      if (activeObject && (activeObject as any).customData) {
-        setSelectedElement((activeObject as any).customData.id);
+      if (activeObject && (activeObject as any).elementId) {
+        const elementId = (activeObject as any).elementId;
+        console.log('Selected element ID:', elementId);
+        setSelectedElement(elementId);
         
         // Se é um elemento de texto, preparar para edição
-        if ((activeObject as any).customData.type === 'text' && activeObject instanceof FabricText) {
+        if ((activeObject as any).elementType === 'text' && activeObject instanceof FabricText) {
           setEditingTextContent(activeObject.text || '');
         }
       }
     });
 
     canvas.on('selection:updated', (e) => {
+      console.log('Selection updated:', e);
       const activeObject = e.selected?.[0];
-      if (activeObject && (activeObject as any).customData) {
-        setSelectedElement((activeObject as any).customData.id);
+      if (activeObject && (activeObject as any).elementId) {
+        const elementId = (activeObject as any).elementId;
+        console.log('Updated selected element ID:', elementId);
+        setSelectedElement(elementId);
         
         // Se é um elemento de texto, preparar para edição
-        if ((activeObject as any).customData.type === 'text' && activeObject instanceof FabricText) {
+        if ((activeObject as any).elementType === 'text' && activeObject instanceof FabricText) {
           setEditingTextContent(activeObject.text || '');
         }
       }
     });
 
     canvas.on('selection:cleared', () => {
+      console.log('Selection cleared');
       setSelectedElement(null);
       setTextEditMode(false);
       setEditingTextContent('');
@@ -157,8 +163,12 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     // Evento de duplo clique para edição de texto
     canvas.on('mouse:dblclick', (e) => {
+      console.log('Double click detected:', e);
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject as any).customData?.type === 'text') {
+      console.log('Active object on double click:', activeObject);
+      
+      if (activeObject && (activeObject as any).elementType === 'text') {
+        console.log('Starting text edit mode');
         setTextEditMode(true);
         if (activeObject instanceof FabricText) {
           setEditingTextContent(activeObject.text || '');
@@ -191,17 +201,22 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const addTextElement = () => {
     if (!fabricCanvas) return;
 
+    const elementId = Date.now().toString();
+    
     const text = new FabricText('Clique duas vezes para editar', {
       left: 100,
       top: 100,
       fontSize: 16,
       fill: '#000000',
       fontFamily: 'Arial',
-      editable: true,
+      editable: false, // Desabilitar edição inline do Fabric
     });
 
-    const elementId = Date.now().toString();
-    (text as any).customData = { id: elementId, type: 'text' };
+    // Adicionar metadata customizada
+    (text as any).elementId = elementId;
+    (text as any).elementType = 'text';
+
+    console.log('Adding text element with ID:', elementId);
 
     fabricCanvas.add(text);
     fabricCanvas.setActiveObject(text);
@@ -224,6 +239,11 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     updateTemplateElements(newElement);
     setSelectedElement(elementId);
+
+    toast({
+      title: "Sucesso",
+      description: "Elemento de texto adicionado! Duplo clique para editar.",
+    });
   };
 
   const updateTextContent = () => {
@@ -251,6 +271,19 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     const activeObject = fabricCanvas?.getActiveObject();
     if (activeObject && activeObject instanceof FabricText) {
       setEditingTextContent(activeObject.text || '');
+    }
+  };
+
+  const startTextEdit = () => {
+    if (!selectedElement || !fabricCanvas) return;
+    
+    const activeObject = fabricCanvas.getActiveObject();
+    if (activeObject && (activeObject as any).elementType === 'text') {
+      console.log('Starting text edit mode via button');
+      setTextEditMode(true);
+      if (activeObject instanceof FabricText) {
+        setEditingTextContent(activeObject.text || '');
+      }
     }
   };
 
@@ -583,6 +616,10 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
   const selectedElementData = activeTemplate?.elements.find(e => e.id === selectedElement);
 
+  console.log('Selected element:', selectedElement);
+  console.log('Selected element data:', selectedElementData);
+  console.log('Text edit mode:', textEditMode);
+
   return (
     <div className="space-y-6">
       {/* Gerenciamento de Templates */}
@@ -822,9 +859,9 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   {selectedElementData.type === 'text' && (
                     <div className="space-y-3">
                       <Button
-                        variant="outline"
-                        onClick={() => setTextEditMode(true)}
-                        className="w-full justify-start"
+                        variant="default"
+                        onClick={startTextEdit}
+                        className="w-full justify-start bg-orange-500 hover:bg-orange-600"
                       >
                         <Edit3 size={16} className="mr-2" />
                         Editar Texto
