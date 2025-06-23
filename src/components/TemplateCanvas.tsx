@@ -68,6 +68,10 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     editor.style.height = `${totalHeight}px`;
     editor.style.minHeight = `${totalHeight}px`;
 
+    // Garantir que o editor é editável
+    editor.contentEditable = 'true';
+    editor.spellcheck = false;
+
     // Focar no editor automaticamente
     editor.focus();
 
@@ -84,22 +88,51 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 
     // Configurar eventos do editor
     const handleInput = () => {
+      console.log('Editor input event triggered');
       onSelectionChange('text-editor');
       updatePlaceholder();
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Permitir todas as teclas de edição normais
+      console.log('Key pressed:', e.key);
+      
+      // Permitir Ctrl+A, Ctrl+C, Ctrl+V, etc.
+      if (e.ctrlKey || e.metaKey) {
+        return; // Deixar passar comandos de teclado
+      }
+      
+      // Permitir teclas de navegação e edição
+      const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Enter', 'Tab'];
+      if (allowedKeys.includes(e.key)) {
+        return;
+      }
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      console.log('Editor clicked');
+      // Garantir que o cursor seja posicionado corretamente
+      editor.focus();
     };
 
     const handleSelectionChange = () => {
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
+        console.log('Selection changed in editor');
         onSelectionChange('text-editor');
       }
     };
 
+    // Adicionar eventos
     editor.addEventListener('input', handleInput);
+    editor.addEventListener('keydown', handleKeyDown);
+    editor.addEventListener('click', handleClick);
     document.addEventListener('selectionchange', handleSelectionChange);
 
     return () => {
       editor.removeEventListener('input', handleInput);
+      editor.removeEventListener('keydown', handleKeyDown);
+      editor.removeEventListener('click', handleClick);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
   }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
@@ -132,6 +165,9 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           `;
           placeholder.textContent = 'Clique para adicionar imagem';
           range.insertNode(placeholder);
+          range.collapse(false);
+          selection.removeAllRanges();
+          selection.addRange(range);
         }
       }
     },
@@ -153,6 +189,9 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           `;
           field.textContent = '{{campo.dinamico}}';
           range.insertNode(field);
+          range.collapse(false);
+          selection.removeAllRanges();
+          selection.addRange(range);
         }
       }
     },
@@ -169,7 +208,11 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
             img.style.maxWidth = '200px';
             img.style.height = 'auto';
             img.style.margin = '10px';
+            img.style.display = 'block';
             range.insertNode(img);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
           }
         }
       };
@@ -215,16 +258,20 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         >
           <div
             ref={editorRef}
-            contentEditable
+            contentEditable={true}
+            suppressContentEditableWarning={true}
             className="w-full min-h-full p-6 outline-none focus:outline-none relative editor-placeholder"
             style={{
               lineHeight: '1.6',
               fontSize: '16px',
               fontFamily: 'Arial, sans-serif',
               color: '#000000',
-              cursor: 'text'
+              cursor: 'text',
+              userSelect: 'text',
+              WebkitUserSelect: 'text',
+              MozUserSelect: 'text',
+              msUserSelect: 'text'
             }}
-            suppressContentEditableWarning={true}
           />
           
           {/* Indicadores de página */}
@@ -252,7 +299,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
             </span>
           </div>
-          <span>✍️ Editor de texto livre - Digite diretamente para escrever</span>
+          <span>✍️ Editor de texto livre - Clique e edite diretamente</span>
         </div>
 
         {/* CSS para o placeholder */}
