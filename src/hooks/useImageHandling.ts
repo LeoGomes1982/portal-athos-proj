@@ -164,37 +164,40 @@ export const useImageHandling = () => {
       let newWidth = startWidth;
       let newHeight = startHeight;
       
+      // Handle horizontal resizing
       if (handle.includes('e')) {
         newWidth = Math.max(20, startWidth + deltaX);
       } else if (handle.includes('w')) {
         newWidth = Math.max(20, startWidth - deltaX);
       }
       
+      // Handle vertical resizing
       if (handle.includes('s')) {
         newHeight = Math.max(20, startHeight + deltaY);
       } else if (handle.includes('n')) {
         newHeight = Math.max(20, startHeight - deltaY);
       }
       
+      // For corner handles, maintain aspect ratio
       if (handle.length === 2) {
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-        
-        if (absX > absY) {
+        if (handle.includes('e') || handle.includes('w')) {
           newHeight = newWidth / aspectRatio;
-        } else {
+        } else if (handle.includes('n') || handle.includes('s')) {
           newWidth = newHeight * aspectRatio;
         }
       }
       
+      // For side handles, only resize in one direction
       if (handle === 'e' || handle === 'w') {
-        newHeight = startHeight;
+        newHeight = startHeight; // Keep original height for horizontal resizing
       } else if (handle === 'n' || handle === 's') {
-        newWidth = startWidth;
+        newWidth = startWidth; // Keep original width for vertical resizing
       }
       
+      // Apply the new dimensions
       img.style.width = newWidth + 'px';
       img.style.height = newHeight + 'px';
+      img.style.maxWidth = 'none'; // Remove max-width constraint during resize
     };
 
     const handleMouseUp = () => {
