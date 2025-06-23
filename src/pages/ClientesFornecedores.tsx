@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Building, Plus, Eye, FileText, History, UserPlus } from "lucide-react";
@@ -67,10 +66,19 @@ export default function ClientesFornecedores() {
   const fornecedores = clientesFornecedores.filter(item => item.tipo === 'fornecedor');
 
   const handleSalvar = () => {
-    if (formData.nomeFantasia && formData.tipo) {
+    if (formData.nomeFantasia && formData.tipo && formData.tipo !== '') {
       const novoItem: ClienteFornecedor = {
         id: Date.now().toString(),
-        ...formData
+        nomeFantasia: formData.nomeFantasia,
+        razaoSocial: formData.razaoSocial,
+        cnpj: formData.cnpj,
+        endereco: formData.endereco,
+        contato: formData.contato,
+        email: formData.email,
+        telefone: formData.telefone,
+        tipo: formData.tipo as 'cliente' | 'fornecedor',
+        cidade: formData.cidade,
+        estado: formData.estado
       };
       setClientesFornecedores([...clientesFornecedores, novoItem]);
       setFormData({

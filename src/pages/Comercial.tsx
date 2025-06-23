@@ -10,36 +10,36 @@ import {
   BarChart3
 } from "lucide-react";
 
-const subsections = [
-  {
-    id: "clientes-fornecedores",
-    title: "Clientes e Fornecedores",
-    description: "Gestão de clientes e fornecedores",
-    icon: Users,
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-700",
-    onClick: () => navigate("/comercial/clientes-fornecedores")
-  },
-  {
-    id: "contratos-propostas",
-    title: "Contratos e Propostas",
-    description: "Gestão de contratos e propostas",
-    icon: FileText,
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-700"
-  },
-  {
-    id: "estatisticas",
-    title: "Estatísticas",
-    description: "Análises e relatórios",
-    icon: BarChart3,
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-700"
-  }
-];
-
 export default function Comercial() {
   const navigate = useNavigate();
+
+  const subsections = [
+    {
+      id: "clientes-fornecedores",
+      title: "Clientes e Fornecedores",
+      description: "Gestão de clientes e fornecedores",
+      icon: Users,
+      bgColor: "bg-orange-100",
+      textColor: "text-orange-700",
+      onClick: () => navigate("/comercial/clientes-fornecedores")
+    },
+    {
+      id: "contratos-propostas",
+      title: "Contratos e Propostas",
+      description: "Gestão de contratos e propostas",
+      icon: FileText,
+      bgColor: "bg-orange-100",
+      textColor: "text-orange-700"
+    },
+    {
+      id: "estatisticas",
+      title: "Estatísticas",
+      description: "Análises e relatórios",
+      icon: BarChart3,
+      bgColor: "bg-orange-100",
+      textColor: "text-orange-700"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
