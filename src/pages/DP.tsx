@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Archive
 } from "lucide-react";
+import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 
 const subsections = [
   {
@@ -48,6 +49,19 @@ const subsections = [
 
 export default function DP() {
   const navigate = useNavigate();
+  const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
+
+  const handleSubsectionClick = (subsectionId: string) => {
+    setActiveSubsection(subsectionId);
+  };
+
+  const handleBackToMain = () => {
+    setActiveSubsection(null);
+  };
+
+  if (activeSubsection === "funcionarios") {
+    return <FuncionariosSubsection onBack={handleBackToMain} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -81,6 +95,7 @@ export default function DP() {
             <div 
               key={subsection.id}
               className="group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
+              onClick={() => handleSubsectionClick(subsection.id)}
             >
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
