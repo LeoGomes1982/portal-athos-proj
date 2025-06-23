@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -11,6 +10,7 @@ import {
   Archive
 } from "lucide-react";
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
+import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
 
 const subsections = [
   {
@@ -61,6 +61,10 @@ export default function DP() {
 
   if (activeSubsection === "funcionarios") {
     return <FuncionariosSubsection onBack={handleBackToMain} />;
+  }
+
+  if (activeSubsection === "arquivo") {
+    return <ArquivoRHSubsection onBack={handleBackToMain} />;
   }
 
   return (

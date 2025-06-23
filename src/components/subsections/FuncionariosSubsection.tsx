@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -132,7 +131,6 @@ const statusConfig = {
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [funcionariosList, setFuncionariosList] = useState(funcionarios);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -143,8 +141,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     funcionario.setor.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Only show active employees (not inactive)
   const funcionariosAtivos = filteredFuncionarios.filter(f => f.status !== 'inativo');
-  const funcionariosArquivados = filteredFuncionarios.filter(f => f.status === 'inativo');
 
   const handleFuncionarioClick = (funcionario: Funcionario) => {
     setSelectedFuncionario(funcionario);
@@ -167,20 +165,16 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     ferias: funcionariosAtivos.filter(f => f.status === 'ferias').length,
     experiencia: funcionariosAtivos.filter(f => f.status === 'experiencia').length,
     aviso: funcionariosAtivos.filter(f => f.status === 'aviso').length,
-    destaque: funcionariosAtivos.filter(f => f.status === 'destaque').length,
-    arquivo: funcionariosArquivados.length
+    destaque: funcionariosAtivos.filter(f => f.status === 'destaque').length
   };
 
-  const renderFuncionarioCard = (funcionario: Funcionario, isArchived = false) => {
+  const renderFuncionarioCard = (funcionario: Funcionario) => {
     const statusInfo = statusConfig[funcionario.status];
-    const cardClass = isArchived 
-      ? "group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105 grayscale opacity-70" 
-      : "group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105";
 
     return (
       <Card 
         key={funcionario.id} 
-        className={cardClass}
+        className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105"
         onClick={() => handleFuncionarioClick(funcionario)}
       >
         <CardHeader className="text-center pb-4 pt-6 relative">
@@ -255,87 +249,47 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             </Button>
           </div>
 
-          {/* Resumo com contadores */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
+          {/* Resumo com contadores - mais compacto */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
               📊 Resumo da Equipe
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
-              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
-                <CardContent className="text-center p-6">
-                  <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <span className="text-blue-600 text-2xl font-bold">{contadores.total}</span>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.total}</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Funcionários Ativos</div>
-                  <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                    Total
-                  </div>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+                <CardContent className="text-center p-4">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.total}</div>
+                  <div className="text-sm font-medium text-gray-600">Funcionários Ativos</div>
                 </CardContent>
               </Card>
               
-              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
-                <CardContent className="text-center p-6">
-                  <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <span className="text-blue-600 text-2xl">🏖️</span>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.ferias}</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Em Férias</div>
-                  <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                    Status
-                  </div>
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+                <CardContent className="text-center p-4">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
+                  <div className="text-sm font-medium text-gray-600">Em Férias</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
-                <CardContent className="text-center p-6">
-                  <div className="w-16 h-16 bg-yellow-100 border-2 border-yellow-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <span className="text-yellow-600 text-2xl">🆕</span>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.experiencia}</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Em Experiência</div>
-                  <div className="text-xs font-semibold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full">
-                    Novatos
-                  </div>
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+                <CardContent className="text-center p-4">
+                  <div className="text-2xl font-bold text-yellow-600 mb-1">{contadores.experiencia}</div>
+                  <div className="text-sm font-medium text-gray-600">Em Experiência</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
-                <CardContent className="text-center p-6">
-                  <div className="w-16 h-16 bg-orange-100 border-2 border-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <span className="text-orange-600 text-2xl">⚠️</span>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.aviso}</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Em Aviso Prévio</div>
-                  <div className="text-xs font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-                    Saídas
-                  </div>
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+                <CardContent className="text-center p-4">
+                  <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.aviso}</div>
+                  <div className="text-sm font-medium text-gray-600">Em Aviso Prévio</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
-                <CardContent className="text-center p-6">
-                  <div className="w-16 h-16 bg-purple-100 border-2 border-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Star className="text-purple-600 w-8 h-8 fill-purple-600" />
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+                <CardContent className="text-center p-4">
+                  <div className="flex items-center justify-center mb-1">
+                    <Star className="text-purple-600 w-6 h-6 fill-purple-600 mr-1" />
+                    <span className="text-2xl font-bold text-purple-600">{contadores.destaque}</span>
                   </div>
-                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.destaque}</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Em Destaque</div>
-                  <div className="text-xs font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-                    Estrelas
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-xl transition-all duration-300 border-2 hover:scale-105">
-                <CardContent className="text-center p-6">
-                  <div className="w-16 h-16 bg-gray-100 border-2 border-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <span className="text-gray-600 text-2xl">📁</span>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-800 mb-2">{contadores.arquivo}</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Arquivo</div>
-                  <div className="text-xs font-semibold text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
-                    Inativos
-                  </div>
+                  <div className="text-sm font-medium text-gray-600">Em Destaque</div>
                 </CardContent>
               </Card>
             </div>
@@ -374,19 +328,6 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
               </div>
             )}
           </div>
-
-          {/* Grid de Arquivo (Funcionários Inativos) */}
-          {funcionariosArquivados.length > 0 && (
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
-                📁 Arquivo - Funcionários Inativos
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
-                {funcionariosArquivados.map((funcionario) => renderFuncionarioCard(funcionario, true))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
