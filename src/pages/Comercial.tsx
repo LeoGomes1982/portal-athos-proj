@@ -17,7 +17,8 @@ const subsections = [
     description: "Gestão de clientes e fornecedores",
     icon: Users,
     bgColor: "bg-orange-100",
-    textColor: "text-orange-700"
+    textColor: "text-orange-700",
+    onClick: () => navigate("/comercial/clientes-fornecedores")
   },
   {
     id: "contratos-propostas",
@@ -72,6 +73,7 @@ export default function Comercial() {
             <div 
               key={subsection.id}
               className="group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150"
+              onClick={subsection.onClick}
             >
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>

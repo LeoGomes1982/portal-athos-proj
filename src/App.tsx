@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import RH from "./pages/RH";
 import DP from "./pages/DP";
 import Comercial from "./pages/Comercial";
+import ClientesFornecedores from "./pages/ClientesFornecedores";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/rh" element={<RH />} />
           <Route path="/dp" element={<DP />} />
           <Route path="/comercial" element={<Comercial />} />
+          <Route path="/comercial/clientes-fornecedores" element={<ClientesFornecedores />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>
