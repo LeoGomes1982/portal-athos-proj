@@ -140,12 +140,33 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       onSelectionChange(null);
     });
 
+    // Evento para edição inline de texto
     canvas.on('mouse:dblclick', (e) => {
       const activeObject = canvas.getActiveObject();
       if (activeObject && (activeObject as any).elementType === 'text') {
         if (activeObject instanceof FabricText) {
-          onTextDoubleClick(activeObject.text || '');
+          // Entrar no modo de edição inline
+          activeObject.enterEditing();
+          activeObject.hiddenTextarea?.focus();
         }
+      }
+    });
+
+    // Evento quando o texto sai do modo de edição
+    canvas.on('text:editing:exited', (e) => {
+      const textObject = e.target;
+      if (textObject && textObject instanceof FabricText) {
+        // Atualizar o conteúdo após a edição
+        canvas.renderAll();
+      }
+    });
+
+    // Evento quando o texto está sendo editado
+    canvas.on('text:changed', (e) => {
+      const textObject = e.target;
+      if (textObject && textObject instanceof FabricText) {
+        // Renderizar mudanças em tempo real
+        canvas.renderAll();
       }
     });
 
@@ -183,7 +204,8 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         fontSize: Math.max(16, dimensions.width * 0.02),
         fill: '#000000',
         fontFamily: 'Arial',
-        editable: false,
+        editable: true, // Permitir edição inline
+        selectable: true,
       });
 
       (text as any).elementId = elementId;
@@ -373,7 +395,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
             </span>
           </div>
-          <span>Canvas responsivo • Linhas laranjas separam as páginas</span>
+          <span>Canvas responsivo • Clique duas vezes no texto para editar • Linhas laranjas separam as páginas</span>
         </div>
       </CardContent>
     </Card>
