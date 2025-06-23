@@ -1,4 +1,3 @@
-
 import { 
   Users, 
   FileText, 
@@ -45,7 +44,8 @@ const Home = () => {
       fullTitle: "Área Comercial",
       icon: TrendingUp,
       className: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
-      iconColor: "text-orange-600"
+      iconColor: "text-orange-600",
+      onClick: () => navigate("/comercial")
     },
     {
       id: "financeiro",

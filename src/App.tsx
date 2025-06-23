@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import RH from "./pages/RH";
 import DP from "./pages/DP";
+import Comercial from "./pages/Comercial";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Home />} />
           <Route path="/rh" element={<RH />} />
           <Route path="/dp" element={<DP />} />
+          <Route path="/comercial" element={<Comercial />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>
