@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Template } from "@/types/template";
@@ -5,6 +6,7 @@ import TemplateManager from "./TemplateManager";
 import TemplateToolbar from "./TemplateToolbar";
 import TemplateCanvas, { TemplateCanvasRef } from "./TemplateCanvas";
 import TemplateProperties from "./TemplateProperties";
+import TextEditingToolbar from "./TextEditingToolbar";
 
 interface TemplateEditorProps {
   tipo: 'proposta' | 'contrato';
@@ -112,7 +114,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       let elementType = 'unknown';
       if ((activeObject as any).elementType) {
         elementType = (activeObject as any).elementType;
-      } else if (activeObject.type === 'text' || activeObject instanceof FabricText) {
+      } else if (activeObject.type === 'text') {
         elementType = 'text';
       } else if (activeObject.type === 'image') {
         elementType = 'image';
@@ -299,7 +301,30 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
             />
           </div>
 
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-4">
+            {/* Barra de ferramentas horizontal acima do canvas */}
+            {selectedElement && selectedElement.elementType === 'text' && (
+              <TextEditingToolbar
+                selectedElement={selectedElement}
+                onFontSizeChange={(size) => handleTextFormattingChange('fontSize', size)}
+                onFontFamilyChange={(family) => handleTextFormattingChange('fontFamily', family)}
+                onColorChange={(color) => handleTextFormattingChange('color', color)}
+                onBackgroundColorChange={(color) => handleTextFormattingChange('backgroundColor', color)}
+                onBoldToggle={() => handleTextFormattingChange('isBold', !selectedElement.fontWeight || selectedElement.fontWeight !== 'bold')}
+                onItalicToggle={() => handleTextFormattingChange('isItalic', !selectedElement.fontStyle || selectedElement.fontStyle !== 'italic')}
+                onUnderlineToggle={() => handleTextFormattingChange('isUnderline', !selectedElement.underline)}
+                onAlignmentChange={(alignment) => handleTextFormattingChange('alignment', alignment)}
+                currentFontSize={selectedElement.fontSize || 16}
+                currentFontFamily={selectedElement.fontFamily || 'Arial'}
+                currentColor={selectedElement.fill || '#000000'}
+                currentBackgroundColor={selectedElement.backgroundColor || '#ffffff'}
+                isBold={selectedElement.fontWeight === 'bold'}
+                isItalic={selectedElement.fontStyle === 'italic'}
+                isUnderline={selectedElement.underline || false}
+                currentAlignment={selectedElement.textAlign || 'left'}
+              />
+            )}
+            
             <TemplateCanvas
               ref={canvasRef}
               activeTemplate={activeTemplate}
