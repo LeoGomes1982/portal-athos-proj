@@ -32,9 +32,9 @@ const statusConfig = {
   ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700" },
   ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700" },
   experiencia: { label: "Em Experiência", color: "bg-yellow-500", textColor: "text-yellow-700" },
-  aviso: { label: "Em Aviso Prévio", color: "bg-orange-500", textColor: "text-orange-700" },
+  aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700" },
   inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
-  destaque: { label: "Destaque", color: "bg-purple-500", textColor: "text-purple-700" }
+  destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700" }
 };
 
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange }: FuncionarioDetalhesModalProps) {
@@ -50,118 +50,75 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-blue-600 flex items-center gap-3">
+          <DialogTitle className="text-2xl font-bold text-green-600 flex items-center gap-3">
             <span className="text-4xl">{funcionario.foto}</span>
             Detalhes do Funcionário
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Status Badge */}
-          <div className="flex items-center gap-4">
-            <span className="font-medium">Status:</span>
-            <Select value={statusAtual} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-48">
-                <SelectValue>
-                  <Badge className={`${statusInfo.color} text-white`}>
-                    {statusInfo.label}
-                  </Badge>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(statusConfig).map(([key, config]) => (
-                  <SelectItem key={key} value={key}>
-                    <Badge className={`${config.color} text-white`}>
-                      {config.label}
-                    </Badge>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Informações Principais */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">👤 Informações Pessoais</h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Nome Completo</label>
-                  <p className="text-lg font-medium">{funcionario.nome}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">CPF</label>
-                  <p>{funcionario.cpf || "000.000.000-00"}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">RG</label>
-                  <p>{funcionario.rg || "00.000.000-0"}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">📞 Telefone</label>
-                  <p>{funcionario.telefone}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">📧 E-mail</label>
-                  <p className="break-all">{funcionario.email}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">🏠 Endereço</label>
-                  <p>{funcionario.endereco || "Rua Exemplo, 123 - Centro"}</p>
-                </div>
+        <div className="space-y-4">
+          {/* Informações em linha horizontal */}
+          <div className="flex items-center justify-between gap-6 p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200">
+            {/* Foto */}
+            <div className="flex flex-col items-center min-w-fit">
+              <div className="w-20 h-20 bg-green-100 border-2 border-green-300 rounded-3xl flex items-center justify-center shadow-lg mb-2">
+                <span className="text-4xl">{funcionario.foto}</span>
               </div>
+              <span className="text-xs text-green-600 font-medium">Foto</span>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-blue-600 border-b pb-2">💼 Informações Profissionais</h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Cargo</label>
-                  <p className="text-lg font-medium">{funcionario.cargo}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Setor</label>
-                  <p>
-                    <Badge variant="secondary">{funcionario.setor}</Badge>
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">📅 Data de Admissão</label>
-                  <p>{new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}</p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">⏱️ Tempo na Empresa</label>
-                  <p>
-                    {Math.floor((new Date().getTime() - new Date(funcionario.dataAdmissao).getTime()) / (1000 * 60 * 60 * 24 * 30))} meses
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-500">💰 Salário</label>
-                  <p>{funcionario.salario || "R$ 0.000,00"}</p>
-                </div>
-              </div>
+            {/* Nome */}
+            <div className="flex flex-col items-center min-w-fit">
+              <p className="text-xl font-bold text-slate-800 text-center mb-2">{funcionario.nome}</p>
+              <span className="text-xs text-green-600 font-medium">Nome</span>
+            </div>
+
+            {/* Cargo */}
+            <div className="flex flex-col items-center min-w-fit">
+              <p className="text-lg font-semibold text-slate-700 text-center mb-2">{funcionario.cargo}</p>
+              <span className="text-xs text-green-600 font-medium">Cargo</span>
+            </div>
+
+            {/* Data de Admissão */}
+            <div className="flex flex-col items-center min-w-fit">
+              <p className="text-lg font-medium text-slate-700 text-center mb-2">
+                {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
+              </p>
+              <span className="text-xs text-green-600 font-medium">Admissão</span>
+            </div>
+
+            {/* Status */}
+            <div className="flex flex-col items-center min-w-fit">
+              <Select value={statusAtual} onValueChange={handleStatusChange}>
+                <SelectTrigger className="w-40 mb-2 border-green-300">
+                  <SelectValue>
+                    <Badge className={`${statusInfo.color} text-white`}>
+                      {statusInfo.label}
+                    </Badge>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(statusConfig).map(([key, config]) => (
+                    <SelectItem key={key} value={key}>
+                      <Badge className={`${config.color} text-white`}>
+                        {config.label}
+                      </Badge>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-xs text-green-600 font-medium">Status</span>
             </div>
           </div>
 
           {/* Ações */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex justify-end gap-3 pt-4 border-t border-green-200">
+            <Button variant="outline" onClick={onClose} className="border-green-300 text-green-700 hover:bg-green-50">
               Fechar
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-green-600 hover:bg-green-700 text-white">
               📝 Editar Dados
             </Button>
           </div>
