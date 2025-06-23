@@ -73,30 +73,40 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 
     // Configurar eventos do editor
     const handleInput = () => {
+      console.log('Editor input event triggered');
       onSelectionChange('text-editor');
     };
 
     const handleSelectionChange = () => {
+      console.log('Selection changed in editor');
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
         onSelectionChange('text-editor');
       }
     };
 
+    const handleClick = () => {
+      console.log('Editor clicked');
+      onSelectionChange('text-editor');
+    };
+
     editor.addEventListener('input', handleInput);
+    editor.addEventListener('click', handleClick);
     document.addEventListener('selectionchange', handleSelectionChange);
 
     return () => {
       editor.removeEventListener('input', handleInput);
+      editor.removeEventListener('click', handleClick);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
-  }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
+  }, [activeTemplate?.orientation, activeTemplate?.totalPages, onSelectionChange]);
 
   useImperativeHandle(ref, () => ({
     addTextElement: () => {
       // Focar no editor
       if (editorRef.current) {
         editorRef.current.focus();
+        onSelectionChange('text-editor');
       }
     },
 
@@ -196,15 +206,27 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* CSS Styles */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .text-editor-placeholder:empty:before {
+              content: "Clique aqui e comece a escrever...";
+              color: #9ca3af;
+              font-style: italic;
+              pointer-events: none;
+            }
+          `
+        }} />
+
         <div 
           ref={canvasContainerRef}
-          className="border-2 border-gray-200 rounded-lg overflow-auto bg-white shadow-inner w-full focus-within:border-orange-400"
+          className="border-2 border-gray-200 rounded-lg overflow-auto bg-white shadow-inner w-full focus-within:border-orange-400 relative"
           style={{ maxHeight: '800px' }}
         >
           <div
             ref={editorRef}
             contentEditable
-            className="w-full min-h-full p-6 outline-none focus:outline-none"
+            className="w-full min-h-full p-6 outline-none focus:outline-none text-editor-placeholder"
             style={{
               lineHeight: '1.6',
               fontSize: '16px',
@@ -212,7 +234,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               color: '#000000',
               cursor: 'text'
             }}
-            placeholder="Clique aqui e comece a escrever..."
             suppressContentEditableWarning={true}
           />
           
