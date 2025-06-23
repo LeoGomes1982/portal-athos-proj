@@ -7,9 +7,12 @@ import {
   Globe
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import EmpresasModal from "@/components/modals/EmpresasModal";
 
 const Configuracoes = () => {
   const navigate = useNavigate();
+  const [isEmpresasModalOpen, setIsEmpresasModalOpen] = useState(false);
 
   const configuracoesSection = [
     {
@@ -18,7 +21,8 @@ const Configuracoes = () => {
       fullTitle: "Personalizar Formulários",
       icon: FileEdit,
       className: "bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 hover:from-slate-100 hover:to-slate-150",
-      iconColor: "text-slate-600"
+      iconColor: "text-slate-600",
+      onClick: () => {}
     },
     {
       id: "edicao-empresas",
@@ -26,7 +30,8 @@ const Configuracoes = () => {
       fullTitle: "Gerenciar Empresas",
       icon: Building2,
       className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
-      iconColor: "text-gray-600"
+      iconColor: "text-gray-600",
+      onClick: () => setIsEmpresasModalOpen(true)
     },
     {
       id: "edicao-site",
@@ -34,7 +39,8 @@ const Configuracoes = () => {
       fullTitle: "Configurar Site",
       icon: Globe,
       className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
-      iconColor: "text-indigo-600"
+      iconColor: "text-indigo-600",
+      onClick: () => {}
     }
   ];
 
@@ -70,6 +76,7 @@ const Configuracoes = () => {
           {configuracoesSection.map((section) => (
             <div 
               key={section.id}
+              onClick={section.onClick}
               className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
             >
               <div className="flex flex-col items-center text-center space-y-4">
@@ -92,6 +99,12 @@ const Configuracoes = () => {
           </p>
         </div>
       </div>
+
+      {/* Modal de Empresas */}
+      <EmpresasModal 
+        isOpen={isEmpresasModalOpen}
+        onClose={() => setIsEmpresasModalOpen(false)}
+      />
     </div>
   );
 };
