@@ -52,6 +52,7 @@ export default function TemplateProperties({
 
   useEffect(() => {
     if (selectedElement && selectedElement.elementType === 'text') {
+      console.log('Selected element:', selectedElement);
       // Extrair propriedades do elemento selecionado
       setTextProperties({
         fontSize: selectedElement.fontSize || 16,
@@ -67,6 +68,7 @@ export default function TemplateProperties({
   }, [selectedElement]);
 
   const handleTextFormattingChange = (property: string, value: any) => {
+    console.log('Formatting change:', property, value);
     setTextProperties(prev => ({ ...prev, [property]: value }));
     if (onTextFormattingChange) {
       onTextFormattingChange(property, value);
@@ -94,10 +96,10 @@ export default function TemplateProperties({
         <Label className="font-semibold text-orange-800">Propriedades do Elemento</Label>
       </div>
 
-      {/* Barra de ferramentas de texto estilo Word */}
+      {/* Barra de ferramentas de texto estilo Word - SEMPRE VISÍVEL para elementos de texto */}
       {selectedElement.elementType === 'text' && (
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Formatação de Texto</Label>
+        <div className="space-y-3 bg-gray-50 p-4 rounded-lg border">
+          <Label className="text-sm font-medium text-orange-800">🎨 Formatação Estilo Word</Label>
           <TextEditingToolbar
             selectedElement={selectedElement}
             onFontSizeChange={(size) => handleTextFormattingChange('fontSize', size)}
@@ -156,8 +158,11 @@ export default function TemplateProperties({
         <div className="flex items-start gap-2">
           <Info size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-blue-800">
-            <p className="font-medium mb-1">Edição de Texto</p>
-            <p>Use a barra de ferramentas acima para formatação ou clique duas vezes no texto no canvas para edição rápida.</p>
+            <p className="font-medium mb-1">🎯 Como Usar</p>
+            <p>1. Selecione um texto no canvas</p>
+            <p>2. Use a barra de formatação acima (estilo Word)</p>
+            <p>3. Edite o conteúdo na caixa de texto</p>
+            <p>4. Clique "Aplicar Texto" para confirmar</p>
           </div>
         </div>
       </div>

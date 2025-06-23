@@ -25,7 +25,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   ]);
   
   const [activeTemplateId, setActiveTemplateId] = useState('1');
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [selectedElement, setSelectedElement] = useState<any>(null);
   const [canvasZoom, setCanvasZoom] = useState(1);
   const [textEditMode, setTextEditMode] = useState(false);
   const [editingTextContent, setEditingTextContent] = useState('');
@@ -100,10 +100,32 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   };
 
   const handleSelectionChange = (elementId: string | null) => {
-    setSelectedElement(elementId);
-    if (!elementId) {
-      setTextEditMode(false);
-      setEditingTextContent('');
+    console.log('Selection changed:', elementId);
+    const fabricCanvas = canvasRef.current?.getFabricCanvas();
+    const activeObject = fabricCanvas?.getActiveObject();
+    
+    if (activeObject) {
+      const elementData = {
+        elementId: elementId,
+        elementType: (activeObject as any).elementType || 'text',
+        fontSize: (activeObject as any).fontSize || 16,
+        fontFamily: (activeObject as any).fontFamily || 'Arial',
+        fill: (activeObject as any).fill || '#000000',
+        backgroundColor: (activeObject as any).backgroundColor || '#ffffff',
+        fontWeight: (activeObject as any).fontWeight || 'normal',
+        fontStyle: (activeObject as any).fontStyle || 'normal',
+        underline: (activeObject as any).underline || false,
+        textAlign: (activeObject as any).textAlign || 'left'
+      };
+      
+      console.log('Element data:', elementData);
+      setSelectedElement(elementData);
+      
+      if (elementData.elementType === 'text' && (activeObject as any).text) {
+        setEditingTextContent((activeObject as any).text);
+      }
+    } else {
+      setSelectedElement(null);
     }
   };
 
@@ -171,10 +193,11 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   };
 
   const handleTextFormattingChange = (property: string, value: any) => {
+    console.log('Applying formatting:', property, value);
     const fabricCanvas = canvasRef.current?.getFabricCanvas();
     const activeObject = fabricCanvas?.getActiveObject();
     
-    if (activeObject && activeObject.type === 'text') {
+    if (activeObject && ((activeObject as any).elementType === 'text' || activeObject.type === 'text')) {
       const updates: any = {};
       
       switch (property) {
@@ -204,8 +227,12 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
           break;
       }
       
+      console.log('Applying updates:', updates);
       activeObject.set(updates);
       fabricCanvas?.renderAll();
+      
+      // Atualizar o selectedElement para refletir as mudanças
+      setSelectedElement(prev => ({ ...prev, ...updates }));
       
       toast({
         title: "Formatação aplicada",
