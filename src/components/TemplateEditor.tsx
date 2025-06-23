@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +27,7 @@ import {
   ZoomOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle } from "fabric";
+import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle, Group } from "fabric";
 
 interface TemplateElement {
   id: string;
@@ -124,15 +125,15 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     // Configurar eventos do canvas
     canvas.on('selection:created', (e) => {
       const activeObject = e.selected?.[0];
-      if (activeObject && activeObject.data) {
-        setSelectedElement(activeObject.data.id);
+      if (activeObject && (activeObject as any).customData) {
+        setSelectedElement((activeObject as any).customData.id);
       }
     });
 
     canvas.on('selection:updated', (e) => {
       const activeObject = e.selected?.[0];
-      if (activeObject && activeObject.data) {
-        setSelectedElement(activeObject.data.id);
+      if (activeObject && (activeObject as any).customData) {
+        setSelectedElement((activeObject as any).customData.id);
       }
     });
 
@@ -175,7 +176,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     });
 
     const elementId = Date.now().toString();
-    text.set('data', { id: elementId, type: 'text' });
+    (text as any).customData = { id: elementId, type: 'text' };
 
     fabricCanvas.add(text);
     fabricCanvas.setActiveObject(text);
@@ -225,15 +226,15 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     });
 
     const elementId = Date.now().toString();
-    rect.set('data', { id: elementId, type: 'image' });
-    text.set('data', { id: elementId, type: 'image' });
+    (rect as any).customData = { id: elementId, type: 'image' };
+    (text as any).customData = { id: elementId, type: 'image' };
 
-    const group = new fabric.Group([rect, text], {
+    const group = new Group([rect, text], {
       left: 100,
       top: 100,
     });
 
-    group.set('data', { id: elementId, type: 'image' });
+    (group as any).customData = { id: elementId, type: 'image' };
 
     fabricCanvas.add(group);
     fabricCanvas.setActiveObject(group);
@@ -283,12 +284,12 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     });
 
     const elementId = Date.now().toString();
-    const group = new fabric.Group([rect, text], {
+    const group = new Group([rect, text], {
       left: 100,
       top: 100,
     });
 
-    group.set('data', { id: elementId, type: 'field' });
+    (group as any).customData = { id: elementId, type: 'field' };
 
     fabricCanvas.add(group);
     fabricCanvas.setActiveObject(group);
@@ -329,7 +330,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
         });
 
         const elementId = Date.now().toString();
-        img.set('data', { id: elementId, type: 'image' });
+        (img as any).customData = { id: elementId, type: 'image' };
 
         fabricCanvas.add(img);
         fabricCanvas.setActiveObject(img);
@@ -370,6 +371,25 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     setTemplates(updatedTemplates);
   };
 
+  const updateElement = (elementId: string, updates: Partial<TemplateElement>) => {
+    if (!activeTemplate) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? {
+            ...template,
+            elements: template.elements.map(element =>
+              element.id === elementId 
+                ? { ...element, ...updates }
+                : element
+            )
+          }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+  };
+
   const updateElementStyle = (elementId: string, styleUpdates: Partial<TemplateElement['style']>) => {
     if (!activeTemplate || !fabricCanvas) return;
 
@@ -391,7 +411,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     // Atualizar no canvas
     const activeObject = fabricCanvas.getActiveObject();
-    if (activeObject && activeObject.data?.id === elementId) {
+    if (activeObject && (activeObject as any).customData?.id === elementId) {
       if (activeObject instanceof FabricText) {
         if (styleUpdates.fontSize) activeObject.set('fontSize', styleUpdates.fontSize);
         if (styleUpdates.color) activeObject.set('fill', styleUpdates.color);
