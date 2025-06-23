@@ -23,7 +23,11 @@ import {
   Move,
   ZoomIn,
   ZoomOut,
-  Edit3
+  Edit3,
+  RotateCcw,
+  FileText,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle, Group, Line } from "fabric";
@@ -52,6 +56,8 @@ interface Template {
   id: string;
   name: string;
   elements: TemplateElement[];
+  orientation: 'portrait' | 'landscape';
+  totalPages: number;
 }
 
 interface TemplateEditorProps {
@@ -67,7 +73,9 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     {
       id: '1',
       name: `Template Padrão - ${tipo === 'proposta' ? 'Proposta' : 'Contrato'}`,
-      elements: []
+      elements: [],
+      orientation: 'portrait',
+      totalPages: 2
     }
   ]);
   
@@ -79,8 +87,19 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const [editingText, setEditingText] = useState(false);
   const [textEditMode, setTextEditMode] = useState(false);
   const [editingTextContent, setEditingTextContent] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const activeTemplate = templates.find(t => t.id === activeTemplateId);
+
+  // Dimensões A4 em pixels (300 DPI para melhor qualidade)
+  const A4_DIMENSIONS = {
+    portrait: { width: 595, height: 842 },
+    landscape: { width: 842, height: 595 }
+  };
+
+  const getCurrentDimensions = () => {
+    return activeTemplate ? A4_DIMENSIONS[activeTemplate.orientation] : A4_DIMENSIONS.portrait;
+  };
 
   // Campos dinâmicos disponíveis
   const camposDinamicos = {
@@ -114,40 +133,65 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
   // Inicializar Fabric Canvas
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !activeTemplate) return;
 
-    // Tamanho A4 em pixels (72 DPI): 595x842
+    const dimensions = getCurrentDimensions();
+    const totalHeight = dimensions.height * activeTemplate.totalPages;
+
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 595,
-      height: 842 * 2, // Duas páginas A4
+      width: dimensions.width,
+      height: totalHeight,
       backgroundColor: "#ffffff",
       selection: true,
     });
 
-    // Adicionar linha tracejada para marcar segunda página
-    const pageBreakLine = new Line([0, 842, 595, 842], {
-      stroke: '#ff6b35',
-      strokeWidth: 2,
-      strokeDashArray: [10, 5],
-      selectable: false,
-      evented: false,
-      excludeFromExport: false,
-    });
+    // Adicionar separadores de página
+    for (let page = 1; page < activeTemplate.totalPages; page++) {
+      const pageBreakY = dimensions.height * page;
+      
+      // Linha divisória
+      const pageBreakLine = new Line([0, pageBreakY, dimensions.width, pageBreakY], {
+        stroke: '#ff6b35',
+        strokeWidth: 3,
+        strokeDashArray: [15, 8],
+        selectable: false,
+        evented: false,
+        excludeFromExport: false,
+      });
 
-    // Texto indicativo da segunda página
-    const pageLabel = new FabricText('PÁGINA 2', {
-      left: 10,
-      top: 850,
-      fontSize: 12,
-      fill: '#ff6b35',
-      fontFamily: 'Arial',
-      selectable: false,
-      evented: false,
-      excludeFromExport: false,
-    });
+      // Texto indicativo da página
+      const pageLabel = new FabricText(`PÁGINA ${page + 1}`, {
+        left: 20,
+        top: pageBreakY + 10,
+        fontSize: 14,
+        fill: '#ff6b35',
+        fontFamily: 'Arial',
+        fontWeight: 'bold',
+        selectable: false,
+        evented: false,
+        excludeFromExport: false,
+      });
 
-    canvas.add(pageBreakLine);
-    canvas.add(pageLabel);
+      // Ícone de página
+      const pageIcon = new Rect({
+        left: dimensions.width - 60,
+        top: pageBreakY + 5,
+        width: 40,
+        height: 30,
+        fill: 'transparent',
+        stroke: '#ff6b35',
+        strokeWidth: 2,
+        rx: 4,
+        ry: 4,
+        selectable: false,
+        evented: false,
+        excludeFromExport: false,
+      });
+
+      canvas.add(pageBreakLine);
+      canvas.add(pageLabel);
+      canvas.add(pageIcon);
+    }
 
     // Configurar eventos do canvas
     canvas.on('selection:created', (e) => {
@@ -222,7 +266,78 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     return () => {
       canvas.dispose();
     };
-  }, []);
+  }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
+
+  const changeOrientation = (orientation: 'portrait' | 'landscape') => {
+    if (!activeTemplate) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? { ...template, orientation }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+    setCurrentPage(1);
+    
+    toast({
+      title: "Orientação alterada",
+      description: `Template alterado para ${orientation === 'portrait' ? 'retrato' : 'paisagem'}`,
+    });
+  };
+
+  const addPage = () => {
+    if (!activeTemplate) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? { ...template, totalPages: template.totalPages + 1 }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+    
+    toast({
+      title: "Página adicionada",
+      description: `Template agora tem ${activeTemplate.totalPages + 1} páginas`,
+    });
+  };
+
+  const removePage = () => {
+    if (!activeTemplate || activeTemplate.totalPages <= 1) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? { ...template, totalPages: Math.max(1, template.totalPages - 1) }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+    setCurrentPage(Math.min(currentPage, activeTemplate.totalPages - 1));
+    
+    toast({
+      title: "Página removida",
+      description: `Template agora tem ${Math.max(1, activeTemplate.totalPages - 1)} páginas`,
+    });
+  };
+
+  const scrollToPage = (pageNumber: number) => {
+    if (!fabricCanvas || !activeTemplate) return;
+
+    const dimensions = getCurrentDimensions();
+    const targetY = dimensions.height * (pageNumber - 1);
+    
+    // Scroll suave para a página
+    const canvasContainer = canvasRef.current?.parentElement;
+    if (canvasContainer) {
+      canvasContainer.scrollTo({
+        top: targetY * canvasZoom,
+        behavior: 'smooth'
+      });
+    }
+    
+    setCurrentPage(pageNumber);
+  };
 
   const addTextElement = () => {
     if (!fabricCanvas) return;
@@ -231,7 +346,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     
     const text = new FabricText('Clique duas vezes para editar', {
       left: 100,
-      top: 100,
+      top: 100 + (getCurrentDimensions().height * (currentPage - 1)),
       fontSize: 16,
       fill: '#000000',
       fontFamily: 'Arial',
@@ -260,7 +375,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
         textDecoration: 'none',
         textAlign: 'left'
       },
-      position: { x: 100, y: 100 }
+      position: { x: 100, y: 100 + (getCurrentDimensions().height * (currentPage - 1)) }
     };
 
     updateTemplateElements(newElement);
@@ -318,7 +433,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     const rect = new Rect({
       left: 100,
-      top: 100,
+      top: 100 + (getCurrentDimensions().height * (currentPage - 1)),
       width: 200,
       height: 150,
       fill: '#f0f0f0',
@@ -329,7 +444,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     const text = new FabricText('Clique para\nadicionar imagem', {
       left: 100,
-      top: 100,
+      top: 100 + (getCurrentDimensions().height * (currentPage - 1)),
       fontSize: 14,
       fill: '#666',
       textAlign: 'center',
@@ -343,7 +458,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     const group = new Group([rect, text], {
       left: 100,
-      top: 100,
+      top: 100 + (getCurrentDimensions().height * (currentPage - 1)),
     });
 
     (group as any).customData = { id: elementId, type: 'image' };
@@ -364,7 +479,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
         textDecoration: 'none',
         textAlign: 'center'
       },
-      position: { x: 100, y: 100 },
+      position: { x: 100, y: 100 + (getCurrentDimensions().height * (currentPage - 1)) },
       size: { width: 200, height: 150 }
     };
 
@@ -377,7 +492,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     const rect = new Rect({
       left: 100,
-      top: 100,
+      top: 100 + (getCurrentDimensions().height * (currentPage - 1)),
       width: 200,
       height: 30,
       fill: '#e3f2fd',
@@ -389,7 +504,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     const text = new FabricText('{{campo.dinamico}}', {
       left: 110,
-      top: 110,
+      top: 110 + (getCurrentDimensions().height * (currentPage - 1)),
       fontSize: 14,
       fill: '#1976d2',
       fontFamily: 'monospace',
@@ -398,7 +513,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     const elementId = Date.now().toString();
     const group = new Group([rect, text], {
       left: 100,
-      top: 100,
+      top: 100 + (getCurrentDimensions().height * (currentPage - 1)),
     });
 
     (group as any).customData = { id: elementId, type: 'field' };
@@ -419,7 +534,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
         textDecoration: 'none',
         textAlign: 'left'
       },
-      position: { x: 100, y: 100 }
+      position: { x: 100, y: 100 + (getCurrentDimensions().height * (currentPage - 1)) }
     };
 
     updateTemplateElements(newElement);
@@ -436,7 +551,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       FabricImage.fromURL(result).then((img) => {
         img.set({
           left: x,
-          top: y,
+          top: y + (getCurrentDimensions().height * (currentPage - 1)),
           scaleX: 0.5,
           scaleY: 0.5,
         });
@@ -460,7 +575,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
             textDecoration: 'none',
             textAlign: 'left'
           },
-          position: { x, y },
+          position: { x, y: y + (getCurrentDimensions().height * (currentPage - 1)) },
           size: { width: img.width! * 0.5, height: img.height! * 0.5 }
         };
 
@@ -574,7 +689,9 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     const newTemplate: Template = {
       id: Date.now().toString(),
       name: newTemplateName,
-      elements: []
+      elements: [],
+      orientation: 'portrait',
+      totalPages: 1
     };
 
     setTemplates([...templates, newTemplate]);
@@ -598,7 +715,9 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       elements: templateToDuplicate.elements.map(element => ({
         ...element,
         id: `${element.id}_copy_${Date.now()}`
-      }))
+      })),
+      orientation: templateToDuplicate.orientation,
+      totalPages: templateToDuplicate.totalPages
     };
 
     setTemplates([...templates, newTemplate]);
@@ -736,7 +855,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 mt-1">
-                  {template.elements.length} elementos
+                  {template.elements.length} elementos • {template.totalPages} página(s) • {template.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
                 </p>
               </div>
             ))}
@@ -753,6 +872,80 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
               <CardTitle>Ferramentas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Configurações de Página */}
+              <div className="space-y-3 border-b pb-4">
+                <Label className="text-orange-800 font-semibold">Configurações da Página</Label>
+                
+                <div>
+                  <Label>Orientação</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Button
+                      variant={activeTemplate.orientation === 'portrait' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => changeOrientation('portrait')}
+                      className="flex-1"
+                    >
+                      <FileText size={16} className="mr-1" />
+                      Retrato
+                    </Button>
+                    <Button
+                      variant={activeTemplate.orientation === 'landscape' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => changeOrientation('landscape')}
+                      className="flex-1"
+                    >
+                      <RotateCcw size={16} className="mr-1" />
+                      Paisagem
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Páginas ({activeTemplate.totalPages})</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={addPage}
+                      className="flex-1"
+                    >
+                      <Plus size={16} className="mr-1" />
+                      Adicionar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={removePage}
+                      disabled={activeTemplate.totalPages <= 1}
+                      className="flex-1"
+                    >
+                      <Trash2 size={16} className="mr-1" />
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Navegação de Páginas */}
+                {activeTemplate.totalPages > 1 && (
+                  <div>
+                    <Label>Ir para Página</Label>
+                    <div className="grid grid-cols-2 gap-1 mt-1">
+                      {Array.from({ length: activeTemplate.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => scrollToPage(pageNum)}
+                          className="text-xs"
+                        >
+                          {pageNum}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-2">
                 <Label>Adicionar Elementos</Label>
                 <div className="grid grid-cols-1 gap-2">
@@ -1055,23 +1248,36 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Editor: {activeTemplate.name}</span>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <Move size={16} />
-                    Duplo clique no texto para editar • Arraste para mover • Linha laranja = Página 2
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-500">
+                      Página {currentPage} de {activeTemplate.totalPages}
+                    </span>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Move size={16} />
+                      Duplo clique no texto para editar • Arraste para mover
+                    </div>
                   </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-white">
+                <div 
+                  className="border-2 border-gray-200 rounded-lg overflow-auto bg-white shadow-inner"
+                  style={{ maxHeight: '800px' }}
+                >
                   <canvas 
                     ref={canvasRef}
-                    className="w-full"
-                    style={{ maxHeight: '800px' }}
+                    className="block mx-auto"
                   />
                 </div>
                 <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                  <span>Zoom: {Math.round(canvasZoom * 100)}% • Formato A4 (595x842px por página)</span>
-                  <span>Linha tracejada laranja indica o início da segunda página</span>
+                  <div className="flex items-center gap-4">
+                    <span>Zoom: {Math.round(canvasZoom * 100)}%</span>
+                    <span>Formato A4: {getCurrentDimensions().width}x{getCurrentDimensions().height}px</span>
+                    <span className="text-orange-600">
+                      {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
+                    </span>
+                  </div>
+                  <span>Linhas laranjas separam as páginas</span>
                 </div>
               </CardContent>
             </Card>
