@@ -14,7 +14,7 @@ interface Funcionario {
   telefone: string;
   email: string;
   foto: string;
-  status: "ativo" | "ferias" | "experiencia" | "aviso" | "inativo";
+  status: "ativo" | "ferias" | "experiencia" | "aviso" | "inativo" | "destaque";
   cpf?: string;
   rg?: string;
   endereco?: string;
@@ -33,7 +33,8 @@ const statusConfig = {
   ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700" },
   experiencia: { label: "Em Experiência", color: "bg-yellow-500", textColor: "text-yellow-700" },
   aviso: { label: "Em Aviso Prévio", color: "bg-orange-500", textColor: "text-orange-700" },
-  inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" }
+  inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
+  destaque: { label: "Destaque", color: "bg-purple-500", textColor: "text-purple-700" }
 };
 
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange }: FuncionarioDetalhesModalProps) {
