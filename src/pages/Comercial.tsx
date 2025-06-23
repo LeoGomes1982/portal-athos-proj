@@ -29,7 +29,8 @@ export default function Comercial() {
       description: "Gestão de contratos e propostas",
       icon: FileText,
       bgColor: "bg-orange-100",
-      textColor: "text-orange-700"
+      textColor: "text-orange-700",
+      onClick: () => navigate("/comercial/contratos-propostas")
     },
     {
       id: "estatisticas",
