@@ -1,10 +1,10 @@
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Bold, 
   Italic, 
@@ -16,9 +16,17 @@ import {
   Copy,
   Type,
   Image as ImageIcon,
-  Database
+  Database,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Move,
+  RotateCw,
+  ZoomIn,
+  ZoomOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle } from "fabric";
 
 interface TemplateElement {
   id: string;
@@ -30,11 +38,14 @@ interface TemplateElement {
     fontWeight: 'normal' | 'bold';
     fontStyle: 'normal' | 'italic';
     textDecoration: 'none' | 'underline';
+    textAlign: 'left' | 'center' | 'right';
+    backgroundColor?: string;
   };
   position: { x: number; y: number };
   size?: { width: number; height: number };
   fieldType?: string;
   fieldKey?: string;
+  rotation?: number;
 }
 
 interface Template {
@@ -49,6 +60,9 @@ interface TemplateEditorProps {
 
 export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const { toast } = useToast();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [templates, setTemplates] = useState<Template[]>([
     {
       id: '1',
@@ -61,7 +75,8 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [newTemplateName, setNewTemplateName] = useState('');
   const [showNewTemplateForm, setShowNewTemplateForm] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [canvasZoom, setCanvasZoom] = useState(1);
+  const [editingText, setEditingText] = useState(false);
 
   const activeTemplate = templates.find(t => t.id === activeTemplateId);
 
@@ -95,26 +110,256 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     ]
   };
 
-  const addElement = (type: 'text' | 'image' | 'field') => {
-    if (!activeTemplate) return;
+  // Inicializar Fabric Canvas
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = new FabricCanvas(canvasRef.current, {
+      width: 800,
+      height: 1000,
+      backgroundColor: "#ffffff",
+      selection: true,
+    });
+
+    // Configurar eventos do canvas
+    canvas.on('selection:created', (e) => {
+      const activeObject = e.selected?.[0];
+      if (activeObject && activeObject.data) {
+        setSelectedElement(activeObject.data.id);
+      }
+    });
+
+    canvas.on('selection:updated', (e) => {
+      const activeObject = e.selected?.[0];
+      if (activeObject && activeObject.data) {
+        setSelectedElement(activeObject.data.id);
+      }
+    });
+
+    canvas.on('selection:cleared', () => {
+      setSelectedElement(null);
+    });
+
+    // Drag and drop para imagens
+    canvas.on('drop', (e) => {
+      const event = e.e as DragEvent;
+      event.preventDefault();
+      
+      const files = event.dataTransfer?.files;
+      if (files && files[0] && files[0].type.startsWith('image/')) {
+        handleImageUpload(files[0], event.offsetX || 100, event.offsetY || 100);
+      }
+    });
+
+    canvas.on('dragover', (e) => {
+      e.e.preventDefault();
+    });
+
+    setFabricCanvas(canvas);
+
+    return () => {
+      canvas.dispose();
+    };
+  }, []);
+
+  const addTextElement = () => {
+    if (!fabricCanvas) return;
+
+    const text = new FabricText('Novo texto', {
+      left: 100,
+      top: 100,
+      fontSize: 16,
+      fill: '#000000',
+      fontFamily: 'Arial',
+      editable: true,
+    });
+
+    const elementId = Date.now().toString();
+    text.set('data', { id: elementId, type: 'text' });
+
+    fabricCanvas.add(text);
+    fabricCanvas.setActiveObject(text);
+    fabricCanvas.renderAll();
 
     const newElement: TemplateElement = {
-      id: Date.now().toString(),
-      type,
-      content: type === 'text' ? 'Novo texto' : '',
+      id: elementId,
+      type: 'text',
+      content: 'Novo texto',
       style: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#000000',
         fontWeight: 'normal',
         fontStyle: 'normal',
-        textDecoration: 'none'
+        textDecoration: 'none',
+        textAlign: 'left'
       },
-      position: { x: 50, y: 50 }
+      position: { x: 100, y: 100 }
     };
 
-    if (type === 'image') {
-      newElement.size = { width: 200, height: 150 };
-    }
+    updateTemplateElements(newElement);
+    setSelectedElement(elementId);
+  };
+
+  const addImagePlaceholder = () => {
+    if (!fabricCanvas) return;
+
+    const rect = new Rect({
+      left: 100,
+      top: 100,
+      width: 200,
+      height: 150,
+      fill: '#f0f0f0',
+      stroke: '#ccc',
+      strokeWidth: 2,
+      strokeDashArray: [5, 5],
+    });
+
+    const text = new FabricText('Clique para\nadicionar imagem', {
+      left: 100,
+      top: 100,
+      fontSize: 14,
+      fill: '#666',
+      textAlign: 'center',
+      originX: 'center',
+      originY: 'center',
+    });
+
+    const elementId = Date.now().toString();
+    rect.set('data', { id: elementId, type: 'image' });
+    text.set('data', { id: elementId, type: 'image' });
+
+    const group = new fabric.Group([rect, text], {
+      left: 100,
+      top: 100,
+    });
+
+    group.set('data', { id: elementId, type: 'image' });
+
+    fabricCanvas.add(group);
+    fabricCanvas.setActiveObject(group);
+    fabricCanvas.renderAll();
+
+    const newElement: TemplateElement = {
+      id: elementId,
+      type: 'image',
+      content: '',
+      style: {
+        fontSize: 14,
+        color: '#666666',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        textAlign: 'center'
+      },
+      position: { x: 100, y: 100 },
+      size: { width: 200, height: 150 }
+    };
+
+    updateTemplateElements(newElement);
+    setSelectedElement(elementId);
+  };
+
+  const addFieldElement = () => {
+    if (!fabricCanvas) return;
+
+    const rect = new Rect({
+      left: 100,
+      top: 100,
+      width: 200,
+      height: 30,
+      fill: '#e3f2fd',
+      stroke: '#2196f3',
+      strokeWidth: 1,
+      rx: 4,
+      ry: 4,
+    });
+
+    const text = new FabricText('{{campo.dinamico}}', {
+      left: 110,
+      top: 110,
+      fontSize: 14,
+      fill: '#1976d2',
+      fontFamily: 'monospace',
+    });
+
+    const elementId = Date.now().toString();
+    const group = new fabric.Group([rect, text], {
+      left: 100,
+      top: 100,
+    });
+
+    group.set('data', { id: elementId, type: 'field' });
+
+    fabricCanvas.add(group);
+    fabricCanvas.setActiveObject(group);
+    fabricCanvas.renderAll();
+
+    const newElement: TemplateElement = {
+      id: elementId,
+      type: 'field',
+      content: '{{campo.dinamico}}',
+      style: {
+        fontSize: 14,
+        color: '#1976d2',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        textAlign: 'left'
+      },
+      position: { x: 100, y: 100 }
+    };
+
+    updateTemplateElements(newElement);
+    setSelectedElement(elementId);
+  };
+
+  const handleImageUpload = (file: File, x = 100, y = 100) => {
+    if (!fabricCanvas) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      
+      FabricImage.fromURL(result).then((img) => {
+        img.set({
+          left: x,
+          top: y,
+          scaleX: 0.5,
+          scaleY: 0.5,
+        });
+
+        const elementId = Date.now().toString();
+        img.set('data', { id: elementId, type: 'image' });
+
+        fabricCanvas.add(img);
+        fabricCanvas.setActiveObject(img);
+        fabricCanvas.renderAll();
+
+        const newElement: TemplateElement = {
+          id: elementId,
+          type: 'image',
+          content: result,
+          style: {
+            fontSize: 14,
+            color: '#000000',
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+            textDecoration: 'none',
+            textAlign: 'left'
+          },
+          position: { x, y },
+          size: { width: img.width! * 0.5, height: img.height! * 0.5 }
+        };
+
+        updateTemplateElements(newElement);
+        setSelectedElement(elementId);
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const updateTemplateElements = (newElement: TemplateElement) => {
+    if (!activeTemplate) return;
 
     const updatedTemplates = templates.map(template => 
       template.id === activeTemplateId 
@@ -123,34 +368,57 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     );
     
     setTemplates(updatedTemplates);
-    setSelectedElement(newElement.id);
   };
 
-  const updateElement = (elementId: string, updates: Partial<TemplateElement>) => {
-    if (!activeTemplate) return;
+  const updateElementStyle = (elementId: string, styleUpdates: Partial<TemplateElement['style']>) => {
+    if (!activeTemplate || !fabricCanvas) return;
 
+    // Atualizar no estado
     const updatedTemplates = templates.map(template => 
       template.id === activeTemplateId 
         ? {
             ...template,
             elements: template.elements.map(element =>
-              element.id === elementId ? { ...element, ...updates } : element
+              element.id === elementId 
+                ? { ...element, style: { ...element.style, ...styleUpdates } }
+                : element
             )
           }
         : template
     );
     
     setTemplates(updatedTemplates);
+
+    // Atualizar no canvas
+    const activeObject = fabricCanvas.getActiveObject();
+    if (activeObject && activeObject.data?.id === elementId) {
+      if (activeObject instanceof FabricText) {
+        if (styleUpdates.fontSize) activeObject.set('fontSize', styleUpdates.fontSize);
+        if (styleUpdates.color) activeObject.set('fill', styleUpdates.color);
+        if (styleUpdates.fontWeight) activeObject.set('fontWeight', styleUpdates.fontWeight);
+        if (styleUpdates.fontStyle) activeObject.set('fontStyle', styleUpdates.fontStyle);
+        if (styleUpdates.textAlign) activeObject.set('textAlign', styleUpdates.textAlign);
+        if (styleUpdates.backgroundColor) activeObject.set('backgroundColor', styleUpdates.backgroundColor);
+      }
+      fabricCanvas.renderAll();
+    }
   };
 
-  const deleteElement = (elementId: string) => {
-    if (!activeTemplate) return;
+  const deleteSelectedElement = () => {
+    if (!fabricCanvas || !selectedElement) return;
 
+    const activeObject = fabricCanvas.getActiveObject();
+    if (activeObject) {
+      fabricCanvas.remove(activeObject);
+      fabricCanvas.renderAll();
+    }
+
+    // Remove do estado
     const updatedTemplates = templates.map(template => 
       template.id === activeTemplateId 
         ? {
             ...template,
-            elements: template.elements.filter(element => element.id !== elementId)
+            elements: template.elements.filter(element => element.id !== selectedElement)
           }
         : template
     );
@@ -159,13 +427,13 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     setSelectedElement(null);
   };
 
-  const handleImageUpload = (elementId: string, file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      updateElement(elementId, { content: result });
-    };
-    reader.readAsDataURL(file);
+  const zoomCanvas = (factor: number) => {
+    if (!fabricCanvas) return;
+    
+    const newZoom = Math.max(0.1, Math.min(3, canvasZoom * factor));
+    setCanvasZoom(newZoom);
+    fabricCanvas.setZoom(newZoom);
+    fabricCanvas.renderAll();
   };
 
   const createNewTemplate = () => {
@@ -342,8 +610,8 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
       {/* Editor do Template Ativo */}
       {activeTemplate && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Ferramentas */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Ferramentas Expandidas */}
           <Card>
             <CardHeader>
               <CardTitle>Ferramentas</CardTitle>
@@ -354,15 +622,15 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                 <div className="grid grid-cols-1 gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => addElement('text')}
+                    onClick={addTextElement}
                     className="justify-start"
                   >
                     <Type size={16} className="mr-2" />
-                    Texto
+                    Texto Rico
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => addElement('image')}
+                    onClick={addImagePlaceholder}
                     className="justify-start"
                   >
                     <ImageIcon size={16} className="mr-2" />
@@ -370,13 +638,71 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => addElement('field')}
+                    onClick={addFieldElement}
                     className="justify-start"
                   >
                     <Database size={16} className="mr-2" />
                     Campo Dinâmico
                   </Button>
                 </div>
+              </div>
+
+              {/* Controles de Canvas */}
+              <div className="space-y-2 border-t pt-4">
+                <Label>Controles do Canvas</Label>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => zoomCanvas(1.2)}
+                  >
+                    <ZoomIn size={16} />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => zoomCanvas(0.8)}
+                  >
+                    <ZoomOut size={16} />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCanvasZoom(1);
+                      fabricCanvas?.setZoom(1);
+                      fabricCanvas?.renderAll();
+                    }}
+                  >
+                    100%
+                  </Button>
+                </div>
+              </div>
+
+              {/* Upload de Imagem */}
+              <div className="space-y-2 border-t pt-4">
+                <Label>Upload de Imagem</Label>
+                <Button
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full"
+                >
+                  <Upload size={16} className="mr-2" />
+                  Carregar Imagem
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(file);
+                  }}
+                />
+                <p className="text-xs text-gray-500">
+                  Ou arraste e solte uma imagem no canvas
+                </p>
               </div>
 
               {/* Propriedades do Elemento Selecionado */}
@@ -386,22 +712,16 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   
                   {selectedElementData.type === 'text' && (
                     <div className="space-y-3">
-                      <div>
-                        <Label>Texto</Label>
-                        <Input
-                          value={selectedElementData.content}
-                          onChange={(e) => updateElement(selectedElement!, { content: e.target.value })}
-                        />
-                      </div>
-                      
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <Label>Tamanho</Label>
                           <Input
                             type="number"
+                            min="8"
+                            max="72"
                             value={selectedElementData.style.fontSize}
-                            onChange={(e) => updateElement(selectedElement!, { 
-                              style: { ...selectedElementData.style, fontSize: Number(e.target.value) }
+                            onChange={(e) => updateElementStyle(selectedElement!, { 
+                              fontSize: Number(e.target.value) 
                             })}
                           />
                         </div>
@@ -410,22 +730,30 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                           <Input
                             type="color"
                             value={selectedElementData.style.color}
-                            onChange={(e) => updateElement(selectedElement!, { 
-                              style: { ...selectedElementData.style, color: e.target.value }
+                            onChange={(e) => updateElementStyle(selectedElement!, { 
+                              color: e.target.value 
                             })}
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <Label>Cor de Fundo</Label>
+                        <Input
+                          type="color"
+                          value={selectedElementData.style.backgroundColor || '#ffffff'}
+                          onChange={(e) => updateElementStyle(selectedElement!, { 
+                            backgroundColor: e.target.value 
+                          })}
+                        />
                       </div>
 
                       <div className="flex gap-2">
                         <Button
                           variant={selectedElementData.style.fontWeight === 'bold' ? 'default' : 'outline'}
                           size="sm"
-                          onClick={() => updateElement(selectedElement!, { 
-                            style: { 
-                              ...selectedElementData.style, 
-                              fontWeight: selectedElementData.style.fontWeight === 'bold' ? 'normal' : 'bold'
-                            }
+                          onClick={() => updateElementStyle(selectedElement!, { 
+                            fontWeight: selectedElementData.style.fontWeight === 'bold' ? 'normal' : 'bold'
                           })}
                         >
                           <Bold size={16} />
@@ -433,11 +761,8 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                         <Button
                           variant={selectedElementData.style.fontStyle === 'italic' ? 'default' : 'outline'}
                           size="sm"
-                          onClick={() => updateElement(selectedElement!, { 
-                            style: { 
-                              ...selectedElementData.style, 
-                              fontStyle: selectedElementData.style.fontStyle === 'italic' ? 'normal' : 'italic'
-                            }
+                          onClick={() => updateElementStyle(selectedElement!, { 
+                            fontStyle: selectedElementData.style.fontStyle === 'italic' ? 'normal' : 'italic'
                           })}
                         >
                           <Italic size={16} />
@@ -445,67 +770,37 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                         <Button
                           variant={selectedElementData.style.textDecoration === 'underline' ? 'default' : 'outline'}
                           size="sm"
-                          onClick={() => updateElement(selectedElement!, { 
-                            style: { 
-                              ...selectedElementData.style, 
-                              textDecoration: selectedElementData.style.textDecoration === 'underline' ? 'none' : 'underline'
-                            }
+                          onClick={() => updateElementStyle(selectedElement!, { 
+                            textDecoration: selectedElementData.style.textDecoration === 'underline' ? 'none' : 'underline'
                           })}
                         >
                           <Underline size={16} />
                         </Button>
                       </div>
-                    </div>
-                  )}
 
-                  {selectedElementData.type === 'image' && (
-                    <div className="space-y-3">
-                      <div>
-                        <Label>Imagem</Label>
+                      <div className="flex gap-2">
                         <Button
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="w-full"
+                          variant={selectedElementData.style.textAlign === 'left' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => updateElementStyle(selectedElement!, { textAlign: 'left' })}
                         >
-                          <Upload size={16} className="mr-2" />
-                          Carregar Imagem
+                          <AlignLeft size={16} />
                         </Button>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleImageUpload(selectedElement!, file);
-                          }}
-                        />
+                        <Button
+                          variant={selectedElementData.style.textAlign === 'center' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => updateElementStyle(selectedElement!, { textAlign: 'center' })}
+                        >
+                          <AlignCenter size={16} />
+                        </Button>
+                        <Button
+                          variant={selectedElementData.style.textAlign === 'right' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => updateElementStyle(selectedElement!, { textAlign: 'right' })}
+                        >
+                          <AlignRight size={16} />
+                        </Button>
                       </div>
-                      
-                      {selectedElementData.size && (
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label>Largura</Label>
-                            <Input
-                              type="number"
-                              value={selectedElementData.size.width}
-                              onChange={(e) => updateElement(selectedElement!, { 
-                                size: { ...selectedElementData.size!, width: Number(e.target.value) }
-                              })}
-                            />
-                          </div>
-                          <div>
-                            <Label>Altura</Label>
-                            <Input
-                              type="number"
-                              value={selectedElementData.size.height}
-                              onChange={(e) => updateElement(selectedElement!, { 
-                                size: { ...selectedElementData.size!, height: Number(e.target.value) }
-                              })}
-                            />
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -562,7 +857,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => deleteElement(selectedElement!)}
+                    onClick={deleteSelectedElement}
                     className="w-full"
                   >
                     <Trash2 size={16} className="mr-2" />
@@ -573,83 +868,29 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
             </CardContent>
           </Card>
 
-          {/* Canvas de Preview */}
-          <div className="lg:col-span-2">
+          {/* Canvas Fabric.js */}
+          <div className="lg:col-span-3">
             <Card>
               <CardHeader>
-                <CardTitle>Preview: {activeTemplate.name}</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Editor: {activeTemplate.name}</span>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Move size={16} />
+                    Arraste para mover • Redimensione pelas bordas
+                  </div>
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div 
-                  className="relative bg-white border-2 border-gray-200 min-h-[600px] overflow-hidden"
-                  style={{ aspectRatio: '210/297' }} // A4 ratio
-                >
-                  {activeTemplate.elements.map((element) => (
-                    <div
-                      key={element.id}
-                      className={`absolute cursor-move border-2 ${
-                        selectedElement === element.id 
-                          ? 'border-orange-500 bg-orange-50' 
-                          : 'border-transparent hover:border-gray-300'
-                      }`}
-                      style={{
-                        left: element.position.x,
-                        top: element.position.y,
-                        width: element.size?.width || 'auto',
-                        height: element.size?.height || 'auto'
-                      }}
-                      onClick={() => setSelectedElement(element.id)}
-                    >
-                      {element.type === 'text' && (
-                        <div
-                          style={{
-                            fontSize: element.style.fontSize,
-                            color: element.style.color,
-                            fontWeight: element.style.fontWeight,
-                            fontStyle: element.style.fontStyle,
-                            textDecoration: element.style.textDecoration,
-                            padding: '4px'
-                          }}
-                        >
-                          {element.content}
-                        </div>
-                      )}
-                      
-                      {element.type === 'image' && element.content && (
-                        <img
-                          src={element.content}
-                          alt="Template"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'contain'
-                          }}
-                        />
-                      )}
-                      
-                      {element.type === 'field' && (
-                        <div
-                          className="bg-blue-100 border border-blue-300 px-2 py-1 text-sm text-blue-700"
-                          style={{
-                            fontSize: element.style.fontSize,
-                            color: element.style.color
-                          }}
-                        >
-                          {element.content || `Campo dinâmico: ${element.fieldType}.${element.fieldKey}`}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  
-                  {activeTemplate.elements.length === 0 && (
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                      <div className="text-center">
-                        <Database size={48} className="mx-auto mb-4" />
-                        <p>Adicione elementos ao seu template</p>
-                        <p className="text-sm">Use as ferramentas ao lado para começar</p>
-                      </div>
-                    </div>
-                  )}
+                <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-white">
+                  <canvas 
+                    ref={canvasRef}
+                    className="w-full"
+                    style={{ maxHeight: '800px' }}
+                  />
+                </div>
+                <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+                  <span>Zoom: {Math.round(canvasZoom * 100)}%</span>
+                  <span>Dica: Use Ctrl+Scroll para zoom rápido</span>
                 </div>
               </CardContent>
             </Card>
