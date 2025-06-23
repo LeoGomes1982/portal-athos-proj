@@ -49,6 +49,9 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 }, ref) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState<string>('');
   
   // Estados para a formatação
   const [fontSize, setFontSize] = useState(16);
@@ -128,6 +131,138 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     applyFormatting('backColor', color);
   };
 
+  const addResizeHandles = (img: HTMLImageElement) => {
+    // Remove existing handles
+    removeResizeHandles();
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-resize-wrapper';
+    wrapper.style.cssText = `
+      position: relative;
+      display: inline-block;
+      border: 2px solid #007bff;
+      cursor: move;
+    `;
+    
+    // Wrap the image
+    img.parentNode?.insertBefore(wrapper, img);
+    wrapper.appendChild(img);
+    
+    // Create resize handles
+    const handles = ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'];
+    handles.forEach(handle => {
+      const handleElement = document.createElement('div');
+      handleElement.className = `resize-handle resize-${handle}`;
+      handleElement.style.cssText = `
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #007bff;
+        border: 1px solid white;
+        cursor: ${handle.includes('n') || handle.includes('s') ? 
+          (handle.includes('e') || handle.includes('w') ? 
+            (handle.includes('nw') || handle.includes('se') ? 'nw-resize' : 'ne-resize') 
+            : 'ns-resize') 
+          : (handle.includes('e') || handle.includes('w') ? 'ew-resize' : 'move')};
+        z-index: 10;
+      `;
+      
+      // Position handles
+      if (handle.includes('n')) handleElement.style.top = '-4px';
+      if (handle.includes('s')) handleElement.style.bottom = '-4px';
+      if (handle.includes('e')) handleElement.style.right = '-4px';
+      if (handle.includes('w')) handleElement.style.left = '-4px';
+      if (handle === 'n' || handle === 's') {
+        handleElement.style.left = '50%';
+        handleElement.style.transform = 'translateX(-50%)';
+      }
+      if (handle === 'e' || handle === 'w') {
+        handleElement.style.top = '50%';
+        handleElement.style.transform = 'translateY(-50%)';
+      }
+      
+      // Add resize functionality
+      handleElement.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        startResize(img, handle, e);
+      });
+      
+      wrapper.appendChild(handleElement);
+    });
+    
+    setSelectedImage(img);
+  };
+
+  const removeResizeHandles = () => {
+    const wrappers = document.querySelectorAll('.image-resize-wrapper');
+    wrappers.forEach(wrapper => {
+      const img = wrapper.querySelector('img');
+      if (img && wrapper.parentNode) {
+        wrapper.parentNode.insertBefore(img, wrapper);
+        wrapper.remove();
+      }
+    });
+    setSelectedImage(null);
+  };
+
+  const startResize = (img: HTMLImageElement, handle: string, e: MouseEvent) => {
+    setIsResizing(true);
+    setResizeHandle(handle);
+    
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startWidth = img.offsetWidth;
+    const startHeight = img.offsetHeight;
+    const aspectRatio = startWidth / startHeight;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+      
+      let newWidth = startWidth;
+      let newHeight = startHeight;
+      
+      if (handle.includes('e')) {
+        newWidth = startWidth + deltaX;
+      } else if (handle.includes('w')) {
+        newWidth = startWidth - deltaX;
+      }
+      
+      if (handle.includes('s')) {
+        newHeight = startHeight + deltaY;
+      } else if (handle.includes('n')) {
+        newHeight = startHeight - deltaY;
+      }
+      
+      // Maintain aspect ratio for corner handles
+      if (handle.length === 2) {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          newHeight = newWidth / aspectRatio;
+        } else {
+          newWidth = newHeight * aspectRatio;
+        }
+      }
+      
+      // Apply minimum size constraints
+      newWidth = Math.max(20, newWidth);
+      newHeight = Math.max(20, newHeight);
+      
+      img.style.width = newWidth + 'px';
+      img.style.height = newHeight + 'px';
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      setResizeHandle('');
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   const fontFamilies = [
     'Arial',
     'Times New Roman',
@@ -170,8 +305,17 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       }
     };
 
-    const handleClick = () => {
+    const handleClick = (e: MouseEvent) => {
       console.log('Editor clicked');
+      const target = e.target as HTMLElement;
+      
+      // Check if clicked on an image
+      if (target.tagName === 'IMG') {
+        addResizeHandles(target as HTMLImageElement);
+      } else {
+        removeResizeHandles();
+      }
+      
       onSelectionChange('text-editor');
     };
 
@@ -252,6 +396,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
             img.style.maxWidth = '200px';
             img.style.height = 'auto';
             img.style.margin = '10px';
+            img.style.cursor = 'pointer';
             range.insertNode(img);
           }
         }
@@ -264,6 +409,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       if (selection && selection.rangeCount > 0) {
         selection.deleteFromDocument();
       }
+      removeResizeHandles();
     },
 
     updateTextContent: (content: string) => {
@@ -299,6 +445,12 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               color: #9ca3af;
               font-style: italic;
               pointer-events: none;
+            }
+            .image-resize-wrapper {
+              user-select: none;
+            }
+            .resize-handle {
+              user-select: none;
             }
           `
         }} />
