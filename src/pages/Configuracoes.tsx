@@ -1,10 +1,10 @@
-
 import { 
   Settings, 
   ArrowLeft,
   FileEdit,
   Building2,
-  Globe
+  Globe,
+  FileText
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -32,6 +32,15 @@ const Configuracoes = () => {
       className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
       iconColor: "text-gray-600",
       onClick: () => setIsEmpresasModalOpen(true)
+    },
+    {
+      id: "edicao-contratos-propostas",
+      title: "EDIÇÃO DE CONTRATOS E PROPOSTAS",
+      fullTitle: "Configurar Templates",
+      icon: FileText,
+      className: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
+      iconColor: "text-orange-600",
+      onClick: () => navigate("/configuracoes/contratos-propostas")
     },
     {
       id: "edicao-site",
@@ -72,7 +81,7 @@ const Configuracoes = () => {
         </div>
 
         {/* Cards Grid - Configurações */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-slide-up">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto animate-slide-up">
           {configuracoesSection.map((section) => (
             <div 
               key={section.id}

@@ -11,6 +11,7 @@ import Comercial from "./pages/Comercial";
 import ClientesFornecedores from "./pages/ClientesFornecedores";
 import ContratosPropostas from "./pages/ContratosPropostas";
 import Configuracoes from "./pages/Configuracoes";
+import EdicaoContratosPropostas from "./pages/EdicaoContratosPropostas";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/comercial/clientes-fornecedores" element={<ClientesFornecedores />} />
           <Route path="/comercial/contratos-propostas" element={<ContratosPropostas />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
+          <Route path="/configuracoes/contratos-propostas" element={<EdicaoContratosPropostas />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>
