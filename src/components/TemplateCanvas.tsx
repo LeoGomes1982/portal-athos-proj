@@ -174,6 +174,44 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       onSelectionChange(null);
     });
 
+    // Clique simples em área vazia cria texto para digitação imediata
+    canvas.on('mouse:down', (e) => {
+      // Verificar se clicou em área vazia (sem objeto)
+      if (!e.target) {
+        const pointer = canvas.getPointer(e.e);
+        const elementId = Date.now().toString();
+        
+        const text = new FabricText('', {
+          left: pointer.x,
+          top: pointer.y,
+          fontSize: 16,
+          fill: '#000000',
+          fontFamily: 'Arial',
+          editable: true,
+          selectable: true,
+        });
+
+        // Definir propriedades customizadas
+        (text as any).elementId = elementId;
+        (text as any).elementType = 'text';
+        
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        
+        // Entrar em modo de edição imediatamente
+        setTimeout(() => {
+          text.set('isEditing', true);
+          canvas.renderAll();
+          
+          // Focar no elemento de texto para digitação
+          const canvasElement = canvas.getElement();
+          canvasElement.focus();
+        }, 50);
+        
+        onSelectionChange(elementId);
+      }
+    });
+
     // Implementação correta da edição inline para Fabric.js v6
     canvas.on('mouse:dblclick', (e) => {
       const activeObject = canvas.getActiveObject();
@@ -265,10 +303,10 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       const elementId = Date.now().toString();
       const dimensions = calculateCanvasDimensions();
       
-      const text = new FabricText('Clique duas vezes para editar', {
+      const text = new FabricText('', {
         left: 50,
         top: 100 + (dimensions.height * (currentPage - 1)),
-        fontSize: Math.max(16, dimensions.width * 0.02),
+        fontSize: 16,
         fill: '#000000',
         fontFamily: 'Arial',
         editable: true,
@@ -284,7 +322,12 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 
       canvas.add(text);
       canvas.setActiveObject(text);
-      canvas.renderAll();
+      
+      // Entrar em modo de edição imediatamente
+      setTimeout(() => {
+        text.set('isEditing', true);
+        canvas.renderAll();
+      }, 50);
       
       // Forçar a seleção após adicionar
       setTimeout(() => {
@@ -471,7 +514,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
             </span>
           </div>
-          <span>Canvas responsivo • Clique duas vezes no texto para editar inline • Linhas laranjas separam as páginas</span>
+          <span>Canvas responsivo • Clique em qualquer lugar para escrever • Duplo clique no texto para editar</span>
         </div>
       </CardContent>
     </Card>
