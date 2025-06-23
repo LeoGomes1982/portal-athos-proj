@@ -48,53 +48,50 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const statusInfo = statusConfig[statusAtual];
 
+  console.log("Modal aberto:", isOpen, "Funcionario:", funcionario?.nome);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-green-600 flex items-center gap-3">
-            <span className="text-4xl">{funcionario.foto}</span>
+          <DialogTitle className="text-xl font-bold text-green-600">
             Detalhes do Funcionário
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Informações em linha horizontal */}
-          <div className="flex items-center justify-between gap-6 p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200">
+          {/* Informações em linha horizontal compacta */}
+          <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
             {/* Foto */}
-            <div className="flex flex-col items-center min-w-fit">
-              <div className="w-20 h-20 bg-green-100 border-2 border-green-300 rounded-3xl flex items-center justify-center shadow-lg mb-2">
-                <span className="text-4xl">{funcionario.foto}</span>
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-green-100 border border-green-300 rounded-full flex items-center justify-center">
+                <span className="text-2xl">{funcionario.foto}</span>
               </div>
-              <span className="text-xs text-green-600 font-medium">Foto</span>
             </div>
 
             {/* Nome */}
-            <div className="flex flex-col items-center min-w-fit">
-              <p className="text-xl font-bold text-slate-800 text-center mb-2">{funcionario.nome}</p>
-              <span className="text-xs text-green-600 font-medium">Nome</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-lg font-bold text-slate-800 truncate">{funcionario.nome}</p>
             </div>
 
             {/* Cargo */}
-            <div className="flex flex-col items-center min-w-fit">
-              <p className="text-lg font-semibold text-slate-700 text-center mb-2">{funcionario.cargo}</p>
-              <span className="text-xs text-green-600 font-medium">Cargo</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-slate-700 truncate">{funcionario.cargo}</p>
             </div>
 
             {/* Data de Admissão */}
-            <div className="flex flex-col items-center min-w-fit">
-              <p className="text-lg font-medium text-slate-700 text-center mb-2">
+            <div className="flex-shrink-0">
+              <p className="text-sm text-slate-600">
                 {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
               </p>
-              <span className="text-xs text-green-600 font-medium">Admissão</span>
             </div>
 
             {/* Status */}
-            <div className="flex flex-col items-center min-w-fit">
+            <div className="flex-shrink-0">
               <Select value={statusAtual} onValueChange={handleStatusChange}>
-                <SelectTrigger className="w-40 mb-2 border-green-300">
+                <SelectTrigger className="w-32">
                   <SelectValue>
-                    <Badge className={`${statusInfo.color} text-white`}>
+                    <Badge className={`${statusInfo.color} text-white text-xs`}>
                       {statusInfo.label}
                     </Badge>
                   </SelectValue>
@@ -102,24 +99,23 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 <SelectContent>
                   {Object.entries(statusConfig).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
-                      <Badge className={`${config.color} text-white`}>
+                      <Badge className={`${config.color} text-white text-xs`}>
                         {config.label}
                       </Badge>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <span className="text-xs text-green-600 font-medium">Status</span>
             </div>
           </div>
 
           {/* Ações */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-green-200">
+          <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" onClick={onClose} className="border-green-300 text-green-700 hover:bg-green-50">
               Fechar
             </Button>
             <Button className="bg-green-600 hover:bg-green-700 text-white">
-              📝 Editar Dados
+              📝 Editar
             </Button>
           </div>
         </div>
