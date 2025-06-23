@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star } from "lucide-react";
+import { Search, Star, Grid3X3, List } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
 
 interface FuncionariosSubsectionProps {
@@ -125,9 +125,9 @@ const statusConfig = {
   ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700" },
   ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700" },
   experiencia: { label: "Em Experiência", color: "bg-yellow-500", textColor: "text-yellow-700" },
-  aviso: { label: "Em Aviso Prévio", color: "bg-orange-500", textColor: "text-orange-700" },
+  aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700" },
   inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
-  destaque: { label: "Destaque", color: "bg-green-600", textColor: "text-green-700" }
+  destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700" }
 };
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
@@ -135,6 +135,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   const [funcionariosList, setFuncionariosList] = useState(funcionarios);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const filteredFuncionarios = funcionariosList.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -175,18 +176,23 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return (
       <Card 
         key={funcionario.id} 
-        className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105 border-green-200 hover:border-green-300"
+        className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105 border-green-300 hover:border-green-400 bg-gradient-to-br from-green-50 to-white"
         onClick={() => handleFuncionarioClick(funcionario)}
       >
         <CardHeader className="text-center pb-4 pt-6 relative">
           {funcionario.status === 'destaque' && (
-            <div className="absolute top-2 right-2 animate-pulse">
-              <Star className="w-8 h-8 text-yellow-400 fill-yellow-400 drop-shadow-lg filter brightness-125" style={{
-                filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
-              }} />
+            <div className="absolute top-2 right-2 animate-bounce">
+              <div className="relative">
+                <Star className="w-10 h-10 text-yellow-500 fill-yellow-400 drop-shadow-lg" style={{
+                  filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
+                }} />
+                <div className="absolute inset-0 animate-pulse">
+                  <Star className="w-10 h-10 text-yellow-300 fill-yellow-200 opacity-50" />
+                </div>
+              </div>
             </div>
           )}
-          <div className="w-20 h-20 bg-green-50 border-2 border-green-200 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+          <div className="w-20 h-20 bg-green-100 border-2 border-green-300 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
             <span className="text-4xl">{funcionario.foto}</span>
           </div>
           <CardTitle className="text-lg font-bold text-slate-800 mb-1">{funcionario.nome}</CardTitle>
@@ -195,7 +201,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         <CardContent className="space-y-3 px-6 pb-6">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-500 font-medium">Setor:</span>
-            <Badge variant="secondary" className="bg-green-100 text-green-700 font-medium px-3 py-1 rounded-full">{funcionario.setor}</Badge>
+            <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium px-3 py-1 rounded-full">{funcionario.setor}</Badge>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-500 font-medium">Status:</span>
@@ -221,25 +227,25 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-50 to-green-200 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-100 rounded-full opacity-30"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-200 rounded-full opacity-20"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-150 rounded-full opacity-20"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full opacity-40"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-300 rounded-full opacity-30"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-250 rounded-full opacity-25"></div>
       </div>
 
       <div className="relative z-10 py-6 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
           {/* Header */}
           <div className="text-center py-8">
-            <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-green-200 mb-6">
-              <div className="w-16 h-16 bg-green-100 border-2 border-green-200 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-green-600 text-2xl">👥</span>
+            <div className="inline-flex items-center gap-4 bg-white/95 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-green-300 mb-6">
+              <div className="w-16 h-16 bg-green-200 border-2 border-green-300 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-green-700 text-2xl">👥</span>
               </div>
               <div className="text-left">
                 <h1 className="text-3xl lg:text-4xl font-bold text-slate-800">Gestão de Funcionários</h1>
-                <p className="text-lg text-slate-600">Departamento Pessoal</p>
+                <p className="text-lg text-green-700">Departamento Pessoal</p>
               </div>
             </div>
             <p className="text-slate-600 text-lg max-w-2xl mx-auto">
@@ -248,85 +254,114 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             <Button 
               variant="outline" 
               onClick={onBack} 
-              className="mt-4 border-green-200 text-green-700 hover:bg-green-50"
+              className="mt-4 border-green-300 text-green-800 hover:bg-green-100"
             >
               ← Voltar ao DP
             </Button>
           </div>
 
           {/* Resumo com contadores - mais compacto */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-green-200 p-6">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-green-300 p-6">
             <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
               📊 Resumo da Equipe
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
                 <CardContent className="text-center p-4">
                   <div className="text-2xl font-bold text-green-600 mb-1">{contadores.total}</div>
                   <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
                 </CardContent>
               </Card>
               
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
                 <CardContent className="text-center p-4">
                   <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
                   <div className="text-sm font-medium text-slate-600">Em Férias</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
                 <CardContent className="text-center p-4">
                   <div className="text-2xl font-bold text-yellow-600 mb-1">{contadores.experiencia}</div>
                   <div className="text-sm font-medium text-slate-600">Em Experiência</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white">
                 <CardContent className="text-center p-4">
-                  <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.aviso}</div>
-                  <div className="text-sm font-medium text-slate-600">Em Aviso Prévio</div>
+                  <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
+                  <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-yellow-400 bg-gradient-to-br from-yellow-100 to-yellow-50 shadow-yellow-200/50">
                 <CardContent className="text-center p-4">
                   <div className="flex items-center justify-center mb-1">
-                    <Star className="text-yellow-400 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md filter brightness-125" />
-                    <span className="text-2xl font-bold text-green-600">{contadores.destaque}</span>
+                    <div className="relative">
+                      <Star className="text-yellow-500 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md" style={{
+                        filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                      }} />
+                      <div className="absolute inset-0 animate-pulse opacity-50">
+                        <Star className="text-yellow-300 w-6 h-6 fill-yellow-200" />
+                      </div>
+                    </div>
+                    <span className="text-2xl font-bold text-yellow-700">{contadores.destaque}</span>
                   </div>
-                  <div className="text-sm font-medium text-slate-600">Em Destaque</div>
+                  <div className="text-sm font-medium text-yellow-800">Em Destaque</div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          {/* Controles */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-green-200 p-6">
-            <div className="relative flex-1 max-w-md mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
-              <Input
-                placeholder="Buscar funcionário..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-12 bg-white/80 border-green-200 shadow-lg rounded-2xl text-lg font-medium focus:border-green-300"
-              />
+          {/* Grid de Funcionários Ativos com Controles */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-green-300 p-6 lg:p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+              <h2 className="text-2xl lg:text-3xl font-bold text-slate-800">
+                👨‍💼 Funcionários Ativos
+              </h2>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                {/* Search Input */}
+                <div className="relative flex-1 min-w-64">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
+                  <Input
+                    placeholder="Buscar funcionário..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-12 h-12 bg-white/90 border-green-300 shadow-lg rounded-2xl text-lg font-medium focus:border-green-400"
+                  />
+                </div>
+                
+                {/* View Mode Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className={viewMode === "grid" ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-300 text-green-700 hover:bg-green-100"}
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                    className={viewMode === "list" ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-300 text-green-700 hover:bg-green-100"}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Grid de Funcionários Ativos */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-green-200 p-6 lg:p-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-6 text-center">
-              👨‍💼 Funcionários Ativos
-            </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+            <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6" : "space-y-4"}>
               {funcionariosAtivos.map((funcionario) => renderFuncionarioCard(funcionario))}
             </div>
 
             {funcionariosAtivos.length === 0 && (
-              <div className="text-center py-16 bg-gradient-to-br from-green-50 to-white rounded-3xl shadow-lg border border-green-200">
-                <div className="w-24 h-24 bg-green-100 border-2 border-green-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <span className="text-green-400 text-4xl">🔍</span>
+              <div className="text-center py-16 bg-gradient-to-br from-green-100 to-white rounded-3xl shadow-lg border border-green-300">
+                <div className="w-24 h-24 bg-green-200 border-2 border-green-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <span className="text-green-500 text-4xl">🔍</span>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum funcionário ativo encontrado</h3>
                 <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
