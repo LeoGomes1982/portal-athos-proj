@@ -276,6 +276,175 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     };
   }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
 
+  // Função para mudar orientação
+  const changeOrientation = (orientation: 'portrait' | 'landscape') => {
+    if (!activeTemplate) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? { ...template, orientation }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+
+    // Recriar o canvas com as novas dimensões
+    if (fabricCanvas) {
+      const dimensions = calculateCanvasDimensions();
+      const totalHeight = (orientation === 'portrait' ? dimensions.height : dimensions.width) * activeTemplate.totalPages;
+      
+      fabricCanvas.setDimensions({
+        width: orientation === 'portrait' ? dimensions.width : dimensions.height,
+        height: totalHeight
+      });
+      fabricCanvas.renderAll();
+    }
+
+    toast({
+      title: "Orientação alterada",
+      description: `Template alterado para ${orientation === 'portrait' ? 'retrato' : 'paisagem'}`,
+    });
+  };
+
+  // Função para adicionar página
+  const addPage = () => {
+    if (!activeTemplate) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? { ...template, totalPages: template.totalPages + 1 }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+
+    // Redimensionar canvas
+    if (fabricCanvas) {
+      const dimensions = calculateCanvasDimensions();
+      const newTotalHeight = dimensions.height * (activeTemplate.totalPages + 1);
+      
+      fabricCanvas.setDimensions({
+        width: dimensions.width,
+        height: newTotalHeight
+      });
+
+      // Adicionar separador para a nova página
+      const pageBreakY = dimensions.height * activeTemplate.totalPages;
+      
+      const pageBreakLine = new Line([0, pageBreakY, dimensions.width, pageBreakY], {
+        stroke: '#ff6b35',
+        strokeWidth: 3,
+        strokeDashArray: [15, 8],
+        selectable: false,
+        evented: false,
+        excludeFromExport: false,
+      });
+
+      const pageLabel = new FabricText(`PÁGINA ${activeTemplate.totalPages + 1}`, {
+        left: 20,
+        top: pageBreakY + 10,
+        fontSize: Math.max(14, dimensions.width * 0.018),
+        fill: '#ff6b35',
+        fontFamily: 'Arial',
+        fontWeight: 'bold',
+        selectable: false,
+        evented: false,
+        excludeFromExport: false,
+      });
+
+      const pageIcon = new Rect({
+        left: dimensions.width - 60,
+        top: pageBreakY + 5,
+        width: 40,
+        height: 30,
+        fill: 'transparent',
+        stroke: '#ff6b35',
+        strokeWidth: 2,
+        rx: 4,
+        ry: 4,
+        selectable: false,
+        evented: false,
+        excludeFromExport: false,
+      });
+
+      fabricCanvas.add(pageBreakLine);
+      fabricCanvas.add(pageLabel);
+      fabricCanvas.add(pageIcon);
+      fabricCanvas.renderAll();
+    }
+
+    toast({
+      title: "Página adicionada",
+      description: `Nova página adicionada ao template`,
+    });
+  };
+
+  // Função para remover página
+  const removePage = () => {
+    if (!activeTemplate || activeTemplate.totalPages <= 1) return;
+
+    const updatedTemplates = templates.map(template => 
+      template.id === activeTemplateId 
+        ? { ...template, totalPages: template.totalPages - 1 }
+        : template
+    );
+    
+    setTemplates(updatedTemplates);
+
+    // Redimensionar canvas
+    if (fabricCanvas) {
+      const dimensions = calculateCanvasDimensions();
+      const newTotalHeight = dimensions.height * (activeTemplate.totalPages - 1);
+      
+      fabricCanvas.setDimensions({
+        width: dimensions.width,
+        height: newTotalHeight
+      });
+
+      // Remover elementos da última página (separadores)
+      const objects = fabricCanvas.getObjects();
+      const pageBreakY = dimensions.height * (activeTemplate.totalPages - 1);
+      
+      objects.forEach(obj => {
+        if (obj.top && obj.top >= pageBreakY) {
+          fabricCanvas.remove(obj);
+        }
+      });
+
+      fabricCanvas.renderAll();
+    }
+
+    // Ajustar página atual se necessário
+    if (currentPage > activeTemplate.totalPages - 1) {
+      setCurrentPage(activeTemplate.totalPages - 1);
+    }
+
+    toast({
+      title: "Página removida",
+      description: `Página removida do template`,
+    });
+  };
+
+  // Função para navegar para uma página específica
+  const goToPage = (pageNumber: number) => {
+    if (!activeTemplate || pageNumber < 1 || pageNumber > activeTemplate.totalPages) return;
+
+    setCurrentPage(pageNumber);
+
+    // Scroll do canvas para a página
+    if (fabricCanvas && canvasContainerRef.current) {
+      const dimensions = calculateCanvasDimensions();
+      const targetY = dimensions.height * (pageNumber - 1);
+      
+      canvasContainerRef.current.scrollTop = targetY;
+    }
+
+    toast({
+      title: "Navegação",
+      description: `Movido para página ${pageNumber}`,
+    });
+  };
+
   const handleImageUpload = (file: File, x = 100, y = 100) => {
     if (!fabricCanvas) return;
 
@@ -677,7 +846,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                     <Button
                       variant={activeTemplate.orientation === 'portrait' ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => {}}
+                      onClick={() => changeOrientation('portrait')}
                       className="flex-1"
                     >
                       <FileText size={16} className="mr-1" />
@@ -686,7 +855,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                     <Button
                       variant={activeTemplate.orientation === 'landscape' ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => {}}
+                      onClick={() => changeOrientation('landscape')}
                       className="flex-1"
                     >
                       <RotateCcw size={16} className="mr-1" />
@@ -701,7 +870,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {}}
+                      onClick={addPage}
                       className="flex-1"
                     >
                       <Plus size={16} className="mr-1" />
@@ -710,7 +879,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {}}
+                      onClick={removePage}
                       disabled={activeTemplate.totalPages <= 1}
                       className="flex-1"
                     >
@@ -730,7 +899,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                           key={pageNum}
                           variant={currentPage === pageNum ? 'default' : 'outline'}
                           size="sm"
-                          onClick={() => {}}
+                          onClick={() => goToPage(pageNum)}
                           className="text-xs"
                         >
                           {pageNum}
