@@ -120,38 +120,8 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 
     // Configurar eventos do canvas
     canvas.on('selection:created', (e) => {
-      console.log('Selection created event:', e);
       const activeObject = e.selected?.[0];
       if (activeObject) {
-        console.log('Active object:', activeObject);
-        console.log('Object type:', activeObject.type);
-        console.log('Element type property:', (activeObject as any).elementType);
-        
-        // Melhor detecção do tipo de elemento
-        let elementType = 'unknown';
-        if ((activeObject as any).elementType) {
-          elementType = (activeObject as any).elementType;
-        } else if (activeObject.type === 'text' || activeObject instanceof FabricText) {
-          elementType = 'text';
-        } else if (activeObject.type === 'image') {
-          elementType = 'image';
-        } else if (activeObject.type === 'group') {
-          elementType = 'field'; // grupos são geralmente campos
-        }
-        
-        console.log('Detected element type:', elementType);
-        const elementId = (activeObject as any).elementId || Date.now().toString();
-        onSelectionChange(elementId);
-      }
-    });
-
-    canvas.on('selection:updated', (e) => {
-      console.log('Selection updated event:', e);
-      const activeObject = e.selected?.[0];
-      if (activeObject) {
-        console.log('Updated active object:', activeObject);
-        
-        // Melhor detecção do tipo de elemento
         let elementType = 'unknown';
         if ((activeObject as any).elementType) {
           elementType = (activeObject as any).elementType;
@@ -163,25 +133,42 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           elementType = 'field';
         }
         
-        console.log('Updated detected element type:', elementType);
+        const elementId = (activeObject as any).elementId || Date.now().toString();
+        onSelectionChange(elementId);
+      }
+    });
+
+    canvas.on('selection:updated', (e) => {
+      const activeObject = e.selected?.[0];
+      if (activeObject) {
+        let elementType = 'unknown';
+        if ((activeObject as any).elementType) {
+          elementType = (activeObject as any).elementType;
+        } else if (activeObject.type === 'text' || activeObject instanceof FabricText) {
+          elementType = 'text';
+        } else if (activeObject.type === 'image') {
+          elementType = 'image';
+        } else if (activeObject.type === 'group') {
+          elementType = 'field';
+        }
+        
         const elementId = (activeObject as any).elementId || Date.now().toString();
         onSelectionChange(elementId);
       }
     });
 
     canvas.on('selection:cleared', () => {
-      console.log('Selection cleared');
       onSelectionChange(null);
     });
 
-    // Clique simples em área vazia cria texto para digitação imediata
+    // Clique simples em qualquer lugar do canvas cria texto para escrita livre
     canvas.on('mouse:down', (e) => {
-      // Verificar se clicou em área vazia (sem objeto)
+      // Se não clicou em nenhum objeto, criar novo texto
       if (!e.target) {
         const pointer = canvas.getPointer(e.e);
         const elementId = Date.now().toString();
         
-        const text = new FabricText('', {
+        const text = new FabricText('Digite aqui...', {
           left: pointer.x,
           top: pointer.y,
           fontSize: 16,
@@ -200,60 +187,69 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         
         // Entrar em modo de edição imediatamente
         setTimeout(() => {
-          text.set('isEditing', true);
+          canvas.setActiveObject(text);
+          (text as any).enterEditing();
+          (text as any).selectAll();
           canvas.renderAll();
-          
-          // Focar no elemento de texto para digitação
-          const canvasElement = canvas.getElement();
-          canvasElement.focus();
-        }, 50);
+        }, 100);
         
         onSelectionChange(elementId);
       }
     });
 
-    // Implementação correta da edição inline para Fabric.js v6
+    // Duplo clique para editar texto existente
     canvas.on('mouse:dblclick', (e) => {
       const activeObject = canvas.getActiveObject();
       if (activeObject && (activeObject as any).elementType === 'text' && activeObject instanceof FabricText) {
-        // Habilitar modo de edição inline diretamente no Fabric.js v6
-        activeObject.set({
-          editable: true,
-          selectable: true
-        });
-        
-        // Entrar no modo de edição inline nativo do Fabric.js
-        canvas.setActiveObject(activeObject);
-        
-        // Simular clique triplo para selecionar todo o texto e iniciar edição
+        // Entrar no modo de edição inline
         setTimeout(() => {
-          const canvasElement = canvas.getElement();
-          const rect = canvasElement.getBoundingClientRect();
-          const objCoords = activeObject.getCoords();
-          
-          // Calcular posição do objeto no canvas
-          const objX = objCoords[0].x;
-          const objY = objCoords[0].y;
-          
-          // Criar evento de clique para iniciar edição
-          const clickEvent = new MouseEvent('mousedown', {
-            clientX: rect.left + objX,
-            clientY: rect.top + objY,
-            bubbles: true
-          });
-          
-          canvasElement.dispatchEvent(clickEvent);
-          
-          // Forçar o modo de edição
-          if (activeObject.set) {
-            activeObject.set('isEditing', true);
-            canvas.renderAll();
-          }
+          canvas.setActiveObject(activeObject);
+          (activeObject as any).enterEditing();
+          (activeObject as any).selectAll();
+          canvas.renderAll();
         }, 50);
       }
     });
 
-    // Eventos para controlar a edição de texto
+    // Capturar teclas para escrita direta quando nenhum objeto está selecionado
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeObject = canvas.getActiveObject();
+      
+      // Se não há objeto selecionado e é uma tecla de texto, criar novo texto
+      if (!activeObject && e.key.length === 1) {
+        const elementId = Date.now().toString();
+        
+        const text = new FabricText(e.key, {
+          left: 50,
+          top: 50,
+          fontSize: 16,
+          fill: '#000000',
+          fontFamily: 'Arial',
+          editable: true,
+          selectable: true,
+        });
+
+        (text as any).elementId = elementId;
+        (text as any).elementType = 'text';
+        
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        
+        // Entrar em modo de edição
+        setTimeout(() => {
+          (text as any).enterEditing();
+          canvas.renderAll();
+        }, 50);
+        
+        onSelectionChange(elementId);
+        e.preventDefault();
+      }
+    };
+
+    // Adicionar event listener para teclas
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Eventos de edição de texto
     canvas.on('text:editing:entered', () => {
       console.log('Entrada no modo de edição');
     });
@@ -261,7 +257,10 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     canvas.on('text:editing:exited', (e) => {
       const textObject = e.target;
       if (textObject && textObject instanceof FabricText) {
-        console.log('Saída do modo de edição');
+        // Se o texto estiver vazio, removê-lo
+        if (!textObject.text || textObject.text.trim() === '' || textObject.text === 'Digite aqui...') {
+          canvas.remove(textObject);
+        }
         canvas.renderAll();
       }
     });
@@ -269,7 +268,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     canvas.on('text:changed', (e) => {
       const textObject = e.target;
       if (textObject && textObject instanceof FabricText) {
-        console.log('Texto alterado:', textObject.text);
         canvas.renderAll();
       }
     });
@@ -290,6 +288,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     });
 
     return () => {
+      document.removeEventListener('keydown', handleKeyDown);
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
@@ -303,7 +302,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       const elementId = Date.now().toString();
       const dimensions = calculateCanvasDimensions();
       
-      const text = new FabricText('', {
+      const text = new FabricText('Digite aqui...', {
         left: 50,
         top: 100 + (dimensions.height * (currentPage - 1)),
         fontSize: 16,
@@ -313,26 +312,22 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         selectable: true,
       });
 
-      // Definir propriedades customizadas de forma mais robusta
       (text as any).elementId = elementId;
       (text as any).elementType = 'text';
-      
-      console.log('Adding text element:', text);
-      console.log('Element type set to:', (text as any).elementType);
 
       canvas.add(text);
       canvas.setActiveObject(text);
       
       // Entrar em modo de edição imediatamente
       setTimeout(() => {
-        text.set('isEditing', true);
+        (text as any).enterEditing();
+        (text as any).selectAll();
         canvas.renderAll();
-      }, 50);
+      }, 100);
       
-      // Forçar a seleção após adicionar
       setTimeout(() => {
         onSelectionChange(elementId);
-      }, 100);
+      }, 150);
     },
 
     addImagePlaceholder: () => {
@@ -498,12 +493,14 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       <CardContent>
         <div 
           ref={canvasContainerRef}
-          className="border-2 border-gray-200 rounded-lg overflow-auto bg-white shadow-inner w-full"
+          className="border-2 border-gray-200 rounded-lg overflow-auto bg-white shadow-inner w-full focus-within:border-orange-400"
           style={{ maxHeight: '800px' }}
+          tabIndex={0}
         >
           <canvas 
             ref={canvasRef}
-            className="block mx-auto w-full"
+            className="block mx-auto w-full focus:outline-none"
+            tabIndex={0}
           />
         </div>
         <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
@@ -514,7 +511,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
             </span>
           </div>
-          <span>Canvas responsivo • Clique em qualquer lugar para escrever • Duplo clique no texto para editar</span>
+          <span>✍️ Clique em qualquer lugar para escrever • Digite para começar a escrever • Duplo clique para editar texto</span>
         </div>
       </CardContent>
     </Card>
