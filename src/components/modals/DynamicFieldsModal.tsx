@@ -21,11 +21,17 @@ export default function DynamicFieldsModal({ isOpen, onClose }: DynamicFieldsMod
   const [editingField, setEditingField] = useState<DynamicField | null>(null);
   const [activeCategory, setActiveCategory] = useState<'cliente' | 'fornecedor' | 'empresa'>('cliente');
   
-  const [newField, setNewField] = useState({
+  const [newField, setNewField] = useState<{
+    label: string;
+    key: string;
+    type: 'text' | 'number' | 'date' | 'email' | 'phone';
+    category: 'cliente' | 'fornecedor' | 'empresa';
+    required: boolean;
+  }>({
     label: '',
     key: '',
-    type: 'text' as const,
-    category: 'cliente' as const,
+    type: 'text',
+    category: 'cliente',
     required: false
   });
 
@@ -159,7 +165,7 @@ export default function DynamicFieldsModal({ isOpen, onClose }: DynamicFieldsMod
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="type">Tipo do Campo</Label>
-                      <Select value={newField.type} onValueChange={(value: any) => setNewField({ ...newField, type: value })}>
+                      <Select value={newField.type} onValueChange={(value: 'text' | 'number' | 'date' | 'email' | 'phone') => setNewField({ ...newField, type: value })}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
