@@ -1,5 +1,4 @@
 
-
 import { 
   Users, 
   FileText, 
@@ -9,7 +8,8 @@ import {
   Building2,
   Edit,
   Globe,
-  FileEdit
+  FileEdit,
+  UserPlus
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -71,6 +71,21 @@ const Home = () => {
     }
   ];
 
+  const portaisExternosSection = [
+    {
+      id: "portal-admissao",
+      title: "PORTAL DE ADMISSÃO",
+      fullTitle: "Portal de Admissão de Funcionários",
+      icon: UserPlus,
+      className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
+      iconColor: "text-emerald-600",
+      onClick: () => {
+        // Aqui você pode adicionar a navegação para o portal de admissão
+        console.log("Portal de Admissão clicado");
+      }
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="container mx-auto px-6 py-12">
@@ -96,8 +111,37 @@ const Home = () => {
         </div>
 
         {/* Cards Grid - Gestão Interna */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-slide-up">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-slide-up mb-20">
           {gestaoInternaSection.map((section) => (
+            <div 
+              key={section.id}
+              className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
+              onClick={section.onClick}
+            >
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                  <section.icon size={32} className={section.iconColor} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">{section.title}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">{section.fullTitle}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Section Title - Portais Externos */}
+        <div className="flex items-center justify-center gap-3 mb-12 animate-slide-up">
+          <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center">
+            <Globe size={24} className="text-emerald-600" />
+          </div>
+          <h2 className="text-3xl font-bold text-slate-800">Portais Externos</h2>
+        </div>
+
+        {/* Cards Grid - Portais Externos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-slide-up">
+          {portaisExternosSection.map((section) => (
             <div 
               key={section.id}
               className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
@@ -128,4 +172,3 @@ const Home = () => {
 };
 
 export default Home;
-
