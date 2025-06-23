@@ -26,7 +26,7 @@ import {
   Edit3
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle, Group } from "fabric";
+import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle, Group, Line } from "fabric";
 
 interface TemplateElement {
   id: string;
@@ -116,12 +116,38 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    // Tamanho A4 em pixels (72 DPI): 595x842
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800,
-      height: 1000,
+      width: 595,
+      height: 842 * 2, // Duas páginas A4
       backgroundColor: "#ffffff",
       selection: true,
     });
+
+    // Adicionar linha tracejada para marcar segunda página
+    const pageBreakLine = new Line([0, 842, 595, 842], {
+      stroke: '#ff6b35',
+      strokeWidth: 2,
+      strokeDashArray: [10, 5],
+      selectable: false,
+      evented: false,
+      excludeFromExport: false,
+    });
+
+    // Texto indicativo da segunda página
+    const pageLabel = new FabricText('PÁGINA 2', {
+      left: 10,
+      top: 850,
+      fontSize: 12,
+      fill: '#ff6b35',
+      fontFamily: 'Arial',
+      selectable: false,
+      evented: false,
+      excludeFromExport: false,
+    });
+
+    canvas.add(pageBreakLine);
+    canvas.add(pageLabel);
 
     // Configurar eventos do canvas
     canvas.on('selection:created', (e) => {
@@ -209,7 +235,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       fontSize: 16,
       fill: '#000000',
       fontFamily: 'Arial',
-      editable: false, // Desabilitar edição inline do Fabric
+      editable: false,
     });
 
     // Adicionar metadata customizada
@@ -1031,7 +1057,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   <span>Editor: {activeTemplate.name}</span>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Move size={16} />
-                    Duplo clique no texto para editar • Arraste para mover
+                    Duplo clique no texto para editar • Arraste para mover • Linha laranja = Página 2
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -1044,8 +1070,8 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   />
                 </div>
                 <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                  <span>Zoom: {Math.round(canvasZoom * 100)}%</span>
-                  <span>Dica: Duplo clique em texto para editar</span>
+                  <span>Zoom: {Math.round(canvasZoom * 100)}% • Formato A4 (595x842px por página)</span>
+                  <span>Linha tracejada laranja indica o início da segunda página</span>
                 </div>
               </CardContent>
             </Card>
