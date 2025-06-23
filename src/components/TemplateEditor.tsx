@@ -276,6 +276,67 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     };
   }, [activeTemplate?.orientation, activeTemplate?.totalPages]);
 
+  const handleImageUpload = (file: File, x = 100, y = 100) => {
+    if (!fabricCanvas) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imgElement = new Image();
+      imgElement.onload = () => {
+        FabricImage.fromURL(e.target?.result as string).then((fabricImg) => {
+          const maxWidth = 200;
+          const maxHeight = 200;
+          
+          // Calculate scale to fit within max dimensions
+          const scaleX = maxWidth / fabricImg.width!;
+          const scaleY = maxHeight / fabricImg.height!;
+          const scale = Math.min(scaleX, scaleY);
+          
+          fabricImg.set({
+            left: x,
+            top: y,
+            scaleX: scale,
+            scaleY: scale,
+          });
+
+          const elementId = Date.now().toString();
+          (fabricImg as any).elementId = elementId;
+          (fabricImg as any).elementType = 'image';
+
+          fabricCanvas.add(fabricImg);
+          fabricCanvas.setActiveObject(fabricImg);
+          fabricCanvas.renderAll();
+
+          const newElement: TemplateElement = {
+            id: elementId,
+            type: 'image',
+            content: file.name,
+            style: {
+              fontSize: 14,
+              color: '#000000',
+              fontWeight: 'normal',
+              fontStyle: 'normal',
+              textDecoration: 'none',
+              textAlign: 'left'
+            },
+            position: { x, y },
+            size: { width: fabricImg.width! * scale, height: fabricImg.height! * scale }
+          };
+
+          updateTemplateElements(newElement);
+          setSelectedElement(elementId);
+
+          toast({
+            title: "Sucesso",
+            description: "Imagem adicionada ao template!",
+          });
+        });
+      };
+      imgElement.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const addTextElement = () => {
     if (!fabricCanvas) return;
 
@@ -924,10 +985,6 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                     <span className="text-sm text-gray-500">
                       Página {currentPage} de {activeTemplate.totalPages}
                     </span>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Move size={16} />
-                      Duplo clique no texto para editar • Arraste para mover
-                    </div>
                   </div>
                 </CardTitle>
               </CardHeader>
