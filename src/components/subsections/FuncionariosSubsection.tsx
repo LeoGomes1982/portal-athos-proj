@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -176,50 +175,33 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return (
       <Card 
         key={funcionario.id} 
-        className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105 border-green-300 hover:border-green-400 bg-gradient-to-br from-green-50 to-white"
+        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:scale-105 border-green-300 hover:border-green-400 bg-gradient-to-br from-green-50 to-white"
         onClick={() => handleFuncionarioClick(funcionario)}
       >
-        <CardHeader className="text-center pb-4 pt-6 relative">
+        <CardHeader className="text-center pb-2 pt-4 relative">
           {funcionario.status === 'destaque' && (
-            <div className="absolute top-2 right-2 animate-bounce">
+            <div className="absolute top-1 right-1">
               <div className="relative">
-                <Star className="w-10 h-10 text-yellow-500 fill-yellow-400 drop-shadow-lg" style={{
-                  filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
+                <Star className="w-6 h-6 text-yellow-500 fill-yellow-400 drop-shadow-md" style={{
+                  filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
                 }} />
-                <div className="absolute inset-0 animate-pulse">
-                  <Star className="w-10 h-10 text-yellow-300 fill-yellow-200 opacity-50" />
-                </div>
               </div>
             </div>
           )}
-          <div className="w-20 h-20 bg-green-100 border-2 border-green-300 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-            <span className="text-4xl">{funcionario.foto}</span>
+          <div className="w-12 h-12 bg-green-100 border-2 border-green-300 rounded-2xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 shadow-md">
+            <span className="text-2xl">{funcionario.foto}</span>
           </div>
-          <CardTitle className="text-lg font-bold text-slate-800 mb-1">{funcionario.nome}</CardTitle>
-          <p className="text-sm text-slate-600 font-medium">{funcionario.cargo}</p>
+          <CardTitle className="text-sm font-bold text-slate-800 mb-1 leading-tight">{funcionario.nome}</CardTitle>
+          <p className="text-xs text-slate-600 font-medium">{funcionario.cargo}</p>
         </CardHeader>
-        <CardContent className="space-y-3 px-6 pb-6">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-medium">Setor:</span>
-            <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium px-3 py-1 rounded-full">{funcionario.setor}</Badge>
+        <CardContent className="space-y-2 px-4 pb-4">
+          <div className="flex items-center justify-center">
+            <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium text-xs px-2 py-1">{funcionario.setor}</Badge>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-medium">Status:</span>
-            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
+          <div className="flex items-center justify-center">
+            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-2 py-1 shadow-sm`}>
               {statusInfo.label}
             </Badge>
-          </div>
-          <div className="text-xs text-slate-500 font-medium flex items-center gap-2">
-            <span>📅</span>
-            {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-          </div>
-          <div className="text-xs text-slate-500 font-medium flex items-center gap-2">
-            <span>📞</span>
-            {funcionario.telefone}
-          </div>
-          <div className="text-xs text-slate-500 font-medium flex items-center gap-2 truncate">
-            <span>📧</span>
-            <span className="truncate">{funcionario.email}</span>
           </div>
         </CardContent>
       </Card>
