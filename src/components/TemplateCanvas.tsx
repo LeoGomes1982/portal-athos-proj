@@ -296,31 +296,45 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       let newWidth = startWidth;
       let newHeight = startHeight;
       
+      // Handle horizontal resizing
       if (handle.includes('e')) {
-        newWidth = startWidth + deltaX;
+        newWidth = Math.max(20, startWidth + deltaX);
       } else if (handle.includes('w')) {
-        newWidth = startWidth - deltaX;
+        newWidth = Math.max(20, startWidth - deltaX);
       }
       
+      // Handle vertical resizing
       if (handle.includes('s')) {
-        newHeight = startHeight + deltaY;
+        newHeight = Math.max(20, startHeight + deltaY);
       } else if (handle.includes('n')) {
-        newHeight = startHeight - deltaY;
+        newHeight = Math.max(20, startHeight - deltaY);
       }
       
-      // Maintain aspect ratio for corner handles
+      // For corner handles, maintain aspect ratio
       if (handle.length === 2) {
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Use the dimension that changed more to determine the primary resize direction
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+        
+        if (absX > absY) {
+          // Horizontal drag is primary, calculate height from width
           newHeight = newWidth / aspectRatio;
         } else {
+          // Vertical drag is primary, calculate width from height
           newWidth = newHeight * aspectRatio;
         }
       }
       
-      // Apply minimum size constraints
-      newWidth = Math.max(20, newWidth);
-      newHeight = Math.max(20, newHeight);
+      // For side handles (not corners), only resize in one direction
+      if (handle === 'e' || handle === 'w') {
+        // Only horizontal resize, keep original height
+        newHeight = startHeight;
+      } else if (handle === 'n' || handle === 's') {
+        // Only vertical resize, keep original width
+        newWidth = startWidth;
+      }
       
+      // Apply the new dimensions
       img.style.width = newWidth + 'px';
       img.style.height = newHeight + 'px';
     };
