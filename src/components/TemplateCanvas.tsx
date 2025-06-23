@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, forwardRef, useImperativeHandle, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -319,13 +318,40 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       onSelectionChange('text-editor');
     };
 
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Drag over editor');
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Drop event on editor');
+      
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          console.log('Dropped file is an image, processing...');
+          handleImageUpload(file);
+        } else {
+          console.log('Dropped file is not an image:', file.type);
+        }
+      }
+    };
+
     editor.addEventListener('input', handleInput);
     editor.addEventListener('click', handleClick);
+    editor.addEventListener('dragover', handleDragOver);
+    editor.addEventListener('drop', handleDrop);
     document.addEventListener('selectionchange', handleSelectionChange);
 
     return () => {
       editor.removeEventListener('input', handleInput);
       editor.removeEventListener('click', handleClick);
+      editor.removeEventListener('dragover', handleDragOver);
+      editor.removeEventListener('drop', handleDrop);
       document.removeEventListener('selectionchange', handleSelectionChange);
     };
   }, [activeTemplate?.orientation, activeTemplate?.totalPages, onSelectionChange]);
@@ -384,25 +410,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
       }
     },
 
-    handleImageUpload: (file: File, x = 100, y = 100) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (editorRef.current) {
-          const selection = window.getSelection();
-          if (selection && selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const img = document.createElement('img');
-            img.src = e.target?.result as string;
-            img.style.maxWidth = '200px';
-            img.style.height = 'auto';
-            img.style.margin = '10px';
-            img.style.cursor = 'pointer';
-            range.insertNode(img);
-          }
-        }
-      };
-      reader.readAsDataURL(file);
-    },
+    handleImageUpload,
 
     deleteSelectedElement: () => {
       const selection = window.getSelection();
@@ -624,7 +632,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               {activeTemplate.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}
             </span>
           </div>
-          <span>✍️ Editor de texto livre - Digite diretamente para escrever</span>
+          <span>✍️ Editor de texto livre - Digite diretamente ou arraste imagens</span>
         </div>
       </CardContent>
     </Card>
