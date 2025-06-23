@@ -71,21 +71,9 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
     // Focar no editor automaticamente
     editor.focus();
 
-    // Adicionar placeholder quando vazio
-    const updatePlaceholder = () => {
-      if (editor.textContent?.trim() === '') {
-        editor.setAttribute('data-placeholder', 'Clique aqui e comece a escrever...');
-      } else {
-        editor.removeAttribute('data-placeholder');
-      }
-    };
-
-    updatePlaceholder();
-
     // Configurar eventos do editor
     const handleInput = () => {
       onSelectionChange('text-editor');
-      updatePlaceholder();
     };
 
     const handleSelectionChange = () => {
@@ -216,7 +204,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           <div
             ref={editorRef}
             contentEditable
-            className="w-full min-h-full p-6 outline-none focus:outline-none relative"
+            className="w-full min-h-full p-6 outline-none focus:outline-none"
             style={{
               lineHeight: '1.6',
               fontSize: '16px',
@@ -224,6 +212,7 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
               color: '#000000',
               cursor: 'text'
             }}
+            placeholder="Clique aqui e comece a escrever..."
             suppressContentEditableWarning={true}
           />
           
@@ -254,14 +243,6 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
           </div>
           <span>✍️ Editor de texto livre - Digite diretamente para escrever</span>
         </div>
-
-        <style jsx>{`
-          [contenteditable][data-placeholder]:empty::before {
-            content: attr(data-placeholder);
-            color: #9ca3af;
-            pointer-events: none;
-          }
-        `}</style>
       </CardContent>
     </Card>
   );
