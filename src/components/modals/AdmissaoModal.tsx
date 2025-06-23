@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdmissaoModalProps {
@@ -22,6 +23,10 @@ interface FormData {
   salario: string;
   dataAdmissao: string;
   tipoContrato: string;
+  escolaridade: string;
+  profissao: string;
+  experienciaProfissional: string;
+  pis: string;
   
   // Informações Pessoais
   nome: string;
@@ -30,6 +35,10 @@ interface FormData {
   dataNascimento: string;
   estadoCivil: string;
   nacionalidade: string;
+  naturalidade: string;
+  nomePai: string;
+  nomeMae: string;
+  nomeConjuge: string;
   foto: File | null;
   
   // Informações de Contato
@@ -39,6 +48,18 @@ interface FormData {
   cidade: string;
   cep: string;
   estado: string;
+  bairro: string;
+  numero: string;
+  complemento: string;
+  
+  // Documentos
+  documentoRG: File | null;
+  documentoCPF: File | null;
+  comprovanteEndereco: File | null;
+  comprovanteEscolaridade: File | null;
+  carteiraTrabalho: File | null;
+  tituloEleitor: File | null;
+  certificadoReservista: File | null;
   
   // Dependentes
   dependentes: Array<{
@@ -46,24 +67,35 @@ interface FormData {
     parentesco: string;
     dataNascimento: string;
     cpf: string;
+    certidaoNascimento: File | null;
   }>;
 }
 
 export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profissional");
+  const [progress, setProgress] = useState(0);
+  
   const [formData, setFormData] = useState<FormData>({
     cargo: "",
     setor: "",
     salario: "",
     dataAdmissao: "",
     tipoContrato: "",
+    escolaridade: "",
+    profissao: "",
+    experienciaProfissional: "",
+    pis: "",
     nome: "",
     cpf: "",
     rg: "",
     dataNascimento: "",
     estadoCivil: "",
     nacionalidade: "Brasileiro",
+    naturalidade: "",
+    nomePai: "",
+    nomeMae: "",
+    nomeConjuge: "",
     foto: null,
     telefone: "",
     email: "",
@@ -71,24 +103,59 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
     cidade: "",
     cep: "",
     estado: "",
+    bairro: "",
+    numero: "",
+    complemento: "",
+    documentoRG: null,
+    documentoCPF: null,
+    comprovanteEndereco: null,
+    comprovanteEscolaridade: null,
+    carteiraTrabalho: null,
+    tituloEleitor: null,
+    certificadoReservista: null,
     dependentes: []
+  });
+
+  // Calcular progresso baseado nos campos preenchidos
+  const calculateProgress = () => {
+    const totalFields = 30; // Número aproximado de campos obrigatórios
+    let filledFields = 0;
+    
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key !== 'dependentes' && value && value !== "") {
+        filledFields++;
+      }
+    });
+    
+    // Adicionar dependentes ao cálculo
+    filledFields += formData.dependentes.length * 2;
+    
+    const newProgress = Math.min((filledFields / totalFields) * 100, 100);
+    setProgress(newProgress);
+  };
+
+  // Atualizar progresso quando formData mudar
+  useState(() => {
+    calculateProgress();
   });
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setTimeout(calculateProgress, 100);
   };
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (field: keyof FormData, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setFormData(prev => ({ ...prev, foto: file }));
+      setFormData(prev => ({ ...prev, [field]: file }));
+      setTimeout(calculateProgress, 100);
     }
   };
 
   const addDependente = () => {
     setFormData(prev => ({
       ...prev,
-      dependentes: [...prev.dependentes, { nome: "", parentesco: "", dataNascimento: "", cpf: "" }]
+      dependentes: [...prev.dependentes, { nome: "", parentesco: "", dataNascimento: "", cpf: "", certidaoNascimento: null }]
     }));
   };
 
@@ -97,60 +164,70 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
       ...prev,
       dependentes: prev.dependentes.filter((_, i) => i !== index)
     }));
+    setTimeout(calculateProgress, 100);
   };
 
-  const updateDependente = (index: number, field: string, value: string) => {
+  const updateDependente = (index: number, field: string, value: string | File | null) => {
     setFormData(prev => ({
       ...prev,
       dependentes: prev.dependentes.map((dep, i) => 
         i === index ? { ...dep, [field]: value } : dep
       )
     }));
+    setTimeout(calculateProgress, 100);
   };
 
   const handleSubmit = () => {
     // Validação básica
-    if (!formData.nome || !formData.cpf || !formData.cargo) {
+    if (!formData.nome || !formData.cpf || !formData.email) {
       toast({
         title: "Erro ❌",
-        description: "Preencha os campos obrigatórios",
+        description: "Preencha os campos obrigatórios: Nome, CPF e E-mail",
         variant: "destructive"
       });
       return;
     }
 
-    // Aqui você salvaria os dados
+    // Simular envio
     toast({
-      title: "Sucesso! 🎉",
-      description: `Funcionário ${formData.nome} foi admitido com sucesso!`,
+      title: "Admissão Enviada com Sucesso! 🎉",
+      description: `Olá ${formData.nome}! Recebemos sua solicitação de admissão. Nossa equipe de RH entrará em contato em breve. Obrigado!`,
     });
     
     onClose();
   };
 
+  const tabs = [
+    { id: "profissional", label: "💼 Profissional" },
+    { id: "pessoal", label: "👤 Pessoal" },
+    { id: "contato", label: "📞 Contato" },
+    { id: "documentos", label: "📄 Documentos" },
+    { id: "dependentes", label: "👨‍👩‍👧‍👦 Dependentes" }
+  ];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-            👋 Nova Admissão
+          <DialogTitle className="text-2xl font-bold text-emerald-600 flex items-center gap-2">
+            🚀 Processo de Admissão Online
           </DialogTitle>
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <span>Progresso do Formulário</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid grid-cols-4 w-full">
-            <TabsTrigger value="profissional" className="flex items-center gap-2">
-              💼 Profissional
-            </TabsTrigger>
-            <TabsTrigger value="pessoal" className="flex items-center gap-2">
-              👤 Pessoal
-            </TabsTrigger>
-            <TabsTrigger value="contato" className="flex items-center gap-2">
-              📞 Contato
-            </TabsTrigger>
-            <TabsTrigger value="dependentes" className="flex items-center gap-2">
-              👨‍👩‍👧‍👦 Dependentes
-            </TabsTrigger>
+          <TabsList className="grid grid-cols-5 w-full">
+            {tabs.map(tab => (
+              <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
+                {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <TabsContent value="profissional" className="space-y-4">
@@ -160,7 +237,7 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="cargo">Cargo *</Label>
+                  <Label htmlFor="cargo">Cargo Pretendido *</Label>
                   <Input
                     id="cargo"
                     value={formData.cargo}
@@ -169,51 +246,49 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="setor">Setor</Label>
-                  <Select onValueChange={(value) => handleInputChange("setor", value)}>
+                  <Label htmlFor="profissao">Profissão</Label>
+                  <Input
+                    id="profissao"
+                    value={formData.profissao}
+                    onChange={(e) => handleInputChange("profissao", e.target.value)}
+                    placeholder="Sua profissão atual"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="escolaridade">Escolaridade</Label>
+                  <Select onValueChange={(value) => handleInputChange("escolaridade", value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o setor" />
+                      <SelectValue placeholder="Selecione sua escolaridade" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="rh">RH</SelectItem>
-                      <SelectItem value="ti">TI</SelectItem>
-                      <SelectItem value="comercial">Comercial</SelectItem>
-                      <SelectItem value="financeiro">Financeiro</SelectItem>
-                      <SelectItem value="operacoes">Operações</SelectItem>
+                      <SelectItem value="fundamental">Ensino Fundamental</SelectItem>
+                      <SelectItem value="medio">Ensino Médio</SelectItem>
+                      <SelectItem value="tecnico">Técnico</SelectItem>
+                      <SelectItem value="superior">Superior</SelectItem>
+                      <SelectItem value="pos-graduacao">Pós-graduação</SelectItem>
+                      <SelectItem value="mestrado">Mestrado</SelectItem>
+                      <SelectItem value="doutorado">Doutorado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="salario">Salário</Label>
+                  <Label htmlFor="pis">PIS/PASEP</Label>
                   <Input
-                    id="salario"
-                    value={formData.salario}
-                    onChange={(e) => handleInputChange("salario", e.target.value)}
-                    placeholder="R$ 0,00"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="dataAdmissao">Data de Admissão</Label>
-                  <Input
-                    id="dataAdmissao"
-                    type="date"
-                    value={formData.dataAdmissao}
-                    onChange={(e) => handleInputChange("dataAdmissao", e.target.value)}
+                    id="pis"
+                    value={formData.pis}
+                    onChange={(e) => handleInputChange("pis", e.target.value)}
+                    placeholder="000.00000.00-0"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="tipoContrato">Tipo de Contrato</Label>
-                  <Select onValueChange={(value) => handleInputChange("tipoContrato", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo de contrato" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="clt">CLT</SelectItem>
-                      <SelectItem value="pj">PJ</SelectItem>
-                      <SelectItem value="estagio">Estágio</SelectItem>
-                      <SelectItem value="temporario">Temporário</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="experienciaProfissional">Experiência Profissional</Label>
+                  <Textarea
+                    id="experienciaProfissional"
+                    value={formData.experienciaProfissional}
+                    onChange={(e) => handleInputChange("experienciaProfissional", e.target.value)}
+                    placeholder="Descreva sua experiência profissional anterior..."
+                    rows={3}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -232,7 +307,7 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                       id="nome"
                       value={formData.nome}
                       onChange={(e) => handleInputChange("nome", e.target.value)}
-                      placeholder="Nome completo do funcionário"
+                      placeholder="Seu nome completo"
                     />
                   </div>
                   <div>
@@ -273,21 +348,60 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                         <SelectItem value="casado">Casado(a)</SelectItem>
                         <SelectItem value="divorciado">Divorciado(a)</SelectItem>
                         <SelectItem value="viuvo">Viúvo(a)</SelectItem>
+                        <SelectItem value="uniao-estavel">União Estável</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+                  <div>
+                    <Label htmlFor="naturalidade">Naturalidade</Label>
+                    <Input
+                      id="naturalidade"
+                      value={formData.naturalidade}
+                      onChange={(e) => handleInputChange("naturalidade", e.target.value)}
+                      placeholder="Cidade/Estado onde nasceu"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="nomePai">Nome do Pai</Label>
+                    <Input
+                      id="nomePai"
+                      value={formData.nomePai}
+                      onChange={(e) => handleInputChange("nomePai", e.target.value)}
+                      placeholder="Nome completo do pai"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="nomeMae">Nome da Mãe</Label>
+                    <Input
+                      id="nomeMae"
+                      value={formData.nomeMae}
+                      onChange={(e) => handleInputChange("nomeMae", e.target.value)}
+                      placeholder="Nome completo da mãe"
+                    />
+                  </div>
+                  {(formData.estadoCivil === "casado" || formData.estadoCivil === "uniao-estavel") && (
+                    <div>
+                      <Label htmlFor="nomeConjuge">Nome do Cônjuge</Label>
+                      <Input
+                        id="nomeConjuge"
+                        value={formData.nomeConjuge}
+                        onChange={(e) => handleInputChange("nomeConjuge", e.target.value)}
+                        placeholder="Nome completo do cônjuge"
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div>
-                  <Label htmlFor="foto">Foto do Funcionário 📸</Label>
+                  <Label htmlFor="foto">Foto 3x4 📸</Label>
                   <Input
                     id="foto"
                     type="file"
                     accept="image/*"
-                    onChange={handlePhotoUpload}
+                    onChange={(e) => handleFileUpload("foto", e)}
                     className="cursor-pointer"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Formatos aceitos: JPG, PNG, GIF (máx. 5MB)</p>
+                  <p className="text-xs text-gray-500 mt-1">Formatos aceitos: JPG, PNG (máx. 5MB)</p>
                 </div>
               </CardContent>
             </Card>
@@ -296,11 +410,11 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
           <TabsContent value="contato" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>📞 Informações de Contato</CardTitle>
+                <CardTitle>📞 Informações de Contato e Endereço</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="telefone">Telefone</Label>
+                  <Label htmlFor="telefone">Telefone *</Label>
                   <Input
                     id="telefone"
                     value={formData.telefone}
@@ -309,22 +423,31 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">E-mail</Label>
+                  <Label htmlFor="email">E-mail *</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="funcionario@empresa.com"
+                    placeholder="seu@email.com"
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="endereco">Endereço Completo</Label>
-                  <Textarea
-                    id="endereco"
-                    value={formData.endereco}
-                    onChange={(e) => handleInputChange("endereco", e.target.value)}
-                    placeholder="Rua, número, complemento, bairro"
+                <div>
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input
+                    id="cep"
+                    value={formData.cep}
+                    onChange={(e) => handleInputChange("cep", e.target.value)}
+                    placeholder="00000-000"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="estado">Estado</Label>
+                  <Input
+                    id="estado"
+                    value={formData.estado}
+                    onChange={(e) => handleInputChange("estado", e.target.value)}
+                    placeholder="São Paulo"
                   />
                 </div>
                 <div>
@@ -337,12 +460,119 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="cep">CEP</Label>
+                  <Label htmlFor="bairro">Bairro</Label>
                   <Input
-                    id="cep"
-                    value={formData.cep}
-                    onChange={(e) => handleInputChange("cep", e.target.value)}
-                    placeholder="00000-000"
+                    id="bairro"
+                    value={formData.bairro}
+                    onChange={(e) => handleInputChange("bairro", e.target.value)}
+                    placeholder="Centro"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="endereco">Logradouro</Label>
+                  <Input
+                    id="endereco"
+                    value={formData.endereco}
+                    onChange={(e) => handleInputChange("endereco", e.target.value)}
+                    placeholder="Rua, Avenida..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="numero">Número</Label>
+                  <Input
+                    id="numero"
+                    value={formData.numero}
+                    onChange={(e) => handleInputChange("numero", e.target.value)}
+                    placeholder="123"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label htmlFor="complemento">Complemento</Label>
+                  <Input
+                    id="complemento"
+                    value={formData.complemento}
+                    onChange={(e) => handleInputChange("complemento", e.target.value)}
+                    placeholder="Apartamento, casa, etc."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="documentos" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>📄 Documentos Necessários</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="documentoRG">RG (frente e verso)</Label>
+                  <Input
+                    id="documentoRG"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("documentoRG", e)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="documentoCPF">CPF</Label>
+                  <Input
+                    id="documentoCPF"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("documentoCPF", e)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="comprovanteEndereco">Comprovante de Endereço</Label>
+                  <Input
+                    id="comprovanteEndereco"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("comprovanteEndereco", e)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="comprovanteEscolaridade">Comprovante de Escolaridade</Label>
+                  <Input
+                    id="comprovanteEscolaridade"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("comprovanteEscolaridade", e)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="carteiraTrabalho">Carteira de Trabalho</Label>
+                  <Input
+                    id="carteiraTrabalho"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("carteiraTrabalho", e)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="tituloEleitor">Título de Eleitor</Label>
+                  <Input
+                    id="tituloEleitor"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("tituloEleitor", e)}
+                    className="cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="certificadoReservista">Certificado de Reservista (se aplicável)</Label>
+                  <Input
+                    id="certificadoReservista"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileUpload("certificadoReservista", e)}
+                    className="cursor-pointer"
                   />
                 </div>
               </CardContent>
@@ -397,6 +627,7 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                               <SelectItem value="conjuge">Cônjuge</SelectItem>
                               <SelectItem value="pai">Pai</SelectItem>
                               <SelectItem value="mae">Mãe</SelectItem>
+                              <SelectItem value="irmao">Irmão(ã)</SelectItem>
                               <SelectItem value="outro">Outro</SelectItem>
                             </SelectContent>
                           </Select>
@@ -417,6 +648,18 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
                             placeholder="000.000.000-00"
                           />
                         </div>
+                        <div className="md:col-span-2">
+                          <Label>Certidão de Nascimento</Label>
+                          <Input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) updateDependente(index, "certidaoNascimento", file);
+                            }}
+                            className="cursor-pointer"
+                          />
+                        </div>
                       </CardContent>
                     </Card>
                   ))
@@ -430,8 +673,8 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
           <Button variant="outline" onClick={onClose}>
             ❌ Cancelar
           </Button>
-          <Button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700">
-            ✅ Finalizar Admissão
+          <Button onClick={handleSubmit} className="bg-emerald-600 hover:bg-emerald-700">
+            🚀 Enviar Admissão
           </Button>
         </div>
       </DialogContent>
