@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,8 @@ import {
   Move,
   RotateCw,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  Edit3
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle, Group } from "fabric";
@@ -78,6 +78,8 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const [showNewTemplateForm, setShowNewTemplateForm] = useState(false);
   const [canvasZoom, setCanvasZoom] = useState(1);
   const [editingText, setEditingText] = useState(false);
+  const [textEditMode, setTextEditMode] = useState(false);
+  const [editingTextContent, setEditingTextContent] = useState('');
 
   const activeTemplate = templates.find(t => t.id === activeTemplateId);
 
@@ -127,6 +129,11 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       const activeObject = e.selected?.[0];
       if (activeObject && (activeObject as any).customData) {
         setSelectedElement((activeObject as any).customData.id);
+        
+        // Se é um elemento de texto, preparar para edição
+        if ((activeObject as any).customData.type === 'text' && activeObject instanceof FabricText) {
+          setEditingTextContent(activeObject.text || '');
+        }
       }
     });
 
@@ -134,11 +141,29 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
       const activeObject = e.selected?.[0];
       if (activeObject && (activeObject as any).customData) {
         setSelectedElement((activeObject as any).customData.id);
+        
+        // Se é um elemento de texto, preparar para edição
+        if ((activeObject as any).customData.type === 'text' && activeObject instanceof FabricText) {
+          setEditingTextContent(activeObject.text || '');
+        }
       }
     });
 
     canvas.on('selection:cleared', () => {
       setSelectedElement(null);
+      setTextEditMode(false);
+      setEditingTextContent('');
+    });
+
+    // Evento de duplo clique para edição de texto
+    canvas.on('mouse:dblclick', (e) => {
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && (activeObject as any).customData?.type === 'text') {
+        setTextEditMode(true);
+        if (activeObject instanceof FabricText) {
+          setEditingTextContent(activeObject.text || '');
+        }
+      }
     });
 
     // Drag and drop para imagens
@@ -166,7 +191,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   const addTextElement = () => {
     if (!fabricCanvas) return;
 
-    const text = new FabricText('Novo texto', {
+    const text = new FabricText('Clique duas vezes para editar', {
       left: 100,
       top: 100,
       fontSize: 16,
@@ -185,7 +210,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     const newElement: TemplateElement = {
       id: elementId,
       type: 'text',
-      content: 'Novo texto',
+      content: 'Clique duas vezes para editar',
       style: {
         fontSize: 16,
         color: '#000000',
@@ -199,6 +224,34 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
 
     updateTemplateElements(newElement);
     setSelectedElement(elementId);
+  };
+
+  const updateTextContent = () => {
+    if (!fabricCanvas || !selectedElement || !textEditMode) return;
+
+    const activeObject = fabricCanvas.getActiveObject();
+    if (activeObject && activeObject instanceof FabricText) {
+      activeObject.set('text', editingTextContent);
+      fabricCanvas.renderAll();
+      
+      // Atualizar no estado
+      updateElement(selectedElement, { content: editingTextContent });
+      
+      setTextEditMode(false);
+      
+      toast({
+        title: "Sucesso",
+        description: "Texto atualizado!",
+      });
+    }
+  };
+
+  const cancelTextEdit = () => {
+    setTextEditMode(false);
+    const activeObject = fabricCanvas?.getActiveObject();
+    if (activeObject && activeObject instanceof FabricText) {
+      setEditingTextContent(activeObject.text || '');
+    }
   };
 
   const addImagePlaceholder = () => {
@@ -667,6 +720,42 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                 </div>
               </div>
 
+              {/* Editor de Texto Inline */}
+              {textEditMode && selectedElementData?.type === 'text' && (
+                <div className="space-y-3 border-2 border-orange-500 bg-orange-50 p-4 rounded-lg">
+                  <Label className="text-orange-800 font-semibold flex items-center gap-2">
+                    <Edit3 size={16} />
+                    Editando Texto
+                  </Label>
+                  <Textarea
+                    value={editingTextContent}
+                    onChange={(e) => setEditingTextContent(e.target.value)}
+                    placeholder="Digite o texto aqui..."
+                    className="min-h-[100px] resize-none"
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={updateTextContent}
+                      className="bg-orange-500 hover:bg-orange-600"
+                    >
+                      Salvar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={cancelTextEdit}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                  <p className="text-xs text-orange-700">
+                    💡 Dica: Use Shift+Enter para quebras de linha
+                  </p>
+                </div>
+              )}
+
               {/* Controles de Canvas */}
               <div className="space-y-2 border-t pt-4">
                 <Label>Controles do Canvas</Label>
@@ -726,12 +815,21 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
               </div>
 
               {/* Propriedades do Elemento Selecionado */}
-              {selectedElementData && (
+              {selectedElementData && !textEditMode && (
                 <div className="space-y-4 border-t pt-4">
                   <Label>Propriedades do Elemento</Label>
                   
                   {selectedElementData.type === 'text' && (
                     <div className="space-y-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => setTextEditMode(true)}
+                        className="w-full justify-start"
+                      >
+                        <Edit3 size={16} className="mr-2" />
+                        Editar Texto
+                      </Button>
+                      
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <Label>Tamanho</Label>
@@ -896,7 +994,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                   <span>Editor: {activeTemplate.name}</span>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Move size={16} />
-                    Arraste para mover • Redimensione pelas bordas
+                    Duplo clique no texto para editar • Arraste para mover
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -910,7 +1008,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
                 </div>
                 <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
                   <span>Zoom: {Math.round(canvasZoom * 100)}%</span>
-                  <span>Dica: Use Ctrl+Scroll para zoom rápido</span>
+                  <span>Dica: Duplo clique em texto para editar</span>
                 </div>
               </CardContent>
             </Card>
