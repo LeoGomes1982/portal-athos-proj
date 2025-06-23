@@ -175,31 +175,27 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return (
       <Card 
         key={funcionario.id} 
-        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:scale-105 border-green-300 hover:border-green-400 bg-gradient-to-br from-green-50 to-white"
+        className="group cursor-pointer hover:shadow-md transition-all duration-300 border hover:scale-105 border-green-200 hover:border-green-300 bg-gradient-to-br from-green-50 to-white"
         onClick={() => handleFuncionarioClick(funcionario)}
       >
-        <CardHeader className="text-center pb-2 pt-4 relative">
+        <CardHeader className="text-center pb-1 pt-3 relative">
           {funcionario.status === 'destaque' && (
-            <div className="absolute top-1 right-1">
-              <div className="relative">
-                <Star className="w-6 h-6 text-yellow-500 fill-yellow-400 drop-shadow-md" style={{
-                  filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
-                }} />
-              </div>
+            <div className="absolute top-0 right-0">
+              <Star className="w-4 h-4 text-yellow-500 fill-yellow-400 drop-shadow-sm" />
             </div>
           )}
-          <div className="w-12 h-12 bg-green-100 border-2 border-green-300 rounded-2xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 shadow-md">
-            <span className="text-2xl">{funcionario.foto}</span>
+          <div className="w-8 h-8 bg-green-100 border border-green-200 rounded-xl flex items-center justify-center mx-auto mb-1 group-hover:scale-110 transition-transform duration-300">
+            <span className="text-lg">{funcionario.foto}</span>
           </div>
-          <CardTitle className="text-sm font-bold text-slate-800 mb-1 leading-tight">{funcionario.nome}</CardTitle>
-          <p className="text-xs text-slate-600 font-medium">{funcionario.cargo}</p>
+          <CardTitle className="text-xs font-bold text-slate-800 mb-0 leading-tight truncate">{funcionario.nome}</CardTitle>
+          <p className="text-xs text-slate-600 font-medium truncate">{funcionario.cargo}</p>
         </CardHeader>
-        <CardContent className="space-y-2 px-4 pb-4">
+        <CardContent className="space-y-1 px-3 pb-3">
           <div className="flex items-center justify-center">
-            <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium text-xs px-2 py-1">{funcionario.setor}</Badge>
+            <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium text-xs px-1 py-0">{funcionario.setor}</Badge>
           </div>
           <div className="flex items-center justify-center">
-            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-2 py-1 shadow-sm`}>
+            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-1 py-0`}>
               {statusInfo.label}
             </Badge>
           </div>
@@ -389,7 +385,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             </div>
             
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 lg:gap-4">
                 {funcionariosAtivos.map((funcionario) => renderFuncionarioCard(funcionario))}
               </div>
             ) : (
