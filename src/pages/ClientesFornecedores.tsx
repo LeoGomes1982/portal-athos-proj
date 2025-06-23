@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Building, Plus, Eye, FileText, History, UserPlus } from "lucide-react";
+import { ArrowLeft, Users, Building, Plus, Eye, FileText, History, UserPlus, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface ClienteFornecedor {
   id: string;
@@ -41,6 +42,7 @@ export default function ClientesFornecedores() {
   const [clientesFornecedores, setClientesFornecedores] = useState<ClienteFornecedor[]>([]);
   const [modalCadastroAberto, setModalCadastroAberto] = useState(false);
   const [modalVisualizacaoAberto, setModalVisualizacaoAberto] = useState(false);
+  const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [itemSelecionado, setItemSelecionado] = useState<ClienteFornecedor | null>(null);
   const [modalPessoasAberto, setModalPessoasAberto] = useState(false);
   const [modalDocumentosAberto, setModalDocumentosAberto] = useState(false);
@@ -100,6 +102,66 @@ export default function ClientesFornecedores() {
   const handleVisualizar = (item: ClienteFornecedor) => {
     setItemSelecionado(item);
     setModalVisualizacaoAberto(true);
+  };
+
+  const handleEditar = (item: ClienteFornecedor) => {
+    setItemSelecionado(item);
+    setFormData({
+      nomeFantasia: item.nomeFantasia,
+      razaoSocial: item.razaoSocial,
+      cnpj: item.cnpj,
+      endereco: item.endereco,
+      contato: item.contato,
+      email: item.email,
+      telefone: item.telefone,
+      tipo: item.tipo,
+      cidade: item.cidade,
+      estado: item.estado
+    });
+    setModalVisualizacaoAberto(false);
+    setModalEdicaoAberto(true);
+  };
+
+  const handleSalvarEdicao = () => {
+    if (itemSelecionado && formData.nomeFantasia && formData.tipo !== '') {
+      const clientesAtualizados = clientesFornecedores.map(item => 
+        item.id === itemSelecionado.id 
+          ? {
+              ...item,
+              nomeFantasia: formData.nomeFantasia,
+              razaoSocial: formData.razaoSocial,
+              cnpj: formData.cnpj,
+              endereco: formData.endereco,
+              contato: formData.contato,
+              email: formData.email,
+              telefone: formData.telefone,
+              tipo: formData.tipo as 'cliente' | 'fornecedor',
+              cidade: formData.cidade,
+              estado: formData.estado
+            }
+          : item
+      );
+      setClientesFornecedores(clientesAtualizados);
+      setModalEdicaoAberto(false);
+      setFormData({
+        nomeFantasia: '',
+        razaoSocial: '',
+        cnpj: '',
+        endereco: '',
+        contato: '',
+        email: '',
+        telefone: '',
+        tipo: '',
+        cidade: '',
+        estado: ''
+      });
+    }
+  };
+
+  const handleExcluir = (id: string) => {
+    const clientesAtualizados = clientesFornecedores.filter(item => item.id !== id);
+    setClientesFornecedores(clientesAtualizados);
+    setModalVisualizacaoAberto(false);
   };
 
   const adicionarHistorico = () => {
@@ -314,7 +376,49 @@ export default function ClientesFornecedores() {
         <Dialog open={modalVisualizacaoAberto} onOpenChange={setModalVisualizacaoAberto}>
           <DialogContent className="max-w-4xl border-orange-200">
             <DialogHeader>
-              <DialogTitle className="text-orange-800">{itemSelecionado?.nomeFantasia}</DialogTitle>
+              <div className="flex items-center justify-between">
+                <DialogTitle className="text-orange-800">{itemSelecionado?.nomeFantasia}</DialogTitle>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditar(itemSelecionado!)}
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                  >
+                    <Edit size={16} className="mr-2" />
+                    Editar
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-red-300 text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 size={16} className="mr-2" />
+                        Excluir
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Tem certeza que deseja excluir "{itemSelecionado?.nomeFantasia}"? Esta ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={() => handleExcluir(itemSelecionado?.id || '')}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Excluir
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4 text-slate-700">
               <div><strong>Razão Social:</strong> {itemSelecionado?.razaoSocial}</div>
@@ -354,6 +458,114 @@ export default function ClientesFornecedores() {
                 </Button>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal de Edição */}
+        <Dialog open={modalEdicaoAberto} onOpenChange={setModalEdicaoAberto}>
+          <DialogContent className="max-w-2xl border-orange-200">
+            <DialogHeader>
+              <DialogTitle className="text-orange-800">Editar {itemSelecionado?.tipo}</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-4 py-4">
+              <div>
+                <Label htmlFor="editNomeFantasia">Nome Fantasia</Label>
+                <Input
+                  id="editNomeFantasia"
+                  value={formData.nomeFantasia}
+                  onChange={(e) => setFormData({...formData, nomeFantasia: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editRazaoSocial">Razão Social</Label>
+                <Input
+                  id="editRazaoSocial"
+                  value={formData.razaoSocial}
+                  onChange={(e) => setFormData({...formData, razaoSocial: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editCnpj">CNPJ</Label>
+                <Input
+                  id="editCnpj"
+                  value={formData.cnpj}
+                  onChange={(e) => setFormData({...formData, cnpj: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editEndereco">Endereço</Label>
+                <Input
+                  id="editEndereco"
+                  value={formData.endereco}
+                  onChange={(e) => setFormData({...formData, endereco: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editContato">Contato</Label>
+                <Input
+                  id="editContato"
+                  value={formData.contato}
+                  onChange={(e) => setFormData({...formData, contato: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editEmail">Email</Label>
+                <Input
+                  id="editEmail"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editTelefone">Telefone</Label>
+                <Input
+                  id="editTelefone"
+                  value={formData.telefone}
+                  onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editTipo">Tipo</Label>
+                <Select value={formData.tipo} onValueChange={(value: 'cliente' | 'fornecedor') => setFormData({...formData, tipo: value})}>
+                  <SelectTrigger className="focus:border-orange-400">
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cliente">Cliente</SelectItem>
+                    <SelectItem value="fornecedor">Fornecedor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="editCidade">Cidade</Label>
+                <Input
+                  id="editCidade"
+                  value={formData.cidade}
+                  onChange={(e) => setFormData({...formData, cidade: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editEstado">Estado</Label>
+                <Input
+                  id="editEstado"
+                  value={formData.estado}
+                  onChange={(e) => setFormData({...formData, estado: e.target.value})}
+                  className="focus:border-orange-400"
+                />
+              </div>
+            </div>
+            <Button onClick={handleSalvarEdicao} className="w-full bg-orange-600 hover:bg-orange-700">
+              Salvar Alterações
+            </Button>
           </DialogContent>
         </Dialog>
 
