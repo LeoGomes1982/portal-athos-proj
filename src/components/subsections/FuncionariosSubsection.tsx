@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,7 +127,7 @@ const statusConfig = {
   experiencia: { label: "Em Experiência", color: "bg-yellow-500", textColor: "text-yellow-700" },
   aviso: { label: "Em Aviso Prévio", color: "bg-orange-500", textColor: "text-orange-700" },
   inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
-  destaque: { label: "Destaque", color: "bg-purple-500", textColor: "text-purple-700" }
+  destaque: { label: "Destaque", color: "bg-green-600", textColor: "text-green-700" }
 };
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
@@ -174,39 +175,43 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return (
       <Card 
         key={funcionario.id} 
-        className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105"
+        className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-2 hover:scale-105 border-green-200 hover:border-green-300"
         onClick={() => handleFuncionarioClick(funcionario)}
       >
         <CardHeader className="text-center pb-4 pt-6 relative">
           {funcionario.status === 'destaque' && (
-            <Star className="absolute top-2 right-2 w-6 h-6 text-yellow-500 fill-yellow-500" />
+            <div className="absolute top-2 right-2 animate-pulse">
+              <Star className="w-8 h-8 text-yellow-400 fill-yellow-400 drop-shadow-lg filter brightness-125" style={{
+                filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+              }} />
+            </div>
           )}
-          <div className="w-20 h-20 bg-gray-100 border-2 border-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+          <div className="w-20 h-20 bg-green-50 border-2 border-green-200 rounded-3xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
             <span className="text-4xl">{funcionario.foto}</span>
           </div>
-          <CardTitle className="text-lg font-bold text-gray-800 mb-1">{funcionario.nome}</CardTitle>
-          <p className="text-sm text-gray-600 font-medium">{funcionario.cargo}</p>
+          <CardTitle className="text-lg font-bold text-slate-800 mb-1">{funcionario.nome}</CardTitle>
+          <p className="text-sm text-slate-600 font-medium">{funcionario.cargo}</p>
         </CardHeader>
         <CardContent className="space-y-3 px-6 pb-6">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 font-medium">Setor:</span>
-            <Badge variant="secondary" className="bg-gray-100 text-gray-700 font-medium px-3 py-1 rounded-full">{funcionario.setor}</Badge>
+            <span className="text-xs text-slate-500 font-medium">Setor:</span>
+            <Badge variant="secondary" className="bg-green-100 text-green-700 font-medium px-3 py-1 rounded-full">{funcionario.setor}</Badge>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 font-medium">Status:</span>
+            <span className="text-xs text-slate-500 font-medium">Status:</span>
             <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
               {statusInfo.label}
             </Badge>
           </div>
-          <div className="text-xs text-gray-500 font-medium flex items-center gap-2">
+          <div className="text-xs text-slate-500 font-medium flex items-center gap-2">
             <span>📅</span>
             {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
           </div>
-          <div className="text-xs text-gray-500 font-medium flex items-center gap-2">
+          <div className="text-xs text-slate-500 font-medium flex items-center gap-2">
             <span>📞</span>
             {funcionario.telefone}
           </div>
-          <div className="text-xs text-gray-500 font-medium flex items-center gap-2 truncate">
+          <div className="text-xs text-slate-500 font-medium flex items-center gap-2 truncate">
             <span>📧</span>
             <span className="truncate">{funcionario.email}</span>
           </div>
@@ -216,101 +221,101 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full opacity-30"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-100 rounded-full opacity-20"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-100 rounded-full opacity-20"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-100 rounded-full opacity-30"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-200 rounded-full opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-150 rounded-full opacity-20"></div>
       </div>
 
       <div className="relative z-10 py-6 lg:py-12">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
           {/* Header */}
           <div className="text-center py-8">
-            <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-gray-200 mb-6">
-              <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-blue-600 text-2xl">👥</span>
+            <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-green-200 mb-6">
+              <div className="w-16 h-16 bg-green-100 border-2 border-green-200 rounded-2xl flex items-center justify-center shadow-lg">
+                <span className="text-green-600 text-2xl">👥</span>
               </div>
               <div className="text-left">
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-800">Gestão de Funcionários</h1>
-                <p className="text-lg text-gray-600">Departamento Pessoal</p>
+                <h1 className="text-3xl lg:text-4xl font-bold text-slate-800">Gestão de Funcionários</h1>
+                <p className="text-lg text-slate-600">Departamento Pessoal</p>
               </div>
             </div>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
               Gerencie todos os funcionários da empresa e seus status
             </p>
             <Button 
               variant="outline" 
               onClick={onBack} 
-              className="mt-4"
+              className="mt-4 border-green-200 text-green-700 hover:bg-green-50"
             >
               ← Voltar ao DP
             </Button>
           </div>
 
           {/* Resumo com contadores - mais compacto */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-green-200 p-6">
+            <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
               📊 Resumo da Equipe
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
                 <CardContent className="text-center p-4">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.total}</div>
-                  <div className="text-sm font-medium text-gray-600">Funcionários Ativos</div>
+                  <div className="text-2xl font-bold text-green-600 mb-1">{contadores.total}</div>
+                  <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
                 </CardContent>
               </Card>
               
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
                 <CardContent className="text-center p-4">
                   <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
-                  <div className="text-sm font-medium text-gray-600">Em Férias</div>
+                  <div className="text-sm font-medium text-slate-600">Em Férias</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
                 <CardContent className="text-center p-4">
                   <div className="text-2xl font-bold text-yellow-600 mb-1">{contadores.experiencia}</div>
-                  <div className="text-sm font-medium text-gray-600">Em Experiência</div>
+                  <div className="text-sm font-medium text-slate-600">Em Experiência</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
                 <CardContent className="text-center p-4">
                   <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.aviso}</div>
-                  <div className="text-sm font-medium text-gray-600">Em Aviso Prévio</div>
+                  <div className="text-sm font-medium text-slate-600">Em Aviso Prévio</div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px]">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-200">
                 <CardContent className="text-center p-4">
                   <div className="flex items-center justify-center mb-1">
-                    <Star className="text-purple-600 w-6 h-6 fill-purple-600 mr-1" />
-                    <span className="text-2xl font-bold text-purple-600">{contadores.destaque}</span>
+                    <Star className="text-yellow-400 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md filter brightness-125" />
+                    <span className="text-2xl font-bold text-green-600">{contadores.destaque}</span>
                   </div>
-                  <div className="text-sm font-medium text-gray-600">Em Destaque</div>
+                  <div className="text-sm font-medium text-slate-600">Em Destaque</div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
           {/* Controles */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-green-200 p-6">
             <div className="relative flex-1 max-w-md mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
               <Input
                 placeholder="Buscar funcionário..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-12 bg-white/80 border-gray-200 shadow-lg rounded-2xl text-lg font-medium"
+                className="pl-12 h-12 bg-white/80 border-green-200 shadow-lg rounded-2xl text-lg font-medium focus:border-green-300"
               />
             </div>
           </div>
 
           {/* Grid de Funcionários Ativos */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-gray-200 p-6 lg:p-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg border border-green-200 p-6 lg:p-8">
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-6 text-center">
               👨‍💼 Funcionários Ativos
             </h2>
             
@@ -319,12 +324,12 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             </div>
 
             {funcionariosAtivos.length === 0 && (
-              <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-lg border border-gray-200">
-                <div className="w-24 h-24 bg-gray-100 border-2 border-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <span className="text-gray-400 text-4xl">🔍</span>
+              <div className="text-center py-16 bg-gradient-to-br from-green-50 to-white rounded-3xl shadow-lg border border-green-200">
+                <div className="w-24 h-24 bg-green-100 border-2 border-green-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <span className="text-green-400 text-4xl">🔍</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-600 mb-3">Nenhum funcionário ativo encontrado</h3>
-                <p className="text-gray-500 font-medium">Tente ajustar os filtros de busca</p>
+                <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum funcionário ativo encontrado</h3>
+                <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
               </div>
             )}
           </div>
