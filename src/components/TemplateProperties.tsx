@@ -1,21 +1,18 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { 
-  Bold, 
-  Italic, 
-  Underline, 
   Trash2,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Info
+  Info,
+  Edit3
 } from "lucide-react";
+import TextEditingToolbar from "./TextEditingToolbar";
 
 interface TemplatePropertiesProps {
-  selectedElement: string | null;
+  selectedElement: any | null;
   textEditMode: boolean;
   editingTextContent: string;
   onTextContentChange: (content: string) => void;
@@ -23,6 +20,7 @@ interface TemplatePropertiesProps {
   onCancelTextEdit: () => void;
   onDeleteElement: () => void;
   onStartTextEdit: () => void;
+  onTextFormattingChange?: (property: string, value: any) => void;
 }
 
 export default function TemplateProperties({
@@ -33,87 +31,187 @@ export default function TemplateProperties({
   onSaveTextEdit,
   onCancelTextEdit,
   onDeleteElement,
-  onStartTextEdit
+  onStartTextEdit,
+  onTextFormattingChange
 }: TemplatePropertiesProps) {
-  if (!selectedElement) return null;
+  const [localText, setLocalText] = useState(editingTextContent);
+  const [textProperties, setTextProperties] = useState({
+    fontSize: 16,
+    fontFamily: 'Arial',
+    color: '#000000',
+    backgroundColor: '#ffffff',
+    isBold: false,
+    isItalic: false,
+    isUnderline: false,
+    alignment: 'left'
+  });
+
+  useEffect(() => {
+    setLocalText(editingTextContent);
+  }, [editingTextContent]);
+
+  useEffect(() => {
+    if (selectedElement && selectedElement.elementType === 'text') {
+      // Extrair propriedades do elemento selecionado
+      setTextProperties({
+        fontSize: selectedElement.fontSize || 16,
+        fontFamily: selectedElement.fontFamily || 'Arial',
+        color: selectedElement.fill || '#000000',
+        backgroundColor: selectedElement.backgroundColor || '#ffffff',
+        isBold: selectedElement.fontWeight === 'bold',
+        isItalic: selectedElement.fontStyle === 'italic',
+        isUnderline: selectedElement.underline || false,
+        alignment: selectedElement.textAlign || 'left'
+      });
+    }
+  }, [selectedElement]);
+
+  const handleTextFormattingChange = (property: string, value: any) => {
+    setTextProperties(prev => ({ ...prev, [property]: value }));
+    if (onTextFormattingChange) {
+      onTextFormattingChange(property, value);
+    }
+  };
+
+  const handleTextChange = (value: string) => {
+    setLocalText(value);
+    onTextContentChange(value);
+  };
+
+  if (!selectedElement) {
+    return (
+      <div className="p-4 text-center text-gray-500">
+        <Info size={24} className="mx-auto mb-2" />
+        <p>Selecione um elemento no canvas para editar suas propriedades</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4 border-t pt-4">
-      <Label>Propriedades do Elemento</Label>
-      
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 pb-2 border-b">
+        <Edit3 size={16} className="text-orange-600" />
+        <Label className="font-semibold text-orange-800">Propriedades do Elemento</Label>
+      </div>
+
+      {/* Barra de ferramentas de texto estilo Word */}
+      {selectedElement.elementType === 'text' && (
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Formatação de Texto</Label>
+          <TextEditingToolbar
+            selectedElement={selectedElement}
+            onFontSizeChange={(size) => handleTextFormattingChange('fontSize', size)}
+            onFontFamilyChange={(family) => handleTextFormattingChange('fontFamily', family)}
+            onColorChange={(color) => handleTextFormattingChange('color', color)}
+            onBackgroundColorChange={(color) => handleTextFormattingChange('backgroundColor', color)}
+            onBoldToggle={() => handleTextFormattingChange('isBold', !textProperties.isBold)}
+            onItalicToggle={() => handleTextFormattingChange('isItalic', !textProperties.isItalic)}
+            onUnderlineToggle={() => handleTextFormattingChange('isUnderline', !textProperties.isUnderline)}
+            onAlignmentChange={(alignment) => handleTextFormattingChange('alignment', alignment)}
+            currentFontSize={textProperties.fontSize}
+            currentFontFamily={textProperties.fontFamily}
+            currentColor={textProperties.color}
+            currentBackgroundColor={textProperties.backgroundColor}
+            isBold={textProperties.isBold}
+            isItalic={textProperties.isItalic}
+            isUnderline={textProperties.isUnderline}
+            currentAlignment={textProperties.alignment}
+          />
+        </div>
+      )}
+
+      {/* Editor de conteúdo de texto */}
+      {selectedElement.elementType === 'text' && (
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Conteúdo do Texto</Label>
+          <div className="space-y-2">
+            <Textarea
+              value={localText}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder="Digite o texto aqui..."
+              className="min-h-[100px] resize-y"
+            />
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={onSaveTextEdit}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Aplicar Texto
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCancelTextEdit}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Informação sobre edição inline */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
         <div className="flex items-start gap-2">
           <Info size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-blue-800">
-            <p className="font-medium mb-1">Edição de Texto Inline</p>
-            <p>Clique duas vezes diretamente no texto no canvas para editá-lo, como no Word!</p>
+            <p className="font-medium mb-1">Edição de Texto</p>
+            <p>Use a barra de ferramentas acima para formatação ou clique duas vezes no texto no canvas para edição rápida.</p>
           </div>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-2">
+      {/* Propriedades específicas por tipo de elemento */}
+      {selectedElement.elementType === 'image' && (
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Propriedades da Imagem</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs">Largura</Label>
+              <Input
+                type="number"
+                defaultValue={200}
+                className="text-sm"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Altura</Label>
+              <Input
+                type="number"
+                defaultValue={150}
+                className="text-sm"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedElement.elementType === 'field' && (
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Campo Dinâmico</Label>
           <div>
-            <Label>Tamanho</Label>
+            <Label className="text-xs">Nome do Campo</Label>
             <Input
-              type="number"
-              min="8"
-              max="72"
-              defaultValue={16}
+              placeholder="ex: cliente.nome"
+              className="text-sm"
             />
           </div>
-          <div>
-            <Label>Cor</Label>
-            <Input
-              type="color"
-              defaultValue="#000000"
-            />
-          </div>
         </div>
+      )}
 
-        <div>
-          <Label>Cor de Fundo</Label>
-          <Input
-            type="color"
-            defaultValue="#ffffff"
-          />
-        </div>
-
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Bold size={16} />
-          </Button>
-          <Button variant="outline" size="sm">
-            <Italic size={16} />
-          </Button>
-          <Button variant="outline" size="sm">
-            <Underline size={16} />
-          </Button>
-        </div>
-
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <AlignLeft size={16} />
-          </Button>
-          <Button variant="outline" size="sm">
-            <AlignCenter size={16} />
-          </Button>
-          <Button variant="outline" size="sm">
-            <AlignRight size={16} />
-          </Button>
-        </div>
+      {/* Ações do elemento */}
+      <div className="pt-4 border-t">
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={onDeleteElement}
+          className="w-full"
+        >
+          <Trash2 size={16} className="mr-2" />
+          Remover Elemento
+        </Button>
       </div>
-
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={onDeleteElement}
-        className="w-full"
-      >
-        <Trash2 size={16} className="mr-2" />
-        Remover Elemento
-      </Button>
     </div>
   );
 }

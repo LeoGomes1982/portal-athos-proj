@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Template } from "@/types/template";
@@ -171,6 +170,50 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
     fabricCanvas?.renderAll();
   };
 
+  const handleTextFormattingChange = (property: string, value: any) => {
+    const fabricCanvas = canvasRef.current?.getFabricCanvas();
+    const activeObject = fabricCanvas?.getActiveObject();
+    
+    if (activeObject && activeObject.type === 'text') {
+      const updates: any = {};
+      
+      switch (property) {
+        case 'fontSize':
+          updates.fontSize = value;
+          break;
+        case 'fontFamily':
+          updates.fontFamily = value;
+          break;
+        case 'color':
+          updates.fill = value;
+          break;
+        case 'backgroundColor':
+          updates.backgroundColor = value;
+          break;
+        case 'isBold':
+          updates.fontWeight = value ? 'bold' : 'normal';
+          break;
+        case 'isItalic':
+          updates.fontStyle = value ? 'italic' : 'normal';
+          break;
+        case 'isUnderline':
+          updates.underline = value;
+          break;
+        case 'alignment':
+          updates.textAlign = value;
+          break;
+      }
+      
+      activeObject.set(updates);
+      fabricCanvas?.renderAll();
+      
+      toast({
+        title: "Formatação aplicada",
+        description: "Propriedades do texto foram atualizadas",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <TemplateManager
@@ -209,6 +252,7 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
               onCancelTextEdit={handleCancelTextEdit}
               onDeleteElement={handleDeleteElement}
               onStartTextEdit={handleStartTextEdit}
+              onTextFormattingChange={handleTextFormattingChange}
             />
           </div>
 
