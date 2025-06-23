@@ -226,6 +226,58 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     );
   };
 
+  const renderFuncionarioListItem = (funcionario: Funcionario) => {
+    const statusInfo = statusConfig[funcionario.status];
+
+    return (
+      <div 
+        key={funcionario.id}
+        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-green-200 hover:border-green-400 bg-gradient-to-r from-green-50 to-white rounded-lg p-4 mb-3"
+        onClick={() => handleFuncionarioClick(funcionario)}
+      >
+        <div className="flex items-center gap-4">
+          {/* Foto */}
+          <div className="flex-shrink-0 relative">
+            {funcionario.status === 'destaque' && (
+              <div className="absolute -top-1 -right-1 animate-bounce">
+                <Star className="w-5 h-5 text-yellow-500 fill-yellow-400 drop-shadow-md" style={{
+                  filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                }} />
+              </div>
+            )}
+            <div className="w-12 h-12 bg-green-100 border-2 border-green-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <span className="text-2xl">{funcionario.foto}</span>
+            </div>
+          </div>
+
+          {/* Nome */}
+          <div className="flex-1 min-w-0">
+            <p className="text-lg font-bold text-slate-800 truncate">{funcionario.nome}</p>
+          </div>
+
+          {/* Cargo */}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-slate-700 truncate">{funcionario.cargo}</p>
+          </div>
+
+          {/* Data de Admissão */}
+          <div className="flex-shrink-0">
+            <p className="text-sm text-slate-600 font-medium">
+              {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
+            </p>
+          </div>
+
+          {/* Status */}
+          <div className="flex-shrink-0">
+            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
+              {statusInfo.label}
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-50 to-green-200 relative overflow-hidden">
       {/* Background decoration */}
@@ -354,9 +406,15 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
               </div>
             </div>
             
-            <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6" : "space-y-4"}>
-              {funcionariosAtivos.map((funcionario) => renderFuncionarioCard(funcionario))}
-            </div>
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                {funcionariosAtivos.map((funcionario) => renderFuncionarioCard(funcionario))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
+              </div>
+            )}
 
             {funcionariosAtivos.length === 0 && (
               <div className="text-center py-16 bg-gradient-to-br from-green-100 to-white rounded-3xl shadow-lg border border-green-300">
@@ -371,7 +429,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         </div>
       </div>
 
-      {/* Modal de Detalhes */}
+      {/* Modal de Detalhes Completo */}
       {selectedFuncionario && (
         <FuncionarioDetalhesModal
           funcionario={selectedFuncionario}

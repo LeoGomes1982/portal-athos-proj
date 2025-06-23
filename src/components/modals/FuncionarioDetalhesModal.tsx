@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star } from "lucide-react";
 
 interface Funcionario {
   id: number;
@@ -48,74 +50,160 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const statusInfo = statusConfig[statusAtual];
 
-  console.log("Modal aberto:", isOpen, "Funcionario:", funcionario?.nome);
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-green-600">
+          <DialogTitle className="text-2xl font-bold text-green-600 flex items-center gap-3">
+            <span className="text-3xl">{funcionario.foto}</span>
             Detalhes do Funcionário
+            {funcionario.status === 'destaque' && (
+              <div className="relative">
+                <Star className="w-8 h-8 text-yellow-500 fill-yellow-400 drop-shadow-lg animate-pulse" style={{
+                  filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
+                }} />
+              </div>
+            )}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Informações em linha horizontal compacta */}
-          <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
-            {/* Foto */}
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-green-100 border border-green-300 rounded-full flex items-center justify-center">
-                <span className="text-2xl">{funcionario.foto}</span>
+        <div className="space-y-6">
+          {/* Informações Principais */}
+          <Card className="border-green-200 bg-gradient-to-r from-green-50 to-green-100">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Nome Completo</label>
+                    <p className="text-lg font-bold text-slate-800">{funcionario.nome}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Cargo</label>
+                    <p className="text-md font-medium text-slate-700">{funcionario.cargo}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Setor</label>
+                    <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium">{funcionario.setor}</Badge>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Data de Admissão</label>
+                    <p className="text-md font-medium text-slate-700">
+                      {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Status Atual</label>
+                    <div className="mt-1">
+                      <Select value={statusAtual} onValueChange={handleStatusChange}>
+                        <SelectTrigger className="w-48">
+                          <SelectValue>
+                            <Badge className={`${statusInfo.color} text-white text-xs`}>
+                              {statusInfo.label}
+                            </Badge>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(statusConfig).map(([key, config]) => (
+                            <SelectItem key={key} value={key}>
+                              <Badge className={`${config.color} text-white text-xs`}>
+                                {config.label}
+                              </Badge>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Nome */}
-            <div className="flex-1 min-w-0">
-              <p className="text-lg font-bold text-slate-800 truncate">{funcionario.nome}</p>
-            </div>
+          {/* Informações de Contato */}
+          <Card className="border-green-200">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                📞 Informações de Contato
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-600">Telefone</label>
+                  <p className="text-md font-medium text-slate-700">{funcionario.telefone}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">E-mail</label>
+                  <p className="text-md font-medium text-slate-700 break-all">{funcionario.email}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Cargo */}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-700 truncate">{funcionario.cargo}</p>
-            </div>
+          {/* Documentos Pessoais */}
+          {(funcionario.cpf || funcionario.rg) && (
+            <Card className="border-green-200">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  📋 Documentos Pessoais
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {funcionario.cpf && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">CPF</label>
+                      <p className="text-md font-medium text-slate-700">{funcionario.cpf}</p>
+                    </div>
+                  )}
+                  {funcionario.rg && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">RG</label>
+                      <p className="text-md font-medium text-slate-700">{funcionario.rg}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-            {/* Data de Admissão */}
-            <div className="flex-shrink-0">
-              <p className="text-sm text-slate-600">
-                {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-              </p>
-            </div>
-
-            {/* Status */}
-            <div className="flex-shrink-0">
-              <Select value={statusAtual} onValueChange={handleStatusChange}>
-                <SelectTrigger className="w-32">
-                  <SelectValue>
-                    <Badge className={`${statusInfo.color} text-white text-xs`}>
-                      {statusInfo.label}
-                    </Badge>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(statusConfig).map(([key, config]) => (
-                    <SelectItem key={key} value={key}>
-                      <Badge className={`${config.color} text-white text-xs`}>
-                        {config.label}
-                      </Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          {/* Endereço e Salário */}
+          {(funcionario.endereco || funcionario.salario) && (
+            <Card className="border-green-200">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  🏠 Informações Adicionais
+                </h3>
+                <div className="space-y-4">
+                  {funcionario.endereco && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Endereço</label>
+                      <p className="text-md font-medium text-slate-700">{funcionario.endereco}</p>
+                    </div>
+                  )}
+                  {funcionario.salario && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Salário</label>
+                      <p className="text-lg font-bold text-green-600">{funcionario.salario}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Ações */}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={onClose} className="border-green-300 text-green-700 hover:bg-green-50">
+          <div className="flex justify-end gap-3 pt-4 border-t border-green-200">
+            <Button 
+              variant="outline" 
+              onClick={onClose} 
+              className="border-green-300 text-green-700 hover:bg-green-50"
+            >
               Fechar
             </Button>
             <Button className="bg-green-600 hover:bg-green-700 text-white">
-              📝 Editar
+              📝 Editar Funcionário
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              📄 Ver Documentos
             </Button>
           </div>
         </div>
