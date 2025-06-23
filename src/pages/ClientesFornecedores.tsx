@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
 
 interface ClienteFornecedor {
   id: string;
@@ -23,6 +24,7 @@ interface ClienteFornecedor {
   tipo: 'cliente' | 'fornecedor';
   cidade: string;
   estado: string;
+  ativo: boolean;
 }
 
 interface Documento {
@@ -61,11 +63,20 @@ export default function ClientesFornecedores() {
     telefone: '',
     tipo: '' as 'cliente' | 'fornecedor' | '',
     cidade: '',
-    estado: ''
+    estado: '',
+    ativo: true
   });
 
   const clientes = clientesFornecedores.filter(item => item.tipo === 'cliente');
   const fornecedores = clientesFornecedores.filter(item => item.tipo === 'fornecedor');
+
+  // Função para ordenar itens - ativos primeiro, depois inativos
+  const ordenarPorStatus = (items: ClienteFornecedor[]) => {
+    return items.sort((a, b) => {
+      if (a.ativo === b.ativo) return 0;
+      return a.ativo ? -1 : 1;
+    });
+  };
 
   const handleSalvar = () => {
     if (formData.nomeFantasia && formData.tipo !== '') {
@@ -80,7 +91,8 @@ export default function ClientesFornecedores() {
         telefone: formData.telefone,
         tipo: formData.tipo as 'cliente' | 'fornecedor',
         cidade: formData.cidade,
-        estado: formData.estado
+        estado: formData.estado,
+        ativo: formData.ativo
       };
       setClientesFornecedores([...clientesFornecedores, novoItem]);
       setFormData({
@@ -93,7 +105,8 @@ export default function ClientesFornecedores() {
         telefone: '',
         tipo: '',
         cidade: '',
-        estado: ''
+        estado: '',
+        ativo: true
       });
       setModalCadastroAberto(false);
     }
@@ -116,7 +129,8 @@ export default function ClientesFornecedores() {
       telefone: item.telefone,
       tipo: item.tipo,
       cidade: item.cidade,
-      estado: item.estado
+      estado: item.estado,
+      ativo: item.ativo
     });
     setModalVisualizacaoAberto(false);
     setModalEdicaoAberto(true);
@@ -137,7 +151,8 @@ export default function ClientesFornecedores() {
               telefone: formData.telefone,
               tipo: formData.tipo as 'cliente' | 'fornecedor',
               cidade: formData.cidade,
-              estado: formData.estado
+              estado: formData.estado,
+              ativo: formData.ativo
             }
           : item
       );
@@ -153,7 +168,8 @@ export default function ClientesFornecedores() {
         telefone: '',
         tipo: '',
         cidade: '',
-        estado: ''
+        estado: '',
+        ativo: true
       });
     }
   };
@@ -162,6 +178,13 @@ export default function ClientesFornecedores() {
     const clientesAtualizados = clientesFornecedores.filter(item => item.id !== id);
     setClientesFornecedores(clientesAtualizados);
     setModalVisualizacaoAberto(false);
+  };
+
+  const toggleStatus = (id: string) => {
+    const clientesAtualizados = clientesFornecedores.map(item => 
+      item.id === id ? { ...item, ativo: !item.ativo } : item
+    );
+    setClientesFornecedores(clientesAtualizados);
   };
 
   const adicionarHistorico = () => {
@@ -175,6 +198,8 @@ export default function ClientesFornecedores() {
       setNovoHistoricoTexto("");
     }
   };
+
+  const itensOrdenados = ordenarPorStatus(clientesFornecedores);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100">
@@ -330,6 +355,16 @@ export default function ClientesFornecedores() {
                     className="focus:border-orange-400"
                   />
                 </div>
+                <div className="col-span-2">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="ativo"
+                      checked={formData.ativo}
+                      onCheckedChange={(checked) => setFormData({...formData, ativo: checked})}
+                    />
+                    <Label htmlFor="ativo">Ativo</Label>
+                  </div>
+                </div>
               </div>
               <Button onClick={handleSalvar} className="w-full bg-orange-600 hover:bg-orange-700">
                 Salvar
@@ -340,22 +375,57 @@ export default function ClientesFornecedores() {
 
         {/* Lista */}
         <div className="space-y-4">
-          {clientesFornecedores.map((item) => (
-            <Card key={item.id} className={`border-l-4 shadow-lg hover:shadow-xl transition-shadow ${item.tipo === 'cliente' ? 'border-l-orange-500 bg-gradient-to-r from-orange-50 to-white' : 'border-l-orange-700 bg-gradient-to-r from-orange-100 to-white'}`}>
+          {itensOrdenados.map((item) => (
+            <Card key={item.id} className={`border-l-4 shadow-lg hover:shadow-xl transition-all ${
+              item.tipo === 'cliente' ? 'border-l-orange-500' : 'border-l-orange-700'
+            } ${
+              item.ativo 
+                ? item.tipo === 'cliente' 
+                  ? 'bg-gradient-to-r from-orange-50 to-white' 
+                  : 'bg-gradient-to-r from-orange-100 to-white'
+                : 'bg-gray-100 opacity-60 grayscale'
+            }`}>
               <CardContent className="flex justify-between items-center p-4">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${item.tipo === 'cliente' ? 'bg-orange-100' : 'bg-orange-200'}`}>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    item.ativo
+                      ? item.tipo === 'cliente' ? 'bg-orange-100' : 'bg-orange-200'
+                      : 'bg-gray-200'
+                  }`}>
                     {item.tipo === 'cliente' ? 
-                      <Users className={`h-6 w-6 text-orange-600`} /> : 
-                      <Building className={`h-6 w-6 text-orange-700`} />
+                      <Users className={`h-6 w-6 ${item.ativo ? 'text-orange-600' : 'text-gray-500'}`} /> : 
+                      <Building className={`h-6 w-6 ${item.ativo ? 'text-orange-700' : 'text-gray-500'}`} />
                     }
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">{item.nomeFantasia}</h3>
-                    <p className="text-sm text-slate-600">{item.razaoSocial}</p>
-                    <Badge variant={item.tipo === 'cliente' ? 'default' : 'secondary'} className={item.tipo === 'cliente' ? 'bg-orange-100 text-orange-800 border-orange-300' : 'bg-orange-200 text-orange-900 border-orange-400'}>
-                      {item.tipo}
-                    </Badge>
+                    <h3 className={`font-semibold ${item.ativo ? 'text-slate-800' : 'text-gray-500'}`}>
+                      {item.nomeFantasia}
+                    </h3>
+                    <p className={`text-sm ${item.ativo ? 'text-slate-600' : 'text-gray-400'}`}>
+                      {item.razaoSocial}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Badge variant={item.tipo === 'cliente' ? 'default' : 'secondary'} 
+                        className={
+                          item.ativo
+                            ? item.tipo === 'cliente' 
+                              ? 'bg-orange-100 text-orange-800 border-orange-300' 
+                              : 'bg-orange-200 text-orange-900 border-orange-400'
+                            : 'bg-gray-200 text-gray-600 border-gray-300'
+                        }>
+                        {item.tipo}
+                      </Badge>
+                      <div className="flex items-center space-x-1">
+                        <Switch
+                          checked={item.ativo}
+                          onCheckedChange={() => toggleStatus(item.id)}
+                          size="sm"
+                        />
+                        <span className={`text-xs ${item.ativo ? 'text-green-600' : 'text-red-600'}`}>
+                          {item.ativo ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <Button
@@ -377,7 +447,13 @@ export default function ClientesFornecedores() {
           <DialogContent className="max-w-4xl border-orange-200">
             <DialogHeader>
               <div className="flex items-center justify-between">
-                <DialogTitle className="text-orange-800">{itemSelecionado?.nomeFantasia}</DialogTitle>
+                <div className="flex items-center space-x-2">
+                  <DialogTitle className="text-orange-800">{itemSelecionado?.nomeFantasia}</DialogTitle>
+                  <Badge variant={itemSelecionado?.ativo ? 'default' : 'secondary'} 
+                    className={itemSelecionado?.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                    {itemSelecionado?.ativo ? 'Ativo' : 'Inativo'}
+                  </Badge>
+                </div>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
@@ -561,6 +637,16 @@ export default function ClientesFornecedores() {
                   onChange={(e) => setFormData({...formData, estado: e.target.value})}
                   className="focus:border-orange-400"
                 />
+              </div>
+              <div className="col-span-2">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="editAtivo"
+                    checked={formData.ativo}
+                    onCheckedChange={(checked) => setFormData({...formData, ativo: checked})}
+                  />
+                  <Label htmlFor="editAtivo">Ativo</Label>
+                </div>
               </div>
             </div>
             <Button onClick={handleSalvarEdicao} className="w-full bg-orange-600 hover:bg-orange-700">
