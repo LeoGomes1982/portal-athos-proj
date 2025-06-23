@@ -100,14 +100,29 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
   };
 
   const handleSelectionChange = (elementId: string | null) => {
-    console.log('Selection changed:', elementId);
+    console.log('TemplateEditor - Selection changed:', elementId);
     const fabricCanvas = canvasRef.current?.getFabricCanvas();
     const activeObject = fabricCanvas?.getActiveObject();
     
     if (activeObject) {
+      console.log('TemplateEditor - Active object found:', activeObject);
+      console.log('TemplateEditor - Object type:', activeObject.type);
+      
+      // Melhor detecção do tipo de elemento
+      let elementType = 'unknown';
+      if ((activeObject as any).elementType) {
+        elementType = (activeObject as any).elementType;
+      } else if (activeObject.type === 'text' || activeObject instanceof FabricText) {
+        elementType = 'text';
+      } else if (activeObject.type === 'image') {
+        elementType = 'image';
+      } else if (activeObject.type === 'group') {
+        elementType = 'field';
+      }
+      
       const elementData = {
         elementId: elementId,
-        elementType: (activeObject as any).elementType || 'text',
+        elementType: elementType,
         fontSize: (activeObject as any).fontSize || 16,
         fontFamily: (activeObject as any).fontFamily || 'Arial',
         fill: (activeObject as any).fill || '#000000',
@@ -118,13 +133,14 @@ export default function TemplateEditor({ tipo }: TemplateEditorProps) {
         textAlign: (activeObject as any).textAlign || 'left'
       };
       
-      console.log('Element data:', elementData);
+      console.log('TemplateEditor - Element data:', elementData);
       setSelectedElement(elementData);
       
-      if (elementData.elementType === 'text' && (activeObject as any).text) {
+      if (elementType === 'text' && (activeObject as any).text) {
         setEditingTextContent((activeObject as any).text);
       }
     } else {
+      console.log('TemplateEditor - No active object, clearing selection');
       setSelectedElement(null);
     }
   };

@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Circle, Group, Line } from "fabric";
@@ -121,22 +120,57 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
 
     // Configurar eventos do canvas
     canvas.on('selection:created', (e) => {
+      console.log('Selection created event:', e);
       const activeObject = e.selected?.[0];
-      if (activeObject && (activeObject as any).elementId) {
-        const elementId = (activeObject as any).elementId;
+      if (activeObject) {
+        console.log('Active object:', activeObject);
+        console.log('Object type:', activeObject.type);
+        console.log('Element type property:', (activeObject as any).elementType);
+        
+        // Melhor detecção do tipo de elemento
+        let elementType = 'unknown';
+        if ((activeObject as any).elementType) {
+          elementType = (activeObject as any).elementType;
+        } else if (activeObject.type === 'text' || activeObject instanceof FabricText) {
+          elementType = 'text';
+        } else if (activeObject.type === 'image') {
+          elementType = 'image';
+        } else if (activeObject.type === 'group') {
+          elementType = 'field'; // grupos são geralmente campos
+        }
+        
+        console.log('Detected element type:', elementType);
+        const elementId = (activeObject as any).elementId || Date.now().toString();
         onSelectionChange(elementId);
       }
     });
 
     canvas.on('selection:updated', (e) => {
+      console.log('Selection updated event:', e);
       const activeObject = e.selected?.[0];
-      if (activeObject && (activeObject as any).elementId) {
-        const elementId = (activeObject as any).elementId;
+      if (activeObject) {
+        console.log('Updated active object:', activeObject);
+        
+        // Melhor detecção do tipo de elemento
+        let elementType = 'unknown';
+        if ((activeObject as any).elementType) {
+          elementType = (activeObject as any).elementType;
+        } else if (activeObject.type === 'text' || activeObject instanceof FabricText) {
+          elementType = 'text';
+        } else if (activeObject.type === 'image') {
+          elementType = 'image';
+        } else if (activeObject.type === 'group') {
+          elementType = 'field';
+        }
+        
+        console.log('Updated detected element type:', elementType);
+        const elementId = (activeObject as any).elementId || Date.now().toString();
         onSelectionChange(elementId);
       }
     });
 
     canvas.on('selection:cleared', () => {
+      console.log('Selection cleared');
       onSelectionChange(null);
     });
 
@@ -241,12 +275,21 @@ const TemplateCanvas = forwardRef<TemplateCanvasRef, TemplateCanvasProps>(({
         selectable: true,
       });
 
+      // Definir propriedades customizadas de forma mais robusta
       (text as any).elementId = elementId;
       (text as any).elementType = 'text';
+      
+      console.log('Adding text element:', text);
+      console.log('Element type set to:', (text as any).elementType);
 
       canvas.add(text);
       canvas.setActiveObject(text);
       canvas.renderAll();
+      
+      // Forçar a seleção após adicionar
+      setTimeout(() => {
+        onSelectionChange(elementId);
+      }, 100);
     },
 
     addImagePlaceholder: () => {
