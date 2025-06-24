@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ArquivoRHSubsectionProps {
   onBack: () => void;
@@ -84,6 +84,7 @@ const getMotivoIcon = (motivo: string) => {
 };
 
 export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredFuncionarios = funcionariosInativos.filter(funcionario =>
@@ -106,13 +107,23 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
     return `${meses} mês${meses > 1 ? 'es' : ''}`;
   };
 
+  const handleBack = () => {
+    // Try to go back in browser history first
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // Fallback to RH page if no history
+      navigate('/rh');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={onBack}
+          onClick={handleBack}
           className="flex items-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />

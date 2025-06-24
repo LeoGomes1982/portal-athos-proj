@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronLeft, Upload, Search, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentCard } from "@/components/DocumentCard";
+import { useNavigate } from "react-router-dom";
 
 interface DocumentosSubsectionProps {
   onBack: () => void;
@@ -81,6 +81,7 @@ const documentosMock = [
 ];
 
 export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [documentos, setDocumentos] = useState(documentosMock);
@@ -183,6 +184,16 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
     });
   };
 
+  const handleBack = () => {
+    // Try to go back in browser history first
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // Fallback to RH page if no history
+      navigate('/rh');
+    }
+  };
+
   const documentosPorFuncionario = documentos.filter(d => d.funcionario).length;
   const documentosGerais = documentos.filter(d => !d.funcionario).length;
 
@@ -192,7 +203,7 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={onBack}
+          onClick={handleBack}
           className="flex items-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />
