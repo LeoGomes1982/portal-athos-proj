@@ -10,7 +10,8 @@ import {
   X,
   Users,
   FileText,
-  History
+  History,
+  Save
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -470,8 +471,9 @@ const ClientesFornecedores = () => {
               >
                 Cancelar
               </Button>
-              <Button onClick={handleSubmit}>
-                {editingItem ? 'Atualizar' : 'Cadastrar'}
+              <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
+                <Save size={16} className="mr-2" />
+                {editingItem ? 'Salvar Alterações' : 'Salvar'}
               </Button>
             </div>
           </DialogContent>

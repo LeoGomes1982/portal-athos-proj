@@ -1,128 +1,191 @@
 
-import { 
-  Settings, 
-  ArrowLeft,
-  FileEdit,
-  Building2,
-  Globe,
-  FileText
-} from "lucide-react";
+import React, { useState } from "react";
+import { ArrowLeft, Settings, Building2, User, FileText, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import EmpresasModal from "@/components/modals/EmpresasModal";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import GerenciarEmpresasModal from "@/components/modals/GerenciarEmpresasModal";
 
 const Configuracoes = () => {
   const navigate = useNavigate();
   const [isEmpresasModalOpen, setIsEmpresasModalOpen] = useState(false);
+  
+  // Estados para configurações gerais
+  const [configuracoes, setConfiguracoes] = useState({
+    nomeUsuario: "Administrador",
+    emailUsuario: "admin@sistema.com",
+    notificacoesPush: true,
+    notificacoesEmail: false,
+    temaEscuro: false,
+    autoSalvar: true
+  });
 
-  console.log("Configuracoes page rendered, isEmpresasModalOpen:", isEmpresasModalOpen);
-
-  const configuracoesSection = [
-    {
-      id: "edicao-formularios",
-      title: "EDIÇÃO DE FORMULÁRIOS",
-      fullTitle: "Personalizar Formulários",
-      icon: FileEdit,
-      className: "bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 hover:from-slate-100 hover:to-slate-150",
-      iconColor: "text-slate-600",
-      onClick: () => {}
-    },
-    {
-      id: "edicao-empresas",
-      title: "EDIÇÃO DE EMPRESAS",
-      fullTitle: "Gerenciar Empresas",
-      icon: Building2,
-      className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
-      iconColor: "text-gray-600",
-      onClick: () => {
-        console.log("Edição de empresas clicked, opening modal");
-        setIsEmpresasModalOpen(true);
-      }
-    },
-    {
-      id: "edicao-contratos-propostas",
-      title: "EDIÇÃO DE CONTRATOS E PROPOSTAS",
-      fullTitle: "Configurar Templates",
-      icon: FileText,
-      className: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
-      iconColor: "text-orange-600",
-      onClick: () => navigate("/configuracoes/contratos-propostas")
-    },
-    {
-      id: "edicao-site",
-      title: "EDIÇÃO DO SITE",
-      fullTitle: "Configurar Site",
-      icon: Globe,
-      className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
-      iconColor: "text-indigo-600",
-      onClick: () => {}
-    }
-  ];
+  const handleConfigChange = (field: string, value: any) => {
+    setConfiguracoes(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
-        {/* Header with Back Button */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="container mx-auto px-6 py-8">
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => navigate("/")}
-            className="back-button"
+            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
           >
             <ArrowLeft size={20} className="text-slate-600" />
             <span className="text-slate-700">Voltar</span>
           </button>
         </div>
 
-        {/* Page Title */}
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl mb-6 shadow-lg">
-            <Settings size={40} className="text-white" />
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl mb-4 shadow-lg">
+            <Settings size={32} className="text-white" />
           </div>
-          <h1 className="page-title text-center">
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">
             Configurações
           </h1>
-          <p className="text-description text-center max-w-2xl mx-auto">
-            Configure formulários, empresas e personalize o site do sistema
+          <p className="text-slate-600">
+            Gerencie as configurações do sistema
           </p>
         </div>
 
-        {/* Cards Grid - Configurações */}
-        <div className="content-grid animate-slide-up">
-          {configuracoesSection.map((section) => (
-            <div 
-              key={section.id}
-              onClick={section.onClick}
-              className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
-            >
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                  <section.icon size={32} className={section.iconColor} />
-                </div>
-                <div>
-                  <h3 className="subsection-title">{section.title}</h3>
-                  <p className="text-description leading-relaxed">{section.fullTitle}</p>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Configurações de Usuário */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <User size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Perfil do Usuário</h2>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="nomeUsuario">Nome</Label>
+                <Input
+                  id="nomeUsuario"
+                  value={configuracoes.nomeUsuario}
+                  onChange={(e) => handleConfigChange("nomeUsuario", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="emailUsuario">E-mail</Label>
+                <Input
+                  id="emailUsuario"
+                  type="email"
+                  value={configuracoes.emailUsuario}
+                  onChange={(e) => handleConfigChange("emailUsuario", e.target.value)}
+                />
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Configurações de Notificações */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center">
+                <Bell size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Notificações</h2>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="notificacoesPush">Notificações Push</Label>
+                  <p className="text-sm text-slate-600">Receber notificações no navegador</p>
+                </div>
+                <Switch
+                  id="notificacoesPush"
+                  checked={configuracoes.notificacoesPush}
+                  onCheckedChange={(checked) => handleConfigChange("notificacoesPush", checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="notificacoesEmail">Notificações por E-mail</Label>
+                  <p className="text-sm text-slate-600">Receber notificações por e-mail</p>
+                </div>
+                <Switch
+                  id="notificacoesEmail"
+                  checked={configuracoes.notificacoesEmail}
+                  onCheckedChange={(checked) => handleConfigChange("notificacoesEmail", checked)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Configurações do Sistema */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Settings size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Sistema</h2>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="temaEscuro">Tema Escuro</Label>
+                  <p className="text-sm text-slate-600">Ativar modo escuro</p>
+                </div>
+                <Switch
+                  id="temaEscuro"
+                  checked={configuracoes.temaEscuro}
+                  onCheckedChange={(checked) => handleConfigChange("temaEscuro", checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="autoSalvar">Auto-salvar</Label>
+                  <p className="text-sm text-slate-600">Salvar automaticamente as alterações</p>
+                </div>
+                <Switch
+                  id="autoSalvar"
+                  checked={configuracoes.autoSalvar}
+                  onCheckedChange={(checked) => handleConfigChange("autoSalvar", checked)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Gerenciamento de Empresas */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                <Building2 size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Empresas</h2>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-slate-600">
+                Gerencie as empresas cadastradas no sistema, incluindo informações básicas como nome, CNPJ e dados de contato.
+              </p>
+              
+              <Button 
+                onClick={() => setIsEmpresasModalOpen(true)}
+                className="w-full bg-orange-600 hover:bg-orange-700"
+              >
+                <Building2 size={16} className="mr-2" />
+                Gerenciar Empresas
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-16 animate-fade-in">
-          <p className="text-description">
-            © 2024 Grupo Athos. Todos os direitos reservados.
-          </p>
-        </div>
+        <GerenciarEmpresasModal
+          isOpen={isEmpresasModalOpen}
+          onClose={() => setIsEmpresasModalOpen(false)}
+        />
       </div>
-
-      {/* Modal de Empresas */}
-      <EmpresasModal 
-        isOpen={isEmpresasModalOpen}
-        onClose={() => {
-          console.log("EmpresasModal onClose called");
-          setIsEmpresasModalOpen(false);
-        }}
-      />
     </div>
   );
 };
