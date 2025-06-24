@@ -7,7 +7,10 @@ import {
   Eye,
   Edit,
   Trash2,
-  X
+  X,
+  Users,
+  FileText,
+  History
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,6 +35,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import PessoasModal from "@/components/modals/PessoasModal";
+import HistoricoModal from "@/components/modals/HistoricoModal";
+import DocumentosModal from "@/components/modals/DocumentosModal";
 
 interface ClienteFornecedor {
   id: string;
@@ -60,6 +66,11 @@ const ClientesFornecedores = () => {
   const [editingItem, setEditingItem] = useState<ClienteFornecedor | null>(null);
   const [viewingItem, setViewingItem] = useState<ClienteFornecedor | null>(null);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  
+  // Estados para os novos modais
+  const [isPessoasModalOpen, setIsPessoasModalOpen] = useState(false);
+  const [isHistoricoModalOpen, setIsHistoricoModalOpen] = useState(false);
+  const [isDocumentosModalOpen, setIsDocumentosModalOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     nome: "",
@@ -519,7 +530,43 @@ const ClientesFornecedores = () => {
                   )}
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pt-4">
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      setIsPessoasModalOpen(true);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Users size={16} />
+                    Pessoas
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      setIsDocumentosModalOpen(true);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <FileText size={16} />
+                    Documentos
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      setIsHistoricoModalOpen(true);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <History size={16} />
+                    Histórico
+                  </Button>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-4 border-t">
                   <Button 
                     variant="outline"
                     onClick={() => {
@@ -562,6 +609,24 @@ const ClientesFornecedores = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <PessoasModal
+          isOpen={isPessoasModalOpen}
+          onClose={() => setIsPessoasModalOpen(false)}
+          clienteNome={viewingItem?.nome || ""}
+        />
+
+        <HistoricoModal
+          isOpen={isHistoricoModalOpen}
+          onClose={() => setIsHistoricoModalOpen(false)}
+          clienteNome={viewingItem?.nome || ""}
+        />
+
+        <DocumentosModal
+          isOpen={isDocumentosModalOpen}
+          onClose={() => setIsDocumentosModalOpen(false)}
+          clienteNome={viewingItem?.nome || ""}
+        />
       </div>
     </div>
   );
