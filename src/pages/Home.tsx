@@ -6,9 +6,7 @@ import {
   TrendingUp, 
   DollarSign,
   Building2,
-  Edit,
   Globe,
-  FileEdit,
   UserPlus
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -84,35 +82,38 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <div className="container mx-auto px-6 py-12">
+    <div className="app-container">
+      <div className="content-wrapper">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
             <span className="text-white font-bold text-2xl">GA</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+          <h1 className="page-title text-center">
             Portal Grupo Athos
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-description text-center max-w-2xl mx-auto text-base">
             Sistema de gestão integrado para organização e controle dos setores essenciais da empresa
           </p>
         </div>
 
         {/* Section Title - Gestão Interna */}
-        <div className="flex items-center justify-center gap-3 mb-12 animate-slide-up">
-          <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
+        <div className="page-header justify-center animate-slide-up">
+          <div className="page-header-icon bg-gradient-to-br from-slate-100 to-slate-200">
             <Building2 size={24} className="text-slate-600" />
           </div>
-          <h2 className="text-3xl font-bold text-slate-800">Portal de Gestão</h2>
+          <div>
+            <h2 className="section-title mb-0">Portal de Gestão</h2>
+            <p className="text-description">Módulos internos do sistema</p>
+          </div>
         </div>
 
         {/* Cards Grid - Gestão Interna */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-slide-up mb-20">
+        <div className="content-grid animate-slide-up mb-12">
           {gestaoInternaSection.map((section) => (
             <div 
               key={section.id}
-              className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
+              className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
               onClick={section.onClick}
             >
               <div className="flex flex-col items-center text-center space-y-4">
@@ -120,8 +121,8 @@ const Home = () => {
                   <section.icon size={32} className={section.iconColor} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">{section.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{section.fullTitle}</p>
+                  <h3 className="subsection-title mb-2">{section.title}</h3>
+                  <p className="text-description leading-relaxed">{section.fullTitle}</p>
                 </div>
               </div>
             </div>
@@ -129,19 +130,22 @@ const Home = () => {
         </div>
 
         {/* Section Title - Portais Externos */}
-        <div className="flex items-center justify-center gap-3 mb-12 animate-slide-up">
-          <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center">
+        <div className="page-header justify-center animate-slide-up">
+          <div className="page-header-icon bg-gradient-to-br from-emerald-100 to-emerald-200">
             <Globe size={24} className="text-emerald-600" />
           </div>
-          <h2 className="text-3xl font-bold text-slate-800">Portais Externos</h2>
+          <div>
+            <h2 className="section-title mb-0">Portais Externos</h2>
+            <p className="text-description">Acesso para colaboradores e parceiros</p>
+          </div>
         </div>
 
         {/* Cards Grid - Portais Externos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-slide-up">
+        <div className="content-grid animate-slide-up mb-8">
           {portaisExternosSection.map((section) => (
             <div 
               key={section.id}
-              className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
+              className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
               onClick={section.onClick}
             >
               <div className="flex flex-col items-center text-center space-y-4">
@@ -149,8 +153,8 @@ const Home = () => {
                   <section.icon size={32} className={section.iconColor} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">{section.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{section.fullTitle}</p>
+                  <h3 className="subsection-title mb-2">{section.title}</h3>
+                  <p className="text-description leading-relaxed">{section.fullTitle}</p>
                 </div>
               </div>
             </div>
@@ -158,8 +162,8 @@ const Home = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-16 animate-fade-in">
-          <p className="text-sm text-slate-500">
+        <div className="text-center mt-8 pt-8 border-t border-gray-200 animate-fade-in">
+          <p className="text-description">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>

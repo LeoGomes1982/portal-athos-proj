@@ -7,7 +7,8 @@ import {
   Briefcase, 
   Target,
   UserCheck,
-  X
+  X,
+  ChevronLeft
 } from "lucide-react";
 
 const subsections = [
@@ -37,39 +38,56 @@ const subsections = [
   }
 ];
 
-export function RHSection() {
+interface RHSectionProps {
+  onBack?: () => void;
+}
+
+export function RHSection({ onBack }: RHSectionProps) {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <>
+    <div className="app-container">
       <div className="content-wrapper animate-fade-in">
-        <div className="section-title-header">
-          <div className="section-icon-header bg-blue-600">
-            <Users size={24} className="text-white" />
+        {/* Back Button */}
+        {onBack && (
+          <button onClick={onBack} className="back-button">
+            <ChevronLeft size={16} />
+            Voltar
+          </button>
+        )}
+
+        {/* Page Header */}
+        <div className="page-header">
+          <div className="page-header-icon bg-blue-600">
+            <Users size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">RH</h1>
-            <p className="text-slate-600">Recursos Humanos</p>
+            <h1 className="page-title mb-0">Recursos Humanos</h1>
+            <p className="text-description">Gestão de pessoas e talentos</p>
           </div>
         </div>
 
-        <div className="subsections-grid">
+        {/* Subsections Grid */}
+        <div className="content-grid">
           {subsections.map((subsection) => (
             <div 
               key={subsection.id}
-              className="subsection-card"
+              className="modern-card cursor-pointer transition-all duration-300 hover:scale-105"
               onClick={() => setShowModal(true)}
             >
-              <div className={`subsection-icon ${subsection.bgColor}`}>
-                <subsection.icon size={24} className={subsection.textColor} />
+              <div className="card-content text-center">
+                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center mx-auto mb-4`}>
+                  <subsection.icon size={24} className={subsection.textColor} />
+                </div>
+                <h3 className="subsection-title">{subsection.title}</h3>
+                <p className="text-description">{subsection.description}</p>
               </div>
-              <h3 className="subsection-title">{subsection.title}</h3>
-              <p className="subsection-description">{subsection.description}</p>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -80,14 +98,15 @@ export function RHSection() {
                     <Users size={24} className="text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="modal-title">RH</h2>
-                    <p className="text-slate-600">Recursos Humanos</p>
+                    <h2 className="modal-title">Recursos Humanos</h2>
+                    <p className="text-description">Gestão de pessoas e talentos</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowModal(false)}
+                  className="secondary-btn p-2 h-auto"
                 >
                   <X size={20} />
                 </Button>
@@ -95,31 +114,33 @@ export function RHSection() {
             </div>
             
             <div className="modal-body">
-              <div className="subsections-grid">
+              <div className="content-grid">
                 {subsections.map((subsection) => (
-                  <div key={subsection.id} className="subsection-card">
-                    <div className={`subsection-icon ${subsection.bgColor}`}>
-                      <subsection.icon size={20} className={subsection.textColor} />
+                  <div key={subsection.id} className="modern-card">
+                    <div className="card-content text-center">
+                      <div className={`w-12 h-12 ${subsection.bgColor} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+                        <subsection.icon size={20} className={subsection.textColor} />
+                      </div>
+                      <h3 className="font-semibold text-slate-800 mb-2 text-sm">
+                        {subsection.title}
+                      </h3>
+                      <p className="text-description text-xs">
+                        {subsection.description}
+                      </p>
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-800 mb-2">
-                      {subsection.title}
-                    </h3>
-                    <p className="text-xs text-slate-600">
-                      {subsection.description}
-                    </p>
                   </div>
                 ))}
               </div>
               
               <div className="text-center mt-6">
-                <Button onClick={() => setShowModal(false)} className="btn-primary">
+                <button onClick={() => setShowModal(false)} className="secondary-btn">
                   Fechar
-                </Button>
+                </button>
               </div>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

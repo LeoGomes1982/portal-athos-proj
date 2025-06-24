@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,90 +21,85 @@ export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
 
   return (
     <div className="app-container">
-      <div className="content-wrapper">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8 animate-fade-in">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={onBack}
-            className="secondary-btn"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Voltar
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center">
-              <UserPlus size={24} className="text-white" />
-            </div>
-            <div>
-              <h1 className="page-title mb-0">Admissão de Colaboradores</h1>
-              <p className="text-gray-600">Gerencie o processo de contratação</p>
-            </div>
+      <div className="content-wrapper animate-fade-in">
+        {/* Back Button */}
+        <button onClick={onBack} className="back-button">
+          <ChevronLeft size={16} />
+          Voltar
+        </button>
+
+        {/* Page Header */}
+        <div className="page-header">
+          <div className="page-header-icon bg-emerald-600">
+            <UserPlus size={24} />
+          </div>
+          <div>
+            <h1 className="page-title mb-0">Admissão de Colaboradores</h1>
+            <p className="text-description">Gerencie o processo de contratação</p>
           </div>
         </div>
 
         {/* Estatísticas */}
         <div className="stats-grid animate-slide-up">
           <div className="stat-card">
-            <Calendar size={24} className="text-blue-600 mb-2 mx-auto" />
-            <div className="text-2xl font-bold text-blue-600 mb-1">12</div>
-            <div className="text-sm text-gray-600">Este mês</div>
+            <Calendar size={24} className="text-blue-600 mb-3 mx-auto" />
+            <div className="stat-value text-blue-600">12</div>
+            <div className="stat-label">Este mês</div>
           </div>
           <div className="stat-card">
-            <CheckCircle size={24} className="text-emerald-600 mb-2 mx-auto" />
-            <div className="text-2xl font-bold text-emerald-600 mb-1">3</div>
-            <div className="text-sm text-gray-600">Esta semana</div>
+            <CheckCircle size={24} className="text-emerald-600 mb-3 mx-auto" />
+            <div className="stat-value text-emerald-600">3</div>
+            <div className="stat-label">Esta semana</div>
           </div>
           <div className="stat-card">
-            <UserPlus size={24} className="text-purple-600 mb-2 mx-auto" />
-            <div className="text-2xl font-bold text-purple-600 mb-1">45</div>
-            <div className="text-sm text-gray-600">Total ano</div>
+            <UserPlus size={24} className="text-purple-600 mb-3 mx-auto" />
+            <div className="stat-value text-purple-600">45</div>
+            <div className="stat-label">Total ano</div>
           </div>
           <div className="stat-card">
-            <Clock size={24}  className="text-orange-600 mb-2 mx-auto" />
-            <div className="text-2xl font-bold text-orange-600 mb-1">2</div>
-            <div className="text-sm text-gray-600">Pendentes</div>
+            <Clock size={24} className="text-orange-600 mb-3 mx-auto" />
+            <div className="stat-value text-orange-600">2</div>
+            <div className="stat-label">Pendentes</div>
           </div>
         </div>
 
         {/* Ação Principal */}
         <div className="text-center mb-8 animate-fade-in">
-          <Button 
+          <button 
             onClick={() => setShowModal(true)}
-            className="primary-btn text-lg px-8 py-6"
+            className="success-btn text-base px-8 py-4 h-auto"
           >
-            <Plus size={24} className="mr-3" />
+            <Plus size={20} className="mr-2" />
             Nova Admissão
-          </Button>
+          </button>
         </div>
 
         {/* Lista de Admissões */}
         <Card className="modern-card animate-slide-up">
-          <CardHeader>
-            <CardTitle className="section-title flex items-center gap-2">
+          <CardHeader className="card-header">
+            <CardTitle className="section-title flex items-center gap-2 mb-0">
               <CheckCircle size={20} className="text-emerald-600" />
               Admissões Recentes
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="card-content">
+            <div className="space-y-3">
               {admissoes.map((admissao, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 font-semibold">
+                <div key={index} className="list-item">
+                  <div className="list-item-content">
+                    <div className="list-item-avatar bg-emerald-100 text-emerald-700">
                       {admissao.avatar}
                     </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{admissao.nome}</div>
-                      <div className="text-sm text-gray-600">{admissao.cargo}</div>
+                    <div className="list-item-info">
+                      <h4>{admissao.nome}</h4>
+                      <p>{admissao.cargo}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-gray-600 mb-1">
+                    <div className="text-xs text-gray-600 mb-2">
                       {new Date(admissao.data).toLocaleDateString('pt-BR')}
                     </div>
-                    <div className={`text-xs px-3 py-1 rounded-full font-medium ${
+                    <div className={`status-badge ${
                       admissao.status === 'Concluída' 
                         ? 'status-active' 
                         : 'status-warning'
