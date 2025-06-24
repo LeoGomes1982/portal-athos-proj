@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -78,8 +79,9 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
   }
 
   html {
@@ -104,33 +106,37 @@
   }
 
   .page-title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 600;
     color: #1e293b;
     margin-bottom: 0.75rem;
-    line-height: 1.2;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
   }
 
   .section-title {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.75rem;
+    font-weight: 500;
     color: #1e293b;
     margin-bottom: 1rem;
-    line-height: 1.3;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
   }
 
   .subsection-title {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.375rem;
+    font-weight: 500;
     color: #374151;
     margin-bottom: 0.75rem;
     line-height: 1.4;
+    letter-spacing: -0.015em;
   }
 
   .text-description {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: #6b7280;
-    line-height: 1.5;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
   }
 
   .navigation-button {
@@ -165,13 +171,14 @@
     color: #64748b;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
     height: 44px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    letter-spacing: -0.005em;
   }
 
   .back-button:hover {
@@ -190,13 +197,14 @@
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
     height: 44px;
     box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.3);
+    letter-spacing: -0.005em;
   }
 
   .home-button:hover {
@@ -208,7 +216,7 @@
   .primary-btn {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
-    font-weight: 600;
+    font-weight: 500;
     padding: 0.875rem 2rem;
     border-radius: 12px;
     border: none;
@@ -218,9 +226,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     height: 44px;
     box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.3);
+    letter-spacing: -0.005em;
   }
 
   .primary-btn:hover {
@@ -248,9 +257,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     height: 44px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    letter-spacing: -0.005em;
   }
 
   .secondary-btn:hover {
@@ -263,7 +273,7 @@
   .success-btn {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
-    font-weight: 600;
+    font-weight: 500;
     padding: 0.875rem 2rem;
     border-radius: 12px;
     border: none;
@@ -273,9 +283,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     height: 44px;
     box-shadow: 0 2px 4px 0 rgba(16, 185, 129, 0.3);
+    letter-spacing: -0.005em;
   }
 
   .success-btn:hover {
@@ -355,16 +366,18 @@
   }
 
   .stat-value {
-    font-size: 2rem;
-    font-weight: 800;
+    font-size: 2.25rem;
+    font-weight: 600;
     margin-bottom: 0.5rem;
-    line-height: 1;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
   }
 
   .stat-label {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: #64748b;
     font-weight: 500;
+    letter-spacing: -0.005em;
   }
 
   .list-item {
@@ -400,28 +413,31 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: 500;
     color: #64748b;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+    letter-spacing: -0.005em;
   }
 
   .list-item-info h4 {
-    font-weight: 600;
+    font-weight: 500;
     color: #1e293b;
     margin-bottom: 0.25rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+    letter-spacing: -0.005em;
   }
 
   .list-item-info p {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: #64748b;
+    letter-spacing: -0.005em;
   }
 
   .status-badge {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8125rem;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.025em;
   }
@@ -470,10 +486,11 @@
   }
 
   .modal-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.625rem;
+    font-weight: 500;
     color: #1e293b;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.015em;
   }
 
   .modal-body {
@@ -494,10 +511,11 @@
 
   .form-label {
     display: block;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     color: #374151;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.005em;
   }
 
   .form-input {
@@ -505,9 +523,10 @@
     padding: 0.75rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     transition: all 0.2s ease;
     background: white;
+    letter-spacing: -0.005em;
   }
 
   .form-input:focus {
@@ -527,11 +546,11 @@
     }
 
     .page-title {
-      font-size: 1.75rem;
+      font-size: 1.875rem;
     }
 
     .section-title {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
     }
 
     .content-grid,
