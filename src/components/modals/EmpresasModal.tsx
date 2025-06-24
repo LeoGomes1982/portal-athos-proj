@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Building2, Upload, X } from "lucide-react";
+import { Building2, Upload, X, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -102,7 +102,9 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!formData.nome || !formData.cnpj || !formData.email) {
       toast({
         title: "Erro",
@@ -140,6 +142,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
   };
 
   const handleEdit = (empresa: Empresa) => {
+    console.log("Editando empresa:", empresa);
     setFormData({
       nome: empresa.nome,
       cnpj: empresa.cnpj,
@@ -165,8 +168,14 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
     });
   };
 
+  const handleClose = () => {
+    resetForm();
+    setShowForm(false);
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -218,7 +227,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                           size="sm"
                           onClick={() => handleEdit(empresa)}
                         >
-                          <Building2 size={16} />
+                          <Edit size={16} />
                         </Button>
                         <Button
                           variant="outline"
@@ -248,141 +257,147 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Upload de Logo */}
-                <div className="md:col-span-2">
-                  <Label>Logo da Empresa</Label>
-                  <div className="mt-2 flex items-center space-x-4">
-                    {logoPreview ? (
-                      <img 
-                        src={logoPreview} 
-                        alt="Preview do logo"
-                        className="w-20 h-20 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 bg-slate-200 rounded-lg flex items-center justify-center">
-                        <Upload size={24} className="text-slate-400" />
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Upload de Logo */}
+                  <div className="md:col-span-2">
+                    <Label>Logo da Empresa</Label>
+                    <div className="mt-2 flex items-center space-x-4">
+                      {logoPreview ? (
+                        <img 
+                          src={logoPreview} 
+                          alt="Preview do logo"
+                          className="w-20 h-20 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-slate-200 rounded-lg flex items-center justify-center">
+                          <Upload size={24} className="text-slate-400" />
+                        </div>
+                      )}
+                      <div>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                          className="w-full"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">
+                          Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
+                        </p>
                       </div>
-                    )}
-                    <div>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="w-full"
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
-                      </p>
                     </div>
+                  </div>
+
+                  {/* Campos do formulário */}
+                  <div>
+                    <Label htmlFor="nome">Nome da Empresa *</Label>
+                    <Input
+                      id="nome"
+                      value={formData.nome}
+                      onChange={(e) => handleInputChange("nome", e.target.value)}
+                      placeholder="Digite o nome da empresa"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="cnpj">CNPJ *</Label>
+                    <Input
+                      id="cnpj"
+                      value={formData.cnpj}
+                      onChange={(e) => handleInputChange("cnpj", e.target.value)}
+                      placeholder="00.000.000/0000-00"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email">E-mail *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="empresa@exemplo.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="telefone">Telefone</Label>
+                    <Input
+                      id="telefone"
+                      value={formData.telefone}
+                      onChange={(e) => handleInputChange("telefone", e.target.value)}
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Label htmlFor="endereco">Endereço</Label>
+                    <Input
+                      id="endereco"
+                      value={formData.endereco}
+                      onChange={(e) => handleInputChange("endereco", e.target.value)}
+                      placeholder="Rua, Avenida, número"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="cidade">Cidade</Label>
+                    <Input
+                      id="cidade"
+                      value={formData.cidade}
+                      onChange={(e) => handleInputChange("cidade", e.target.value)}
+                      placeholder="Nome da cidade"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="estado">Estado</Label>
+                    <Input
+                      id="estado"
+                      value={formData.estado}
+                      onChange={(e) => handleInputChange("estado", e.target.value)}
+                      placeholder="UF"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="cep">CEP</Label>
+                    <Input
+                      id="cep"
+                      value={formData.cep}
+                      onChange={(e) => handleInputChange("cep", e.target.value)}
+                      placeholder="00000-000"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Label htmlFor="observacoes">Observações</Label>
+                    <Textarea
+                      id="observacoes"
+                      value={formData.observacoes}
+                      onChange={(e) => handleInputChange("observacoes", e.target.value)}
+                      placeholder="Informações adicionais sobre a empresa"
+                      rows={3}
+                    />
                   </div>
                 </div>
 
-                {/* Campos do formulário */}
-                <div>
-                  <Label htmlFor="nome">Nome da Empresa *</Label>
-                  <Input
-                    id="nome"
-                    value={formData.nome}
-                    onChange={(e) => handleInputChange("nome", e.target.value)}
-                    placeholder="Digite o nome da empresa"
-                  />
+                <div className="flex justify-end space-x-4 pt-4">
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={() => { setShowForm(false); resetForm(); }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit">
+                    {editingEmpresa ? "Atualizar" : "Cadastrar"} Empresa
+                  </Button>
                 </div>
-
-                <div>
-                  <Label htmlFor="cnpj">CNPJ *</Label>
-                  <Input
-                    id="cnpj"
-                    value={formData.cnpj}
-                    onChange={(e) => handleInputChange("cnpj", e.target.value)}
-                    placeholder="00.000.000/0000-00"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="email">E-mail *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="empresa@exemplo.com"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="telefone">Telefone</Label>
-                  <Input
-                    id="telefone"
-                    value={formData.telefone}
-                    onChange={(e) => handleInputChange("telefone", e.target.value)}
-                    placeholder="(00) 00000-0000"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="endereco">Endereço</Label>
-                  <Input
-                    id="endereco"
-                    value={formData.endereco}
-                    onChange={(e) => handleInputChange("endereco", e.target.value)}
-                    placeholder="Rua, Avenida, número"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="cidade">Cidade</Label>
-                  <Input
-                    id="cidade"
-                    value={formData.cidade}
-                    onChange={(e) => handleInputChange("cidade", e.target.value)}
-                    placeholder="Nome da cidade"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="estado">Estado</Label>
-                  <Input
-                    id="estado"
-                    value={formData.estado}
-                    onChange={(e) => handleInputChange("estado", e.target.value)}
-                    placeholder="UF"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="cep">CEP</Label>
-                  <Input
-                    id="cep"
-                    value={formData.cep}
-                    onChange={(e) => handleInputChange("cep", e.target.value)}
-                    placeholder="00000-000"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="observacoes">Observações</Label>
-                  <Textarea
-                    id="observacoes"
-                    value={formData.observacoes}
-                    onChange={(e) => handleInputChange("observacoes", e.target.value)}
-                    placeholder="Informações adicionais sobre a empresa"
-                    rows={3}
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-4 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => { setShowForm(false); resetForm(); }}
-                >
-                  Cancelar
-                </Button>
-                <Button onClick={handleSubmit}>
-                  {editingEmpresa ? "Atualizar" : "Cadastrar"} Empresa
-                </Button>
-              </div>
+              </form>
             </>
           )}
         </div>
