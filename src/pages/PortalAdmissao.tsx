@@ -68,8 +68,8 @@ const PortalAdmissao = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
-      <div className="container mx-auto px-6 py-12">
+    <div className="app-container">
+      <div className="content-wrapper">
         <PortalHeader />
         
         <StepsProgress
@@ -80,8 +80,8 @@ const PortalAdmissao = () => {
         />
 
         {/* Footer */}
-        <div className="text-center mt-16">
-          <p className="text-sm text-slate-500">
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
