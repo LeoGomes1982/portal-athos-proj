@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -259,8 +260,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-green-50/30 via-slate-50/70 to-green-100/40">
+      <div className="content-wrapper animate-fade-in bg-white/80 backdrop-blur-sm border border-green-100/50">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={onBack} className="back-button">
@@ -271,8 +272,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="page-header-icon bg-green-600">
-            <span className="text-white text-2xl">👥</span>
+          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <span className="text-white text-3xl">👥</span>
           </div>
           <div>
             <h1 className="page-title mb-0">Gestão de Funcionários</h1>
@@ -334,7 +335,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         </div>
 
         {/* Grid de Funcionários Ativos com Controles */}
-        <Card className="modern-card animate-slide-up">
+        <Card className="modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-green-200/50">
           <CardHeader className="card-header">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
