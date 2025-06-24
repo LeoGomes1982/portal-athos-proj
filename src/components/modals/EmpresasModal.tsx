@@ -1,9 +1,6 @@
+
 import React, { useState } from "react";
-import { Building2, Upload, X, Edit } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Building2 } from "lucide-react";
 import { 
   Dialog, 
   DialogContent, 
@@ -18,11 +15,10 @@ import {
   validatePhone, 
   validateCNPJ, 
   validateCEP,
-  validateFileType,
-  validateFileSize,
-  sanitizeFileName,
   generateSecureId
 } from "@/utils/security";
+import EmpresasList from "./empresa/EmpresasList";
+import EmpresaForm from "./empresa/EmpresaForm";
 
 interface Empresa {
   id: string;
@@ -103,6 +99,11 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
     setFormData(prev => ({ ...prev, [field]: sanitizedValue }));
   };
 
+  const handleLogoChange = (logo: string) => {
+    setLogoPreview(logo);
+    setFormData(prev => ({ ...prev, logo }));
+  };
+
   const validateForm = (): boolean => {
     if (!formData.nome || !formData.cnpj || !formData.email) {
       toast({
@@ -150,51 +151,6 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
     }
 
     return true;
-  };
-
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    const maxSizeInMB = 5;
-
-    if (!validateFileType(file, allowedTypes)) {
-      toast({
-        title: "Erro",
-        description: "Tipo de arquivo inválido. Use: JPG, PNG, GIF ou WebP",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!validateFileSize(file, maxSizeInMB)) {
-      toast({
-        title: "Erro",
-        description: `Arquivo muito grande. Máximo permitido: ${maxSizeInMB}MB`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const sanitizedFileName = sanitizeFileName(file.name);
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setLogoPreview(result);
-      setFormData(prev => ({ ...prev, logo: result }));
-    };
-    
-    reader.onerror = () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao processar o arquivo de imagem.",
-        variant: "destructive",
-      });
-    };
-    
-    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -282,6 +238,15 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
     }
   };
 
+  const handleAddNew = () => {
+    setShowForm(true);
+  };
+
+  const handleCancel = () => {
+    setShowForm(false);
+    resetForm();
+  };
+
   const handleClose = () => {
     console.log("handleClose called");
     resetForm();
@@ -304,245 +269,22 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
 
         <div className="space-y-6">
           {!showForm ? (
-            <>
-              {/* Header com botão adicionar */}
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Empresas Cadastradas</h3>
-                <Button onClick={() => {
-                  console.log("Nova Empresa button clicked");
-                  setShowForm(true);
-                }}>
-                  <Building2 size={16} className="mr-2" />
-                  Nova Empresa
-                </Button>
-              </div>
-
-              {/* Lista de empresas */}
-              <div className="space-y-4">
-                {empresas.map((empresa) => (
-                  <div key={empresa.id} className="bg-slate-50 rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-4">
-                        {empresa.logo ? (
-                          <img 
-                            src={empresa.logo} 
-                            alt={`Logo ${empresa.nome}`}
-                            className="w-16 h-16 rounded-lg object-cover"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                            <Building2 className="text-white" size={24} />
-                          </div>
-                        )}
-                        <div>
-                          <h4 className="font-semibold text-slate-800">{empresa.nome}</h4>
-                          <p className="text-sm text-slate-600">CNPJ: {empresa.cnpj}</p>
-                          <p className="text-sm text-slate-600">{empresa.email}</p>
-                          <p className="text-sm text-slate-600">{empresa.telefone}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            console.log("Edit button clicked for:", empresa.nome);
-                            handleEdit(empresa);
-                          }}
-                        >
-                          <Edit size={16} />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            console.log("Delete button clicked for:", empresa.nome);
-                            handleDelete(empresa.id);
-                          }}
-                        >
-                          <X size={16} />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+            <EmpresasList
+              empresas={empresas}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onAddNew={handleAddNew}
+            />
           ) : (
-            <>
-              {/* Formulário */}
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">
-                  {editingEmpresa ? "Editar Empresa" : "Nova Empresa"}
-                </h3>
-                <Button 
-                  variant="outline" 
-                  onClick={() => { 
-                    console.log("Cancel form button clicked");
-                    setShowForm(false); 
-                    resetForm(); 
-                  }}
-                >
-                  <X size={16} />
-                </Button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Upload de Logo */}
-                <div className="md:col-span-2">
-                  <Label>Logo da Empresa</Label>
-                  <div className="mt-2 flex items-center space-x-4">
-                    {logoPreview ? (
-                      <img 
-                        src={logoPreview} 
-                        alt="Preview do logo"
-                        className="w-20 h-20 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 bg-slate-200 rounded-lg flex items-center justify-center">
-                        <Upload size={24} className="text-slate-400" />
-                      </div>
-                    )}
-                    <div>
-                      <Input
-                        type="file"
-                        accept="image/jpeg,image/png,image/gif,image/webp"
-                        onChange={handleLogoUpload}
-                        className="w-full"
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        Formatos aceitos: JPG, PNG, GIF, WebP (máx. 5MB)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Campos do formulário */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="nome">Nome da Empresa *</Label>
-                    <Input
-                      id="nome"
-                      value={formData.nome}
-                      onChange={(e) => handleInputChange("nome", e.target.value)}
-                      placeholder="Digite o nome da empresa"
-                      required
-                      maxLength={100}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="cnpj">CNPJ *</Label>
-                    <Input
-                      id="cnpj"
-                      value={formData.cnpj}
-                      onChange={(e) => handleInputChange("cnpj", e.target.value)}
-                      placeholder="00.000.000/0000-00"
-                      required
-                      maxLength={18}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">E-mail *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
-                      placeholder="empresa@exemplo.com"
-                      required
-                      maxLength={254}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="telefone">Telefone</Label>
-                    <Input
-                      id="telefone"
-                      value={formData.telefone}
-                      onChange={(e) => handleInputChange("telefone", e.target.value)}
-                      placeholder="(00) 00000-0000"
-                      maxLength={15}
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor="endereco">Endereço</Label>
-                    <Input
-                      id="endereco"
-                      value={formData.endereco}
-                      onChange={(e) => handleInputChange("endereco", e.target.value)}
-                      placeholder="Rua, Avenida, número"
-                      maxLength={200}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="cidade">Cidade</Label>
-                    <Input
-                      id="cidade"
-                      value={formData.cidade}
-                      onChange={(e) => handleInputChange("cidade", e.target.value)}
-                      placeholder="Nome da cidade"
-                      maxLength={100}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="estado">Estado</Label>
-                    <Input
-                      id="estado"
-                      value={formData.estado}
-                      onChange={(e) => handleInputChange("estado", e.target.value)}
-                      placeholder="UF"
-                      maxLength={2}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="cep">CEP</Label>
-                    <Input
-                      id="cep"
-                      value={formData.cep}
-                      onChange={(e) => handleInputChange("cep", e.target.value)}
-                      placeholder="00000-000"
-                      maxLength={9}
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor="observacoes">Observações</Label>
-                    <Textarea
-                      id="observacoes"
-                      value={formData.observacoes}
-                      onChange={(e) => handleInputChange("observacoes", e.target.value)}
-                      placeholder="Informações adicionais sobre a empresa"
-                      rows={3}
-                      maxLength={500}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-4">
-                  <Button 
-                    type="button"
-                    variant="outline" 
-                    onClick={() => { 
-                      console.log("Cancel form button clicked");
-                      setShowForm(false); 
-                      resetForm(); 
-                    }}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button type="submit">
-                    {editingEmpresa ? "Atualizar" : "Cadastrar"} Empresa
-                  </Button>
-                </div>
-              </form>
-            </>
+            <EmpresaForm
+              formData={formData}
+              editingEmpresa={editingEmpresa}
+              logoPreview={logoPreview}
+              onInputChange={handleInputChange}
+              onLogoChange={handleLogoChange}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+            />
           )}
         </div>
       </DialogContent>
