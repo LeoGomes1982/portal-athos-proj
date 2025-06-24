@@ -49,7 +49,7 @@ export default function Comercial() {
         <Button 
           variant="ghost" 
           className="mb-6"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
         >
           <ArrowLeft size={16} />
           Voltar

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, Grid3X3, List, Home } from "lucide-react";
+import { Search, Star, Grid3X3, List, ChevronLeft } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
 import { useNavigate } from "react-router-dom";
 
@@ -259,108 +259,87 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-50 to-green-200 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full opacity-40"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-300 rounded-full opacity-30"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-250 rounded-full opacity-25"></div>
-      </div>
+    <div className="app-container">
+      <div className="content-wrapper animate-fade-in">
+        {/* Navigation Button */}
+        <div className="navigation-button">
+          <button onClick={onBack} className="back-button">
+            <ChevronLeft size={16} />
+            Voltar
+          </button>
+        </div>
 
-      <div className="relative z-10 py-6 lg:py-12">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
-          {/* Header */}
-          <div className="text-center py-8">
-            <div className="inline-flex items-center gap-4 bg-white/95 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-green-300 mb-6">
-              <div className="w-16 h-16 bg-green-200 border-2 border-green-300 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-green-700 text-2xl">👥</span>
-              </div>
-              <div className="text-left">
-                <h1 className="text-3xl lg:text-4xl font-bold text-slate-800">Gestão de Funcionários</h1>
-                <p className="text-lg text-green-700">Departamento Pessoal</p>
-              </div>
-            </div>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-              Gerencie todos os funcionários da empresa e seus status
-            </p>
-            <div className="navigation-buttons justify-center mt-4">
-              <Button 
-                variant="outline" 
-                onClick={onBack} 
-                className="back-button"
-              >
-                ← Voltar ao DP
-              </Button>
-              <Button 
-                variant="default" 
-                onClick={() => navigate("/")}
-                className="home-button"
-              >
-                <Home className="w-4 h-4" />
-                Home
-              </Button>
-            </div>
+        {/* Page Header */}
+        <div className="page-header-centered">
+          <div className="page-header-icon bg-green-600">
+            <span className="text-white text-2xl">👥</span>
           </div>
+          <div>
+            <h1 className="page-title mb-0">Gestão de Funcionários</h1>
+            <p className="text-description">Departamento Pessoal</p>
+          </div>
+        </div>
 
-          {/* Resumo com contadores - mais compacto */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-green-300 p-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
-              📊 Resumo da Equipe
-            </h2>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
-                <CardContent className="text-center p-4">
-                  <div className="text-2xl font-bold text-green-600 mb-1">{contadores.total}</div>
-                  <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
-                </CardContent>
-              </Card>
-              
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
-                <CardContent className="text-center p-4">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
-                  <div className="text-sm font-medium text-slate-600">Em Férias</div>
-                </CardContent>
-              </Card>
+        {/* Resumo com contadores - mais compacto */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-green-300 p-6 mb-8">
+          <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
+            📊 Resumo da Equipe
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-green-600 mb-1">{contadores.total}</div>
+                <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
+                <div className="text-sm font-medium text-slate-600">Em Férias</div>
+              </CardContent>
+            </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
-                <CardContent className="text-center p-4">
-                  <div className="text-2xl font-bold text-yellow-600 mb-1">{contadores.experiencia}</div>
-                  <div className="text-sm font-medium text-slate-600">Em Experiência</div>
-                </CardContent>
-              </Card>
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-yellow-600 mb-1">{contadores.experiencia}</div>
+                <div className="text-sm font-medium text-slate-600">Em Experiência</div>
+              </CardContent>
+            </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white">
-                <CardContent className="text-center p-4">
-                  <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
-                  <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
-                </CardContent>
-              </Card>
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
+                <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
+              </CardContent>
+            </Card>
 
-              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-yellow-400 bg-gradient-to-br from-yellow-100 to-yellow-50 shadow-yellow-200/50">
-                <CardContent className="text-center p-4">
-                  <div className="flex items-center justify-center mb-1">
-                    <div className="relative">
-                      <Star className="text-yellow-500 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md" style={{
-                        filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
-                      }} />
-                      <div className="absolute inset-0 animate-pulse opacity-50">
-                        <Star className="text-yellow-300 w-6 h-6 fill-yellow-200" />
-                      </div>
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-yellow-400 bg-gradient-to-br from-yellow-100 to-yellow-50 shadow-yellow-200/50">
+              <CardContent className="text-center p-4">
+                <div className="flex items-center justify-center mb-1">
+                  <div className="relative">
+                    <Star className="text-yellow-500 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md" style={{
+                      filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                    }} />
+                    <div className="absolute inset-0 animate-pulse opacity-50">
+                      <Star className="text-yellow-300 w-6 h-6 fill-yellow-200" />
                     </div>
-                    <span className="text-2xl font-bold text-yellow-700">{contadores.destaque}</span>
                   </div>
-                  <div className="text-sm font-medium text-yellow-800">Em Destaque</div>
-                </CardContent>
-              </Card>
-            </div>
+                  <span className="text-2xl font-bold text-yellow-700">{contadores.destaque}</span>
+                </div>
+                <div className="text-sm font-medium text-yellow-800">Em Destaque</div>
+              </CardContent>
+            </Card>
           </div>
+        </div>
 
-          {/* Grid de Funcionários Ativos com Controles */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-green-300 p-6 lg:p-8">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-              <h2 className="text-2xl lg:text-3xl font-bold text-slate-800">
+        {/* Grid de Funcionários Ativos com Controles */}
+        <Card className="modern-card animate-slide-up">
+          <CardHeader className="card-header">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
                 👨‍💼 Funcionários Ativos
-              </h2>
+              </CardTitle>
               
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 {/* Search Input */}
@@ -395,7 +374,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                 </div>
               </div>
             </div>
-            
+          </CardHeader>
+          <CardContent className="card-content">
             {viewMode === "grid" ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 lg:gap-4">
                 {funcionariosAtivos.map((funcionario) => renderFuncionarioCard(funcionario))}
@@ -415,8 +395,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                 <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
               </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Modal de Detalhes Completo */}
