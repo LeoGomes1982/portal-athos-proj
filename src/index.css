@@ -134,6 +134,13 @@
     line-height: 1.5;
   }
 
+  .navigation-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
   .back-button {
     display: inline-flex;
     align-items: center;
@@ -147,7 +154,6 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: 1.5rem;
     text-decoration: none;
     height: 44px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -158,6 +164,30 @@
     color: #475569;
     transform: translateY(-1px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .home-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    height: 44px;
+    box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.3);
+  }
+
+  .home-button:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px 0 rgba(59, 130, 246, 0.4);
   }
 
   .primary-btn {
@@ -494,7 +524,13 @@
       grid-template-columns: 1fr;
     }
 
+    .navigation-buttons {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
     .back-button,
+    .home-button,
     .primary-btn,
     .secondary-btn,
     .success-btn {

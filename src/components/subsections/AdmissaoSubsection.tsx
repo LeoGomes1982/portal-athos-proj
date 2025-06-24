@@ -3,13 +3,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdmissaoModal } from "../modals/AdmissaoModal";
-import { ChevronLeft, UserPlus, Calendar, CheckCircle, Clock, Plus } from "lucide-react";
+import { ChevronLeft, UserPlus, Calendar, CheckCircle, Clock, Plus, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface AdmissaoSubsectionProps {
   onBack: () => void;
 }
 
 export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
   const admissoes = [
@@ -22,11 +24,17 @@ export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
   return (
     <div className="app-container">
       <div className="content-wrapper animate-fade-in">
-        {/* Back Button */}
-        <button onClick={onBack} className="back-button">
-          <ChevronLeft size={16} />
-          Voltar
-        </button>
+        {/* Navigation Buttons */}
+        <div className="navigation-buttons">
+          <button onClick={onBack} className="back-button">
+            <ChevronLeft size={16} />
+            Voltar
+          </button>
+          <button onClick={() => navigate("/")} className="home-button">
+            <Home size={16} />
+            Home
+          </button>
+        </div>
 
         {/* Page Header */}
         <div className="page-header">
@@ -63,7 +71,6 @@ export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
           </div>
         </div>
 
-        {/* Ação Principal */}
         <div className="text-center mb-8 animate-fade-in">
           <button 
             onClick={() => setShowModal(true)}
@@ -74,7 +81,6 @@ export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
           </button>
         </div>
 
-        {/* Lista de Admissões */}
         <Card className="modern-card animate-slide-up">
           <CardHeader className="card-header">
             <CardTitle className="section-title flex items-center gap-2 mb-0">

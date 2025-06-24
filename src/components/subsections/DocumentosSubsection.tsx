@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Upload, Search, Plus } from "lucide-react";
+import { ChevronLeft, Upload, Search, Plus, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentCard } from "@/components/DocumentCard";
 import { useNavigate } from "react-router-dom";
@@ -101,7 +101,6 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Verificar tamanho do arquivo (máx 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast({
           title: "Arquivo muito grande ❌",
@@ -128,7 +127,6 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       ? funcionarios.find(f => f.id.toString() === uploadData.funcionarioId)?.nome 
       : null;
 
-    // Criar novo documento
     const novoDocumento = {
       id: documentos.length + 1,
       nome: uploadData.arquivo.name,
@@ -146,7 +144,6 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       description: `${uploadData.arquivo.name} foi adicionado${funcionario ? ` para ${funcionario}` : ' como documento geral'}`,
     });
 
-    // Reset form
     setUploadData({
       arquivo: null,
       tipo: "",
@@ -154,7 +151,6 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       descricao: ""
     });
 
-    // Reset file input
     const fileInput = document.getElementById('arquivo') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
   };
@@ -184,31 +180,33 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
     });
   };
 
-  const handleBack = () => {
-    // Try to go back in browser history first
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      // Fallback to RH page if no history
-      navigate('/rh');
-    }
-  };
-
   const documentosPorFuncionario = documentos.filter(d => d.funcionario).length;
   const documentosGerais = documentos.filter(d => !d.funcionario).length;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
+      <div className="navigation-buttons">
         <Button 
           variant="outline" 
           size="sm" 
           onClick={onBack}
-          className="flex items-center gap-2"
+          className="back-button"
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar
         </Button>
+        <Button 
+          variant="default" 
+          size="sm" 
+          onClick={() => navigate("/")}
+          className="home-button"
+        >
+          <Home className="w-4 h-4" />
+          Home
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold text-blue-600">📄 Gestão de Documentos</h1>
       </div>
 

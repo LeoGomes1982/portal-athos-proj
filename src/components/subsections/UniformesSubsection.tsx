@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Home } from "lucide-react";
 import { UniformeModal } from "../modals/UniformeModal";
+import { useNavigate } from "react-router-dom";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -48,6 +48,7 @@ const entregasRecentes = [
 ];
 
 export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -64,15 +65,26 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
           {/* Header */}
           <div className="text-center py-8">
             <div className="flex items-center justify-center gap-4 mb-6">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onBack}
-                className="flex items-center gap-2 bg-white/90 backdrop-blur-sm shadow-lg border-2 hover:shadow-xl transition-all duration-300"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Voltar
-              </Button>
+              <div className="navigation-buttons">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onBack}
+                  className="back-button"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Voltar
+                </Button>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  onClick={() => navigate("/")}
+                  className="home-button"
+                >
+                  <Home className="w-4 h-4" />
+                  Home
+                </Button>
+              </div>
             </div>
             <div className="inline-flex items-center gap-4 bg-white/90 backdrop-blur-sm px-12 py-6 rounded-3xl shadow-lg border border-gray-200 mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Search } from "lucide-react";
+import { ChevronLeft, Search, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface ArquivoRHSubsectionProps {
@@ -107,28 +107,30 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
     return `${meses} mês${meses > 1 ? 'es' : ''}`;
   };
 
-  const handleBack = () => {
-    // Try to go back in browser history first
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      // Fallback to RH page if no history
-      navigate('/rh');
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
+      <div className="navigation-buttons">
         <Button 
           variant="outline" 
           size="sm" 
           onClick={onBack}
-          className="flex items-center gap-2"
+          className="back-button"
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar
         </Button>
+        <Button 
+          variant="default" 
+          size="sm" 
+          onClick={() => navigate("/")}
+          className="home-button"
+        >
+          <Home className="w-4 h-4" />
+          Home
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold text-blue-600">📦 Arquivo de RH</h1>
       </div>
 

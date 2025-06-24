@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, Grid3X3, List } from "lucide-react";
+import { Search, Star, Grid3X3, List, Home } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
+import { useNavigate } from "react-router-dom";
 
 interface FuncionariosSubsectionProps {
   onBack: () => void;
@@ -130,6 +131,7 @@ const statusConfig = {
 };
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [funcionariosList, setFuncionariosList] = useState(funcionarios);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
@@ -281,13 +283,23 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             <p className="text-slate-600 text-lg max-w-2xl mx-auto">
               Gerencie todos os funcionários da empresa e seus status
             </p>
-            <Button 
-              variant="outline" 
-              onClick={onBack} 
-              className="mt-4 border-green-300 text-green-800 hover:bg-green-100"
-            >
-              ← Voltar ao DP
-            </Button>
+            <div className="navigation-buttons justify-center mt-4">
+              <Button 
+                variant="outline" 
+                onClick={onBack} 
+                className="back-button"
+              >
+                ← Voltar ao DP
+              </Button>
+              <Button 
+                variant="default" 
+                onClick={() => navigate("/")}
+                className="home-button"
+              >
+                <Home className="w-4 h-4" />
+                Home
+              </Button>
+            </div>
           </div>
 
           {/* Resumo com contadores - mais compacto */}
