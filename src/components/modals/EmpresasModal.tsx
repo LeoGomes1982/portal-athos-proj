@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Building2, Upload, X, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,17 @@ import {
   DialogTitle 
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  sanitizeInput, 
+  validateEmail, 
+  validatePhone, 
+  validateCNPJ, 
+  validateCEP,
+  validateFileType,
+  validateFileSize,
+  sanitizeFileName,
+  generateSecureId
+} from "@/utils/security";
 
 interface Empresa {
   id: string;
@@ -86,86 +96,184 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const sanitizedValue = sanitizeInput(value);
+    setFormData(prev => ({ ...prev, [field]: sanitizedValue }));
   };
 
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setLogoPreview(result);
-        setFormData(prev => ({ ...prev, logo: result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const validateForm = (): boolean => {
     if (!formData.nome || !formData.cnpj || !formData.email) {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios.",
         variant: "destructive",
       });
+      return false;
+    }
+
+    if (!validateEmail(formData.email)) {
+      toast({
+        title: "Erro",
+        description: "Por favor, insira um email válido.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.telefone && !validatePhone(formData.telefone)) {
+      toast({
+        title: "Erro",
+        description: "Formato de telefone inválido. Use: (00) 00000-0000",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!validateCNPJ(formData.cnpj)) {
+      toast({
+        title: "Erro",
+        description: "Formato de CNPJ inválido. Use: 00.000.000/0000-00",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.cep && !validateCEP(formData.cep)) {
+      toast({
+        title: "Erro",
+        description: "Formato de CEP inválido. Use: 00000-000",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const maxSizeInMB = 5;
+
+    if (!validateFileType(file, allowedTypes)) {
+      toast({
+        title: "Erro",
+        description: "Tipo de arquivo inválido. Use: JPG, PNG, GIF ou WebP",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (editingEmpresa) {
-      setEmpresas(prev => prev.map(empresa => 
-        empresa.id === editingEmpresa.id 
-          ? { ...empresa, ...formData }
-          : empresa
-      ));
+    if (!validateFileSize(file, maxSizeInMB)) {
       toast({
-        title: "Sucesso",
-        description: "Empresa atualizada com sucesso!",
+        title: "Erro",
+        description: `Arquivo muito grande. Máximo permitido: ${maxSizeInMB}MB`,
+        variant: "destructive",
       });
-    } else {
-      const novaEmpresa: Empresa = {
-        id: Date.now().toString(),
-        ...formData,
-        ativo: true
-      };
-      setEmpresas(prev => [...prev, novaEmpresa]);
-      toast({
-        title: "Sucesso",
-        description: "Empresa cadastrada com sucesso!",
-      });
+      return;
     }
 
-    resetForm();
-    setShowForm(false);
+    const sanitizedFileName = sanitizeFileName(file.name);
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setLogoPreview(result);
+      setFormData(prev => ({ ...prev, logo: result }));
+    };
+    
+    reader.onerror = () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao processar o arquivo de imagem.",
+        variant: "destructive",
+      });
+    };
+    
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    try {
+      if (editingEmpresa) {
+        setEmpresas(prev => prev.map(empresa => 
+          empresa.id === editingEmpresa.id 
+            ? { ...empresa, ...formData }
+            : empresa
+        ));
+        toast({
+          title: "Sucesso",
+          description: "Empresa atualizada com sucesso!",
+        });
+      } else {
+        const novaEmpresa: Empresa = {
+          id: generateSecureId(),
+          ...formData,
+          ativo: true
+        };
+        setEmpresas(prev => [...prev, novaEmpresa]);
+        toast({
+          title: "Sucesso",
+          description: "Empresa cadastrada com sucesso!",
+        });
+      }
+
+      resetForm();
+      setShowForm(false);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao processar os dados da empresa.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleEdit = (empresa: Empresa) => {
-    console.log("Editando empresa:", empresa);
-    setFormData({
-      nome: empresa.nome,
-      cnpj: empresa.cnpj,
-      email: empresa.email,
-      telefone: empresa.telefone,
-      endereco: empresa.endereco,
-      cidade: empresa.cidade,
-      estado: empresa.estado,
-      cep: empresa.cep,
-      observacoes: empresa.observacoes,
-      logo: empresa.logo || ""
-    });
-    setLogoPreview(empresa.logo || "");
-    setEditingEmpresa(empresa);
-    setShowForm(true);
+    try {
+      setFormData({
+        nome: empresa.nome,
+        cnpj: empresa.cnpj,
+        email: empresa.email,
+        telefone: empresa.telefone,
+        endereco: empresa.endereco,
+        cidade: empresa.cidade,
+        estado: empresa.estado,
+        cep: empresa.cep,
+        observacoes: empresa.observacoes,
+        logo: empresa.logo || ""
+      });
+      setLogoPreview(empresa.logo || "");
+      setEditingEmpresa(empresa);
+      setShowForm(true);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar dados da empresa.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDelete = (id: string) => {
-    setEmpresas(prev => prev.filter(empresa => empresa.id !== id));
-    toast({
-      title: "Sucesso",
-      description: "Empresa removida com sucesso!",
-    });
+    try {
+      setEmpresas(prev => prev.filter(empresa => empresa.id !== id));
+      toast({
+        title: "Sucesso",
+        description: "Empresa removida com sucesso!",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao remover empresa.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleClose = () => {
@@ -258,37 +366,37 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Upload de Logo */}
-                  <div className="md:col-span-2">
-                    <Label>Logo da Empresa</Label>
-                    <div className="mt-2 flex items-center space-x-4">
-                      {logoPreview ? (
-                        <img 
-                          src={logoPreview} 
-                          alt="Preview do logo"
-                          className="w-20 h-20 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 bg-slate-200 rounded-lg flex items-center justify-center">
-                          <Upload size={24} className="text-slate-400" />
-                        </div>
-                      )}
-                      <div>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleLogoUpload}
-                          className="w-full"
-                        />
-                        <p className="text-xs text-slate-500 mt-1">
-                          Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
-                        </p>
+                {/* Upload de Logo */}
+                <div className="md:col-span-2">
+                  <Label>Logo da Empresa</Label>
+                  <div className="mt-2 flex items-center space-x-4">
+                    {logoPreview ? (
+                      <img 
+                        src={logoPreview} 
+                        alt="Preview do logo"
+                        className="w-20 h-20 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 bg-slate-200 rounded-lg flex items-center justify-center">
+                        <Upload size={24} className="text-slate-400" />
                       </div>
+                    )}
+                    <div>
+                      <Input
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        onChange={handleLogoUpload}
+                        className="w-full"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        Formatos aceitos: JPG, PNG, GIF, WebP (máx. 5MB)
+                      </p>
                     </div>
                   </div>
+                </div>
 
-                  {/* Campos do formulário */}
+                {/* Campos do formulário */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="nome">Nome da Empresa *</Label>
                     <Input
@@ -297,6 +405,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       onChange={(e) => handleInputChange("nome", e.target.value)}
                       placeholder="Digite o nome da empresa"
                       required
+                      maxLength={100}
                     />
                   </div>
 
@@ -308,6 +417,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       onChange={(e) => handleInputChange("cnpj", e.target.value)}
                       placeholder="00.000.000/0000-00"
                       required
+                      maxLength={18}
                     />
                   </div>
 
@@ -320,6 +430,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       onChange={(e) => handleInputChange("email", e.target.value)}
                       placeholder="empresa@exemplo.com"
                       required
+                      maxLength={254}
                     />
                   </div>
 
@@ -330,6 +441,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       value={formData.telefone}
                       onChange={(e) => handleInputChange("telefone", e.target.value)}
                       placeholder="(00) 00000-0000"
+                      maxLength={15}
                     />
                   </div>
 
@@ -340,6 +452,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       value={formData.endereco}
                       onChange={(e) => handleInputChange("endereco", e.target.value)}
                       placeholder="Rua, Avenida, número"
+                      maxLength={200}
                     />
                   </div>
 
@@ -350,6 +463,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       value={formData.cidade}
                       onChange={(e) => handleInputChange("cidade", e.target.value)}
                       placeholder="Nome da cidade"
+                      maxLength={100}
                     />
                   </div>
 
@@ -360,6 +474,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       value={formData.estado}
                       onChange={(e) => handleInputChange("estado", e.target.value)}
                       placeholder="UF"
+                      maxLength={2}
                     />
                   </div>
 
@@ -370,6 +485,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       value={formData.cep}
                       onChange={(e) => handleInputChange("cep", e.target.value)}
                       placeholder="00000-000"
+                      maxLength={9}
                     />
                   </div>
 
@@ -381,6 +497,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                       onChange={(e) => handleInputChange("observacoes", e.target.value)}
                       placeholder="Informações adicionais sobre a empresa"
                       rows={3}
+                      maxLength={500}
                     />
                   </div>
                 </div>
