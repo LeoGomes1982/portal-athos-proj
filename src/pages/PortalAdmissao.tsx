@@ -166,17 +166,30 @@ const PortalAdmissao = () => {
         {/* Process Steps with Connection Lines */}
         <div className="max-w-5xl mx-auto">
           <div className="relative">
-            {/* Connection Lines */}
-            <div className="absolute top-16 left-0 w-full h-1 bg-gray-200 z-0 hidden lg:block">
-              <div className="flex justify-between h-full">
-                {steps.slice(0, -1).map((_, index) => (
-                  <div key={index} className="flex-1 relative">
+            {/* Connection Lines - Behind Cards */}
+            <div className="absolute top-16 left-0 w-full h-1 z-0 hidden lg:block">
+              {/* Background gray line */}
+              <div className="w-full h-full bg-gray-300 rounded-full" />
+              
+              {/* Progress lines */}
+              <div className="absolute top-0 left-0 h-full flex">
+                {steps.slice(0, -1).map((_, index) => {
+                  const segmentWidth = 100 / (steps.length - 1);
+                  const progressPercent = getStepProgress(index + 1);
+                  
+                  return (
                     <div 
-                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500"
-                      style={{ width: `${getStepProgress(index + 1)}%` }}
-                    />
-                  </div>
-                ))}
+                      key={index} 
+                      className="h-full relative"
+                      style={{ width: `${segmentWidth}%` }}
+                    >
+                      <div 
+                        className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500 rounded-full"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -248,7 +261,6 @@ const PortalAdmissao = () => {
       <AdmissaoModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onFormSubmitted={handleFormSubmitted}
       />
     </div>
   );
