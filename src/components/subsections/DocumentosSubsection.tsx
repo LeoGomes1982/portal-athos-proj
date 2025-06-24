@@ -203,7 +203,7 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={handleBack}
+          onClick={onBack}
           className="flex items-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />

@@ -3,14 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdmissaoModal } from "../modals/AdmissaoModal";
 import { ChevronLeft, UserPlus, Calendar, CheckCircle, Clock, Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface AdmissaoSubsectionProps {
   onBack: () => void;
 }
 
 export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
-  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
   const admissoes = [
@@ -20,16 +18,6 @@ export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
     { nome: "Pedro Lima", cargo: "Designer", data: "2024-06-12", status: "Pendente", avatar: "PL" }
   ];
 
-  const handleBack = () => {
-    // Try to go back in browser history first
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      // Fallback to RH page if no history
-      navigate('/rh');
-    }
-  };
-
   return (
     <div className="app-container">
       <div className="content-wrapper">
@@ -38,7 +26,7 @@ export function AdmissaoSubsection({ onBack }: AdmissaoSubsectionProps) {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={handleBack}
+            onClick={onBack}
             className="secondary-btn"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
