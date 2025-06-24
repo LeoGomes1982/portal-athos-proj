@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -68,8 +69,8 @@ export default function DP() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <div className="container mx-auto px-6 py-12">
+    <div className="app-container">
+      <div className="content-wrapper">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -85,20 +86,20 @@ export default function DP() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl mb-6 shadow-lg">
             <FileText size={32} className="text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+          <h1 className="page-title text-center">
             Departamento Pessoal
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-description text-center max-w-2xl mx-auto">
             Gestão completa de funcionários, documentação e controles administrativos
           </p>
         </div>
 
         {/* Subsections Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto animate-slide-up">
+        <div className="content-grid animate-slide-up">
           {subsections.map((subsection) => (
             <div 
               key={subsection.id}
-              className="group relative p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
+              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
               onClick={() => handleSubsectionClick(subsection.id)}
             >
               <div className="flex flex-col items-center text-center space-y-4">
@@ -106,8 +107,8 @@ export default function DP() {
                   <subsection.icon size={32} className={subsection.textColor} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">{subsection.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{subsection.description}</p>
+                  <h3 className="subsection-title">{subsection.title}</h3>
+                  <p className="text-description leading-relaxed">{subsection.description}</p>
                 </div>
               </div>
             </div>
@@ -116,7 +117,7 @@ export default function DP() {
 
         {/* Footer */}
         <div className="text-center mt-16 animate-fade-in">
-          <p className="text-sm text-slate-500">
+          <p className="text-description">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
