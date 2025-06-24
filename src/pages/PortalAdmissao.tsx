@@ -99,30 +99,36 @@ const PortalAdmissao = () => {
             Portal de Admissão
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed mb-8">
-            Bem-vindo ao nosso processo de admissão online. Preencha suas informações para iniciar sua jornada conosco.
+            Bem-vindo ao nosso processo de admissão online. Siga os passos abaixo para completar sua jornada conosco.
           </p>
-          
-          <Button
-            onClick={handleOpenModal}
-            size="lg"
-            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-4 text-lg font-semibold shadow-lg"
-          >
-            ➡️ Iniciar Processo de Admissão
-          </Button>
         </div>
 
-        {/* Informações adicionais */}
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Cards do Processo */}
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <Card className="text-center p-6">
+            <CardHeader>
+              <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">👋</span>
+              </div>
+              <CardTitle className="text-lg">Boas vindas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-slate-600 text-sm">
+                Seja bem-vindo ao nosso processo de admissão
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center p-6 cursor-pointer hover:shadow-lg transition-shadow" onClick={handleOpenModal}>
             <CardHeader>
               <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">📋</span>
               </div>
-              <CardTitle className="text-lg">Documentação</CardTitle>
+              <CardTitle className="text-lg">Formulário de Admissão</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 text-sm">
-                Tenha seus documentos pessoais e profissionais em mãos
+                Clique aqui para preencher seus dados pessoais e profissionais
               </p>
             </CardContent>
           </Card>
@@ -130,13 +136,13 @@ const PortalAdmissao = () => {
           <Card className="text-center p-6">
             <CardHeader>
               <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">⏱️</span>
+                <span className="text-2xl">✅</span>
               </div>
-              <CardTitle className="text-lg">Processo Rápido</CardTitle>
+              <CardTitle className="text-lg">Verificação</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 text-sm">
-                O preenchimento leva aproximadamente 10-15 minutos
+                Nossa equipe verificará suas informações e documentos
               </p>
             </CardContent>
           </Card>
@@ -144,13 +150,13 @@ const PortalAdmissao = () => {
           <Card className="text-center p-6">
             <CardHeader>
               <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🔒</span>
+                <span className="text-2xl">🎉</span>
               </div>
-              <CardTitle className="text-lg">Seguro</CardTitle>
+              <CardTitle className="text-lg">Bem vindo</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 text-sm">
-                Suas informações são protegidas e tratadas com confidencialidade
+                Parabéns! Você faz parte da nossa equipe
               </p>
             </CardContent>
           </Card>
