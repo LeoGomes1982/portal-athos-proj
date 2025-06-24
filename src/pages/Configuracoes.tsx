@@ -14,6 +14,8 @@ const Configuracoes = () => {
   const navigate = useNavigate();
   const [isEmpresasModalOpen, setIsEmpresasModalOpen] = useState(false);
 
+  console.log("Configuracoes page rendered, isEmpresasModalOpen:", isEmpresasModalOpen);
+
   const configuracoesSection = [
     {
       id: "edicao-formularios",
@@ -31,7 +33,10 @@ const Configuracoes = () => {
       icon: Building2,
       className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
       iconColor: "text-gray-600",
-      onClick: () => setIsEmpresasModalOpen(true)
+      onClick: () => {
+        console.log("Edição de empresas clicked, opening modal");
+        setIsEmpresasModalOpen(true);
+      }
     },
     {
       id: "edicao-contratos-propostas",
@@ -112,7 +117,10 @@ const Configuracoes = () => {
       {/* Modal de Empresas */}
       <EmpresasModal 
         isOpen={isEmpresasModalOpen}
-        onClose={() => setIsEmpresasModalOpen(false)}
+        onClose={() => {
+          console.log("EmpresasModal onClose called");
+          setIsEmpresasModalOpen(false);
+        }}
       />
     </div>
   );

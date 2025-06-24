@@ -8,7 +8,8 @@ import {
   Dialog, 
   DialogContent, 
   DialogHeader, 
-  DialogTitle 
+  DialogTitle,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -44,6 +45,8 @@ interface EmpresasModalProps {
 }
 
 const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
+  console.log("EmpresasModal rendered with isOpen:", isOpen);
+  
   const { toast } = useToast();
   const [empresas, setEmpresas] = useState<Empresa[]>([
     {
@@ -235,6 +238,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
   };
 
   const handleEdit = (empresa: Empresa) => {
+    console.log("handleEdit called for empresa:", empresa.nome);
     try {
       setFormData({
         nome: empresa.nome,
@@ -251,7 +255,9 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
       setLogoPreview(empresa.logo || "");
       setEditingEmpresa(empresa);
       setShowForm(true);
+      console.log("Form state updated, showForm:", true);
     } catch (error) {
+      console.error("Error in handleEdit:", error);
       toast({
         title: "Erro",
         description: "Erro ao carregar dados da empresa.",
@@ -277,6 +283,7 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
   };
 
   const handleClose = () => {
+    console.log("handleClose called");
     resetForm();
     setShowForm(false);
     onClose();
@@ -290,6 +297,9 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
             <Building2 className="text-blue-600" size={24} />
             Gerenciar Empresas do Grupo
           </DialogTitle>
+          <DialogDescription>
+            Gerencie as empresas do grupo, cadastre novas empresas ou edite as existentes.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -298,7 +308,10 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
               {/* Header com botão adicionar */}
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">Empresas Cadastradas</h3>
-                <Button onClick={() => setShowForm(true)}>
+                <Button onClick={() => {
+                  console.log("Nova Empresa button clicked");
+                  setShowForm(true);
+                }}>
                   <Building2 size={16} className="mr-2" />
                   Nova Empresa
                 </Button>
@@ -333,14 +346,20 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleEdit(empresa)}
+                          onClick={() => {
+                            console.log("Edit button clicked for:", empresa.nome);
+                            handleEdit(empresa);
+                          }}
                         >
                           <Edit size={16} />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDelete(empresa.id)}
+                          onClick={() => {
+                            console.log("Delete button clicked for:", empresa.nome);
+                            handleDelete(empresa.id);
+                          }}
                         >
                           <X size={16} />
                         </Button>
@@ -359,7 +378,11 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                 </h3>
                 <Button 
                   variant="outline" 
-                  onClick={() => { setShowForm(false); resetForm(); }}
+                  onClick={() => { 
+                    console.log("Cancel form button clicked");
+                    setShowForm(false); 
+                    resetForm(); 
+                  }}
                 >
                   <X size={16} />
                 </Button>
@@ -506,7 +529,11 @@ const EmpresasModal = ({ isOpen, onClose }: EmpresasModalProps) => {
                   <Button 
                     type="button"
                     variant="outline" 
-                    onClick={() => { setShowForm(false); resetForm(); }}
+                    onClick={() => { 
+                      console.log("Cancel form button clicked");
+                      setShowForm(false); 
+                      resetForm(); 
+                    }}
                   >
                     Cancelar
                   </Button>
