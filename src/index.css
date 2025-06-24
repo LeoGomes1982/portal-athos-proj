@@ -106,7 +106,7 @@
   }
 
   .page-title {
-    font-size: 2.25rem;
+    font-size: 2.75rem;
     font-weight: 600;
     color: #1e293b;
     margin-bottom: 0.75rem;
@@ -115,7 +115,7 @@
   }
 
   .section-title {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 500;
     color: #1e293b;
     margin-bottom: 1rem;
@@ -124,7 +124,7 @@
   }
 
   .subsection-title {
-    font-size: 1.375rem;
+    font-size: 1.5rem;
     font-weight: 500;
     color: #374151;
     margin-bottom: 0.75rem;
@@ -486,7 +486,7 @@
   }
 
   .modal-title {
-    font-size: 1.625rem;
+    font-size: 1.875rem;
     font-weight: 500;
     color: #1e293b;
     margin-bottom: 0.5rem;
@@ -546,11 +546,11 @@
     }
 
     .page-title {
-      font-size: 1.875rem;
+      font-size: 2.25rem;
     }
 
     .section-title {
-      font-size: 1.5rem;
+      font-size: 1.75rem;
     }
 
     .content-grid,

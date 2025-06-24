@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, Grid3X3, List, ChevronLeft } from "lucide-react";
+import { Search, Star, ChevronLeft } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
 import { useNavigate } from "react-router-dom";
 
@@ -137,7 +136,6 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   const [funcionariosList, setFuncionariosList] = useState(funcionarios);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const filteredFuncionarios = funcionariosList.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -170,41 +168,6 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     experiencia: funcionariosAtivos.filter(f => f.status === 'experiencia').length,
     aviso: funcionariosAtivos.filter(f => f.status === 'aviso').length,
     destaque: funcionariosAtivos.filter(f => f.status === 'destaque').length
-  };
-
-  const renderFuncionarioCard = (funcionario: Funcionario) => {
-    const statusInfo = statusConfig[funcionario.status];
-
-    return (
-      <Card 
-        key={funcionario.id} 
-        className="group cursor-pointer hover:shadow-md transition-all duration-300 border hover:scale-105 border-green-200 hover:border-green-300 bg-gradient-to-br from-green-50 to-white"
-        onClick={() => handleFuncionarioClick(funcionario)}
-      >
-        <CardHeader className="text-center pb-1 pt-3 relative">
-          {funcionario.status === 'destaque' && (
-            <div className="absolute top-0 right-0">
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-400 drop-shadow-sm" />
-            </div>
-          )}
-          <div className="w-8 h-8 bg-green-100 border border-green-200 rounded-xl flex items-center justify-center mx-auto mb-1 group-hover:scale-110 transition-transform duration-300">
-            <span className="text-lg">{funcionario.foto}</span>
-          </div>
-          <CardTitle className="text-xs font-bold text-slate-800 mb-0 leading-tight truncate">{funcionario.nome}</CardTitle>
-          <p className="text-xs text-slate-600 font-medium truncate">{funcionario.cargo}</p>
-        </CardHeader>
-        <CardContent className="space-y-1 px-3 pb-3">
-          <div className="flex items-center justify-center">
-            <Badge variant="secondary" className="bg-green-200 text-green-800 font-medium text-xs px-1 py-0">{funcionario.setor}</Badge>
-          </div>
-          <div className="flex items-center justify-center">
-            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-1 py-0`}>
-              {statusInfo.label}
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-    );
   };
 
   const renderFuncionarioListItem = (funcionario: Funcionario) => {
@@ -334,7 +297,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           </div>
         </div>
 
-        {/* Grid de Funcionários Ativos com Controles */}
+        {/* Lista de Funcionários Ativos */}
         <Card className="modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-green-200/50">
           <CardHeader className="card-header">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -342,7 +305,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                 👨‍💼 Funcionários Ativos
               </CardTitle>
               
-              <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex items-center gap-4">
                 {/* Search Input */}
                 <div className="relative flex-1 min-w-64">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
@@ -353,39 +316,13 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                     className="pl-12 h-12 bg-white/90 border-green-300 shadow-lg rounded-2xl text-lg font-medium focus:border-green-400"
                   />
                 </div>
-                
-                {/* View Mode Buttons */}
-                <div className="flex gap-2">
-                  <Button
-                    variant={viewMode === "grid" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("grid")}
-                    className={viewMode === "grid" ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-300 text-green-700 hover:bg-green-100"}
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === "list" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("list")}
-                    className={viewMode === "list" ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-300 text-green-700 hover:bg-green-100"}
-                  >
-                    <List className="w-4 h-4" />
-                  </Button>
-                </div>
               </div>
             </div>
           </CardHeader>
           <CardContent className="card-content">
-            {viewMode === "grid" ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 lg:gap-4">
-                {funcionariosAtivos.map((funcionario) => renderFuncionarioCard(funcionario))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
-              </div>
-            )}
+            <div className="space-y-3">
+              {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
+            </div>
 
             {funcionariosAtivos.length === 0 && (
               <div className="text-center py-16 bg-gradient-to-br from-green-100 to-white rounded-3xl shadow-lg border border-green-300">
