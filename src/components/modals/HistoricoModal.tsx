@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,9 +19,10 @@ interface HistoricoModalProps {
   isOpen: boolean;
   onClose: () => void;
   clienteNome: string;
+  clienteId: string;
 }
 
-const HistoricoModal = ({ isOpen, onClose, clienteNome }: HistoricoModalProps) => {
+const HistoricoModal = ({ isOpen, onClose, clienteNome, clienteId }: HistoricoModalProps) => {
   const [isAddingRecord, setIsAddingRecord] = useState(false);
   const [newRecord, setNewRecord] = useState({
     tipo: 'neutro' as 'positivo' | 'neutro' | 'negativo',
@@ -30,25 +30,46 @@ const HistoricoModal = ({ isOpen, onClose, clienteNome }: HistoricoModalProps) =
     descricao: ''
   });
 
-  // Dados mockados - em produção viriam de uma API
-  const [historicos, setHistoricos] = useState<RegistroHistorico[]>([
-    {
-      id: "1",
-      data: "2024-01-15",
-      tipo: "positivo",
-      titulo: "Pagamento em dia",
-      descricao: "Cliente efetuou pagamento antes do vencimento",
-      usuario: "João Admin"
-    },
-    {
-      id: "2", 
-      data: "2024-01-10",
-      tipo: "neutro",
-      titulo: "Contato comercial",
-      descricao: "Cliente solicitou informações sobre novos serviços",
-      usuario: "Maria Vendas"
+  const [historicos, setHistoricos] = useState<RegistroHistorico[]>([]);
+
+  // Carregar históricos do localStorage
+  useEffect(() => {
+    const historicosKey = `historico_cliente_${clienteId}`;
+    const savedHistoricos = localStorage.getItem(historicosKey);
+    if (savedHistoricos) {
+      setHistoricos(JSON.parse(savedHistoricos));
+    } else {
+      // Dados iniciais se não houver dados salvos
+      const historicosIniciais = [
+        {
+          id: "1",
+          data: "2024-01-15",
+          tipo: "positivo" as const,
+          titulo: "Pagamento em dia",
+          descricao: "Cliente efetuou pagamento antes do vencimento",
+          usuario: "João Admin"
+        },
+        {
+          id: "2", 
+          data: "2024-01-10",
+          tipo: "neutro" as const,
+          titulo: "Contato comercial",
+          descricao: "Cliente solicitou informações sobre novos serviços",
+          usuario: "Maria Vendas"
+        }
+      ];
+      setHistoricos(historicosIniciais);
+      localStorage.setItem(historicosKey, JSON.stringify(historicosIniciais));
     }
-  ]);
+  }, [clienteId]);
+
+  // Salvar históricos no localStorage sempre que mudar
+  useEffect(() => {
+    if (historicos.length > 0) {
+      const historicosKey = `historico_cliente_${clienteId}`;
+      localStorage.setItem(historicosKey, JSON.stringify(historicos));
+    }
+  }, [historicos, clienteId]);
 
   const handleAddRecord = () => {
     if (newRecord.titulo && newRecord.descricao) {

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,9 +18,10 @@ interface DocumentosModalProps {
   isOpen: boolean;
   onClose: () => void;
   clienteNome: string;
+  clienteId: string;
 }
 
-const DocumentosModal = ({ isOpen, onClose, clienteNome }: DocumentosModalProps) => {
+const DocumentosModal = ({ isOpen, onClose, clienteNome, clienteId }: DocumentosModalProps) => {
   const [isUploading, setIsUploading] = useState(false);
 
   // Dados mockados - em produção viriam de uma API
