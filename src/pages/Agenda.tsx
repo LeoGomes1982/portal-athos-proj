@@ -193,7 +193,7 @@ const Agenda = () => {
         </div>
 
         {/* Botões de Ação */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 mb-8">
           <Button onClick={() => setShowResumoModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
             <Users size={16} className="mr-2" />
             Resumo Geral
@@ -204,74 +204,98 @@ const Agenda = () => {
           </Button>
         </div>
 
-        {/* Calendário Principal */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Calendário</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="rounded-md border pointer-events-auto"
-                />
-              </CardContent>
-            </Card>
-          </div>
+        {/* Conteúdo Principal */}
+        <div className="content-grid">
+          {/* Calendário */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-xl">Calendário</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                locale={ptBR}
+                className="rounded-lg border w-full p-4"
+                classNames={{
+                  months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                  month: "space-y-4 flex-1",
+                  caption: "flex justify-center pt-1 relative items-center mb-4",
+                  caption_label: "text-lg font-semibold",
+                  nav: "space-x-1 flex items-center",
+                  nav_button: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 border rounded-md",
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse space-y-1",
+                  head_row: "flex mb-2",
+                  head_cell: "text-muted-foreground rounded-md w-12 h-12 font-medium text-sm flex items-center justify-center",
+                  row: "flex w-full mt-1",
+                  cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 w-12 h-12",
+                  day: "h-12 w-12 p-0 font-normal aria-selected:opacity-100 rounded-md border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-sm",
+                  day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-600",
+                  day_today: "bg-indigo-100 text-indigo-900 border-indigo-300",
+                  day_outside: "text-muted-foreground opacity-50",
+                  day_disabled: "text-muted-foreground opacity-50",
+                }}
+              />
+            </CardContent>
+          </Card>
 
           {/* Compromissos do Dia */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {selectedDate ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR }) : 'Selecione uma data'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {selectedDate && getCompromissosData(selectedDate).map((compromisso) => (
-                  <div
-                    key={compromisso.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      compromisso.concluido 
-                        ? 'bg-gray-100 opacity-60' 
-                        : 'bg-white hover:shadow-md'
-                    }`}
-                    onClick={() => {
-                      setCompromissoSelecionado(compromisso);
-                      setShowDetalhesCompromisso(true);
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm">{compromisso.titulo}</span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleConcluido(compromisso.id);
-                        }}
-                        className="text-green-600 hover:text-green-700"
-                      >
-                        {compromisso.concluido ? <CheckCircle2 size={16} /> : <Circle size={16} />}
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <Clock size={12} />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">
+                {selectedDate ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR }) : 'Selecione uma data'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {selectedDate && getCompromissosData(selectedDate).map((compromisso) => (
+                <div
+                  key={compromisso.id}
+                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                    compromisso.concluido 
+                      ? 'bg-gray-100 opacity-60 border-gray-300' 
+                      : 'bg-white hover:shadow-md border-gray-200 hover:border-indigo-300'
+                  }`}
+                  onClick={() => {
+                    setCompromissoSelecionado(compromisso);
+                    setShowDetalhesCompromisso(true);
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-medium text-base">{compromisso.titulo}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleConcluido(compromisso.id);
+                      }}
+                      className="text-green-600 hover:text-green-700 transition-colors"
+                    >
+                      {compromisso.concluido ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
                       {compromisso.horario}
-                      <User size={12} />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <User size={14} />
                       {compromisso.participantes.length} pessoas
                     </div>
                   </div>
-                ))}
-                {selectedDate && getCompromissosData(selectedDate).length === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-4">
+                </div>
+              ))}
+              {selectedDate && getCompromissosData(selectedDate).length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 text-base">
                     Nenhum compromisso para esta data
                   </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Modal de Resumo */}
