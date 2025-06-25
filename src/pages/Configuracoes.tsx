@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Settings, Building2, User, FileText, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,6 +21,19 @@ const Configuracoes = () => {
     temaEscuro: false,
     autoSalvar: true
   });
+
+  // Carregar configurações do localStorage na inicialização
+  useEffect(() => {
+    const configSalvas = localStorage.getItem('configuracoes');
+    if (configSalvas) {
+      setConfiguracoes(JSON.parse(configSalvas));
+    }
+  }, []);
+
+  // Salvar configurações no localStorage sempre que mudarem
+  useEffect(() => {
+    localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
+  }, [configuracoes]);
 
   const handleConfigChange = (field: string, value: any) => {
     setConfiguracoes(prev => ({ ...prev, [field]: value }));

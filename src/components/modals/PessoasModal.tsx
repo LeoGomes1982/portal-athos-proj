@@ -1,10 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Users, Plus, Search, User, UserPlus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Funcionario {
   id: string;
@@ -20,22 +20,26 @@ interface PessoasModalProps {
   isOpen: boolean;
   onClose: () => void;
   clienteNome: string;
+  clienteId: string;
 }
 
-const PessoasModal = ({ isOpen, onClose, clienteNome }: PessoasModalProps) => {
+const PessoasModal = ({ isOpen, onClose, clienteNome, clienteId }: PessoasModalProps) => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddingFuncionario, setIsAddingFuncionario] = useState(false);
   
   // Funcionários vinculados ao cliente
-  const [funcionariosVinculados, setFuncionariosVinculados] = useState<Funcionario[]>([
+  const [funcionariosVinculados, setFuncionariosVinculados] = useState<Funcionario[]>([]);
+
+  // Lista completa de funcionários disponíveis
+  const [todosOsFuncionarios] = useState<Funcionario[]>([
     {
       id: "1",
       nome: "João Silva",
       cargo: "Gerente",
       email: "joao.silva@empresa.com",
       telefone: "(11) 99999-9999",
-      status: "ativo",
-      vinculadoCliente: true
+      status: "ativo"
     },
     {
       id: "2",
@@ -43,13 +47,8 @@ const PessoasModal = ({ isOpen, onClose, clienteNome }: PessoasModalProps) => {
       cargo: "Coordenadora",
       email: "maria.santos@empresa.com", 
       telefone: "(11) 88888-8888",
-      status: "ativo",
-      vinculadoCliente: true
-    }
-  ]);
-
-  // Lista completa de funcionários disponíveis
-  const [todosOsFuncionarios] = useState<Funcionario[]>([
+      status: "ativo"
+    },
     {
       id: "3",
       nome: "Pedro Oliveira",
@@ -83,6 +82,25 @@ const PessoasModal = ({ isOpen, onClose, clienteNome }: PessoasModalProps) => {
       status: "aviso_previo"
     }
   ]);
+
+  // Carregar funcionários vinculados do localStorage
+  useEffect(() => {
+    const vinculos = localStorage.getItem(`funcionarios_cliente_${clienteId}`);
+    if (vinculos) {
+      const funcionariosIds = JSON.parse(vinculos);
+      const funcionariosVinculadosData = todosOsFuncionarios.filter(func => 
+        funcionariosIds.includes(func.id)
+      ).map(func => ({ ...func, vinculadoCliente: true }));
+      setFuncionariosVinculados(funcionariosVinculadosData);
+    }
+  }, [clienteId, todosOsFuncionarios]);
+
+  // Salvar vínculos no localStorage
+  const salvarVinculos = (funcionarios: Funcionario[]) => {
+    const ids = funcionarios.map(func => func.id);
+    localStorage.setItem(`funcionarios_cliente_${clienteId}`, JSON.stringify(ids));
+    setFuncionariosVinculados(funcionarios);
+  };
 
   const funcionariosDisponiveis = todosOsFuncionarios.filter(funcionario => 
     !funcionariosVinculados.some(vinculado => vinculado.id === funcionario.id)
@@ -119,11 +137,21 @@ const PessoasModal = ({ isOpen, onClose, clienteNome }: PessoasModalProps) => {
   };
 
   const vincularFuncionario = (funcionario: Funcionario) => {
-    setFuncionariosVinculados(prev => [...prev, { ...funcionario, vinculadoCliente: true }]);
+    const novosFuncionariosVinculados = [...funcionariosVinculados, { ...funcionario, vinculadoCliente: true }];
+    salvarVinculos(novosFuncionariosVinculados);
+    toast({
+      title: "Sucesso",
+      description: `${funcionario.nome} foi vinculado ao cliente.`,
+    });
   };
 
   const desvincularFuncionario = (funcionarioId: string) => {
-    setFuncionariosVinculados(prev => prev.filter(f => f.id !== funcionarioId));
+    const novosFuncionariosVinculados = funcionariosVinculados.filter(f => f.id !== funcionarioId);
+    salvarVinculos(novosFuncionariosVinculados);
+    toast({
+      title: "Sucesso",
+      description: "Funcionário desvinculado com sucesso.",
+    });
   };
 
   return (
