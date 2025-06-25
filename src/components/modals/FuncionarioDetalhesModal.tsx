@@ -49,10 +49,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   };
 
   const statusInfo = statusConfig[statusAtual];
+  
+  // Special styling for destaque employees
+  const isDestaque = statusAtual === 'destaque';
+  const modalBackgroundClass = isDestaque 
+    ? "bg-gradient-to-br from-yellow-50/80 via-amber-50/70 to-yellow-100/60 border border-yellow-200/70"
+    : "bg-gradient-to-br from-green-50/60 via-white to-green-100/50 border border-green-200";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-slate-100 border border-slate-200">
+      <DialogContent className={`max-w-4xl max-h-[90vh] overflow-y-auto ${modalBackgroundClass}`}>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-slate-700 flex items-center gap-3">
             <span className="text-3xl">{funcionario.foto}</span>
@@ -69,7 +75,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
         <div className="space-y-6">
           {/* Informações Principais */}
-          <Card className="border-slate-200 bg-gradient-to-r from-slate-50/70 to-gray-50/70 backdrop-blur-sm">
+          <Card className={`border-slate-200 ${isDestaque ? 'bg-gradient-to-r from-yellow-50/90 to-amber-50/80 backdrop-blur-sm border-yellow-300/50' : 'bg-gradient-to-r from-green-50/80 to-emerald-50/70 backdrop-blur-sm border-green-300/60'}`}>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -83,7 +89,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">Setor</label>
-                    <Badge variant="secondary" className="bg-slate-200 text-slate-700 font-medium">{funcionario.setor}</Badge>
+                    <Badge variant="secondary" className={`${isDestaque ? 'bg-yellow-200 text-yellow-800 border-yellow-300' : 'bg-green-200 text-green-800 border-green-300'} font-medium`}>{funcionario.setor}</Badge>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -97,7 +103,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     <label className="text-sm font-medium text-slate-600">Status Atual</label>
                     <div className="mt-1">
                       <Select value={statusAtual} onValueChange={handleStatusChange}>
-                        <SelectTrigger className="w-48 bg-white/80 border-slate-300">
+                        <SelectTrigger className={`w-48 ${isDestaque ? 'bg-yellow-50/90 border-yellow-300' : 'bg-white/80 border-green-300'}`}>
                           <SelectValue>
                             <Badge className={`${statusInfo.color} text-white text-xs`}>
                               {statusInfo.label}
@@ -122,7 +128,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           </Card>
 
           {/* Informações de Contato */}
-          <Card className="border-slate-200 bg-white/90 backdrop-blur-sm">
+          <Card className={`${isDestaque ? 'border-yellow-200 bg-yellow-50/90 backdrop-blur-sm' : 'border-green-200 bg-green-50/90 backdrop-blur-sm'}`}>
             <CardContent className="p-6">
               <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                 📞 Informações de Contato
@@ -142,7 +148,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Documentos Pessoais */}
           {(funcionario.cpf || funcionario.rg) && (
-            <Card className="border-slate-200 bg-white/90 backdrop-blur-sm">
+            <Card className={`${isDestaque ? 'border-yellow-200 bg-yellow-50/90 backdrop-blur-sm' : 'border-green-200 bg-green-50/90 backdrop-blur-sm'}`}>
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   📋 Documentos Pessoais
@@ -167,7 +173,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Endereço e Salário */}
           {(funcionario.endereco || funcionario.salario) && (
-            <Card className="border-slate-200 bg-white/90 backdrop-blur-sm">
+            <Card className={`${isDestaque ? 'border-yellow-200 bg-yellow-50/90 backdrop-blur-sm' : 'border-green-200 bg-green-50/90 backdrop-blur-sm'}`}>
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   🏠 Informações Adicionais
@@ -182,7 +188,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   {funcionario.salario && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">Salário</label>
-                      <p className="text-lg font-bold text-emerald-600">{funcionario.salario}</p>
+                      <p className={`text-lg font-bold ${isDestaque ? 'text-yellow-600' : 'text-emerald-600'}`}>{funcionario.salario}</p>
                     </div>
                   )}
                 </div>
@@ -191,15 +197,15 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           )}
 
           {/* Ações */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <div className={`flex justify-end gap-3 pt-4 ${isDestaque ? 'border-t border-yellow-200' : 'border-t border-green-200'}`}>
             <Button 
               variant="outline" 
               onClick={onClose} 
-              className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white/80"
+              className={`${isDestaque ? 'border-yellow-300 text-slate-700 hover:bg-yellow-50 bg-yellow-50/80' : 'border-green-300 text-slate-700 hover:bg-green-50 bg-green-50/80'}`}
             >
               Fechar
             </Button>
-            <Button className="bg-slate-600 hover:bg-slate-700 text-white shadow-lg">
+            <Button className={`${isDestaque ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'} text-white shadow-lg`}>
               📝 Editar Funcionário
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
