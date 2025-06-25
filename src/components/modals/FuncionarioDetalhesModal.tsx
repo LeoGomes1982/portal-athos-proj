@@ -33,7 +33,7 @@ interface FuncionarioDetalhesModalProps {
 const statusConfig = {
   ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700" },
   ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700" },
-  experiencia: { label: "Em Experiência", color: "bg-yellow-500", textColor: "text-yellow-700" },
+  experiencia: { label: "Em Experiência", color: "bg-orange-500", textColor: "text-orange-700" },
   aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700" },
   inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
   destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700" }
@@ -54,7 +54,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const isDestaque = statusAtual === 'destaque';
   const modalBackgroundClass = isDestaque 
     ? "bg-gradient-to-br from-yellow-50/80 via-amber-50/70 to-yellow-100/60 border border-yellow-200/70"
-    : "bg-gradient-to-br from-green-50/60 via-white to-green-100/50 border border-green-200";
+    : "bg-gradient-to-br from-green-50/60 via-slate-50/80 to-green-100/50 border border-green-200";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

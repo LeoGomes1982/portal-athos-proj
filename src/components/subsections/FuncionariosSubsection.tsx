@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -124,7 +125,7 @@ const funcionarios: Funcionario[] = [
 const statusConfig = {
   ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700" },
   ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700" },
-  experiencia: { label: "Em Experiência", color: "bg-yellow-500", textColor: "text-yellow-700" },
+  experiencia: { label: "Em Experiência", color: "bg-orange-500", textColor: "text-orange-700" },
   aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700" },
   inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
   destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700" }
@@ -264,10 +265,10 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-orange-300 bg-gradient-to-br from-orange-50 to-white">
               <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-yellow-600 mb-1">{contadores.experiencia}</div>
-                <div className="text-sm font-medium text-slate-600">Em Experiência</div>
+                <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.experiencia}</div>
+                <div className="text-sm font-medium text-orange-700">Em Experiência</div>
               </CardContent>
             </Card>
 
