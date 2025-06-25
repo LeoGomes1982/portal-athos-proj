@@ -52,9 +52,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-green-100 via-white to-green-50 border-2 border-green-300">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-slate-100 border border-slate-200">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-green-700 flex items-center gap-3">
+          <DialogTitle className="text-2xl font-bold text-slate-700 flex items-center gap-3">
             <span className="text-3xl">{funcionario.foto}</span>
             Detalhes do Funcionário
             {funcionario.status === 'destaque' && (
@@ -69,35 +69,35 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
         <div className="space-y-6">
           {/* Informações Principais */}
-          <Card className="border-green-300 bg-gradient-to-r from-green-200/70 to-green-100/70 backdrop-blur-sm">
+          <Card className="border-slate-200 bg-gradient-to-r from-slate-50/70 to-gray-50/70 backdrop-blur-sm">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-green-800">Nome Completo</label>
+                    <label className="text-sm font-medium text-slate-600">Nome Completo</label>
                     <p className="text-lg font-bold text-slate-800">{funcionario.nome}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-green-800">Cargo</label>
+                    <label className="text-sm font-medium text-slate-600">Cargo</label>
                     <p className="text-md font-medium text-slate-700">{funcionario.cargo}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-green-800">Setor</label>
-                    <Badge variant="secondary" className="bg-green-300 text-green-900 font-medium">{funcionario.setor}</Badge>
+                    <label className="text-sm font-medium text-slate-600">Setor</label>
+                    <Badge variant="secondary" className="bg-slate-200 text-slate-700 font-medium">{funcionario.setor}</Badge>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-green-800">Data de Admissão</label>
+                    <label className="text-sm font-medium text-slate-600">Data de Admissão</label>
                     <p className="text-md font-medium text-slate-700">
                       {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-green-800">Status Atual</label>
+                    <label className="text-sm font-medium text-slate-600">Status Atual</label>
                     <div className="mt-1">
                       <Select value={statusAtual} onValueChange={handleStatusChange}>
-                        <SelectTrigger className="w-48 bg-white/80 border-green-400">
+                        <SelectTrigger className="w-48 bg-white/80 border-slate-300">
                           <SelectValue>
                             <Badge className={`${statusInfo.color} text-white text-xs`}>
                               {statusInfo.label}
@@ -122,18 +122,18 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           </Card>
 
           {/* Informações de Contato */}
-          <Card className="border-green-300 bg-white/90 backdrop-blur-sm">
+          <Card className="border-slate-200 bg-white/90 backdrop-blur-sm">
             <CardContent className="p-6">
-              <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                 📞 Informações de Contato
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-green-700">Telefone</label>
+                  <label className="text-sm font-medium text-slate-600">Telefone</label>
                   <p className="text-md font-medium text-slate-700">{funcionario.telefone}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-green-700">E-mail</label>
+                  <label className="text-sm font-medium text-slate-600">E-mail</label>
                   <p className="text-md font-medium text-slate-700 break-all">{funcionario.email}</p>
                 </div>
               </div>
@@ -142,21 +142,21 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Documentos Pessoais */}
           {(funcionario.cpf || funcionario.rg) && (
-            <Card className="border-green-300 bg-white/90 backdrop-blur-sm">
+            <Card className="border-slate-200 bg-white/90 backdrop-blur-sm">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   📋 Documentos Pessoais
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {funcionario.cpf && (
                     <div>
-                      <label className="text-sm font-medium text-green-700">CPF</label>
+                      <label className="text-sm font-medium text-slate-600">CPF</label>
                       <p className="text-md font-medium text-slate-700">{funcionario.cpf}</p>
                     </div>
                   )}
                   {funcionario.rg && (
                     <div>
-                      <label className="text-sm font-medium text-green-700">RG</label>
+                      <label className="text-sm font-medium text-slate-600">RG</label>
                       <p className="text-md font-medium text-slate-700">{funcionario.rg}</p>
                     </div>
                   )}
@@ -167,22 +167,22 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Endereço e Salário */}
           {(funcionario.endereco || funcionario.salario) && (
-            <Card className="border-green-300 bg-white/90 backdrop-blur-sm">
+            <Card className="border-slate-200 bg-white/90 backdrop-blur-sm">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   🏠 Informações Adicionais
                 </h3>
                 <div className="space-y-4">
                   {funcionario.endereco && (
                     <div>
-                      <label className="text-sm font-medium text-green-700">Endereço</label>
+                      <label className="text-sm font-medium text-slate-600">Endereço</label>
                       <p className="text-md font-medium text-slate-700">{funcionario.endereco}</p>
                     </div>
                   )}
                   {funcionario.salario && (
                     <div>
-                      <label className="text-sm font-medium text-green-700">Salário</label>
-                      <p className="text-lg font-bold text-green-700">{funcionario.salario}</p>
+                      <label className="text-sm font-medium text-slate-600">Salário</label>
+                      <p className="text-lg font-bold text-emerald-600">{funcionario.salario}</p>
                     </div>
                   )}
                 </div>
@@ -191,15 +191,15 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           )}
 
           {/* Ações */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-green-300">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
             <Button 
               variant="outline" 
               onClick={onClose} 
-              className="border-green-400 text-green-800 hover:bg-green-100/70 bg-white/80"
+              className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white/80"
             >
               Fechar
             </Button>
-            <Button className="bg-green-700 hover:bg-green-800 text-white shadow-lg">
+            <Button className="bg-slate-600 hover:bg-slate-700 text-white shadow-lg">
               📝 Editar Funcionário
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
