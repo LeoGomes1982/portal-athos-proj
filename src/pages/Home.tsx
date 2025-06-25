@@ -7,7 +7,8 @@ import {
   DollarSign,
   Building2,
   Globe,
-  UserPlus
+  UserPlus,
+  Calendar
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +33,15 @@ const Home = () => {
       className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
       iconColor: "text-green-600",
       onClick: () => navigate("/dp")
+    },
+    {
+      id: "agenda",
+      title: "AGENDA",
+      fullTitle: "Gestão de Tarefas e Agendamentos",
+      icon: Calendar,
+      className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
+      iconColor: "text-indigo-600",
+      onClick: () => navigate("/agenda")
     },
     {
       id: "operacoes",
