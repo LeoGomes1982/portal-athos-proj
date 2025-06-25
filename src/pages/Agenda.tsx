@@ -8,8 +8,7 @@ import {
   CheckCircle2,
   Circle,
   Clock,
-  User,
-  Home
+  User
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -180,10 +179,6 @@ const Agenda = () => {
             <ArrowLeft size={16} />
             Voltar
           </button>
-          <button onClick={() => navigate("/")} className="home-button">
-            <Home size={16} />
-            Home
-          </button>
         </div>
 
         {/* Page Header */}
@@ -250,7 +245,7 @@ const Agenda = () => {
                     row: "flex w-full mt-2",
                     cell: "relative p-1 text-center text-sm focus-within:relative focus-within:z-20 flex-1",
                     day: "h-14 w-full p-0 font-medium aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-indigo-300 hover:bg-indigo-50 flex items-center justify-center text-base transition-all",
-                    day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-600 shadow-lg scale-105",
+                    day_selected: "bg-indigo-600/20 text-indigo-800 hover:bg-indigo-600/30 border-indigo-400/50 shadow-md scale-105",
                     day_today: "bg-indigo-100 text-indigo-900 border-indigo-400 font-bold",
                     day_outside: "text-gray-400 opacity-50",
                     day_disabled: "text-gray-300 opacity-30",
