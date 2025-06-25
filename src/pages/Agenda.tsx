@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Calendar as CalendarIcon, 
@@ -9,7 +8,8 @@ import {
   CheckCircle2,
   Circle,
   Clock,
-  User
+  User,
+  Home
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -172,128 +172,152 @@ const Agenda = () => {
   };
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
-        {/* Header */}
-        <div className="page-header">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="page-back-button"
-          >
-            <ArrowLeft size={20} />
-          </Button>
-          <div className="page-header-icon bg-gradient-to-br from-indigo-100 to-indigo-200">
-            <CalendarIcon size={24} className="text-indigo-600" />
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50/30 via-slate-50/70 to-indigo-100/40">
+      <div className="content-wrapper animate-fade-in bg-white/80 backdrop-blur-sm border border-indigo-100/50">
+        {/* Navigation Buttons */}
+        <div className="navigation-buttons">
+          <button onClick={() => navigate("/")} className="back-button">
+            <ArrowLeft size={16} />
+            Voltar
+          </button>
+          <button onClick={() => navigate("/")} className="home-button">
+            <Home size={16} />
+            Home
+          </button>
+        </div>
+
+        {/* Page Header */}
+        <div className="page-header-centered">
+          <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <CalendarIcon size={32} className="text-white" />
           </div>
           <div>
-            <h1 className="page-title">Agenda</h1>
+            <h1 className="page-title mb-0">Agenda</h1>
             <p className="text-description">Gestão de Tarefas e Agendamentos</p>
           </div>
         </div>
 
-        {/* Botões de Ação */}
-        <div className="flex gap-4 mb-8">
-          <Button onClick={() => setShowResumoModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
-            <Users size={16} className="mr-2" />
-            Resumo Geral
-          </Button>
-          <Button onClick={() => setShowNovoCompromisso(true)} variant="outline">
-            <Plus size={16} className="mr-2" />
-            Novo Compromisso
-          </Button>
+        {/* Action Buttons */}
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="flex flex-wrap justify-center gap-4">
+            <button 
+              onClick={() => setShowResumoModal(true)}
+              className="primary-btn text-base px-8 py-4 h-auto bg-indigo-600 hover:bg-indigo-700"
+            >
+              <Users size={20} className="mr-2" />
+              Resumo Geral
+            </button>
+            <button 
+              onClick={() => setShowNovoCompromisso(true)}
+              className="success-btn text-base px-8 py-4 h-auto"
+            >
+              <Plus size={20} className="mr-2" />
+              Novo Compromisso
+            </button>
+          </div>
         </div>
 
-        {/* Conteúdo Principal */}
-        <div className="content-grid">
-          {/* Calendário */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-xl">Calendário</CardTitle>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Calendar - Full Width */}
+          <Card className="lg:col-span-2 modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-indigo-200/50">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <CalendarIcon size={20} className="text-indigo-600" />
+                Calendário
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                locale={ptBR}
-                className="rounded-lg border w-full p-4"
-                classNames={{
-                  months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                  month: "space-y-4 flex-1",
-                  caption: "flex justify-center pt-1 relative items-center mb-4",
-                  caption_label: "text-lg font-semibold",
-                  nav: "space-x-1 flex items-center",
-                  nav_button: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 border rounded-md",
-                  nav_button_previous: "absolute left-1",
-                  nav_button_next: "absolute right-1",
-                  table: "w-full border-collapse space-y-1",
-                  head_row: "flex mb-2",
-                  head_cell: "text-muted-foreground rounded-md w-12 h-12 font-medium text-sm flex items-center justify-center",
-                  row: "flex w-full mt-1",
-                  cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 w-12 h-12",
-                  day: "h-12 w-12 p-0 font-normal aria-selected:opacity-100 rounded-md border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-sm",
-                  day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-600",
-                  day_today: "bg-indigo-100 text-indigo-900 border-indigo-300",
-                  day_outside: "text-muted-foreground opacity-50",
-                  day_disabled: "text-muted-foreground opacity-50",
-                }}
-              />
+            <CardContent className="card-content">
+              <div className="w-full">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  locale={ptBR}
+                  className="w-full mx-auto"
+                  classNames={{
+                    months: "w-full",
+                    month: "w-full space-y-4",
+                    caption: "flex justify-center pt-1 relative items-center mb-4",
+                    caption_label: "text-xl font-semibold text-indigo-800",
+                    nav: "space-x-1 flex items-center",
+                    nav_button: "h-10 w-10 bg-white border-2 border-indigo-200 p-0 opacity-70 hover:opacity-100 hover:border-indigo-400 rounded-lg transition-all",
+                    nav_button_previous: "absolute left-1",
+                    nav_button_next: "absolute right-1",
+                    table: "w-full border-collapse space-y-1 mt-4",
+                    head_row: "flex mb-2",
+                    head_cell: "text-indigo-600 rounded-md flex-1 h-14 font-semibold text-base flex items-center justify-center",
+                    row: "flex w-full mt-2",
+                    cell: "relative p-1 text-center text-sm focus-within:relative focus-within:z-20 flex-1",
+                    day: "h-14 w-full p-0 font-medium aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-indigo-300 hover:bg-indigo-50 flex items-center justify-center text-base transition-all",
+                    day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-600 shadow-lg scale-105",
+                    day_today: "bg-indigo-100 text-indigo-900 border-indigo-400 font-bold",
+                    day_outside: "text-gray-400 opacity-50",
+                    day_disabled: "text-gray-300 opacity-30",
+                  }}
+                />
+              </div>
             </CardContent>
           </Card>
 
-          {/* Compromissos do Dia */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">
+          {/* Daily Schedule */}
+          <Card className="modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-indigo-200/50">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Clock size={20} className="text-indigo-600" />
                 {selectedDate ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR }) : 'Selecione uma data'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {selectedDate && getCompromissosData(selectedDate).map((compromisso) => (
-                <div
-                  key={compromisso.id}
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    compromisso.concluido 
-                      ? 'bg-gray-100 opacity-60 border-gray-300' 
-                      : 'bg-white hover:shadow-md border-gray-200 hover:border-indigo-300'
-                  }`}
-                  onClick={() => {
-                    setCompromissoSelecionado(compromisso);
-                    setShowDetalhesCompromisso(true);
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-medium text-base">{compromisso.titulo}</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleConcluido(compromisso.id);
-                      }}
-                      className="text-green-600 hover:text-green-700 transition-colors"
-                    >
-                      {compromisso.concluido ? <CheckCircle2 size={20} /> : <Circle size={20} />}
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Clock size={14} />
-                      {compromisso.horario}
+            <CardContent className="card-content">
+              <div className="space-y-3">
+                {selectedDate && getCompromissosData(selectedDate).map((compromisso) => (
+                  <div
+                    key={compromisso.id}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
+                      compromisso.concluido 
+                        ? 'bg-gray-100 opacity-60 border-gray-300' 
+                        : 'bg-white hover:shadow-md border-indigo-200 hover:border-indigo-400 hover:scale-102'
+                    }`}
+                    onClick={() => {
+                      setCompromissoSelecionado(compromisso);
+                      setShowDetalhesCompromisso(true);
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-semibold text-base text-gray-800">{compromisso.titulo}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleConcluido(compromisso.id);
+                        }}
+                        className="text-green-600 hover:text-green-700 transition-colors hover:scale-110"
+                      >
+                        {compromisso.concluido ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                      </button>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <User size={14} />
-                      {compromisso.participantes.length} pessoas
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded-full">
+                        <Clock size={14} />
+                        {compromisso.horario}
+                      </div>
+                      <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                        <User size={14} />
+                        {compromisso.participantes.length} pessoas
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              {selectedDate && getCompromissosData(selectedDate).length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 text-base">
-                    Nenhum compromisso para esta data
-                  </p>
-                </div>
-              )}
+                ))}
+                {selectedDate && getCompromissosData(selectedDate).length === 0 && (
+                  <div className="text-center py-12 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border-2 border-indigo-100">
+                    <div className="w-16 h-16 bg-indigo-100 border-2 border-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <CalendarIcon size={24} className="text-indigo-500" />
+                    </div>
+                    <p className="text-gray-600 text-base font-medium">
+                      Nenhum compromisso para esta data
+                    </p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
