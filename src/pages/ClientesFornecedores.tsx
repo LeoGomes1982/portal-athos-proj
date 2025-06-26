@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Users, Building, FileText, Clock, Edit, Trash2, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -174,78 +175,120 @@ const ClientesFornecedores = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
-          >
-            <ArrowLeft size={20} className="text-slate-600" />
-            <span className="text-slate-700">Voltar</span>
-          </button>
-        </div>
+    <div className="app-container">
+      <div className="content-wrapper">
+        {/* Back Button */}
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={() => navigate("/comercial")}
+        >
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
 
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-slate-800">
+        {/* Header */}
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-6 shadow-lg">
+            <Users size={32} className="text-white" />
+          </div>
+          <h1 className="page-title text-center">
             Clientes e Fornecedores
           </h1>
-          <Input
-            type="search"
-            placeholder="Buscar por nome, email ou CNPJ..."
-            className="w-full max-w-md"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <p className="text-description text-center max-w-2xl mx-auto">
+            Gestão completa de clientes e fornecedores da empresa
+          </p>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={() => setFilterType("todos")}
-              variant={filterType === "todos" ? "default" : "outline"}
-            >
-              Todos
-            </Button>
-            <Button
-              onClick={() => setFilterType("cliente")}
-              variant={filterType === "cliente" ? "default" : "outline"}
-            >
-              Clientes
-            </Button>
-            <Button
-              onClick={() => setFilterType("fornecedor")}
-              variant={filterType === "fornecedor" ? "default" : "outline"}
-            >
-              Fornecedores
-            </Button>
+        {/* Search and Filter Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <Input
+              type="search"
+              placeholder="Buscar por nome, email ou CNPJ..."
+              className="w-full md:max-w-md"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setFilterType("todos")}
+                variant={filterType === "todos" ? "default" : "outline"}
+                size="sm"
+              >
+                Todos
+              </Button>
+              <Button
+                onClick={() => setFilterType("cliente")}
+                variant={filterType === "cliente" ? "default" : "outline"}
+                size="sm"
+              >
+                Clientes
+              </Button>
+              <Button
+                onClick={() => setFilterType("fornecedor")}
+                variant={filterType === "fornecedor" ? "default" : "outline"}
+                size="sm"
+              >
+                Fornecedores
+              </Button>
+              <Button onClick={() => alert("Funcionalidade em breve!")}>
+                Adicionar
+              </Button>
+            </div>
           </div>
-          <Button onClick={() => alert("Funcionalidade em breve!")}>
-            Adicionar
-          </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
           {filteredClients.map((client) => (
             <div
               key={client.id}
-              className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:bg-slate-50 transition-colors cursor-pointer"
+              className="modern-card group relative p-6 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150"
               onClick={() => handleView(client)}
             >
-              <div className="flex items-center gap-4 mb-3">
-                <div className="w-10 h-10 rounded-md bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white flex items-center justify-center shadow-sm">
                   {client.tipo === "cliente" ? (
                     <Users size={20} />
                   ) : (
                     <Building size={20} />
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-slate-800">{client.nome}</h3>
+                <div className="flex-1">
+                  <h3 className="subsection-title text-left">{client.nome}</h3>
+                  <span className="text-xs px-2 py-1 bg-orange-200 text-orange-800 rounded-full capitalize">
+                    {client.tipo}
+                  </span>
+                </div>
               </div>
-              <p className="text-slate-600">{client.email}</p>
-              <p className="text-slate-500">{client.telefone}</p>
+              <div className="space-y-1">
+                <p className="text-description">{client.email}</p>
+                <p className="text-description">{client.telefone}</p>
+                <p className="text-description">{client.cnpj}</p>
+              </div>
             </div>
           ))}
+        </div>
+
+        {filteredClients.length === 0 && (
+          <div className="text-center py-16 animate-fade-in">
+            <Users size={64} className="mx-auto mb-4 text-slate-400" />
+            <h3 className="text-xl font-semibold text-slate-600 mb-2">
+              Nenhum resultado encontrado
+            </h3>
+            <p className="text-description">
+              Tente ajustar os filtros ou termos de busca
+            </p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
+            © 2024 Grupo Athos. Todos os direitos reservados.
+          </p>
         </div>
       </div>
 
