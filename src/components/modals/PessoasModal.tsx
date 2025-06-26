@@ -85,21 +85,36 @@ const PessoasModal = ({ isOpen, onClose, clienteNome, clienteId }: PessoasModalP
 
   // Carregar funcionários vinculados do localStorage
   useEffect(() => {
+    if (!clienteId) return;
+    
     const vinculos = localStorage.getItem(`funcionarios_cliente_${clienteId}`);
     if (vinculos) {
-      const funcionariosIds = JSON.parse(vinculos);
-      const funcionariosVinculadosData = todosOsFuncionarios.filter(func => 
-        funcionariosIds.includes(func.id)
-      ).map(func => ({ ...func, vinculadoCliente: true }));
-      setFuncionariosVinculados(funcionariosVinculadosData);
+      try {
+        const funcionariosIds = JSON.parse(vinculos);
+        const funcionariosVinculadosData = todosOsFuncionarios.filter(func => 
+          funcionariosIds.includes(func.id)
+        ).map(func => ({ ...func, vinculadoCliente: true }));
+        setFuncionariosVinculados(funcionariosVinculadosData);
+        console.log('Funcionários vinculados carregados para cliente', clienteId, ':', funcionariosVinculadosData);
+      } catch (error) {
+        console.error('Erro ao carregar vínculos de funcionários:', error);
+        setFuncionariosVinculados([]);
+      }
     }
   }, [clienteId, todosOsFuncionarios]);
 
   // Salvar vínculos no localStorage
   const salvarVinculos = (funcionarios: Funcionario[]) => {
+    if (!clienteId) return;
+    
     const ids = funcionarios.map(func => func.id);
-    localStorage.setItem(`funcionarios_cliente_${clienteId}`, JSON.stringify(ids));
-    setFuncionariosVinculados(funcionarios);
+    try {
+      localStorage.setItem(`funcionarios_cliente_${clienteId}`, JSON.stringify(ids));
+      setFuncionariosVinculados(funcionarios);
+      console.log('Vínculos salvos para cliente', clienteId, ':', ids);
+    } catch (error) {
+      console.error('Erro ao salvar vínculos:', error);
+    }
   };
 
   const funcionariosDisponiveis = todosOsFuncionarios.filter(funcionario => 
@@ -130,7 +145,7 @@ const PessoasModal = ({ isOpen, onClose, clienteNome, clienteId }: PessoasModalP
     switch (status) {
       case 'ativo': return 'bg-green-100 text-green-800';
       case 'ferias': return 'bg-blue-100 text-blue-800';
-      case 'experiencia': return 'bg-yellow-100 text-yellow-800';
+      case 'experiencia': return 'bg-orange-100 text-orange-800';
       case 'aviso_previo': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -34,42 +35,66 @@ const HistoricoModal = ({ isOpen, onClose, clienteNome, clienteId }: HistoricoMo
 
   // Carregar históricos do localStorage
   useEffect(() => {
+    if (!clienteId) return;
+    
     const historicosKey = `historico_cliente_${clienteId}`;
     const savedHistoricos = localStorage.getItem(historicosKey);
+    
     if (savedHistoricos) {
-      setHistoricos(JSON.parse(savedHistoricos));
+      try {
+        const parsedHistoricos = JSON.parse(savedHistoricos);
+        setHistoricos(parsedHistoricos);
+        console.log('Históricos carregados para cliente', clienteId, ':', parsedHistoricos);
+      } catch (error) {
+        console.error('Erro ao carregar históricos:', error);
+        // Se houver erro, criar dados iniciais
+        const historicosIniciais = criarHistoricosIniciais();
+        setHistoricos(historicosIniciais);
+        localStorage.setItem(historicosKey, JSON.stringify(historicosIniciais));
+      }
     } else {
       // Dados iniciais se não houver dados salvos
-      const historicosIniciais = [
-        {
-          id: "1",
-          data: "2024-01-15",
-          tipo: "positivo" as const,
-          titulo: "Pagamento em dia",
-          descricao: "Cliente efetuou pagamento antes do vencimento",
-          usuario: "João Admin"
-        },
-        {
-          id: "2", 
-          data: "2024-01-10",
-          tipo: "neutro" as const,
-          titulo: "Contato comercial",
-          descricao: "Cliente solicitou informações sobre novos serviços",
-          usuario: "Maria Vendas"
-        }
-      ];
+      const historicosIniciais = criarHistoricosIniciais();
       setHistoricos(historicosIniciais);
       localStorage.setItem(historicosKey, JSON.stringify(historicosIniciais));
     }
   }, [clienteId]);
 
+  // Função para criar históricos iniciais
+  const criarHistoricosIniciais = (): RegistroHistorico[] => {
+    return [
+      {
+        id: "1",
+        data: "2024-01-15",
+        tipo: "positivo" as const,
+        titulo: "Pagamento em dia",
+        descricao: "Cliente efetuou pagamento antes do vencimento",
+        usuario: "João Admin"
+      },
+      {
+        id: "2", 
+        data: "2024-01-10",
+        tipo: "neutro" as const,
+        titulo: "Contato comercial",
+        descricao: "Cliente solicitou informações sobre novos serviços",
+        usuario: "Maria Vendas"
+      }
+    ];
+  };
+
   // Salvar históricos no localStorage sempre que mudar
-  useEffect(() => {
-    if (historicos.length > 0) {
-      const historicosKey = `historico_cliente_${clienteId}`;
-      localStorage.setItem(historicosKey, JSON.stringify(historicos));
+  const salvarHistoricos = (novosHistoricos: RegistroHistorico[]) => {
+    if (!clienteId) return;
+    
+    const historicosKey = `historico_cliente_${clienteId}`;
+    try {
+      localStorage.setItem(historicosKey, JSON.stringify(novosHistoricos));
+      setHistoricos(novosHistoricos);
+      console.log('Históricos salvos para cliente', clienteId, ':', novosHistoricos);
+    } catch (error) {
+      console.error('Erro ao salvar históricos:', error);
     }
-  }, [historicos, clienteId]);
+  };
 
   const handleAddRecord = () => {
     if (newRecord.titulo && newRecord.descricao) {
@@ -82,7 +107,9 @@ const HistoricoModal = ({ isOpen, onClose, clienteNome, clienteId }: HistoricoMo
         usuario: "Usuário Atual"
       };
       
-      setHistoricos(prev => [registro, ...prev]);
+      const novosHistoricos = [registro, ...historicos];
+      salvarHistoricos(novosHistoricos);
+      
       setNewRecord({ tipo: 'neutro', titulo: '', descricao: '' });
       setIsAddingRecord(false);
     }

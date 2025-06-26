@@ -41,31 +41,50 @@ const GerenciarEmpresasModal = ({ isOpen, onClose }: GerenciarEmpresasModalProps
   useEffect(() => {
     const empresasSalvas = localStorage.getItem('empresas');
     if (empresasSalvas) {
-      setEmpresas(JSON.parse(empresasSalvas));
+      try {
+        const parsedEmpresas = JSON.parse(empresasSalvas);
+        setEmpresas(parsedEmpresas);
+        console.log('Empresas carregadas:', parsedEmpresas);
+      } catch (error) {
+        console.error('Erro ao carregar empresas:', error);
+        // Se houver erro, criar dados iniciais
+        const empresasIniciais = criarEmpresasIniciais();
+        setEmpresas(empresasIniciais);
+        localStorage.setItem('empresas', JSON.stringify(empresasIniciais));
+      }
     } else {
       // Dados iniciais se não houver dados salvos
-      const empresasIniciais: Empresa[] = [
-        {
-          id: "1",
-          nome: "Minha Empresa Ltda",
-          cnpj: "12.345.678/0001-90",
-          endereco: "Rua Principal, 123",
-          telefone: "(11) 99999-9999",
-          email: "contato@minhaempresa.com.br",
-          observacoes: "Empresa principal"
-        }
-      ];
+      const empresasIniciais = criarEmpresasIniciais();
       setEmpresas(empresasIniciais);
       localStorage.setItem('empresas', JSON.stringify(empresasIniciais));
     }
   }, []);
 
-  // Salvar empresas no localStorage sempre que a lista mudar
-  useEffect(() => {
-    if (empresas.length > 0) {
-      localStorage.setItem('empresas', JSON.stringify(empresas));
+  // Função para criar empresas iniciais
+  const criarEmpresasIniciais = (): Empresa[] => {
+    return [
+      {
+        id: "1",
+        nome: "Minha Empresa Ltda",
+        cnpj: "12.345.678/0001-90",
+        endereco: "Rua Principal, 123",
+        telefone: "(11) 99999-9999",
+        email: "contato@minhaempresa.com.br",
+        observacoes: "Empresa principal"
+      }
+    ];
+  };
+
+  // Salvar empresas no localStorage
+  const salvarEmpresas = (novasEmpresas: Empresa[]) => {
+    try {
+      localStorage.setItem('empresas', JSON.stringify(novasEmpresas));
+      setEmpresas(novasEmpresas);
+      console.log('Empresas salvas:', novasEmpresas);
+    } catch (error) {
+      console.error('Erro ao salvar empresas:', error);
     }
-  }, [empresas]);
+  };
 
   const resetForm = () => {
     setFormData({
@@ -96,11 +115,12 @@ const GerenciarEmpresasModal = ({ isOpen, onClose }: GerenciarEmpresasModalProps
 
     if (editingId) {
       // Editar empresa existente
-      setEmpresas(prev => prev.map(empresa => 
+      const novasEmpresas = empresas.map(empresa => 
         empresa.id === editingId 
           ? { ...empresa, ...formData }
           : empresa
-      ));
+      );
+      salvarEmpresas(novasEmpresas);
       toast({
         title: "Sucesso",
         description: "Empresa atualizada com sucesso!",
@@ -111,7 +131,8 @@ const GerenciarEmpresasModal = ({ isOpen, onClose }: GerenciarEmpresasModalProps
         id: Date.now().toString(),
         ...formData
       };
-      setEmpresas(prev => [...prev, novaEmpresa]);
+      const novasEmpresas = [...empresas, novaEmpresa];
+      salvarEmpresas(novasEmpresas);
       toast({
         title: "Sucesso",
         description: "Empresa adicionada com sucesso!",
@@ -136,7 +157,8 @@ const GerenciarEmpresasModal = ({ isOpen, onClose }: GerenciarEmpresasModalProps
 
   const handleDelete = (id: string) => {
     if (confirm("Tem certeza que deseja excluir esta empresa?")) {
-      setEmpresas(prev => prev.filter(empresa => empresa.id !== id));
+      const novasEmpresas = empresas.filter(empresa => empresa.id !== id);
+      salvarEmpresas(novasEmpresas);
       toast({
         title: "Sucesso",
         description: "Empresa excluída com sucesso!",

@@ -60,42 +60,62 @@ const Agenda = () => {
   useEffect(() => {
     const savedCompromissos = localStorage.getItem('agenda_compromissos');
     if (savedCompromissos) {
-      setCompromissos(JSON.parse(savedCompromissos));
+      try {
+        const parsedCompromissos = JSON.parse(savedCompromissos);
+        setCompromissos(parsedCompromissos);
+        console.log('Compromissos carregados:', parsedCompromissos);
+      } catch (error) {
+        console.error('Erro ao carregar compromissos:', error);
+        // Se houver erro, criar dados iniciais
+        const compromissosIniciais = criarCompromissosIniciais();
+        setCompromissos(compromissosIniciais);
+        localStorage.setItem('agenda_compromissos', JSON.stringify(compromissosIniciais));
+      }
     } else {
-      // Dados iniciais
-      const compromissosIniciais: Compromisso[] = [
-        {
-          id: '1',
-          titulo: 'Reunião de Planejamento',
-          descricao: 'Planejamento mensal da equipe',
-          data: format(new Date(), 'yyyy-MM-dd'),
-          horario: '09:00',
-          participantes: ['user1', 'user2', 'user3'],
-          tipo: 'reuniao',
-          concluido: false,
-          criadoPor: 'user1'
-        },
-        {
-          id: '2',
-          titulo: 'Revisão de Contratos',
-          descricao: 'Revisar contratos pendentes',
-          data: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'), // Amanhã
-          horario: '14:00',
-          participantes: ['user1', 'user4'],
-          tipo: 'tarefa',
-          concluido: false,
-          criadoPor: 'user4'
-        }
-      ];
+      // Criar dados iniciais se não existirem
+      const compromissosIniciais = criarCompromissosIniciais();
       setCompromissos(compromissosIniciais);
       localStorage.setItem('agenda_compromissos', JSON.stringify(compromissosIniciais));
     }
   }, []);
 
-  // Salvar compromissos no localStorage
+  // Função para criar compromissos iniciais
+  const criarCompromissosIniciais = (): Compromisso[] => {
+    return [
+      {
+        id: '1',
+        titulo: 'Reunião de Planejamento',
+        descricao: 'Planejamento mensal da equipe',
+        data: format(new Date(), 'yyyy-MM-dd'),
+        horario: '09:00',
+        participantes: ['user1', 'user2', 'user3'],
+        tipo: 'reuniao',
+        concluido: false,
+        criadoPor: 'user1'
+      },
+      {
+        id: '2',
+        titulo: 'Revisão de Contratos',
+        descricao: 'Revisar contratos pendentes',
+        data: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
+        horario: '14:00',
+        participantes: ['user1', 'user4'],
+        tipo: 'tarefa',
+        concluido: false,
+        criadoPor: 'user4'
+      }
+    ];
+  };
+
+  // Salvar compromissos no localStorage sempre que mudar
   useEffect(() => {
     if (compromissos.length > 0) {
-      localStorage.setItem('agenda_compromissos', JSON.stringify(compromissos));
+      try {
+        localStorage.setItem('agenda_compromissos', JSON.stringify(compromissos));
+        console.log('Compromissos salvos:', compromissos);
+      } catch (error) {
+        console.error('Erro ao salvar compromissos:', error);
+      }
     }
   }, [compromissos]);
 
@@ -108,7 +128,17 @@ const Agenda = () => {
         criadoPor: usuarioAtual
       };
       
-      setCompromissos([...compromissos, compromisso]);
+      const novosCompromissos = [...compromissos, compromisso];
+      setCompromissos(novosCompromissos);
+      
+      // Salvar imediatamente
+      try {
+        localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
+        console.log('Novo compromisso salvo:', compromisso);
+      } catch (error) {
+        console.error('Erro ao salvar novo compromisso:', error);
+      }
+      
       setNovoCompromisso({
         titulo: '',
         descricao: '',
@@ -122,9 +152,18 @@ const Agenda = () => {
   };
 
   const toggleConcluido = (id: string) => {
-    setCompromissos(compromissos.map(c => 
+    const novosCompromissos = compromissos.map(c => 
       c.id === id ? { ...c, concluido: !c.concluido } : c
-    ));
+    );
+    setCompromissos(novosCompromissos);
+    
+    // Salvar imediatamente
+    try {
+      localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
+      console.log('Status de compromisso atualizado:', id);
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+    }
   };
 
   const getCompromissosUsuario = (usuario: string) => {
