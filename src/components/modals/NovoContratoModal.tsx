@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,22 +24,45 @@ interface Servico {
   valor: number;
 }
 
+interface ClienteFornecedor {
+  id: string;
+  nome: string;
+  tipo: "cliente" | "fornecedor";
+}
+
+interface Empresa {
+  id: string;
+  nome: string;
+}
+
 export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoContratoModalProps) {
   const [cliente, setCliente] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [servicos, setServicos] = useState<Servico[]>([{ descricao: "", valor: 0 }]);
   const [showGerarTemplate, setShowGerarTemplate] = useState(false);
+  const [clientesFornecedores, setClientesFornecedores] = useState<ClienteFornecedor[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
-  // Mock de clientes ativos - em produção viria de uma API
-  const clientesAtivos = [
-    "Empresa ABC Ltda",
-    "Tech Solutions Ltd", 
-    "Inovação Digital S.A.",
-    "Consultoria Moderna Ltda",
-    "Desenvolvimento Web Inc"
-  ];
+  // Carregar clientes e fornecedores do localStorage
+  useEffect(() => {
+    const savedClients = localStorage.getItem('clientesFornecedores');
+    if (savedClients) {
+      const clients = JSON.parse(savedClients);
+      setClientesFornecedores(clients);
+    }
 
-  const empresas = ["GA SERVIÇOS", "GOMES E GUIDOTTI"];
+    const savedEmpresas = localStorage.getItem('empresas');
+    if (savedEmpresas) {
+      const empresasData = JSON.parse(savedEmpresas);
+      setEmpresas(empresasData);
+    } else {
+      // Empresas padrão se não houver dados salvos
+      setEmpresas([
+        { id: "1", nome: "GA SERVIÇOS" },
+        { id: "2", nome: "GOMES E GUIDOTTI" }
+      ]);
+    }
+  }, [isOpen]);
 
   const adicionarServico = () => {
     setServicos([...servicos, { descricao: "", valor: 0 }]);
@@ -125,12 +148,12 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
               <Label htmlFor="cliente">Cliente *</Label>
               <Select value={cliente} onValueChange={setCliente}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um cliente ativo" />
+                  <SelectValue placeholder="Selecione um cliente" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clientesAtivos.map((clienteItem) => (
-                    <SelectItem key={clienteItem} value={clienteItem}>
-                      {clienteItem}
+                  {clientesFornecedores.map((clienteItem) => (
+                    <SelectItem key={clienteItem.id} value={clienteItem.nome}>
+                      {clienteItem.nome} ({clienteItem.tipo})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -146,8 +169,8 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                 </SelectTrigger>
                 <SelectContent>
                   {empresas.map((empresaItem) => (
-                    <SelectItem key={empresaItem} value={empresaItem}>
-                      {empresaItem}
+                    <SelectItem key={empresaItem.id} value={empresaItem.nome}>
+                      {empresaItem.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>
