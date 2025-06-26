@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   Calendar as CalendarIcon, 
@@ -210,8 +211,8 @@ const Agenda = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50/30 via-slate-50/70 to-indigo-100/40">
-      <div className="content-wrapper animate-fade-in bg-white/80 backdrop-blur-sm border border-indigo-100/50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50/40 via-violet-50/30 to-purple-100/50">
+      <div className="content-wrapper animate-fade-in bg-white/85 backdrop-blur-sm border border-purple-100/60">
         {/* Navigation Buttons */}
         <div className="navigation-buttons">
           <button onClick={() => navigate("/")} className="back-button">
@@ -222,7 +223,7 @@ const Agenda = () => {
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <CalendarIcon size={32} className="text-white" />
           </div>
           <div>
@@ -236,7 +237,7 @@ const Agenda = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <button 
               onClick={() => setShowResumoModal(true)}
-              className="primary-btn text-base px-8 py-4 h-auto bg-indigo-600 hover:bg-indigo-700"
+              className="primary-btn text-base px-8 py-4 h-auto bg-purple-600 hover:bg-purple-700"
             >
               <Users size={20} className="mr-2" />
               Resumo Geral
@@ -254,10 +255,10 @@ const Agenda = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Calendar - Full Width */}
-          <Card className="lg:col-span-2 modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-indigo-200/50">
+          <Card className="lg:col-span-2 modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-purple-200/50">
             <CardHeader className="card-header">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <CalendarIcon size={20} className="text-indigo-600" />
+                <CalendarIcon size={20} className="text-purple-600" />
                 Calendário
               </CardTitle>
             </CardHeader>
@@ -273,19 +274,19 @@ const Agenda = () => {
                     months: "w-full",
                     month: "w-full space-y-4",
                     caption: "flex justify-center pt-1 relative items-center mb-4",
-                    caption_label: "text-xl font-semibold text-indigo-800",
+                    caption_label: "text-xl font-semibold text-purple-800",
                     nav: "space-x-1 flex items-center",
-                    nav_button: "h-10 w-10 bg-white border-2 border-indigo-200 p-0 opacity-70 hover:opacity-100 hover:border-indigo-400 rounded-lg transition-all",
+                    nav_button: "h-10 w-10 bg-white border-2 border-purple-200 p-0 opacity-70 hover:opacity-100 hover:border-purple-400 rounded-lg transition-all",
                     nav_button_previous: "absolute left-1",
                     nav_button_next: "absolute right-1",
                     table: "w-full border-collapse space-y-1 mt-4",
                     head_row: "flex mb-2",
-                    head_cell: "text-indigo-600 rounded-md flex-1 h-14 font-semibold text-base flex items-center justify-center",
+                    head_cell: "text-purple-600 rounded-md flex-1 h-14 font-semibold text-base flex items-center justify-center",
                     row: "flex w-full mt-2",
                     cell: "relative p-1 text-center text-sm focus-within:relative focus-within:z-20 flex-1",
-                    day: "h-14 w-full p-0 font-medium aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-indigo-300 hover:bg-indigo-50 flex items-center justify-center text-base transition-all",
-                    day_selected: "bg-indigo-600/20 text-indigo-800 hover:bg-indigo-600/30 border-indigo-400/50 shadow-md scale-105",
-                    day_today: "bg-indigo-100 text-indigo-900 border-indigo-400 font-bold",
+                    day: "h-14 w-full p-0 font-medium aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-purple-300 hover:bg-purple-50 flex items-center justify-center text-base transition-all",
+                    day_selected: "bg-purple-600/20 text-purple-800 hover:bg-purple-600/30 border-purple-400/50 shadow-md scale-105",
+                    day_today: "bg-purple-100 text-purple-900 border-purple-400 font-bold",
                     day_outside: "text-gray-400 opacity-50",
                     day_disabled: "text-gray-300 opacity-30",
                   }}
@@ -295,10 +296,10 @@ const Agenda = () => {
           </Card>
 
           {/* Daily Schedule */}
-          <Card className="modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-indigo-200/50">
+          <Card className="modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-purple-200/50">
             <CardHeader className="card-header">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Clock size={20} className="text-indigo-600" />
+                <Clock size={20} className="text-purple-600" />
                 {selectedDate ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR }) : 'Selecione uma data'}
               </CardTitle>
             </CardHeader>
@@ -310,7 +311,7 @@ const Agenda = () => {
                     className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                       compromisso.concluido 
                         ? 'bg-gray-100 opacity-60 border-gray-300' 
-                        : 'bg-white hover:shadow-md border-indigo-200 hover:border-indigo-400 hover:scale-102'
+                        : 'bg-white hover:shadow-md border-purple-200 hover:border-purple-400 hover:scale-102'
                     }`}
                     onClick={() => {
                       setCompromissoSelecionado(compromisso);
@@ -330,7 +331,7 @@ const Agenda = () => {
                       </button>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded-full">
+                      <div className="flex items-center gap-1 bg-purple-50 px-2 py-1 rounded-full">
                         <Clock size={14} />
                         {compromisso.horario}
                       </div>
@@ -342,9 +343,9 @@ const Agenda = () => {
                   </div>
                 ))}
                 {selectedDate && getCompromissosData(selectedDate).length === 0 && (
-                  <div className="text-center py-12 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border-2 border-indigo-100">
-                    <div className="w-16 h-16 bg-indigo-100 border-2 border-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <CalendarIcon size={24} className="text-indigo-500" />
+                  <div className="text-center py-12 bg-gradient-to-br from-purple-50 to-white rounded-2xl border-2 border-purple-100">
+                    <div className="w-16 h-16 bg-purple-100 border-2 border-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <CalendarIcon size={24} className="text-purple-500" />
                     </div>
                     <p className="text-gray-600 text-base font-medium">
                       Nenhum compromisso para esta data
