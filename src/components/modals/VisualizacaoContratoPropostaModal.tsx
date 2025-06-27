@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -37,28 +38,32 @@ export default function VisualizacaoContratoPropostaModal({
 
   const handleStatusChange = (checked: boolean) => {
     setIsActive(checked);
-    // Aqui você implementaria a lógica para atualizar o status no backend
     console.log(`Status alterado para: ${checked ? 'ativo' : 'inativo'}`);
   };
 
   const handleEdit = () => {
     console.log('Editar item:', item.id);
-    // Aqui você abriria o modal de edição
+    // Fechar modal antes de abrir edição
+    onClose();
   };
 
   const handleDelete = () => {
     if (confirm(`Tem certeza que deseja excluir esta ${item.tipo}?`)) {
       console.log('Excluir item:', item.id);
-      // Aqui você implementaria a lógica de exclusão
       onClose();
     }
   };
 
   const handleShare = () => {
-    const texto = `${item.tipo === 'proposta' ? 'Proposta Comercial' : 'Contrato'} - ${item.cliente}\n\nEmpresa: ${item.empresa}\nValor Total: R$ ${item.valorTotal.toLocaleString('pt-BR')}\n\nServiços:\n${item.servicos.map(s => `• ${s.descricao}: R$ ${s.valor.toLocaleString('pt-BR')}`).join('\n')}`;
-    
-    const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
-    window.open(url, '_blank');
+    try {
+      const texto = `${item.tipo === 'proposta' ? 'Proposta Comercial' : 'Contrato'} - ${item.cliente}\n\nEmpresa: ${item.empresa}\nValor Total: R$ ${item.valorTotal.toLocaleString('pt-BR')}\n\nServiços:\n${item.servicos.map(s => `• ${s.descricao}: R$ ${s.valor.toLocaleString('pt-BR')}`).join('\n')}`;
+      
+      const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Erro ao compartilhar:', error);
+      alert('Erro ao compartilhar. Tente novamente.');
+    }
   };
 
   const handleDownload = async () => {
@@ -190,8 +195,17 @@ export default function VisualizacaoContratoPropostaModal({
     }
   };
 
+  // Função para fechar modal de forma segura
+  const handleClose = () => {
+    try {
+      onClose();
+    } catch (error) {
+      console.error('Erro ao fechar modal:', error);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
@@ -203,6 +217,7 @@ export default function VisualizacaoContratoPropostaModal({
                 variant="outline"
                 size="sm"
                 onClick={handleEdit}
+                type="button"
               >
                 <Edit className="h-4 w-4" />
                 Editar
@@ -212,6 +227,7 @@ export default function VisualizacaoContratoPropostaModal({
                 size="sm"
                 onClick={handleDelete}
                 className="text-red-600 hover:text-red-700"
+                type="button"
               >
                 <Trash2 className="h-4 w-4" />
                 Excluir
@@ -238,6 +254,7 @@ export default function VisualizacaoContratoPropostaModal({
                 size="sm"
                 onClick={handleShare}
                 className="bg-green-50 hover:bg-green-100 text-green-700"
+                type="button"
               >
                 <Share className="h-4 w-4" />
                 Compartilhar WhatsApp
@@ -247,6 +264,7 @@ export default function VisualizacaoContratoPropostaModal({
                 size="sm"
                 onClick={handleDownload}
                 className="bg-blue-50 hover:bg-blue-100 text-blue-700"
+                type="button"
               >
                 <Download className="h-4 w-4" />
                 Download PDF

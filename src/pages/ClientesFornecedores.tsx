@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Users, Building, FileText, Clock, Edit, Trash2, Save, Plus, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -174,6 +173,7 @@ const ClientesFornecedores = () => {
       setClients(updatedClients);
       localStorage.setItem('clientesFornecedores', JSON.stringify(updatedClients));
       setIsModalOpen(false);
+      setSelectedClient(null);
       
       toast({
         title: "Sucesso",
@@ -259,21 +259,31 @@ const ClientesFornecedores = () => {
     });
   };
 
-  const resetAndClose = () => {
+  // Função corrigida para fechar o modal sem quebrar a página
+  const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedClient(null);
     setIsEditing(false);
-    setEditForm({
-      nome: "",
-      tipo: "cliente",
-      email: "",
-      telefone: "",
-      telefoneSecundario: "",
-      endereco: "",
-      cnpj: "",
-      representante: "",
-      observacoes: ""
-    });
+    // Não resetar o editForm aqui para evitar problemas
+  };
+
+  // Função para cancelar edição
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    // Restaurar dados originais se necessário
+    if (selectedClient) {
+      setEditForm({
+        nome: selectedClient.nome,
+        tipo: selectedClient.tipo,
+        email: selectedClient.email,
+        telefone: selectedClient.telefone,
+        telefoneSecundario: selectedClient.telefoneSecundario || "",
+        endereco: selectedClient.endereco,
+        cnpj: selectedClient.cnpj,
+        representante: selectedClient.representante,
+        observacoes: selectedClient.observacoes
+      });
+    }
   };
 
   return (
@@ -444,8 +454,8 @@ const ClientesFornecedores = () => {
         </div>
       </div>
 
-      {/* Modal de Visualização/Edição */}
-      <Dialog open={isModalOpen} onOpenChange={resetAndClose}>
+      {/* Modal de Visualização/Edição CORRIGIDO */}
+      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -609,7 +619,7 @@ const ClientesFornecedores = () => {
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => setIsEditing(false)}
+                      onClick={handleCancelEdit}
                     >
                       Cancelar
                     </Button>
