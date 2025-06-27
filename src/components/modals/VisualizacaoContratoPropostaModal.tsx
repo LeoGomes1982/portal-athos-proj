@@ -83,25 +83,21 @@ export default function VisualizacaoContratoPropostaModal({
           logoImg.onerror = reject;
         });
         
-        // Adicionar logo centralizado acima do título
-        const logoWidth = 30;
-        const logoHeight = 40;
-        const logoX = (pageWidth - logoWidth) / 2; // Centralizar horizontalmente
-        pdf.addImage(logoImg, 'PNG', logoX, margin, logoWidth, logoHeight);
+        // Adicionar logo alinhado à esquerda com proporção padrão (quadrada)
+        const logoSize = 20; // Tamanho padrão quadrado
+        pdf.addImage(logoImg, 'PNG', margin, margin, logoSize, logoSize);
       } catch (error) {
         console.log('Erro ao carregar logo, continuando sem logo:', error);
       }
       
-      let yPosition = margin + 50; // Posição abaixo do logo
+      let yPosition = margin + 25; // Posição ao lado do logo
       
-      // Título (centralizado abaixo do logo)
+      // Título (alinhado à esquerda, ao lado do logo)
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(251, 146, 60); // Cor laranja
       const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
-      const tituloWidth = pdf.getTextWidth(titulo);
-      const tituloX = (pageWidth - tituloWidth) / 2; // Centralizar horizontalmente
-      pdf.text(titulo, tituloX, yPosition);
+      pdf.text(titulo, margin + 25, yPosition); // Posicionado ao lado do logo
       yPosition += 25;
       
       // Informações do cliente
