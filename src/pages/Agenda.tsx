@@ -211,8 +211,8 @@ const Agenda = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50/20 via-white to-purple-50/30">
-      <div className="content-wrapper animate-fade-in bg-white/95 backdrop-blur-sm border border-purple-100/40">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100/60 via-purple-50/40 to-violet-100/50">
+      <div className="content-wrapper animate-fade-in bg-white/90 backdrop-blur-sm border border-purple-200/60 shadow-lg">
         {/* Navigation Buttons */}
         <div className="navigation-buttons">
           <button onClick={() => navigate("/")} className="back-button">
@@ -255,7 +255,7 @@ const Agenda = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Calendar - Full Width */}
-          <Card className="lg:col-span-2 modern-card animate-slide-up bg-white/98 backdrop-blur-sm border-purple-200/40">
+          <Card className="lg:col-span-2 modern-card animate-slide-up bg-white/95 backdrop-blur-sm border-purple-200/60 shadow-md">
             <CardHeader className="card-header">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
                 <CalendarIcon size={20} className="text-purple-600" />
@@ -296,7 +296,7 @@ const Agenda = () => {
           </Card>
 
           {/* Daily Schedule */}
-          <Card className="modern-card animate-slide-up bg-white/98 backdrop-blur-sm border-purple-200/40">
+          <Card className="modern-card animate-slide-up bg-white/95 backdrop-blur-sm border-purple-200/60 shadow-md">
             <CardHeader className="card-header">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
                 <Clock size={20} className="text-purple-600" />
