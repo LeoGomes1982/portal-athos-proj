@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Users, Building, FileText, Clock, Edit, Trash2, Save, Plus } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
@@ -925,7 +924,7 @@ const ClientesFornecedores = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Modais adicionais */}
+      {/* Modals adicionais */}
       {selectedClient && (
         <>
           <PessoasModal
