@@ -1,50 +1,15 @@
 
-import { useState } from "react";
+import React from "react";
+import { ArrowLeft, Users, FileText, Building2, TrendingUp, DollarSign, Calendar } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { 
-  TrendingUp, 
-  Users, 
-  FileText,
-  BarChart3
-} from "lucide-react";
 
-export default function Comercial() {
+const Comercial = () => {
   const navigate = useNavigate();
 
-  const subsections = [
-    {
-      id: "clientes-fornecedores",
-      title: "Clientes e Fornecedores",
-      description: "Gestão de clientes e fornecedores",
-      icon: Users,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700",
-      onClick: () => navigate("/comercial/clientes-fornecedores")
-    },
-    {
-      id: "contratos-propostas",
-      title: "Contratos e Propostas",
-      description: "Gestão de contratos e propostas",
-      icon: FileText,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700",
-      onClick: () => navigate("/comercial/contratos-propostas")
-    },
-    {
-      id: "estatisticas",
-      title: "Estatísticas",
-      description: "Análises e relatórios",
-      icon: BarChart3,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700"
-    }
-  ];
-
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100">
+      <div className="container mx-auto px-6 py-12">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -56,46 +21,123 @@ export default function Comercial() {
         </Button>
 
         {/* Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-6 shadow-lg">
             <TrendingUp size={32} className="text-white" />
           </div>
-          <h1 className="page-title text-center">
-            Área Comercial
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+            Módulo Comercial
           </h1>
-          <p className="text-description text-center max-w-2xl mx-auto">
-            Gestão completa de clientes, fornecedores, contratos e análises comerciais
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Gerencie clientes, fornecedores, contratos e propostas comerciais
           </p>
         </div>
 
-        {/* Subsections Grid */}
-        <div className="content-grid animate-slide-up">
-          {subsections.map((subsection) => (
-            <div 
-              key={subsection.id}
-              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150"
-              onClick={subsection.onClick}
-            >
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
-                  <subsection.icon size={32} className={subsection.textColor} />
-                </div>
-                <div>
-                  <h3 className="subsection-title">{subsection.title}</h3>
-                  <p className="text-description leading-relaxed">{subsection.description}</p>
-                </div>
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+          {/* Clientes e Fornecedores */}
+          <Link to="/comercial/clientes-fornecedores">
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-orange-200 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Users size={28} className="text-white" />
               </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-3">
+                Clientes e Fornecedores
+              </h3>
+              <p className="text-slate-600 leading-relaxed">
+                Cadastre e gerencie informações de clientes e fornecedores da empresa
+              </p>
             </div>
-          ))}
+          </Link>
+
+          {/* Contratos e Propostas */}
+          <Link to="/comercial/contratos-propostas">
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-orange-200 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FileText size={28} className="text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-3">
+                Contratos e Propostas
+              </h3>
+              <p className="text-slate-600 leading-relaxed">
+                Crie, edite e gerencie contratos e propostas comerciais
+              </p>
+            </div>
+          </Link>
+
+          {/* Empresas */}
+          <div className="group bg-white rounded-2xl p-8 shadow-lg border border-orange-200 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer opacity-75">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Building2 size={28} className="text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-3">
+              Empresas
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Gerencie informações das empresas do grupo
+            </p>
+            <span className="inline-block mt-3 text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+              Em breve
+            </span>
+          </div>
+
+          {/* Relatórios */}
+          <div className="group bg-white rounded-2xl p-8 shadow-lg border border-orange-200 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer opacity-75">
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <TrendingUp size={28} className="text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-3">
+              Relatórios
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Visualize relatórios e métricas comerciais
+            </p>
+            <span className="inline-block mt-3 text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+              Em breve
+            </span>
+          </div>
+
+          {/* Financeiro */}
+          <div className="group bg-white rounded-2xl p-8 shadow-lg border border-orange-200 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer opacity-75">
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <DollarSign size={28} className="text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-3">
+              Financeiro
+            </h3>
+            <p className="text-slate-600 leading-relaxed">
+              Controle financeiro e fluxo de caixa
+            </p>
+            <span className="inline-block mt-3 text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+              Em breve
+            </span>
+          </div>
+
+          {/* Agenda Comercial */}
+          <Link to="/agenda">
+            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-orange-200 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Calendar size={28} className="text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-3">
+                Agenda Comercial
+              </h3>
+              <p className="text-slate-600 leading-relaxed">
+                Organize reuniões, tarefas e compromissos comerciais
+              </p>
+            </div>
+          </Link>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-16 animate-fade-in">
-          <p className="text-description">
+        <div className="text-center">
+          <p className="text-sm text-slate-500">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Comercial;
