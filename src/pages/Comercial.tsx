@@ -19,8 +19,8 @@ export default function Comercial() {
       title: "Clientes e Fornecedores",
       description: "Gestão de clientes e fornecedores",
       icon: Users,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700",
+      bgColor: "bg-blue-100",
+      textColor: "text-blue-700",
       onClick: () => navigate("/comercial/clientes-fornecedores")
     },
     {
@@ -28,8 +28,8 @@ export default function Comercial() {
       title: "Contratos e Propostas",
       description: "Gestão de contratos e propostas",
       icon: FileText,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700",
+      bgColor: "bg-green-100",
+      textColor: "text-green-700",
       onClick: () => navigate("/comercial/contratos-propostas")
     },
     {
@@ -37,8 +37,8 @@ export default function Comercial() {
       title: "Estatísticas",
       description: "Análises e relatórios",
       icon: BarChart3,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700"
+      bgColor: "bg-purple-100",
+      textColor: "text-purple-700"
     }
   ];
 

@@ -19,32 +19,32 @@ const subsections = [
     title: "Funcionários",
     description: "Gestão de funcionários",
     icon: Users,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-700"
   },
   {
     id: "uniformes",
     title: "Uniformes",
     description: "Controle de uniformes",
     icon: Shirt,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-700"
   },
   {
     id: "documentos",
     title: "Documentos",
     description: "Documentação pessoal",
     icon: FileText,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
+    bgColor: "bg-orange-100",
+    textColor: "text-orange-700"
   },
   {
     id: "arquivo",
     title: "Arquivo",
     description: "Arquivo de documentos",
     icon: Archive,
-    bgColor: "bg-green-100",
-    textColor: "text-green-700"
+    bgColor: "bg-red-100",
+    textColor: "text-red-700"
   }
 ];
 
