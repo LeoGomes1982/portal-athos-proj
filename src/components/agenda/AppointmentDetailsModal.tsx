@@ -1,0 +1,104 @@
+
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { CheckCircle2, Circle } from 'lucide-react';
+import { format } from "date-fns";
+
+interface Compromisso {
+  id: string;
+  titulo: string;
+  descricao: string;
+  data: string;
+  horario: string;
+  participantes: string[];
+  tipo: 'reuniao' | 'tarefa' | 'evento';
+  concluido: boolean;
+  criadoPor: string;
+}
+
+interface AppointmentDetailsModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  compromisso: Compromisso | null;
+  onToggleConcluido: (id: string) => void;
+  setCompromisso: React.Dispatch<React.SetStateAction<Compromisso | null>>;
+}
+
+const AppointmentDetailsModal = ({ 
+  open, 
+  onOpenChange, 
+  compromisso, 
+  onToggleConcluido, 
+  setCompromisso 
+}: AppointmentDetailsModalProps) => {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Detalhes do Compromisso</DialogTitle>
+        </DialogHeader>
+        {compromisso && (
+          <div className="space-y-4">
+            <div>
+              <Label>Título</Label>
+              <p className="font-medium">{compromisso.titulo}</p>
+            </div>
+
+            <div>
+              <Label>Descrição</Label>
+              <p className="text-gray-700">{compromisso.descricao}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Data</Label>
+                <p>{format(new Date(compromisso.data), "dd/MM/yyyy")}</p>
+              </div>
+              <div>
+                <Label>Horário</Label>
+                <p>{compromisso.horario}</p>
+              </div>
+            </div>
+
+            <div>
+              <Label>Tipo</Label>
+              <p className="capitalize">{compromisso.tipo}</p>
+            </div>
+
+            <div>
+              <Label>Participantes</Label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {compromisso.participantes.map((participante) => (
+                  <span key={participante} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                    {participante}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label>Status</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <button
+                  onClick={() => {
+                    onToggleConcluido(compromisso.id);
+                    setCompromisso(prev => prev ? { ...prev, concluido: !prev.concluido } : null);
+                  }}
+                  className="text-green-600 hover:text-green-700"
+                >
+                  {compromisso.concluido ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                </button>
+                <span className={compromisso.concluido ? 'text-green-600' : 'text-gray-600'}>
+                  {compromisso.concluido ? 'Concluído' : 'Pendente'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default AppointmentDetailsModal;
