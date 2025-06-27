@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -86,7 +87,7 @@ export default function VisualizacaoContratoPropostaModal({
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
-        logoImg.src = '/lovable-uploads/0d90b58c-34f6-477c-8d81-8377d61ca1be.png';
+        logoImg.src = '/lovable-uploads/73719fa4-93e5-467f-84ba-25ba18aaa9d7.png';
         
         await new Promise((resolve, reject) => {
           logoImg.onload = () => resolve(logoImg);
