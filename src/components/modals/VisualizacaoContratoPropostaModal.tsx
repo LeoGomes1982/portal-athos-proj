@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { X, Edit, Trash2, Share, Download } from "lucide-react";
 import { useState } from "react";
+import jsPDF from 'jspdf';
 
 interface Item {
   id: string;
@@ -61,18 +62,136 @@ export default function VisualizacaoContratoPropostaModal({
     window.open(url, '_blank');
   };
 
-  const handleDownload = () => {
-    // Aqui você implementaria a geração do PDF
-    console.log('Gerar PDF para:', item.id);
-    
-    // Simulação de download
-    const element = document.createElement('a');
-    const file = new Blob([`${item.tipo.toUpperCase()}\n\nCliente: ${item.cliente}\nEmpresa: ${item.empresa}\nValor Total: R$ ${item.valorTotal.toLocaleString('pt-BR')}`], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = `${item.tipo}-${item.cliente.replace(/\s+/g, '-')}-${item.data}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const handleDownload = async () => {
+    try {
+      // Criar nova instância do jsPDF
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      // Configurações da página
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - (margin * 2);
+      
+      // Adicionar logo da empresa
+      try {
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        logoImg.src = '/lovable-uploads/04ea6679-4d34-4222-8407-5528da6fbe52.png';
+        
+        await new Promise((resolve, reject) => {
+          logoImg.onload = () => resolve(logoImg);
+          logoImg.onerror = reject;
+        });
+        
+        // Adicionar logo no canto superior direito
+        const logoWidth = 40;
+        const logoHeight = 20;
+        pdf.addImage(logoImg, 'PNG', pageWidth - logoWidth - margin, margin, logoWidth, logoHeight);
+      } catch (error) {
+        console.log('Erro ao carregar logo, continuando sem logo:', error);
+      }
+      
+      let yPosition = margin + 30;
+      
+      // Título
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(251, 146, 60); // Cor laranja
+      const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
+      pdf.text(titulo, margin, yPosition);
+      yPosition += 15;
+      
+      // Data
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Data: ${new Date(item.data).toLocaleDateString('pt-BR')}`, margin, yPosition);
+      yPosition += 20;
+      
+      // Informações do cliente
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('INFORMAÇÕES DO CLIENTE', margin, yPosition);
+      yPosition += 10;
+      
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Cliente: ${item.cliente}`, margin, yPosition);
+      yPosition += 8;
+      pdf.text(`Empresa Contratada: ${item.empresa}`, margin, yPosition);
+      yPosition += 20;
+      
+      // Serviços
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`SERVIÇOS ${item.tipo === 'proposta' ? 'SOLICITADOS' : 'CONTRATADOS'}`, margin, yPosition);
+      yPosition += 15;
+      
+      // Tabela de serviços
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      
+      // Cabeçalho da tabela
+      pdf.setFillColor(251, 146, 60);
+      pdf.rect(margin, yPosition - 5, contentWidth, 10, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('DESCRIÇÃO', margin + 5, yPosition + 2);
+      pdf.text('VALOR', pageWidth - margin - 40, yPosition + 2);
+      yPosition += 15;
+      
+      // Linhas dos serviços
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFont('helvetica', 'normal');
+      
+      item.servicos.forEach((servico, index) => {
+        // Verificar se precisa de nova página
+        if (yPosition > pageHeight - 40) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        
+        // Linha zebrada
+        if (index % 2 === 0) {
+          pdf.setFillColor(248, 248, 248);
+          pdf.rect(margin, yPosition - 5, contentWidth, 10, 'F');
+        }
+        
+        pdf.text(servico.descricao, margin + 5, yPosition + 2);
+        pdf.text(`R$ ${servico.valor.toLocaleString('pt-BR')}`, pageWidth - margin - 40, yPosition + 2);
+        yPosition += 12;
+      });
+      
+      yPosition += 10;
+      
+      // Valor total
+      pdf.setFillColor(251, 146, 60);
+      pdf.rect(margin, yPosition - 5, contentWidth, 15, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('VALOR TOTAL:', margin + 5, yPosition + 5);
+      pdf.text(`R$ ${item.valorTotal.toLocaleString('pt-BR')}`, pageWidth - margin - 60, yPosition + 5);
+      yPosition += 25;
+      
+      // Rodapé
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('© 2024 Grupo Athos. Todos os direitos reservados.', margin, pageHeight - 20);
+      
+      // Salvar o PDF
+      const fileName = `${item.tipo}-${item.cliente.replace(/\s+/g, '-')}-${item.data}.pdf`;
+      pdf.save(fileName);
+      
+      console.log('PDF gerado com sucesso');
+      
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar PDF. Tente novamente.');
+    }
   };
 
   return (
