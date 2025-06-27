@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -87,7 +86,7 @@ export default function VisualizacaoContratoPropostaModal({
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
-        logoImg.src = '/lovable-uploads/8cf0c88a-bb74-40fc-aede-dae7cdfa9c51.png';
+        logoImg.src = '/lovable-uploads/0d90b58c-34f6-477c-8d81-8377d61ca1be.png';
         
         await new Promise((resolve, reject) => {
           logoImg.onload = () => resolve(logoImg);
@@ -109,7 +108,7 @@ export default function VisualizacaoContratoPropostaModal({
       pdf.setTextColor(251, 146, 60); // Cor laranja
       const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
       pdf.text(titulo, margin, yPosition);
-      yPosition += 25;
+      yPosition += 15; // Reduzido de 25 para 15
       
       // Informações do cliente
       pdf.setFontSize(16);
