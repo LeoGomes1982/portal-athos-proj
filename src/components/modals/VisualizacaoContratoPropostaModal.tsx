@@ -77,32 +77,38 @@ export default function VisualizacaoContratoPropostaModal({
       const margin = 20;
       const contentWidth = pageWidth - (margin * 2);
       
+      let yPosition = margin;
+      
+      // Adicionar caixa de fundo laranja transparente para o logo
+      pdf.setFillColor(251, 146, 60, 0.1); // Laranja com transparência
+      pdf.rect(margin, yPosition, 25, 25, 'F'); // Caixa de fundo
+      
       // Adicionar logo da empresa
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
-        logoImg.src = '/lovable-uploads/04ea6679-4d34-4222-8407-5528da6fbe52.png';
+        logoImg.src = '/lovable-uploads/8cf0c88a-bb74-40fc-aede-dae7cdfa9c51.png';
         
         await new Promise((resolve, reject) => {
           logoImg.onload = () => resolve(logoImg);
           logoImg.onerror = reject;
         });
         
-        // Adicionar logo alinhado à esquerda com proporção padrão (quadrada)
-        const logoSize = 20; // Tamanho padrão quadrado
-        pdf.addImage(logoImg, 'PNG', margin, margin, logoSize, logoSize);
+        // Adicionar logo com tamanho padrão dentro da caixa
+        const logoSize = 20;
+        pdf.addImage(logoImg, 'PNG', margin + 2.5, yPosition + 2.5, logoSize, logoSize);
       } catch (error) {
         console.log('Erro ao carregar logo, continuando sem logo:', error);
       }
       
-      let yPosition = margin + 25; // Posição ao lado do logo
+      yPosition += 30; // Espaço após o logo
       
-      // Título (alinhado à esquerda, ao lado do logo)
+      // Título alinhado à esquerda (mesma posição que "INFORMAÇÕES DO CLIENTE")
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(251, 146, 60); // Cor laranja
       const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
-      pdf.text(titulo, margin + 25, yPosition); // Posicionado ao lado do logo
+      pdf.text(titulo, margin, yPosition);
       yPosition += 25;
       
       // Informações do cliente
@@ -172,7 +178,7 @@ export default function VisualizacaoContratoPropostaModal({
       pdf.text(`R$ ${item.valorTotal.toLocaleString('pt-BR')}`, pageWidth - margin - 40, yPosition + 5);
       yPosition += 25;
       
-      // Rodapé com data ao lado dos direitos reservados
+      // Rodapé com copyright e data lado a lado
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
       pdf.setFont('helvetica', 'normal');
@@ -181,7 +187,7 @@ export default function VisualizacaoContratoPropostaModal({
       const dataText = `Data: ${new Date(item.data).toLocaleDateString('pt-BR')}`;
       
       pdf.text(copyrightText, margin, pageHeight - 20);
-      pdf.text(dataText, pageWidth - margin - pdf.getTextWidth(dataText), pageHeight - 20);
+      pdf.text(dataText, margin + pdf.getTextWidth(copyrightText) + 10, pageHeight - 20);
       
       // Salvar o PDF
       const fileName = `${item.tipo}-${item.cliente.replace(/\s+/g, '-')}-${item.data}.pdf`;
