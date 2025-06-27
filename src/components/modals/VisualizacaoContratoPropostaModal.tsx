@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -84,30 +83,26 @@ export default function VisualizacaoContratoPropostaModal({
           logoImg.onerror = reject;
         });
         
-        // Adicionar logo no canto superior esquerdo, alinhado com o título
+        // Adicionar logo centralizado acima do título
         const logoWidth = 30;
-        const logoHeight = 30; // Altura maior para esticar verticalmente
-        pdf.addImage(logoImg, 'PNG', margin, margin, logoWidth, logoHeight);
+        const logoHeight = 40;
+        const logoX = (pageWidth - logoWidth) / 2; // Centralizar horizontalmente
+        pdf.addImage(logoImg, 'PNG', logoX, margin, logoWidth, logoHeight);
       } catch (error) {
         console.log('Erro ao carregar logo, continuando sem logo:', error);
       }
       
-      let yPosition = margin + 30;
+      let yPosition = margin + 50; // Posição abaixo do logo
       
-      // Título (alinhado com o logo)
+      // Título (centralizado abaixo do logo)
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(251, 146, 60); // Cor laranja
       const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
-      pdf.text(titulo, margin + 35, yPosition); // Posicionado ao lado do logo
-      yPosition += 15;
-      
-      // Data
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Data: ${new Date(item.data).toLocaleDateString('pt-BR')}`, margin, yPosition);
-      yPosition += 20;
+      const tituloWidth = pdf.getTextWidth(titulo);
+      const tituloX = (pageWidth - tituloWidth) / 2; // Centralizar horizontalmente
+      pdf.text(titulo, tituloX, yPosition);
+      yPosition += 25;
       
       // Informações do cliente
       pdf.setFontSize(16);
@@ -173,14 +168,19 @@ export default function VisualizacaoContratoPropostaModal({
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
       pdf.text('VALOR TOTAL:', margin + 5, yPosition + 5);
-      pdf.text(`R$ ${item.valorTotal.toLocaleString('pt-BR')}`, pageWidth - margin - 40, yPosition + 5); // Alinhado com os valores acima
+      pdf.text(`R$ ${item.valorTotal.toLocaleString('pt-BR')}`, pageWidth - margin - 40, yPosition + 5);
       yPosition += 25;
       
-      // Rodapé
+      // Rodapé com data ao lado dos direitos reservados
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
       pdf.setFont('helvetica', 'normal');
-      pdf.text('© 2024 Grupo Athos. Todos os direitos reservados.', margin, pageHeight - 20);
+      
+      const copyrightText = '© 2024 Grupo Athos. Todos os direitos reservados.';
+      const dataText = `Data: ${new Date(item.data).toLocaleDateString('pt-BR')}`;
+      
+      pdf.text(copyrightText, margin, pageHeight - 20);
+      pdf.text(dataText, pageWidth - margin - pdf.getTextWidth(dataText), pageHeight - 20);
       
       // Salvar o PDF
       const fileName = `${item.tipo}-${item.cliente.replace(/\s+/g, '-')}-${item.data}.pdf`;
