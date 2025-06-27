@@ -2,7 +2,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Circle } from 'lucide-react';
+import { CheckCircle2, Circle, Star } from 'lucide-react';
 import { format } from "date-fns";
 
 interface Compromisso {
@@ -15,6 +15,7 @@ interface Compromisso {
   tipo: 'reuniao' | 'tarefa' | 'evento';
   concluido: boolean;
   criadoPor: string;
+  prioridade: 'normal' | 'importante' | 'muito-importante';
 }
 
 interface AppointmentDetailsModalProps {
@@ -32,6 +33,24 @@ const AppointmentDetailsModal = ({
   onToggleConcluido, 
   setCompromisso 
 }: AppointmentDetailsModalProps) => {
+  const getPriorityStars = (prioridade: string) => {
+    const starCount = prioridade === 'muito-importante' ? 3 : prioridade === 'importante' ? 2 : 1;
+    return Array.from({ length: starCount }, (_, i) => (
+      <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+    ));
+  };
+
+  const getPriorityLabel = (prioridade: string) => {
+    switch (prioridade) {
+      case 'muito-importante':
+        return 'Muito Importante';
+      case 'importante':
+        return 'Importante';
+      default:
+        return 'Normal';
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -61,9 +80,20 @@ const AppointmentDetailsModal = ({
               </div>
             </div>
 
-            <div>
-              <Label>Tipo</Label>
-              <p className="capitalize">{compromisso.tipo}</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Tipo</Label>
+                <p className="capitalize">{compromisso.tipo}</p>
+              </div>
+              <div>
+                <Label>Prioridade</Label>
+                <div className="flex items-center gap-2">
+                  <div className="flex">
+                    {getPriorityStars(compromisso.prioridade)}
+                  </div>
+                  <span>{getPriorityLabel(compromisso.prioridade)}</span>
+                </div>
+              </div>
             </div>
 
             <div>

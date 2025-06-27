@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Star } from 'lucide-react';
 
 interface NewAppointmentData {
   titulo: string;
@@ -15,6 +16,7 @@ interface NewAppointmentData {
   horario: string;
   participantes: string[];
   tipo: 'reuniao' | 'tarefa' | 'evento';
+  prioridade: 'normal' | 'importante' | 'muito-importante';
 }
 
 interface NewAppointmentModalProps {
@@ -46,6 +48,22 @@ const NewAppointmentModal = ({
         participantes: prev.participantes.filter(p => p !== usuario)
       }));
     }
+  };
+
+  const getPriorityDisplay = (prioridade: string) => {
+    const starCount = prioridade === 'muito-importante' ? 3 : prioridade === 'importante' ? 2 : 1;
+    const label = prioridade === 'muito-importante' ? 'Muito Importante' : prioridade === 'importante' ? 'Importante' : 'Normal';
+    
+    return (
+      <div className="flex items-center gap-2">
+        <div className="flex">
+          {Array.from({ length: starCount }, (_, i) => (
+            <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
+          ))}
+        </div>
+        <span>{label}</span>
+      </div>
+    );
   };
 
   return (
@@ -94,23 +112,49 @@ const NewAppointmentModal = ({
             </div>
           </div>
 
-          <div>
-            <Label>Tipo</Label>
-            <Select
-              value={novoCompromisso.tipo}
-              onValueChange={(value: 'reuniao' | 'tarefa' | 'evento') => 
-                setNovoCompromisso(prev => ({ ...prev, tipo: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="reuniao">Reunião</SelectItem>
-                <SelectItem value="tarefa">Tarefa</SelectItem>
-                <SelectItem value="evento">Evento</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Tipo</Label>
+              <Select
+                value={novoCompromisso.tipo}
+                onValueChange={(value: 'reuniao' | 'tarefa' | 'evento') => 
+                  setNovoCompromisso(prev => ({ ...prev, tipo: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="reuniao">Reunião</SelectItem>
+                  <SelectItem value="tarefa">Tarefa</SelectItem>
+                  <SelectItem value="evento">Evento</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Prioridade</Label>
+              <Select
+                value={novoCompromisso.prioridade}
+                onValueChange={(value: 'normal' | 'importante' | 'muito-importante') => 
+                  setNovoCompromisso(prev => ({ ...prev, prioridade: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">
+                    {getPriorityDisplay('normal')}
+                  </SelectItem>
+                  <SelectItem value="importante">
+                    {getPriorityDisplay('importante')}
+                  </SelectItem>
+                  <SelectItem value="muito-importante">
+                    {getPriorityDisplay('muito-importante')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div>

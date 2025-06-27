@@ -5,6 +5,7 @@ import AgendaHeader from "@/components/agenda/AgendaHeader";
 import AgendaActionButtons from "@/components/agenda/AgendaActionButtons";
 import AgendaCalendar from "@/components/agenda/AgendaCalendar";
 import DailySchedule from "@/components/agenda/DailySchedule";
+import HighPriorityTasks from "@/components/agenda/HighPriorityTasks";
 import AgendaSummaryModal from "@/components/agenda/AgendaSummaryModal";
 import NewAppointmentModal from "@/components/agenda/NewAppointmentModal";
 import AppointmentDetailsModal from "@/components/agenda/AppointmentDetailsModal";
@@ -19,6 +20,7 @@ interface Compromisso {
   tipo: 'reuniao' | 'tarefa' | 'evento';
   concluido: boolean;
   criadoPor: string;
+  prioridade: 'normal' | 'importante' | 'muito-importante';
 }
 
 const Agenda = () => {
@@ -35,11 +37,12 @@ const Agenda = () => {
     data: '',
     horario: '',
     participantes: [] as string[],
-    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento'
+    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento',
+    prioridade: 'normal' as 'normal' | 'importante' | 'muito-importante'
   });
 
   const usuarios = ['user1', 'user2', 'user3', 'user4'];
-  const usuarioAtual = 'user1'; // Simular usuário logado
+  const usuarioAtual = 'user1';
 
   // Carregar compromissos do localStorage
   useEffect(() => {
@@ -47,17 +50,20 @@ const Agenda = () => {
     if (savedCompromissos) {
       try {
         const parsedCompromissos = JSON.parse(savedCompromissos);
-        setCompromissos(parsedCompromissos);
-        console.log('Compromissos carregados:', parsedCompromissos);
+        // Adicionar prioridade aos compromissos existentes se não tiverem
+        const compromissosComPrioridade = parsedCompromissos.map((c: any) => ({
+          ...c,
+          prioridade: c.prioridade || 'normal'
+        }));
+        setCompromissos(compromissosComPrioridade);
+        console.log('Compromissos carregados:', compromissosComPrioridade);
       } catch (error) {
         console.error('Erro ao carregar compromissos:', error);
-        // Se houver erro, criar dados iniciais
         const compromissosIniciais = criarCompromissosIniciais();
         setCompromissos(compromissosIniciais);
         localStorage.setItem('agenda_compromissos', JSON.stringify(compromissosIniciais));
       }
     } else {
-      // Criar dados iniciais se não existirem
       const compromissosIniciais = criarCompromissosIniciais();
       setCompromissos(compromissosIniciais);
       localStorage.setItem('agenda_compromissos', JSON.stringify(compromissosIniciais));
@@ -76,7 +82,8 @@ const Agenda = () => {
         participantes: ['user1', 'user2', 'user3'],
         tipo: 'reuniao',
         concluido: false,
-        criadoPor: 'user1'
+        criadoPor: 'user1',
+        prioridade: 'muito-importante'
       },
       {
         id: '2',
@@ -87,7 +94,8 @@ const Agenda = () => {
         participantes: ['user1', 'user4'],
         tipo: 'tarefa',
         concluido: false,
-        criadoPor: 'user4'
+        criadoPor: 'user4',
+        prioridade: 'importante'
       }
     ];
   };
@@ -116,7 +124,6 @@ const Agenda = () => {
       const novosCompromissos = [...compromissos, compromisso];
       setCompromissos(novosCompromissos);
       
-      // Salvar imediatamente
       try {
         localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
         console.log('Novo compromisso salvo:', compromisso);
@@ -130,7 +137,8 @@ const Agenda = () => {
         data: '',
         horario: '',
         participantes: [],
-        tipo: 'reuniao'
+        tipo: 'reuniao',
+        prioridade: 'normal'
       });
       setShowNovoCompromisso(false);
     }
@@ -142,7 +150,6 @@ const Agenda = () => {
     );
     setCompromissos(novosCompromissos);
     
-    // Salvar imediatamente
     try {
       localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
       console.log('Status de compromisso atualizado:', id);
@@ -156,9 +163,11 @@ const Agenda = () => {
     setShowDetalhesCompromisso(true);
   };
 
+  const compromissosMuitoImportantes = compromissos.filter(c => c.prioridade === 'muito-importante' && !c.concluido);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100/60 via-purple-50/40 to-violet-100/50">
-      <div className="content-wrapper animate-fade-in bg-white/90 backdrop-blur-sm border border-purple-200/60 shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200/80 via-violet-150/60 to-purple-300/70">
+      <div className="content-wrapper animate-fade-in bg-white/80 backdrop-blur-sm border border-purple-300/80 shadow-xl">
         <AgendaHeader />
         
         <AgendaActionButtons 
@@ -168,16 +177,24 @@ const Agenda = () => {
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <AgendaCalendar 
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-          />
+          <div className="lg:col-span-2 space-y-8">
+            <AgendaCalendar 
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+            />
+            
+            <DailySchedule 
+              selectedDate={selectedDate}
+              compromissos={compromissos}
+              onToggleConcluido={toggleConcluido}
+              onSelectCompromisso={handleSelectCompromisso}
+            />
+          </div>
           
-          <DailySchedule 
-            selectedDate={selectedDate}
-            compromissos={compromissos}
-            onToggleConcluido={toggleConcluido}
+          <HighPriorityTasks 
+            compromissos={compromissosMuitoImportantes}
             onSelectCompromisso={handleSelectCompromisso}
+            onToggleConcluido={toggleConcluido}
           />
         </div>
 

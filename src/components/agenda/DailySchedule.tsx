@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Clock, CalendarIcon, CheckCircle2, Circle, User } from 'lucide-react';
+import { Clock, CalendarIcon, CheckCircle2, Circle, User, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,6 +15,7 @@ interface Compromisso {
   tipo: 'reuniao' | 'tarefa' | 'evento';
   concluido: boolean;
   criadoPor: string;
+  prioridade: 'normal' | 'importante' | 'muito-importante';
 }
 
 interface DailyScheduleProps {
@@ -28,6 +29,24 @@ const DailySchedule = ({ selectedDate, compromissos, onToggleConcluido, onSelect
   const getCompromissosData = (data: Date) => {
     const dataStr = format(data, 'yyyy-MM-dd');
     return compromissos.filter(c => c.data === dataStr);
+  };
+
+  const getPriorityStars = (prioridade: string) => {
+    const starCount = prioridade === 'muito-importante' ? 3 : prioridade === 'importante' ? 2 : 1;
+    return Array.from({ length: starCount }, (_, i) => (
+      <Star key={i} size={12} className="fill-yellow-400 text-yellow-400" />
+    ));
+  };
+
+  const getPriorityColor = (prioridade: string) => {
+    switch (prioridade) {
+      case 'muito-importante':
+        return 'border-red-200 hover:border-red-400';
+      case 'importante':
+        return 'border-orange-200 hover:border-orange-400';
+      default:
+        return 'border-purple-200 hover:border-purple-400';
+    }
   };
 
   return (
@@ -46,12 +65,17 @@ const DailySchedule = ({ selectedDate, compromissos, onToggleConcluido, onSelect
               className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
                 compromisso.concluido 
                   ? 'bg-gray-100 opacity-60 border-gray-300' 
-                  : 'bg-white hover:shadow-md border-purple-200 hover:border-purple-400 hover:scale-102'
+                  : `bg-white hover:shadow-md ${getPriorityColor(compromisso.prioridade)} hover:scale-102`
               }`}
               onClick={() => onSelectCompromisso(compromisso)}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="font-semibold text-base text-gray-800">{compromisso.titulo}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex">
+                    {getPriorityStars(compromisso.prioridade)}
+                  </div>
+                  <span className="font-semibold text-base text-gray-800">{compromisso.titulo}</span>
+                </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
