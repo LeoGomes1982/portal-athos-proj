@@ -84,22 +84,22 @@ export default function VisualizacaoContratoPropostaModal({
           logoImg.onerror = reject;
         });
         
-        // Adicionar logo no canto superior direito
-        const logoWidth = 40;
-        const logoHeight = 20;
-        pdf.addImage(logoImg, 'PNG', pageWidth - logoWidth - margin, margin, logoWidth, logoHeight);
+        // Adicionar logo no canto superior esquerdo, alinhado com o título
+        const logoWidth = 30;
+        const logoHeight = 30; // Altura maior para esticar verticalmente
+        pdf.addImage(logoImg, 'PNG', margin, margin, logoWidth, logoHeight);
       } catch (error) {
         console.log('Erro ao carregar logo, continuando sem logo:', error);
       }
       
       let yPosition = margin + 30;
       
-      // Título
+      // Título (alinhado com o logo)
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(251, 146, 60); // Cor laranja
       const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
-      pdf.text(titulo, margin, yPosition);
+      pdf.text(titulo, margin + 35, yPosition); // Posicionado ao lado do logo
       yPosition += 15;
       
       // Data
@@ -166,14 +166,14 @@ export default function VisualizacaoContratoPropostaModal({
       
       yPosition += 10;
       
-      // Valor total
+      // Valor total (alinhado com os valores acima)
       pdf.setFillColor(251, 146, 60);
       pdf.rect(margin, yPosition - 5, contentWidth, 15, 'F');
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
       pdf.text('VALOR TOTAL:', margin + 5, yPosition + 5);
-      pdf.text(`R$ ${item.valorTotal.toLocaleString('pt-BR')}`, pageWidth - margin - 60, yPosition + 5);
+      pdf.text(`R$ ${item.valorTotal.toLocaleString('pt-BR')}`, pageWidth - margin - 40, yPosition + 5); // Alinhado com os valores acima
       yPosition += 25;
       
       // Rodapé
