@@ -78,11 +78,11 @@ export default function VisualizacaoContratoPropostaModal({
       
       let yPosition = margin;
       
-      // Adicionar caixa de fundo laranja transparente para o logo
-      pdf.setFillColor(251, 146, 60, 0.1); // Laranja com transparência
+      // Adicionar caixa de fundo azul serenity transparente para o logo
+      pdf.setFillColor(147, 197, 253, 0.1); // Azul serenity com transparência
       pdf.rect(margin, yPosition, 25, 25, 'F'); // Caixa de fundo
       
-      // Adicionar logo da empresa
+      // Adicionar logo da empresa com cores invertidas
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
@@ -93,9 +93,56 @@ export default function VisualizacaoContratoPropostaModal({
           logoImg.onerror = reject;
         });
         
-        // Adicionar logo com tamanho padrão dentro da caixa
+        // Criar canvas para inverter cores e trocar laranja por azul serenity
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = logoImg.width;
+        canvas.height = logoImg.height;
+        
+        // Desenhar imagem original
+        ctx.drawImage(logoImg, 0, 0);
+        
+        // Obter dados dos pixels
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Processar cada pixel
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          // Verificar se é laranja (aproximadamente)
+          if (r > 200 && g > 100 && g < 200 && b < 100) {
+            // Substituir por azul serenity (147, 197, 253)
+            data[i] = 147;     // R
+            data[i + 1] = 197; // G
+            data[i + 2] = 253; // B
+          }
+          // Inverter cores: branco para preto e preto para branco
+          else if (r > 200 && g > 200 && b > 200) {
+            // Branco para preto
+            data[i] = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+          }
+          else if (r < 50 && g < 50 && b < 50) {
+            // Preto para branco
+            data[i] = 255;
+            data[i + 1] = 255;
+            data[i + 2] = 255;
+          }
+        }
+        
+        // Aplicar mudanças
+        ctx.putImageData(imageData, 0, 0);
+        
+        // Converter canvas para imagem
+        const modifiedImageData = canvas.toDataURL('image/png');
+        
+        // Adicionar logo modificado com tamanho padrão dentro da caixa
         const logoSize = 20;
-        pdf.addImage(logoImg, 'PNG', margin + 2.5, yPosition + 2.5, logoSize, logoSize);
+        pdf.addImage(modifiedImageData, 'PNG', margin + 2.5, yPosition + 2.5, logoSize, logoSize);
       } catch (error) {
         console.log('Erro ao carregar logo, continuando sem logo:', error);
       }
@@ -105,7 +152,7 @@ export default function VisualizacaoContratoPropostaModal({
       // Título alinhado à esquerda (mesma posição que "INFORMAÇÕES DO CLIENTE")
       pdf.setFontSize(24);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(251, 146, 60); // Cor laranja
+      pdf.setTextColor(147, 197, 253); // Cor azul serenity
       const titulo = item.tipo === 'proposta' ? 'PROPOSTA COMERCIAL' : 'CONTRATO';
       pdf.text(titulo, margin, yPosition);
       yPosition += 15; // Reduzido de 25 para 15
@@ -134,8 +181,8 @@ export default function VisualizacaoContratoPropostaModal({
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
       
-      // Cabeçalho da tabela
-      pdf.setFillColor(251, 146, 60);
+      // Cabeçalho da tabela com azul serenity
+      pdf.setFillColor(147, 197, 253);
       pdf.rect(margin, yPosition - 5, contentWidth, 10, 'F');
       pdf.setTextColor(255, 255, 255);
       pdf.setFont('helvetica', 'bold');
@@ -167,8 +214,8 @@ export default function VisualizacaoContratoPropostaModal({
       
       yPosition += 10;
       
-      // Valor total (alinhado com os valores acima)
-      pdf.setFillColor(251, 146, 60);
+      // Valor total com azul serenity (alinhado com os valores acima)
+      pdf.setFillColor(147, 197, 253);
       pdf.rect(margin, yPosition - 5, contentWidth, 15, 'F');
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(14);
