@@ -18,39 +18,6 @@ import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsectio
 
 const subsections = [
   {
-    id: "funcionarios",
-    title: "Funcionários",
-    description: "Gestão de funcionários",
-    icon: Users,
-    bgColor: "bg-blue-100",
-    textColor: "text-blue-700"
-  },
-  {
-    id: "uniformes",
-    title: "Uniformes",
-    description: "Controle de uniformes",
-    icon: Shirt,
-    bgColor: "bg-purple-100",
-    textColor: "text-purple-700"
-  },
-  {
-    id: "documentos",
-    title: "Documentos",
-    description: "Documentação pessoal",
-    icon: FileText,
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-700"
-  },
-  {
-    id: "arquivo",
-    title: "Arquivo",
-    description: "Arquivo de documentos",
-    icon: Archive,
-    bgColor: "bg-red-100",
-    textColor: "text-red-700"
-  },
-  // Cards movidos do RH
-  {
     id: "vagas",
     title: "Vagas",
     description: "Gestão de vagas disponíveis",
@@ -75,12 +42,44 @@ const subsections = [
     textColor: "text-indigo-700"
   },
   {
+    id: "funcionarios",
+    title: "Funcionários",
+    description: "Gestão de funcionários",
+    icon: Users,
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-700"
+  },
+  {
+    id: "uniformes",
+    title: "Uniformes",
+    description: "Controle de uniformes",
+    icon: Shirt,
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-700"
+  },
+  {
+    id: "documentos",
+    title: "Documentos",
+    description: "Documentação pessoal",
+    icon: FileText,
+    bgColor: "bg-orange-100",
+    textColor: "text-orange-700"
+  },
+  {
     id: "geladeira",
     title: "Geladeira",
     description: "Arquivos do RH",
     icon: FolderOpen,
     bgColor: "bg-teal-100",
     textColor: "text-teal-700"
+  },
+  {
+    id: "arquivo",
+    title: "Arquivo",
+    description: "Arquivo de documentos",
+    icon: Archive,
+    bgColor: "bg-red-100",
+    textColor: "text-red-700"
   }
 ];
 
@@ -123,7 +122,7 @@ export default function DP() {
             <FileText size={32} className="text-white" />
           </div>
           <h1 className="page-title text-center">
-            Departamento Pessoal
+            DP e RH
           </h1>
           <p className="text-description text-center max-w-2xl mx-auto">
             Gestão completa de funcionários, documentação, controles administrativos e processos de RH
