@@ -8,7 +8,10 @@ import {
   Users, 
   Shirt,
   FolderOpen,
-  Archive
+  Archive,
+  Briefcase, 
+  Target,
+  UserCheck
 } from "lucide-react";
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
@@ -45,6 +48,39 @@ const subsections = [
     icon: Archive,
     bgColor: "bg-red-100",
     textColor: "text-red-700"
+  },
+  // Cards movidos do RH
+  {
+    id: "vagas",
+    title: "Vagas",
+    description: "Gestão de vagas disponíveis",
+    icon: Briefcase,
+    bgColor: "bg-emerald-100",
+    textColor: "text-emerald-700"
+  },
+  {
+    id: "banco-talentos",
+    title: "Banco de Talentos",
+    description: "Candidatos e talentos",
+    icon: Target,
+    bgColor: "bg-cyan-100",
+    textColor: "text-cyan-700"
+  },
+  {
+    id: "processo-seletivo",
+    title: "Processo Seletivo",
+    description: "Gestão de seleções",
+    icon: UserCheck,
+    bgColor: "bg-indigo-100",
+    textColor: "text-indigo-700"
+  },
+  {
+    id: "geladeira",
+    title: "Geladeira",
+    description: "Arquivos do RH",
+    icon: FolderOpen,
+    bgColor: "bg-teal-100",
+    textColor: "text-teal-700"
   }
 ];
 
@@ -90,7 +126,7 @@ export default function DP() {
             Departamento Pessoal
           </h1>
           <p className="text-description text-center max-w-2xl mx-auto">
-            Gestão completa de funcionários, documentação e controles administrativos
+            Gestão completa de funcionários, documentação, controles administrativos e processos de RH
           </p>
         </div>
 
