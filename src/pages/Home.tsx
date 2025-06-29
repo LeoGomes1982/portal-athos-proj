@@ -1,4 +1,3 @@
-
 import { 
   Users, 
   FileText, 
@@ -16,15 +15,6 @@ const Home = () => {
   const navigate = useNavigate();
 
   const gestaoInternaSection = [
-    {
-      id: "rh",
-      title: "RH",
-      fullTitle: "Recursos Humanos",
-      icon: Users,
-      className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
-      iconColor: "text-blue-600",
-      onClick: () => navigate("/rh")
-    },
     {
       id: "dp",
       title: "DP",
