@@ -1,3 +1,4 @@
+
 import { 
   Users, 
   FileText, 
@@ -8,7 +9,8 @@ import {
   Globe,
   UserPlus,
   Calendar,
-  Briefcase
+  Briefcase,
+  Target
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -88,6 +90,15 @@ const Home = () => {
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
       onClick: () => window.open("/portal-admissao", "_blank")
+    },
+    {
+      id: "portal-vagas",
+      title: "PORTAL DE VAGAS",
+      fullTitle: "Portal de Vagas e Oportunidades",
+      icon: Target,
+      className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
+      iconColor: "text-emerald-600",
+      onClick: () => window.open("/portal-vagas", "_blank")
     }
   ];
 

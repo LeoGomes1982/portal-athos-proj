@@ -13,6 +13,7 @@ import ContratosPropostas from "./pages/ContratosPropostas";
 import Configuracoes from "./pages/Configuracoes";
 import EdicaoContratosPropostas from "./pages/EdicaoContratosPropostas";
 import PortalAdmissao from "./pages/PortalAdmissao";
+import PortalVagas from "./pages/PortalVagas";
 import Agenda from "./pages/Agenda";
 import Gerencia from "./pages/Gerencia";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/configuracoes/contratos-propostas" element={<EdicaoContratosPropostas />} />
           <Route path="/portal-admissao" element={<PortalAdmissao />} />
+          <Route path="/portal-vagas" element={<PortalVagas />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>

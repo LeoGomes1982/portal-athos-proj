@@ -10,28 +10,20 @@ import {
   FolderOpen,
   Archive,
   Briefcase, 
-  Target,
   UserCheck
 } from "lucide-react";
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
+import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
 
 const subsections = [
   {
-    id: "vagas",
-    title: "Vagas",
-    description: "Gestão de vagas disponíveis",
+    id: "vagas-talentos",
+    title: "Vagas e Talentos",
+    description: "Gestão de vagas e processos seletivos",
     icon: Briefcase,
     bgColor: "bg-emerald-100",
     textColor: "text-emerald-700"
-  },
-  {
-    id: "banco-talentos",
-    title: "Banco de Talentos",
-    description: "Candidatos e talentos",
-    icon: Target,
-    bgColor: "bg-cyan-100",
-    textColor: "text-cyan-700"
   },
   {
     id: "processo-seletivo",
@@ -101,6 +93,10 @@ export default function DP() {
 
   if (activeSubsection === "arquivo") {
     return <ArquivoRHSubsection onBack={handleBackToMain} />;
+  }
+
+  if (activeSubsection === "vagas-talentos") {
+    return <VagasTalentosSubsection onBack={handleBackToMain} />;
   }
 
   return (
