@@ -14,6 +14,7 @@ import Configuracoes from "./pages/Configuracoes";
 import EdicaoContratosPropostas from "./pages/EdicaoContratosPropostas";
 import PortalAdmissao from "./pages/PortalAdmissao";
 import Agenda from "./pages/Agenda";
+import Gerencia from "./pages/Gerencia";
 
 const queryClient = new QueryClient();
 
