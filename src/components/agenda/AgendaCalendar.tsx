@@ -12,15 +12,15 @@ interface AgendaCalendarProps {
 
 const AgendaCalendar = ({ selectedDate, onSelectDate }: AgendaCalendarProps) => {
   return (
-    <Card className="lg:col-span-2 modern-card animate-slide-up bg-white/95 backdrop-blur-sm border-purple-200/60 shadow-md">
-      <CardHeader className="card-header">
+    <Card className="modern-card animate-slide-up bg-white/95 backdrop-blur-sm border-purple-200/60 shadow-md h-[500px] flex flex-col">
+      <CardHeader className="card-header flex-shrink-0">
         <CardTitle className="section-title flex items-center gap-2 mb-0">
           <CalendarIcon size={20} className="text-purple-600" />
           Calendário
         </CardTitle>
       </CardHeader>
-      <CardContent className="card-content">
-        <div className="w-full">
+      <CardContent className="card-content flex-1 overflow-hidden">
+        <div className="w-full h-full flex items-center justify-center">
           <Calendar
             mode="single"
             selected={selectedDate}

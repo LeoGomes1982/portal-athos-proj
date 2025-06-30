@@ -176,13 +176,27 @@ const Agenda = () => {
         />
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <AgendaCalendar 
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-            />
+        <div className="space-y-8">
+          {/* Calendar and High Priority Tasks - Same Height */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <AgendaCalendar 
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+              />
+            </div>
             
+            <div className="lg:col-span-1">
+              <HighPriorityTasks 
+                compromissos={compromissosMuitoImportantes}
+                onSelectCompromisso={handleSelectCompromisso}
+                onToggleConcluido={toggleConcluido}
+              />
+            </div>
+          </div>
+
+          {/* Daily Schedule - Full Width */}
+          <div className="w-full">
             <DailySchedule 
               selectedDate={selectedDate}
               compromissos={compromissos}
@@ -190,12 +204,6 @@ const Agenda = () => {
               onSelectCompromisso={handleSelectCompromisso}
             />
           </div>
-          
-          <HighPriorityTasks 
-            compromissos={compromissosMuitoImportantes}
-            onSelectCompromisso={handleSelectCompromisso}
-            onToggleConcluido={toggleConcluido}
-          />
         </div>
 
         <AgendaSummaryModal 

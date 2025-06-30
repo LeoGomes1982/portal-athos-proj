@@ -31,8 +31,8 @@ const HighPriorityTasks = ({ compromissos, onSelectCompromisso, onToggleConcluid
   };
 
   return (
-    <Card className="modern-card animate-slide-up bg-gradient-to-br from-red-50 to-orange-50 border-red-200/60 shadow-md">
-      <CardHeader className="card-header">
+    <Card className="modern-card animate-slide-up bg-gradient-to-br from-red-50 to-orange-50 border-red-200/60 shadow-md h-[500px] flex flex-col">
+      <CardHeader className="card-header flex-shrink-0">
         <CardTitle className="section-title flex items-center gap-2 mb-0 text-red-700">
           <div className="flex">
             <Star size={20} className="fill-yellow-400 text-yellow-400" />
@@ -42,7 +42,7 @@ const HighPriorityTasks = ({ compromissos, onSelectCompromisso, onToggleConcluid
           Muito Importantes
         </CardTitle>
       </CardHeader>
-      <CardContent className="card-content">
+      <CardContent className="card-content flex-1 overflow-y-auto">
         <div className="space-y-3">
           {compromissos.map((compromisso) => (
             <div
