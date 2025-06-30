@@ -14,6 +14,9 @@ interface NovaVagaModalProps {
   onSubmit: (dados: {
     titulo: string;
     departamento: string;
+    cidade: string;
+    cargaHoraria: string;
+    jornada: string;
     descricao: string;
     requisitos: string;
     salario: string;
@@ -26,6 +29,9 @@ export function NovaVagaModal({ isOpen, onClose, onSubmit }: NovaVagaModalProps)
   const [formData, setFormData] = useState({
     titulo: "",
     departamento: "",
+    cidade: "",
+    cargaHoraria: "",
+    jornada: "",
     descricao: "",
     requisitos: "",
     salario: "",
@@ -35,7 +41,7 @@ export function NovaVagaModal({ isOpen, onClose, onSubmit }: NovaVagaModalProps)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.titulo || !formData.departamento || !formData.descricao) {
+    if (!formData.titulo || !formData.departamento || !formData.cidade || !formData.descricao) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios.",
@@ -48,6 +54,9 @@ export function NovaVagaModal({ isOpen, onClose, onSubmit }: NovaVagaModalProps)
     setFormData({
       titulo: "",
       departamento: "",
+      cidade: "",
+      cargaHoraria: "",
+      jornada: "",
       descricao: "",
       requisitos: "",
       salario: "",
@@ -115,6 +124,45 @@ export function NovaVagaModal({ isOpen, onClose, onSubmit }: NovaVagaModalProps)
                 placeholder="Ex: Tecnologia"
                 required
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <Label htmlFor="cidade">Cidade *</Label>
+              <Input
+                id="cidade"
+                value={formData.cidade}
+                onChange={(e) => handleChange("cidade", e.target.value)}
+                placeholder="Ex: São Paulo - SP"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="cargaHoraria">Carga Horária</Label>
+              <Input
+                id="cargaHoraria"
+                value={formData.cargaHoraria}
+                onChange={(e) => handleChange("cargaHoraria", e.target.value)}
+                placeholder="Ex: 40h semanais"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="jornada">Jornada</Label>
+              <Select value={formData.jornada} onValueChange={(value) => handleChange("jornada", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a jornada" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="integral">Integral</SelectItem>
+                  <SelectItem value="meio-periodo">Meio Período</SelectItem>
+                  <SelectItem value="flexivel">Flexível</SelectItem>
+                  <SelectItem value="home-office">Home Office</SelectItem>
+                  <SelectItem value="hibrido">Híbrido</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

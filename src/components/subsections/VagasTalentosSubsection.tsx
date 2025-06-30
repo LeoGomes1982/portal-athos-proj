@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Users, Plus } from "lucide-react";
+import { ArrowLeft, Briefcase, Users, Plus, MapPin, Clock, Calendar } from "lucide-react";
 import { NovaVagaModal } from "@/components/modals/NovaVagaModal";
 
 interface VagasTalentosSubsectionProps {
@@ -13,6 +13,9 @@ interface Vaga {
   id: string;
   titulo: string;
   departamento: string;
+  cidade: string;
+  cargaHoraria: string;
+  jornada: string;
   descricao: string;
   requisitos: string;
   salario: string;
@@ -28,6 +31,9 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
       id: "1",
       titulo: "Desenvolvedor Frontend",
       departamento: "Tecnologia",
+      cidade: "São Paulo - SP",
+      cargaHoraria: "40h semanais",
+      jornada: "hibrido",
       descricao: "Desenvolvimento de interfaces web",
       requisitos: "React, TypeScript, CSS",
       salario: "R$ 5.000 - R$ 7.000",
@@ -39,6 +45,9 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
       id: "2", 
       titulo: "Analista de Marketing",
       departamento: "Marketing",
+      cidade: "Rio de Janeiro - RJ",
+      cargaHoraria: "44h semanais",
+      jornada: "integral",
       descricao: "Gestão de campanhas digitais",
       requisitos: "Marketing Digital, Google Ads",
       salario: "R$ 3.500 - R$ 5.000",
@@ -59,6 +68,17 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
       dataPublicacao: new Date().toISOString().split('T')[0]
     };
     setVagas([...vagas, novaVaga]);
+  };
+
+  const getJornadaLabel = (jornada: string) => {
+    switch (jornada) {
+      case 'integral': return 'Integral';
+      case 'meio-periodo': return 'Meio Período';
+      case 'flexivel': return 'Flexível';
+      case 'home-office': return 'Home Office';
+      case 'hibrido': return 'Híbrido';
+      default: return jornada;
+    }
   };
 
   return (
@@ -130,6 +150,24 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
                   <div>
                     <CardTitle className="section-title mb-2">{vaga.titulo}</CardTitle>
                     <p className="text-description">{vaga.departamento}</p>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
+                      <div className="flex items-center gap-1">
+                        <MapPin size={14} />
+                        {vaga.cidade}
+                      </div>
+                      {vaga.cargaHoraria && (
+                        <div className="flex items-center gap-1">
+                          <Clock size={14} />
+                          {vaga.cargaHoraria}
+                        </div>
+                      )}
+                      {vaga.jornada && (
+                        <div className="flex items-center gap-1">
+                          <Calendar size={14} />
+                          {getJornadaLabel(vaga.jornada)}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${

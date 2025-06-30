@@ -1,12 +1,12 @@
+
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Star, AlertTriangle } from "lucide-react";
+import { Star, AlertTriangle, X, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Funcionario {
@@ -99,54 +99,48 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   };
 
   const statusInfo = statusConfig[statusAtual];
-  
-  const getModalBackground = () => {
-    switch (statusAtual) {
-      case 'ativo':
-        return { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' };
-      case 'ferias':
-        return { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' };
-      case 'destaque':
-        return { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' };
-      case 'experiencia':
-        return { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' };
-      case 'aviso':
-        return { backgroundColor: '#FEF2F2', borderColor: '#FECACA' };
-      default:
-        return { backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' };
-    }
-  };
-
-  const modalStyle = getModalBackground();
   const isDestaque = statusAtual === 'destaque';
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-4xl max-h-[90vh] overflow-y-auto border-2"
-        style={{
-          backgroundColor: modalStyle.backgroundColor,
-          borderColor: modalStyle.borderColor
-        }}
-      >
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-slate-700 flex items-center gap-3">
-            <span className="text-3xl">{funcionario.foto}</span>
-            Detalhes do Funcionário
-            {funcionario.status === 'destaque' && (
-              <div className="relative">
-                <Star className="w-8 h-8 text-yellow-500 fill-yellow-400 drop-shadow-lg animate-pulse" style={{
-                  filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
-                }} />
-              </div>
-            )}
-          </DialogTitle>
-        </DialogHeader>
+  if (!isOpen) return null;
 
-        <div className="space-y-6">
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content max-w-4xl bg-blue-50" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header bg-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <User size={24} className="text-blue-600" />
+              </div>
+              <div>
+                <h2 className="modal-title flex items-center gap-2">
+                  Detalhes do Funcionário
+                  {funcionario.status === 'destaque' && (
+                    <div className="relative">
+                      <Star className="w-8 h-8 text-yellow-500 fill-yellow-400 drop-shadow-lg animate-pulse" style={{
+                        filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
+                      }} />
+                    </div>
+                  )}
+                </h2>
+                <p className="text-description">{funcionario.nome}</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="secondary-btn p-2 h-auto"
+            >
+              <X size={20} />
+            </Button>
+          </div>
+        </div>
+
+        <div className="modal-body space-y-6">
           {/* Date Input Section */}
           {showDateInput && (
-            <Card className="bg-white/90 backdrop-blur-sm border-2 border-yellow-300">
+            <Card className="bg-white border-2 border-yellow-300">
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   📅 Data de Encerramento
@@ -179,7 +173,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           )}
 
           {/* Informações Principais */}
-          <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
+          <Card className="bg-white border-2 border-blue-200">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -193,11 +187,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">Setor</label>
-                    <Badge variant="secondary" className="font-medium" style={{ 
-                      backgroundColor: modalStyle.backgroundColor,
-                      borderColor: modalStyle.borderColor,
-                      color: statusInfo.textColor
-                    }}>
+                    <Badge variant="secondary" className="font-medium bg-blue-100 text-blue-700 border-blue-200">
                       {funcionario.setor}
                     </Badge>
                   </div>
@@ -213,7 +203,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     <label className="text-sm font-medium text-slate-600">Status Atual</label>
                     <div className="mt-1">
                       <Select value={statusAtual} onValueChange={handleStatusChange} disabled={showDateInput}>
-                        <SelectTrigger className="w-48 bg-white/80" style={{ borderColor: modalStyle.borderColor }}>
+                        <SelectTrigger className="w-48 bg-white border-blue-200">
                           <SelectValue>
                             <Badge className={`${statusInfo.color} text-white text-xs`}>
                               {statusInfo.label}
@@ -257,7 +247,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           </Card>
 
           {/* Informações de Contato */}
-          <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
+          <Card className="bg-white border-2 border-blue-200">
             <CardContent className="p-6">
               <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                 📞 Informações de Contato
@@ -277,7 +267,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Documentos Pessoais */}
           {(funcionario.cpf || funcionario.rg) && (
-            <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
+            <Card className="bg-white border-2 border-blue-200">
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   📋 Documentos Pessoais
@@ -302,7 +292,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Endereço e Salário */}
           {(funcionario.endereco || funcionario.salario) && (
-            <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
+            <Card className="bg-white border-2 border-blue-200">
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   🏠 Informações Adicionais
@@ -317,7 +307,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   {funcionario.salario && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">Salário</label>
-                      <p className={`text-lg font-bold ${statusInfo.textColor}`}>{funcionario.salario}</p>
+                      <p className="text-lg font-bold text-blue-700">{funcionario.salario}</p>
                     </div>
                   )}
                 </div>
@@ -326,24 +316,23 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           )}
 
           {/* Ações */}
-          <div className="flex justify-end gap-3 pt-4 border-t-2" style={{ borderColor: modalStyle.borderColor }}>
+          <div className="flex justify-end gap-3 pt-4 border-t-2 border-blue-200">
             <Button 
               variant="outline" 
               onClick={onClose} 
-              className="bg-white/80 text-slate-700 hover:bg-white"
-              style={{ borderColor: modalStyle.borderColor }}
+              className="bg-white text-slate-700 hover:bg-gray-50 border-blue-200"
             >
               Fechar
             </Button>
-            <Button className={`${statusInfo.color} text-white shadow-lg hover:opacity-90`}>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
               📝 Editar Funcionário
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+            <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
               📄 Ver Documentos
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
