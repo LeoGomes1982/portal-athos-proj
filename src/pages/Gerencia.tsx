@@ -29,9 +29,9 @@ export default function Gerencia() {
       icon: TrendingUp,
       description: "Acompanhamento de performance e metas individuais",
       component: ResultadosPessoaisSubsection,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-700",
-      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
+      bgColor: "bg-purple-100",
+      textColor: "text-purple-700",
+      cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
     },
     {
       id: "tomada-decisao",
@@ -39,9 +39,9 @@ export default function Gerencia() {
       icon: Target,
       description: "Ferramentas e processos para tomada de decisão",
       component: TomadaDecisaoSubsection,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700",
-      cardClass: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150"
+      bgColor: "bg-purple-100",
+      textColor: "text-purple-700",
+      cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
     }
   ];
 
