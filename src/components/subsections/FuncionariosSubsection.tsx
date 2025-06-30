@@ -341,10 +341,10 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             <p className="text-slate-600 text-lg">Departamento Pessoal</p>
           </div>
 
-          {/* Resumo com contadores - Fundo Azul */}
-          <Card className="mb-8 bg-gradient-to-r from-blue-500 to-blue-600 border-none shadow-lg">
-            <CardHeader className="border-b border-blue-400/30">
-              <CardTitle className="text-xl font-bold text-white text-center">
+          {/* Resumo com contadores - Usando o mesmo azul do fundo */}
+          <Card className="mb-8 bg-gradient-to-br from-blue-100 to-blue-200 border-none shadow-lg">
+            <CardHeader className="border-b border-blue-300/30">
+              <CardTitle className="text-xl font-bold text-blue-800 text-center">
                 📊 Resumo da Equipe
               </CardTitle>
             </CardHeader>
@@ -404,11 +404,11 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             </CardContent>
           </Card>
 
-          {/* Lista de Funcionários Ativos - Fundo Azul */}
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 border-none shadow-lg animate-slide-up">
-            <CardHeader className="border-b border-blue-400/30">
+          {/* Lista de Funcionários Ativos - Usando o mesmo azul do fundo */}
+          <Card className="bg-gradient-to-br from-blue-100 to-blue-200 border-none shadow-lg animate-slide-up">
+            <CardHeader className="border-b border-blue-300/30">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <CardTitle className="text-xl font-bold text-white flex items-center gap-2 mb-0">
+                <CardTitle className="text-xl font-bold text-blue-800 flex items-center gap-2 mb-0">
                   👨‍💼 Funcionários Ativos
                 </CardTitle>
                 
@@ -426,21 +426,25 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 bg-white rounded-b-lg">
-              <div className="space-y-3">
-                {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
-              </div>
-
-              {funcionariosAtivos.length === 0 && (
-                <div className="text-center py-16 bg-gradient-to-br from-blue-100 to-white rounded-3xl shadow-lg border border-blue-300">
-                  <div className="w-24 h-24 bg-blue-200 border-2 border-blue-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <span className="text-blue-500 text-4xl">🔍</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum funcionário ativo encontrado</h3>
-                  <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
+            
+            {/* Lista de funcionários com fundo branco separado */}
+            <div className="p-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="space-y-3">
+                  {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
                 </div>
-              )}
-            </CardContent>
+
+                {funcionariosAtivos.length === 0 && (
+                  <div className="text-center py-16 bg-gradient-to-br from-blue-100 to-white rounded-3xl shadow-lg border border-blue-300">
+                    <div className="w-24 h-24 bg-blue-200 border-2 border-blue-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <span className="text-blue-500 text-4xl">🔍</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum funcionário ativo encontrado</h3>
+                    <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </Card>
         </div>
       </div>
