@@ -317,117 +317,122 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen bg-blue-50">
+      <div className="p-6 max-w-7xl mx-auto">
         {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={onBack} className="back-button">
+        <div className="mb-6">
+          <button 
+            onClick={onBack} 
+            className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors duration-300 font-medium"
+          >
             <ChevronLeft size={16} />
             Voltar
           </button>
         </div>
 
         {/* Page Header */}
-        <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
             <span className="text-white text-3xl">👥</span>
           </div>
-          <div>
-            <h1 className="page-title mb-0">Gestão de Funcionários</h1>
-            <p className="text-description">Departamento Pessoal</p>
-          </div>
+          <h1 className="text-4xl font-bold text-slate-800 mb-2">Gestão de Funcionários</h1>
+          <p className="text-slate-600 text-lg">Departamento Pessoal</p>
         </div>
 
-        {/* Resumo com contadores - mais compacto */}
-        <div className="bg-white rounded-3xl shadow-lg border border-green-300 p-6 mb-8">
-          <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
-            📊 Resumo da Equipe
-          </h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
-              <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-green-600 mb-1">{contadores.total}</div>
-                <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
-              <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
-                <div className="text-sm font-medium text-slate-600">Em Férias</div>
-              </CardContent>
-            </Card>
+        {/* Resumo com contadores */}
+        <Card className="mb-8 bg-white border-blue-200 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
+            <CardTitle className="text-xl font-bold text-slate-800 text-center">
+              📊 Resumo da Equipe
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="flex flex-wrap justify-center gap-4">
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-blue-200">
+                <CardContent className="text-center p-4">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.total}</div>
+                  <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
+                </CardContent>
+              </Card>
+              
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-blue-200">
+                <CardContent className="text-center p-4">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
+                  <div className="text-sm font-medium text-slate-600">Em Férias</div>
+                </CardContent>
+              </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-orange-300 bg-gradient-to-br from-orange-50 to-white relative">
-              <CardContent className="text-center p-4">
-                {alertasExperiencia > 0 && (
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
-                )}
-                <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.experiencia}</div>
-                <div className="text-sm font-medium text-orange-700">Em Experiência</div>
-              </CardContent>
-            </Card>
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-orange-300 bg-gradient-to-br from-orange-50 to-white relative">
+                <CardContent className="text-center p-4">
+                  {alertasExperiencia > 0 && (
+                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
+                  )}
+                  <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.experiencia}</div>
+                  <div className="text-sm font-medium text-orange-700">Em Experiência</div>
+                </CardContent>
+              </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white relative">
-              <CardContent className="text-center p-4">
-                {alertasAvisoPrevio > 0 && (
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
-                )}
-                <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
-                <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
-              </CardContent>
-            </Card>
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white relative">
+                <CardContent className="text-center p-4">
+                  {alertasAvisoPrevio > 0 && (
+                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
+                  )}
+                  <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
+                  <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
+                </CardContent>
+              </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-yellow-400 bg-gradient-to-br from-yellow-100 to-yellow-50 shadow-yellow-200/50">
-              <CardContent className="text-center p-4">
-                <div className="flex items-center justify-center mb-1">
-                  <div className="relative">
-                    <Star className="text-yellow-500 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md" style={{
-                      filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
-                    }} />
-                    <div className="absolute inset-0 animate-pulse opacity-50">
-                      <Star className="text-yellow-300 w-6 h-6 fill-yellow-200" />
+              <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-yellow-400 bg-gradient-to-br from-yellow-100 to-yellow-50 shadow-yellow-200/50">
+                <CardContent className="text-center p-4">
+                  <div className="flex items-center justify-center mb-1">
+                    <div className="relative">
+                      <Star className="text-yellow-500 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md" style={{
+                        filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                      }} />
+                      <div className="absolute inset-0 animate-pulse opacity-50">
+                        <Star className="text-yellow-300 w-6 h-6 fill-yellow-200" />
+                      </div>
                     </div>
+                    <span className="text-2xl font-bold text-yellow-700">{contadores.destaque}</span>
                   </div>
-                  <span className="text-2xl font-bold text-yellow-700">{contadores.destaque}</span>
-                </div>
-                <div className="text-sm font-medium text-yellow-800">Em Destaque</div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                  <div className="text-sm font-medium text-yellow-800">Em Destaque</div>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Lista de Funcionários Ativos */}
-        <Card className="modern-card animate-slide-up bg-white">
-          <CardHeader className="card-header">
+        <Card className="bg-white border-blue-200 shadow-lg animate-slide-up">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
+              <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2 mb-0">
                 👨‍💼 Funcionários Ativos
               </CardTitle>
               
               <div className="flex items-center gap-4">
                 {/* Search Input */}
                 <div className="relative flex-1 min-w-64">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
                   <Input
                     placeholder="Buscar funcionário..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-12 bg-white border-green-300 shadow-lg rounded-2xl text-lg font-medium focus:border-green-400"
+                    className="pl-12 h-12 bg-white border-blue-300 shadow-lg rounded-2xl text-lg font-medium focus:border-blue-400"
                   />
                 </div>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="card-content">
+          <CardContent className="p-6">
             <div className="space-y-3">
               {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
             </div>
 
             {funcionariosAtivos.length === 0 && (
-              <div className="text-center py-16 bg-gradient-to-br from-green-100 to-white rounded-3xl shadow-lg border border-green-300">
-                <div className="w-24 h-24 bg-green-200 border-2 border-green-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <span className="text-green-500 text-4xl">🔍</span>
+              <div className="text-center py-16 bg-gradient-to-br from-blue-100 to-white rounded-3xl shadow-lg border border-blue-300">
+                <div className="w-24 h-24 bg-blue-200 border-2 border-blue-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <span className="text-blue-500 text-4xl">🔍</span>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum funcionário ativo encontrado</h3>
                 <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
