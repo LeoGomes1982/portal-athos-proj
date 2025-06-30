@@ -1,11 +1,13 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Star, AlertTriangle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Funcionario {
   id: number;
@@ -21,48 +23,95 @@ interface Funcionario {
   rg?: string;
   endereco?: string;
   salario?: string;
+  dataFimExperiencia?: string;
+  dataFimAvisoPrevio?: string;
 }
 
 interface FuncionarioDetalhesModalProps {
   funcionario: Funcionario;
   isOpen: boolean;
   onClose: () => void;
-  onStatusChange: (funcionarioId: number, novoStatus: Funcionario['status']) => void;
+  onStatusChange: (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => void;
 }
 
 const statusConfig = {
-  ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700", bgColor: "#F0FDF4" }, // Verde nevasca
-  ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700", bgColor: "#EFF6FF" }, // Azul serenity
-  experiencia: { label: "Em Experiência", color: "bg-orange-500", textColor: "text-orange-700", bgColor: "#FFF7ED" }, // Laranja flan de papaya
-  aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700", bgColor: "#FEF2F2" }, // Vermelho coral red
+  ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700", bgColor: "#F0FDF4" },
+  ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700", bgColor: "#EFF6FF" },
+  experiencia: { label: "Em Experiência", color: "bg-orange-500", textColor: "text-orange-700", bgColor: "#FFF7ED" },
+  aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700", bgColor: "#FEF2F2" },
   inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700", bgColor: "#F9FAFB" },
-  destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700", bgColor: "#FFFBEB" } // Amarelo dourado
+  destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700", bgColor: "#FFFBEB" }
 };
 
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange }: FuncionarioDetalhesModalProps) {
+  const { toast } = useToast();
   const [statusAtual, setStatusAtual] = useState(funcionario.status);
+  const [showDateInput, setShowDateInput] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [dataFim, setDataFim] = useState("");
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
+    
+    if (status === 'experiencia' || status === 'aviso') {
+      setSelectedStatus(status);
+      setShowDateInput(true);
+      setDataFim("");
+    } else {
+      setStatusAtual(status);
+      onStatusChange(funcionario.id, status);
+      toast({
+        title: "Status Atualizado",
+        description: `Status alterado para ${statusConfig[status].label}`,
+      });
+    }
+  };
+
+  const handleDateSubmit = () => {
+    if (!dataFim) {
+      toast({
+        title: "Erro",
+        description: "Por favor, selecione uma data",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const status = selectedStatus as Funcionario['status'];
     setStatusAtual(status);
-    onStatusChange(funcionario.id, status);
+    onStatusChange(funcionario.id, status, dataFim);
+    
+    const statusLabel = selectedStatus === 'experiencia' ? 'período de experiência' : 'aviso prévio';
+    toast({
+      title: "Status Atualizado",
+      description: `${statusConfig[status].label} definido até ${new Date(dataFim).toLocaleDateString('pt-BR')}`,
+    });
+    
+    setShowDateInput(false);
+    setSelectedStatus("");
+    setDataFim("");
+  };
+
+  const handleDateCancel = () => {
+    setShowDateInput(false);
+    setSelectedStatus("");
+    setDataFim("");
   };
 
   const statusInfo = statusConfig[statusAtual];
   
-  // Cores específicas para cada status
   const getModalBackground = () => {
     switch (statusAtual) {
       case 'ativo':
-        return { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }; // Verde nevasca
+        return { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' };
       case 'ferias':
-        return { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }; // Azul serenity
+        return { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' };
       case 'destaque':
-        return { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }; // Amarelo dourado
+        return { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' };
       case 'experiencia':
-        return { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' }; // Laranja flan de papaya
+        return { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' };
       case 'aviso':
-        return { backgroundColor: '#FEF2F2', borderColor: '#FECACA' }; // Vermelho coral red
+        return { backgroundColor: '#FEF2F2', borderColor: '#FECACA' };
       default:
         return { backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' };
     }
@@ -95,6 +144,40 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Date Input Section */}
+          {showDateInput && (
+            <Card className="bg-white/90 backdrop-blur-sm border-2 border-yellow-300">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  📅 Data de Encerramento
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="dataFim" className="text-sm font-medium text-slate-600">
+                      {selectedStatus === 'experiencia' ? 'Data de encerramento do período de experiência' : 'Data de encerramento do aviso prévio'}
+                    </Label>
+                    <Input
+                      id="dataFim"
+                      type="date"
+                      value={dataFim}
+                      onChange={(e) => setDataFim(e.target.value)}
+                      className="mt-1"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button onClick={handleDateSubmit} className="bg-green-600 hover:bg-green-700">
+                      Confirmar
+                    </Button>
+                    <Button variant="outline" onClick={handleDateCancel}>
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Informações Principais */}
           <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
             <CardContent className="p-6">
@@ -129,7 +212,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   <div>
                     <label className="text-sm font-medium text-slate-600">Status Atual</label>
                     <div className="mt-1">
-                      <Select value={statusAtual} onValueChange={handleStatusChange}>
+                      <Select value={statusAtual} onValueChange={handleStatusChange} disabled={showDateInput}>
                         <SelectTrigger className="w-48 bg-white/80" style={{ borderColor: modalStyle.borderColor }}>
                           <SelectValue>
                             <Badge className={`${statusInfo.color} text-white text-xs`}>
@@ -149,6 +232,25 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       </Select>
                     </div>
                   </div>
+                  
+                  {/* Mostrar datas de fim se existirem */}
+                  {funcionario.dataFimExperiencia && statusAtual === 'experiencia' && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Fim do Período de Experiência</label>
+                      <p className="text-md font-medium text-orange-700">
+                        {new Date(funcionario.dataFimExperiencia).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {funcionario.dataFimAvisoPrevio && statusAtual === 'aviso' && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Fim do Aviso Prévio</label>
+                      <p className="text-md font-medium text-red-700">
+                        {new Date(funcionario.dataFimAvisoPrevio).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>

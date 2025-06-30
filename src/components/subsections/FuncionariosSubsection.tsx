@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, ChevronLeft } from "lucide-react";
+import { Search, Star, ChevronLeft, AlertTriangle } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
 import { useNavigate } from "react-router-dom";
 
@@ -26,10 +26,12 @@ interface Funcionario {
   rg?: string;
   endereco?: string;
   salario?: string;
+  dataFimExperiencia?: string;
+  dataFimAvisoPrevio?: string;
 }
 
 // Dados mockados de funcionários
-const funcionarios: Funcionario[] = [
+const funcionariosIniciais: Funcionario[] = [
   {
     id: 1,
     nome: "Ana Silva",
@@ -134,9 +136,58 @@ const statusConfig = {
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [funcionariosList, setFuncionariosList] = useState(funcionarios);
+  const [funcionariosList, setFuncionariosList] = useState(funcionariosIniciais);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Função para verificar se está próximo do fim (3 dias ou menos)
+  const isProximoDoFim = (dataFim: string) => {
+    const hoje = new Date();
+    const dataLimite = new Date(dataFim);
+    const diferenca = dataLimite.getTime() - hoje.getTime();
+    const diasRestantes = Math.ceil(diferenca / (1000 * 3600 * 24));
+    return diasRestantes <= 3 && diasRestantes >= 0;
+  };
+
+  // Função para verificar se a data já passou
+  const dataJaPassou = (dataFim: string) => {
+    const hoje = new Date();
+    const dataLimite = new Date(dataFim);
+    return dataLimite < hoje;
+  };
+
+  // Verificar automaticamente as datas e atualizar status
+  useEffect(() => {
+    const verificarDatas = () => {
+      setFuncionariosList(prev => prev.map(func => {
+        let novoStatus = func.status;
+
+        // Verificar período de experiência
+        if (func.status === 'experiencia' && func.dataFimExperiencia) {
+          if (dataJaPassou(func.dataFimExperiencia)) {
+            novoStatus = 'ativo';
+            console.log(`Funcionário ${func.nome} mudou de experiência para ativo`);
+          }
+        }
+
+        // Verificar aviso prévio
+        if (func.status === 'aviso' && func.dataFimAvisoPrevio) {
+          if (dataJaPassou(func.dataFimAvisoPrevio)) {
+            novoStatus = 'inativo';
+            console.log(`Funcionário ${func.nome} mudou de aviso prévio para inativo`);
+          }
+        }
+
+        return { ...func, status: novoStatus };
+      }));
+    };
+
+    // Executar verificação imediatamente e depois a cada minuto
+    verificarDatas();
+    const interval = setInterval(verificarDatas, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredFuncionarios = funcionariosList.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,13 +203,33 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     setIsModalOpen(true);
   };
 
-  const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status']) => {
+  const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
     setFuncionariosList(prev => 
-      prev.map(func => 
-        func.id === funcionarioId 
-          ? { ...func, status: novoStatus }
-          : func
-      )
+      prev.map(func => {
+        if (func.id === funcionarioId) {
+          const updatedFunc = { ...func, status: novoStatus };
+          
+          // Limpar datas antigas
+          if (novoStatus !== 'experiencia') {
+            delete updatedFunc.dataFimExperiencia;
+          }
+          if (novoStatus !== 'aviso') {
+            delete updatedFunc.dataFimAvisoPrevio;
+          }
+          
+          // Adicionar nova data se fornecida
+          if (dataFim) {
+            if (novoStatus === 'experiencia') {
+              updatedFunc.dataFimExperiencia = dataFim;
+            } else if (novoStatus === 'aviso') {
+              updatedFunc.dataFimAvisoPrevio = dataFim;
+            }
+          }
+          
+          return updatedFunc;
+        }
+        return func;
+      })
     );
   };
 
@@ -171,8 +242,23 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     destaque: funcionariosAtivos.filter(f => f.status === 'destaque').length
   };
 
+  // Verificar se há alertas
+  const alertasExperiencia = funcionariosAtivos.filter(f => 
+    f.status === 'experiencia' && f.dataFimExperiencia && isProximoDoFim(f.dataFimExperiencia)
+  ).length;
+
+  const alertasAvisoPrevio = funcionariosAtivos.filter(f => 
+    f.status === 'aviso' && f.dataFimAvisoPrevio && isProximoDoFim(f.dataFimAvisoPrevio)
+  ).length;
+
   const renderFuncionarioListItem = (funcionario: Funcionario) => {
     const statusInfo = statusConfig[funcionario.status];
+    
+    // Verificar se deve mostrar alerta
+    const mostrarAlerta = (
+      (funcionario.status === 'experiencia' && funcionario.dataFimExperiencia && isProximoDoFim(funcionario.dataFimExperiencia)) ||
+      (funcionario.status === 'aviso' && funcionario.dataFimAvisoPrevio && isProximoDoFim(funcionario.dataFimAvisoPrevio))
+    );
 
     return (
       <div 
@@ -187,6 +273,13 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
               <div className="absolute -top-1 -right-1 animate-bounce">
                 <Star className="w-5 h-5 text-yellow-500 fill-yellow-400 drop-shadow-md" style={{
                   filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                }} />
+              </div>
+            )}
+            {mostrarAlerta && (
+              <div className="absolute -top-1 -right-1 animate-bounce">
+                <AlertTriangle className="w-5 h-5 text-red-500 fill-red-400 drop-shadow-md" style={{
+                  filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)) brightness(1.2)'
                 }} />
               </div>
             )}
@@ -265,15 +358,21 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-orange-300 bg-gradient-to-br from-orange-50 to-white">
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-orange-300 bg-gradient-to-br from-orange-50 to-white relative">
               <CardContent className="text-center p-4">
+                {alertasExperiencia > 0 && (
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                )}
                 <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.experiencia}</div>
                 <div className="text-sm font-medium text-orange-700">Em Experiência</div>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white">
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white relative">
               <CardContent className="text-center p-4">
+                {alertasAvisoPrevio > 0 && (
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                )}
                 <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
                 <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
               </CardContent>
