@@ -1,0 +1,317 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, Plus, ChevronLeft, Briefcase, Edit, Trash2 } from "lucide-react";
+import { NovoCargoModal } from "@/components/modals/NovoCargoModal";
+import { EditarCargoModal } from "@/components/modals/EditarCargoModal";
+import { VisualizarCargoModal } from "@/components/modals/VisualizarCargoModal";
+
+interface PlanosCargosSubsectionProps {
+  onBack: () => void;
+}
+
+interface Cargo {
+  id: number;
+  nome: string;
+  nivel: "I" | "II" | "III";
+  salarioBase: string;
+  beneficios: string[];
+  habilidadesEspecificas: string[];
+  habilidadesEsperadas: string[];
+  responsabilidades: string[];
+  carencia: number; // em meses
+  status: "ativo" | "inativo";
+  criadoEm: string;
+}
+
+// Dados mockados
+const cargosIniciais: Cargo[] = [
+  {
+    id: 1,
+    nome: "Analista de Sistemas",
+    nivel: "I",
+    salarioBase: "R$ 4.500,00",
+    beneficios: ["Vale Refeição", "Plano de Saúde", "Vale Transporte"],
+    habilidadesEspecificas: ["JavaScript", "React", "Node.js"],
+    habilidadesEsperadas: ["Trabalho em equipe", "Comunicação", "Proatividade"],
+    responsabilidades: ["Desenvolver sistemas", "Manutenção de código", "Testes unitários"],
+    carencia: 6,
+    status: "ativo",
+    criadoEm: "2024-01-15"
+  },
+  {
+    id: 2,
+    nome: "Analista de Sistemas",
+    nivel: "II",
+    salarioBase: "R$ 6.000,00",
+    beneficios: ["Vale Refeição", "Plano de Saúde", "Vale Transporte", "Participação nos Lucros"],
+    habilidadesEspecificas: ["JavaScript", "React", "Node.js", "Liderança técnica"],
+    habilidadesEsperadas: ["Trabalho em equipe", "Comunicação", "Proatividade", "Mentoria"],
+    responsabilidades: ["Desenvolver sistemas", "Manutenção de código", "Testes unitários", "Orientar júnior"],
+    carencia: 18,
+    status: "ativo",
+    criadoEm: "2024-01-15"
+  }
+];
+
+export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [cargos, setCargos] = useState<Cargo[]>(cargosIniciais);
+  const [isNovoCargoModalOpen, setIsNovoCargoModalOpen] = useState(false);
+  const [isEditarCargoModalOpen, setIsEditarCargoModalOpen] = useState(false);
+  const [isVisualizarCargoModalOpen, setIsVisualizarCargoModalOpen] = useState(false);
+  const [cargoSelecionado, setCargoSelecionado] = useState<Cargo | null>(null);
+
+  const filteredCargos = cargos.filter(cargo =>
+    cargo.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cargo.nivel.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleVisualizarCargo = (cargo: Cargo) => {
+    setCargoSelecionado(cargo);
+    setIsVisualizarCargoModalOpen(true);
+  };
+
+  const handleEditarCargo = (cargo: Cargo) => {
+    setCargoSelecionado(cargo);
+    setIsEditarCargoModalOpen(true);
+  };
+
+  const handleExcluirCargo = (cargoId: number) => {
+    setCargos(prev => prev.filter(cargo => cargo.id !== cargoId));
+  };
+
+  const handleSalvarCargo = (cargo: Omit<Cargo, 'id' | 'criadoEm'>) => {
+    const novoCargo: Cargo = {
+      ...cargo,
+      id: Math.max(...cargos.map(c => c.id), 0) + 1,
+      criadoEm: new Date().toISOString().split('T')[0]
+    };
+    setCargos(prev => [...prev, novoCargo]);
+  };
+
+  const handleAtualizarCargo = (cargoAtualizado: Cargo) => {
+    setCargos(prev => prev.map(cargo => 
+      cargo.id === cargoAtualizado.id ? cargoAtualizado : cargo
+    ));
+  };
+
+  const getNivelColor = (nivel: string) => {
+    switch(nivel) {
+      case 'I': return 'bg-green-500';
+      case 'II': return 'bg-blue-500';
+      case 'III': return 'bg-purple-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg m-6 p-8">
+        {/* Navigation Button */}
+        <div className="navigation-button">
+          <button onClick={onBack} className="back-button">
+            <ChevronLeft size={16} />
+            Voltar
+          </button>
+        </div>
+
+        {/* Page Header */}
+        <div className="page-header-centered">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <Briefcase className="text-white text-3xl w-10 h-10" />
+          </div>
+          <div>
+            <h1 className="page-title mb-0">Planos de Cargos e Salários</h1>
+            <p className="text-description">Gestão de cargos, níveis e estrutura salarial</p>
+          </div>
+        </div>
+
+        {/* Resumo */}
+        <div className="bg-white rounded-3xl shadow-lg border border-purple-300 p-6 mb-8">
+          <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
+            📊 Resumo dos Cargos
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-purple-300">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-purple-600 mb-1">{cargos.length}</div>
+                <div className="text-sm font-medium text-slate-600">Total de Cargos</div>
+              </CardContent>
+            </Card>
+            
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-green-600 mb-1">
+                  {cargos.filter(c => c.status === 'ativo').length}
+                </div>
+                <div className="text-sm font-medium text-slate-600">Cargos Ativos</div>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-blue-300">
+              <CardContent className="text-center p-4">
+                <div className="text-2xl font-bold text-blue-600 mb-1">
+                  {new Set(cargos.map(c => c.nome)).size}
+                </div>
+                <div className="text-sm font-medium text-slate-600">Funções Únicas</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Lista de Cargos */}
+        <Card className="modern-card animate-slide-up bg-white">
+          <CardHeader className="card-header">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                💼 Cargos Cadastrados
+              </CardTitle>
+              
+              <div className="flex items-center gap-4">
+                {/* Search Input */}
+                <div className="relative flex-1 min-w-64">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500 w-5 h-5" />
+                  <Input
+                    placeholder="Buscar cargo..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-12 h-12 bg-white border-purple-300 shadow-lg rounded-2xl text-lg font-medium focus:border-purple-400"
+                  />
+                </div>
+                
+                {/* Add Button */}
+                <Button
+                  onClick={() => setIsNovoCargoModalOpen(true)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-2xl shadow-lg text-lg font-medium transition-all duration-300 flex items-center gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  Novo Cargo
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="card-content">
+            <div className="space-y-3">
+              {filteredCargos.map((cargo) => (
+                <div 
+                  key={cargo.id}
+                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-400 bg-white rounded-lg p-4 mb-3"
+                  onClick={() => handleVisualizarCargo(cargo)}
+                >
+                  <div className="flex items-center gap-4">
+                    {/* Ícone */}
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-purple-100 border-2 border-purple-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Briefcase className="text-purple-600 w-6 h-6" />
+                      </div>
+                    </div>
+
+                    {/* Nome */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-lg font-bold text-slate-800 truncate">{cargo.nome}</p>
+                      <p className="text-sm text-slate-600">Carência: {cargo.carencia} meses</p>
+                    </div>
+
+                    {/* Nível */}
+                    <div className="flex-shrink-0">
+                      <Badge className={`${getNivelColor(cargo.nivel)} text-white text-sm font-medium px-3 py-1 rounded-full shadow-sm`}>
+                        Nível {cargo.nivel}
+                      </Badge>
+                    </div>
+
+                    {/* Salário */}
+                    <div className="flex-shrink-0">
+                      <p className="text-lg font-bold text-green-600">{cargo.salarioBase}</p>
+                    </div>
+
+                    {/* Status */}
+                    <div className="flex-shrink-0">
+                      <Badge className={`${cargo.status === 'ativo' ? 'bg-green-500' : 'bg-gray-500'} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
+                        {cargo.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                    </div>
+
+                    {/* Ações */}
+                    <div className="flex-shrink-0 flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditarCargo(cargo);
+                        }}
+                        className="hover:bg-blue-50 hover:border-blue-300"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleExcluirCargo(cargo.id);
+                        }}
+                        className="hover:bg-red-50 hover:border-red-300 text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredCargos.length === 0 && (
+              <div className="text-center py-16 bg-gradient-to-br from-purple-100 to-white rounded-3xl shadow-lg border border-purple-300">
+                <div className="w-24 h-24 bg-purple-200 border-2 border-purple-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <Briefcase className="text-purple-500 w-12 h-12" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum cargo encontrado</h3>
+                <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca ou crie um novo cargo</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Modais */}
+      <NovoCargoModal
+        isOpen={isNovoCargoModalOpen}
+        onClose={() => setIsNovoCargoModalOpen(false)}
+        onSave={handleSalvarCargo}
+      />
+
+      {cargoSelecionado && (
+        <>
+          <EditarCargoModal
+            isOpen={isEditarCargoModalOpen}
+            onClose={() => {
+              setIsEditarCargoModalOpen(false);
+              setCargoSelecionado(null);
+            }}
+            cargo={cargoSelecionado}
+            onSave={handleAtualizarCargo}
+          />
+
+          <VisualizarCargoModal
+            isOpen={isVisualizarCargoModalOpen}
+            onClose={() => {
+              setIsVisualizarCargoModalOpen(false);
+              setCargoSelecionado(null);
+            }}
+            cargo={cargoSelecionado}
+            onEdit={() => {
+              setIsVisualizarCargoModalOpen(false);
+              setIsEditarCargoModalOpen(true);
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
+}

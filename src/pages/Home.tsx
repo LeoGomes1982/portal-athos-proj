@@ -7,7 +7,8 @@ import {
   Building2,
   Globe,
   UserPlus,
-  Calendar
+  Calendar,
+  Briefcase
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -34,12 +35,21 @@ const Home = () => {
       onClick: () => navigate("/agenda")
     },
     {
+      id: "gerencia",
+      title: "GERÊNCIA",
+      fullTitle: "Gestão Estratégica e Operacional",
+      icon: Briefcase,
+      className: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
+      iconColor: "text-purple-600",
+      onClick: () => navigate("/gerencia")
+    },
+    {
       id: "operacoes",
       title: "OPERAÇÕES",
       fullTitle: "Gestão Operacional",
       icon: Settings,
-      className: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
-      iconColor: "text-purple-600"
+      className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
+      iconColor: "text-gray-600"
     },
     {
       id: "comercial",
