@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Users, Plus, MapPin, Clock, Calendar } from "lucide-react";
+import { ArrowLeft, Briefcase, Users, Plus, MapPin, Clock, Calendar, Edit, Eye } from "lucide-react";
 import { NovaVagaModal } from "@/components/modals/NovaVagaModal";
+import { EditarVagaModal } from "@/components/modals/EditarVagaModal";
+import { CandidatosModal } from "@/components/modals/CandidatosModal";
 
 interface VagasTalentosSubsectionProps {
   onBack: () => void;
@@ -24,8 +26,23 @@ interface Vaga {
   candidatos: number;
 }
 
+interface Candidato {
+  id: string;
+  nome: string;
+  endereco: string;
+  telefone: string;
+  email: string;
+  curriculo: File | null;
+  sobreMim: string;
+  experiencias: string;
+  dataInscricao: string;
+}
+
 export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps) {
   const [showNovaVagaModal, setShowNovaVagaModal] = useState(false);
+  const [showEditarVagaModal, setShowEditarVagaModal] = useState(false);
+  const [showCandidatosModal, setShowCandidatosModal] = useState(false);
+  const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
   const [vagas, setVagas] = useState<Vaga[]>([
     {
       id: "1",
@@ -57,6 +74,36 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
     }
   ]);
 
+  // Simulando candidatos para demonstração
+  const [candidatos] = useState<{ [vagaId: string]: Candidato[] }>({
+    "1": [
+      {
+        id: "1",
+        nome: "João Silva",
+        endereco: "Rua das Flores, 123 - São Paulo, SP",
+        telefone: "(11) 99999-9999",
+        email: "joao@email.com",
+        curriculo: null,
+        sobreMim: "Desenvolvedor com 3 anos de experiência em React",
+        experiencias: "Trabalhei em startup de tecnologia desenvolvendo interfaces web",
+        dataInscricao: "2024-01-16"
+      }
+    ],
+    "2": [
+      {
+        id: "2",
+        nome: "Maria Santos",
+        endereco: "Av. Copacabana, 456 - Rio de Janeiro, RJ",
+        telefone: "(21) 88888-8888",
+        email: "maria@email.com",
+        curriculo: null,
+        sobreMim: "Analista de marketing com foco em digital",
+        experiencias: "5 anos de experiência em campanhas digitais e análise de dados",
+        dataInscricao: "2024-01-12"
+      }
+    ]
+  });
+
   const vagasAtivas = vagas.filter(v => v.status === "ativa").length;
   const totalCandidatos = vagas.reduce((sum, vaga) => sum + vaga.candidatos, 0);
 
@@ -68,6 +115,20 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
       dataPublicacao: new Date().toISOString().split('T')[0]
     };
     setVagas([...vagas, novaVaga]);
+  };
+
+  const handleEditarVaga = (vaga: Vaga) => {
+    setVagaSelecionada(vaga);
+    setShowEditarVagaModal(true);
+  };
+
+  const handleSubmitEdicao = (dadosVaga: Vaga) => {
+    setVagas(vagas.map(v => v.id === dadosVaga.id ? dadosVaga : v));
+  };
+
+  const handleVerCandidatos = (vaga: Vaga) => {
+    setVagaSelecionada(vaga);
+    setShowCandidatosModal(true);
   };
 
   const getJornadaLabel = (jornada: string) => {
@@ -170,16 +231,38 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      vaga.status === 'ativa' ? 'bg-green-100 text-green-700' :
-                      vaga.status === 'pausada' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {vaga.status.charAt(0).toUpperCase() + vaga.status.slice(1)}
-                    </span>
-                    <div className="flex items-center gap-1 text-sm text-slate-600">
-                      <Users size={16} />
-                      {vaga.candidatos} candidatos
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEditarVaga(vaga)}
+                        className="flex items-center gap-1"
+                      >
+                        <Edit size={16} />
+                        Editar
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleVerCandidatos(vaga)}
+                        className="flex items-center gap-1"
+                      >
+                        <Eye size={16} />
+                        Candidatos
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        vaga.status === 'ativa' ? 'bg-green-100 text-green-700' :
+                        vaga.status === 'pausada' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {vaga.status.charAt(0).toUpperCase() + vaga.status.slice(1)}
+                      </span>
+                      <div className="flex items-center gap-1 text-sm text-slate-600">
+                        <Users size={16} />
+                        {vaga.candidatos} candidatos
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -216,11 +299,36 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
         </div>
       </div>
 
+      {/* Modals */}
       <NovaVagaModal
         isOpen={showNovaVagaModal}
         onClose={() => setShowNovaVagaModal(false)}
         onSubmit={handleNovaVaga}
       />
+
+      {vagaSelecionada && (
+        <>
+          <EditarVagaModal
+            isOpen={showEditarVagaModal}
+            onClose={() => {
+              setShowEditarVagaModal(false);
+              setVagaSelecionada(null);
+            }}
+            vaga={vagaSelecionada}
+            onSubmit={handleSubmitEdicao}
+          />
+
+          <CandidatosModal
+            isOpen={showCandidatosModal}
+            onClose={() => {
+              setShowCandidatosModal(false);
+              setVagaSelecionada(null);
+            }}
+            vaga={vagaSelecionada}
+            candidatos={candidatos[vagaSelecionada.id] || []}
+          />
+        </>
+      )}
     </div>
   );
 }

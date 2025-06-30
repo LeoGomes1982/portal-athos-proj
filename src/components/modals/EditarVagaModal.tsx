@@ -1,0 +1,235 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { X, Edit } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface EditarVagaModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  vaga: {
+    id: string;
+    titulo: string;
+    departamento: string;
+    cidade: string;
+    cargaHoraria: string;
+    jornada: string;
+    descricao: string;
+    requisitos: string;
+    salario: string;
+    status: "ativa" | "pausada" | "encerrada";
+  };
+  onSubmit: (dados: {
+    id: string;
+    titulo: string;
+    departamento: string;
+    cidade: string;
+    cargaHoraria: string;
+    jornada: string;
+    descricao: string;
+    requisitos: string;
+    salario: string;
+    status: "ativa" | "pausada" | "encerrada";
+  }) => void;
+}
+
+export function EditarVagaModal({ isOpen, onClose, vaga, onSubmit }: EditarVagaModalProps) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    titulo: vaga.titulo,
+    departamento: vaga.departamento,
+    cidade: vaga.cidade,
+    cargaHoraria: vaga.cargaHoraria,
+    jornada: vaga.jornada,
+    descricao: vaga.descricao,
+    requisitos: vaga.requisitos,
+    salario: vaga.salario,
+    status: vaga.status as "ativa" | "pausada" | "encerrada"
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.titulo || !formData.departamento || !formData.cidade || !formData.descricao) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos obrigatórios.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    onSubmit({
+      id: vaga.id,
+      ...formData
+    });
+    
+    toast({
+      title: "Vaga atualizada!",
+      description: "As alterações foram salvas com sucesso.",
+    });
+    
+    onClose();
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content max-w-4xl" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Edit size={24} className="text-blue-600" />
+              </div>
+              <div>
+                <h2 className="modal-title">Editar Vaga</h2>
+                <p className="text-description">Edite as informações da vaga</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="secondary-btn p-2 h-auto"
+            >
+              <X size={20} />
+            </Button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-body space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="titulo">Título da Vaga *</Label>
+              <Input
+                id="titulo"
+                value={formData.titulo}
+                onChange={(e) => handleChange("titulo", e.target.value)}
+                placeholder="Ex: Desenvolvedor Frontend"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="departamento">Departamento *</Label>
+              <Input
+                id="departamento"
+                value={formData.departamento}
+                onChange={(e) => handleChange("departamento", e.target.value)}
+                placeholder="Ex: Tecnologia"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <Label htmlFor="cidade">Cidade *</Label>
+              <Input
+                id="cidade"
+                value={formData.cidade}
+                onChange={(e) => handleChange("cidade", e.target.value)}
+                placeholder="Ex: São Paulo - SP"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="cargaHoraria">Carga Horária</Label>
+              <Input
+                id="cargaHoraria"
+                value={formData.cargaHoraria}
+                onChange={(e) => handleChange("cargaHoraria", e.target.value)}
+                placeholder="Ex: 40h semanais"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="jornada">Jornada</Label>
+              <Select value={formData.jornada} onValueChange={(value) => handleChange("jornada", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a jornada" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="integral">Integral</SelectItem>
+                  <SelectItem value="meio-periodo">Meio Período</SelectItem>
+                  <SelectItem value="flexivel">Flexível</SelectItem>
+                  <SelectItem value="home-office">Home Office</SelectItem>
+                  <SelectItem value="hibrido">Híbrido</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="descricao">Descrição da Vaga *</Label>
+            <Textarea
+              id="descricao"
+              value={formData.descricao}
+              onChange={(e) => handleChange("descricao", e.target.value)}
+              placeholder="Descreva as principais responsabilidades e atividades..."
+              rows={4}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="requisitos">Requisitos</Label>
+            <Textarea
+              id="requisitos"
+              value={formData.requisitos}
+              onChange={(e) => handleChange("requisitos", e.target.value)}
+              placeholder="Liste os requisitos técnicos e experiências necessárias..."
+              rows={3}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="salario">Faixa Salarial</Label>
+              <Input
+                id="salario"
+                value={formData.salario}
+                onChange={(e) => handleChange("salario", e.target.value)}
+                placeholder="Ex: R$ 3.000 - R$ 5.000"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => handleChange("status", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ativa">Ativa</SelectItem>
+                  <SelectItem value="pausada">Pausada</SelectItem>
+                  <SelectItem value="encerrada">Encerrada</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button type="submit" className="primary-btn">
+              Salvar Alterações
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

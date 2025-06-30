@@ -2,10 +2,76 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, Building2 } from "lucide-react";
+import { Target, Building2, MapPin, Clock, Calendar, Users } from "lucide-react";
+import { CandidaturaModal } from "@/components/modals/CandidaturaModal";
+
+interface Vaga {
+  id: string;
+  titulo: string;
+  departamento: string;
+  cidade: string;
+  cargaHoraria: string;
+  jornada: string;
+  descricao: string;
+  requisitos: string;
+  salario: string;
+  status: "ativa" | "pausada" | "encerrada";
+  dataPublicacao: string;
+  candidatos: number;
+}
+
+interface Candidato {
+  id: string;
+  nome: string;
+  endereco: string;
+  telefone: string;
+  email: string;
+  curriculo: File | null;
+  sobreMim: string;
+  experiencias: string;
+  vagaId: string;
+  dataInscricao: string;
+}
 
 const PortalVagas = () => {
   const [activeCard, setActiveCard] = useState<string | null>(null);
+  const [showCandidaturaModal, setShowCandidaturaModal] = useState(false);
+  const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
+  const [candidatos, setCandidatos] = useState<Candidato[]>([]);
+
+  // Simulando vagas vindas da página Vagas e Talentos
+  const [vagas] = useState<Vaga[]>([
+    {
+      id: "1",
+      titulo: "Desenvolvedor Frontend",
+      departamento: "Tecnologia",
+      cidade: "São Paulo - SP",
+      cargaHoraria: "40h semanais",
+      jornada: "hibrido",
+      descricao: "Desenvolvimento de interfaces web utilizando React e TypeScript",
+      requisitos: "React, TypeScript, CSS, conhecimento em APIs REST",
+      salario: "R$ 5.000 - R$ 7.000",
+      status: "ativa",
+      dataPublicacao: "2024-01-15",
+      candidatos: 8
+    },
+    {
+      id: "2", 
+      titulo: "Analista de Marketing",
+      departamento: "Marketing",
+      cidade: "Rio de Janeiro - RJ",
+      cargaHoraria: "44h semanais",
+      jornada: "integral",
+      descricao: "Gestão de campanhas digitais e análise de métricas",
+      requisitos: "Marketing Digital, Google Ads, Facebook Ads",
+      salario: "R$ 3.500 - R$ 5.000",
+      status: "ativa",
+      dataPublicacao: "2024-01-10",
+      candidatos: 12
+    }
+  ]);
+
+  const vagasAtivas = vagas.filter(v => v.status === "ativa");
 
   const cards = [
     {
@@ -24,6 +90,31 @@ const PortalVagas = () => {
     }
   ];
 
+  const getJornadaLabel = (jornada: string) => {
+    switch (jornada) {
+      case 'integral': return 'Integral';
+      case 'meio-periodo': return 'Meio Período';
+      case 'flexivel': return 'Flexível';
+      case 'home-office': return 'Home Office';
+      case 'hibrido': return 'Híbrido';
+      default: return jornada;
+    }
+  };
+
+  const handleCandidatarSe = (vaga: Vaga) => {
+    setVagaSelecionada(vaga);
+    setShowCandidaturaModal(true);
+  };
+
+  const handleSubmitCandidatura = (dados: any) => {
+    const novoCandidato: Candidato = {
+      id: Date.now().toString(),
+      ...dados,
+      dataInscricao: new Date().toISOString()
+    };
+    setCandidatos([...candidatos, novoCandidato]);
+  };
+
   return (
     <div className="app-container">
       <div className="content-wrapper">
@@ -41,37 +132,129 @@ const PortalVagas = () => {
         </div>
 
         {/* Cards */}
-        <div className="content-grid animate-slide-up max-w-4xl mx-auto">
-          {cards.map((card) => (
-            <Card 
-              key={card.id}
-              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150"
-              onClick={() => setActiveCard(card.id)}
-            >
-              <CardContent className="p-0">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                    <card.icon size={32} className="text-emerald-600" />
+        {!activeCard && (
+          <div className="content-grid animate-slide-up max-w-4xl mx-auto">
+            {cards.map((card) => (
+              <Card 
+                key={card.id}
+                className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150"
+                onClick={() => setActiveCard(card.id)}
+              >
+                <CardContent className="p-0">
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                      <card.icon size={32} className="text-emerald-600" />
+                    </div>
+                    <div>
+                      <h3 className="subsection-title mb-2">{card.title}</h3>
+                      <p className="text-description leading-relaxed">{card.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="subsection-title mb-2">{card.title}</h3>
-                    <p className="text-description leading-relaxed">{card.description}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
-        {/* Placeholder for future functionality */}
-        {activeCard && (
-          <div className="text-center mt-12 animate-fade-in">
-            <p className="text-slate-600 text-lg">
-              {activeCard === "vagas" ? "Funcionalidade de vagas será implementada em breve." : "Informações sobre nossa empresa serão adicionadas em breve."}
+        {/* Vagas Section */}
+        {activeCard === "vagas" && (
+          <div className="animate-fade-in">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-slate-800">Vagas Disponíveis</h2>
+              <Button 
+                variant="outline" 
+                onClick={() => setActiveCard(null)}
+              >
+                Voltar
+              </Button>
+            </div>
+
+            {vagasAtivas.length === 0 ? (
+              <div className="text-center py-16">
+                <Target size={64} className="text-slate-400 mx-auto mb-4" />
+                <p className="text-lg text-slate-600">Nenhuma vaga disponível no momento.</p>
+                <p className="text-slate-500">Volte em breve para conferir novas oportunidades!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6">
+                {vagasAtivas.map((vaga) => (
+                  <Card key={vaga.id} className="modern-card">
+                    <CardHeader className="card-header">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="section-title mb-2">{vaga.titulo}</CardTitle>
+                          <p className="text-description">{vaga.departamento}</p>
+                          <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
+                            <div className="flex items-center gap-1">
+                              <MapPin size={14} />
+                              {vaga.cidade}
+                            </div>
+                            {vaga.cargaHoraria && (
+                              <div className="flex items-center gap-1">
+                                <Clock size={14} />
+                                {vaga.cargaHoraria}
+                              </div>
+                            )}
+                            {vaga.jornada && (
+                              <div className="flex items-center gap-1">
+                                <Calendar size={14} />
+                                {getJornadaLabel(vaga.jornada)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <Button 
+                            className="primary-btn"
+                            onClick={() => handleCandidatarSe(vaga)}
+                          >
+                            Candidatar-se
+                          </Button>
+                          <div className="flex items-center gap-1 text-sm text-slate-600">
+                            <Users size={16} />
+                            {vaga.candidatos} candidatos
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="card-content">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 mb-2">Descrição</h4>
+                          <p className="text-description">{vaga.descricao}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-slate-800 mb-2">Requisitos</h4>
+                          <p className="text-description">{vaga.requisitos}</p>
+                        </div>
+                        {vaga.salario && (
+                          <div>
+                            <h4 className="font-semibold text-slate-800 mb-2">Salário</h4>
+                            <p className="text-description">{vaga.salario}</p>
+                          </div>
+                        )}
+                        <div>
+                          <h4 className="font-semibold text-slate-800 mb-2">Publicada em</h4>
+                          <p className="text-description">{new Date(vaga.dataPublicacao).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Nossa Empresa Section */}
+        {activeCard === "nossa-empresa" && (
+          <div className="text-center animate-fade-in">
+            <h2 className="text-3xl font-bold text-slate-800 mb-8">Nossa Empresa</h2>
+            <p className="text-slate-600 text-lg mb-8">
+              Informações sobre nossa empresa serão adicionadas em breve.
             </p>
             <Button 
               variant="outline" 
-              className="mt-4" 
               onClick={() => setActiveCard(null)}
             >
               Voltar
@@ -86,6 +269,19 @@ const PortalVagas = () => {
           </p>
         </div>
       </div>
+
+      {/* Modal de Candidatura */}
+      {vagaSelecionada && (
+        <CandidaturaModal
+          isOpen={showCandidaturaModal}
+          onClose={() => {
+            setShowCandidaturaModal(false);
+            setVagaSelecionada(null);
+          }}
+          vaga={vagaSelecionada}
+          onSubmit={handleSubmitCandidatura}
+        />
+      )}
     </div>
   );
 };
