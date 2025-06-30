@@ -224,8 +224,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#2F5233' }}>
-      <div className="content-wrapper animate-fade-in bg-white rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={onBack} className="back-button">
