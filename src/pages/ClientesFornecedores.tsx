@@ -259,18 +259,31 @@ const ClientesFornecedores = () => {
     });
   };
 
-  // Função corrigida para fechar o modal sem quebrar a página
+  // Função corrigida para fechar o modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedClient(null);
     setIsEditing(false);
-    // Não resetar o editForm aqui para evitar problemas
+    // Limpar o formulário apenas se não estiver editando
+    if (!isEditing) {
+      setEditForm({
+        nome: "",
+        tipo: "cliente",
+        email: "",
+        telefone: "",
+        telefoneSecundario: "",
+        endereco: "",
+        cnpj: "",
+        representante: "",
+        observacoes: ""
+      });
+    }
   };
 
   // Função para cancelar edição
   const handleCancelEdit = () => {
     setIsEditing(false);
-    // Restaurar dados originais se necessário
+    // Restaurar dados originais
     if (selectedClient) {
       setEditForm({
         nome: selectedClient.nome,
@@ -454,9 +467,13 @@ const ClientesFornecedores = () => {
         </div>
       </div>
 
-      {/* Modal de Visualização/Edição CORRIGIDO */}
-      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      {/* Modal de Visualização/Edição - MODAL MAIOR (25% maior) */}
+      <Dialog open={isModalOpen} onOpenChange={(open) => {
+        if (!open) {
+          handleCloseModal();
+        }
+      }}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedClient?.tipo === "cliente" ? <Users className="h-5 w-5" /> : <Building className="h-5 w-5" />}

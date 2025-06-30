@@ -31,12 +31,12 @@ interface FuncionarioDetalhesModalProps {
 }
 
 const statusConfig = {
-  ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700" },
-  ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700" },
-  experiencia: { label: "Em Experiência", color: "bg-orange-500", textColor: "text-orange-700" },
-  aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700" },
-  inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700" },
-  destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700" }
+  ativo: { label: "Ativo", color: "bg-green-500", textColor: "text-green-700", bgColor: "#F0FDF4" }, // Verde nevasca
+  ferias: { label: "Em Férias", color: "bg-blue-500", textColor: "text-blue-700", bgColor: "#EFF6FF" }, // Azul serenity
+  experiencia: { label: "Em Experiência", color: "bg-orange-500", textColor: "text-orange-700", bgColor: "#FFF7ED" }, // Laranja flan de papaya
+  aviso: { label: "Em Aviso Prévio", color: "bg-red-500", textColor: "text-red-700", bgColor: "#FEF2F2" }, // Vermelho coral red
+  inativo: { label: "Inativo", color: "bg-gray-500", textColor: "text-gray-700", bgColor: "#F9FAFB" },
+  destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700", bgColor: "#FFFBEB" } // Amarelo dourado
 };
 
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange }: FuncionarioDetalhesModalProps) {
@@ -50,15 +50,36 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const statusInfo = statusConfig[statusAtual];
   
-  // Special styling for destaque employees
+  // Cores específicas para cada status
+  const getModalBackground = () => {
+    switch (statusAtual) {
+      case 'ativo':
+        return { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }; // Verde nevasca
+      case 'ferias':
+        return { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }; // Azul serenity
+      case 'destaque':
+        return { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }; // Amarelo dourado
+      case 'experiencia':
+        return { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' }; // Laranja flan de papaya
+      case 'aviso':
+        return { backgroundColor: '#FEF2F2', borderColor: '#FECACA' }; // Vermelho coral red
+      default:
+        return { backgroundColor: '#F9FAFB', borderColor: '#E5E7EB' };
+    }
+  };
+
+  const modalStyle = getModalBackground();
   const isDestaque = statusAtual === 'destaque';
-  const modalBackgroundClass = isDestaque 
-    ? "bg-gradient-to-br from-yellow-50/80 via-amber-50/70 to-yellow-100/60 border border-yellow-200/70"
-    : "bg-gradient-to-br from-green-50/60 via-slate-50/80 to-green-100/50 border border-green-200";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`max-w-4xl max-h-[90vh] overflow-y-auto ${modalBackgroundClass}`}>
+      <DialogContent 
+        className="max-w-4xl max-h-[90vh] overflow-y-auto border-2"
+        style={{
+          backgroundColor: modalStyle.backgroundColor,
+          borderColor: modalStyle.borderColor
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-slate-700 flex items-center gap-3">
             <span className="text-3xl">{funcionario.foto}</span>
@@ -75,7 +96,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
         <div className="space-y-6">
           {/* Informações Principais */}
-          <Card className={`border-slate-200 ${isDestaque ? 'bg-gradient-to-r from-yellow-50/90 to-amber-50/80 backdrop-blur-sm border-yellow-300/50' : 'bg-gradient-to-r from-green-50/80 to-emerald-50/70 backdrop-blur-sm border-green-300/60'}`}>
+          <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -89,7 +110,13 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">Setor</label>
-                    <Badge variant="secondary" className={`${isDestaque ? 'bg-yellow-200 text-yellow-800 border-yellow-300' : 'bg-green-200 text-green-800 border-green-300'} font-medium`}>{funcionario.setor}</Badge>
+                    <Badge variant="secondary" className="font-medium" style={{ 
+                      backgroundColor: modalStyle.backgroundColor,
+                      borderColor: modalStyle.borderColor,
+                      color: statusInfo.textColor
+                    }}>
+                      {funcionario.setor}
+                    </Badge>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -103,7 +130,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     <label className="text-sm font-medium text-slate-600">Status Atual</label>
                     <div className="mt-1">
                       <Select value={statusAtual} onValueChange={handleStatusChange}>
-                        <SelectTrigger className={`w-48 ${isDestaque ? 'bg-yellow-50/90 border-yellow-300' : 'bg-white/80 border-green-300'}`}>
+                        <SelectTrigger className="w-48 bg-white/80" style={{ borderColor: modalStyle.borderColor }}>
                           <SelectValue>
                             <Badge className={`${statusInfo.color} text-white text-xs`}>
                               {statusInfo.label}
@@ -128,7 +155,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           </Card>
 
           {/* Informações de Contato */}
-          <Card className={`${isDestaque ? 'border-yellow-200 bg-yellow-50/90 backdrop-blur-sm' : 'border-green-200 bg-green-50/90 backdrop-blur-sm'}`}>
+          <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
             <CardContent className="p-6">
               <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                 📞 Informações de Contato
@@ -148,7 +175,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Documentos Pessoais */}
           {(funcionario.cpf || funcionario.rg) && (
-            <Card className={`${isDestaque ? 'border-yellow-200 bg-yellow-50/90 backdrop-blur-sm' : 'border-green-200 bg-green-50/90 backdrop-blur-sm'}`}>
+            <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   📋 Documentos Pessoais
@@ -173,7 +200,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
           {/* Endereço e Salário */}
           {(funcionario.endereco || funcionario.salario) && (
-            <Card className={`${isDestaque ? 'border-yellow-200 bg-yellow-50/90 backdrop-blur-sm' : 'border-green-200 bg-green-50/90 backdrop-blur-sm'}`}>
+            <Card className="bg-white/90 backdrop-blur-sm border-2" style={{ borderColor: modalStyle.borderColor }}>
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                   🏠 Informações Adicionais
@@ -188,7 +215,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   {funcionario.salario && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">Salário</label>
-                      <p className={`text-lg font-bold ${isDestaque ? 'text-yellow-600' : 'text-emerald-600'}`}>{funcionario.salario}</p>
+                      <p className={`text-lg font-bold ${statusInfo.textColor}`}>{funcionario.salario}</p>
                     </div>
                   )}
                 </div>
@@ -197,15 +224,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           )}
 
           {/* Ações */}
-          <div className={`flex justify-end gap-3 pt-4 ${isDestaque ? 'border-t border-yellow-200' : 'border-t border-green-200'}`}>
+          <div className="flex justify-end gap-3 pt-4 border-t-2" style={{ borderColor: modalStyle.borderColor }}>
             <Button 
               variant="outline" 
               onClick={onClose} 
-              className={`${isDestaque ? 'border-yellow-300 text-slate-700 hover:bg-yellow-50 bg-yellow-50/80' : 'border-green-300 text-slate-700 hover:bg-green-50 bg-green-50/80'}`}
+              className="bg-white/80 text-slate-700 hover:bg-white"
+              style={{ borderColor: modalStyle.borderColor }}
             >
               Fechar
             </Button>
-            <Button className={`${isDestaque ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'} text-white shadow-lg`}>
+            <Button className={`${statusInfo.color} text-white shadow-lg hover:opacity-90`}>
               📝 Editar Funcionário
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">

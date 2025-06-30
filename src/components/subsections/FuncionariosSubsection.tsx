@@ -177,7 +177,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return (
       <div 
         key={funcionario.id}
-        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-green-200 hover:border-green-400 bg-gradient-to-r from-green-50 to-white rounded-lg p-4 mb-3"
+        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-400 bg-white rounded-lg p-4 mb-3"
         onClick={() => handleFuncionarioClick(funcionario)}
       >
         <div className="flex items-center gap-4">
@@ -190,7 +190,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                 }} />
               </div>
             )}
-            <div className="w-12 h-12 bg-green-100 border-2 border-green-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-12 h-12 bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <span className="text-2xl">{funcionario.foto}</span>
             </div>
           </div>
@@ -224,8 +224,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50/30 via-slate-50/70 to-green-100/40">
-      <div className="content-wrapper animate-fade-in bg-white/80 backdrop-blur-sm border border-green-100/50">
+    <div className="min-h-screen" style={{ backgroundColor: '#2F5233' }}>
+      <div className="content-wrapper animate-fade-in bg-white rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={onBack} className="back-button">
@@ -246,7 +246,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         </div>
 
         {/* Resumo com contadores - mais compacto */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-lg border border-green-300 p-6 mb-8">
+        <div className="bg-white rounded-3xl shadow-lg border border-green-300 p-6 mb-8">
           <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
             📊 Resumo da Equipe
           </h2>
@@ -299,7 +299,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         </div>
 
         {/* Lista de Funcionários Ativos */}
-        <Card className="modern-card animate-slide-up bg-white/90 backdrop-blur-sm border-green-200/50">
+        <Card className="modern-card animate-slide-up bg-white">
           <CardHeader className="card-header">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
@@ -314,7 +314,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                     placeholder="Buscar funcionário..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-12 bg-white/90 border-green-300 shadow-lg rounded-2xl text-lg font-medium focus:border-green-400"
+                    className="pl-12 h-12 bg-white border-green-300 shadow-lg rounded-2xl text-lg font-medium focus:border-green-400"
                   />
                 </div>
               </div>
