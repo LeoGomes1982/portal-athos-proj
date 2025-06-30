@@ -104,16 +104,20 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content max-w-4xl bg-blue-50" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header bg-white">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div 
+        className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-blue-50 rounded-2xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="bg-white rounded-t-2xl border-b-2 border-blue-200 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <User size={24} className="text-blue-600" />
               </div>
               <div>
-                <h2 className="modal-title flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
                   Detalhes do Funcionário
                   {funcionario.status === 'destaque' && (
                     <div className="relative">
@@ -123,21 +127,21 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </div>
                   )}
                 </h2>
-                <p className="text-description">{funcionario.nome}</p>
+                <p className="text-slate-600">{funcionario.nome}</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="secondary-btn p-2 h-auto"
+              className="p-2 h-auto hover:bg-blue-100"
             >
               <X size={20} />
             </Button>
           </div>
         </div>
 
-        <div className="modal-body space-y-6">
+        <div className="p-6 space-y-6">
           {/* Date Input Section */}
           {showDateInput && (
             <Card className="bg-white border-2 border-yellow-300">
