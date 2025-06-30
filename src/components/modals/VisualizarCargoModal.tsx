@@ -3,7 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Calendar, DollarSign, Clock, Award, Target, Brain, CheckCircle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Edit, Calendar, DollarSign, Clock, Award, Target, Brain, CheckCircle, FileText } from "lucide-react";
+import { useState } from "react";
 
 interface Cargo {
   id: number;
@@ -17,6 +19,7 @@ interface Cargo {
   carencia: number;
   status: "ativo" | "inativo";
   criadoEm: string;
+  informacoesAdicionais?: string;
 }
 
 interface VisualizarCargoModalProps {
@@ -27,6 +30,8 @@ interface VisualizarCargoModalProps {
 }
 
 export function VisualizarCargoModal({ isOpen, onClose, cargo, onEdit }: VisualizarCargoModalProps) {
+  const [informacoesAdicionais, setInformacoesAdicionais] = useState(cargo.informacoesAdicionais || "");
+
   const getNivelColor = (nivel: string) => {
     switch(nivel) {
       case 'I': return 'bg-green-500';
@@ -196,6 +201,45 @@ export function VisualizarCargoModal({ isOpen, onClose, cargo, onEdit }: Visuali
               </div>
               {cargo.responsabilidades.length === 0 && (
                 <p className="text-gray-500 italic">Nenhuma responsabilidade cadastrada</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Informações Adicionais */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gray-600" />
+                Informações Adicionais
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder="Digite informações adicionais sobre o cargo..."
+                value={informacoesAdicionais}
+                onChange={(e) => setInformacoesAdicionais(e.target.value)}
+                className="min-h-[100px] resize-none"
+              />
+              {informacoesAdicionais !== (cargo.informacoesAdicionais || "") && (
+                <div className="mt-2 flex gap-2">
+                  <Button 
+                    size="sm" 
+                    className="bg-green-600 hover:bg-green-700"
+                    onClick={() => {
+                      // Aqui você salvaria as informações
+                      console.log("Informações salvas:", informacoesAdicionais);
+                    }}
+                  >
+                    Salvar
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setInformacoesAdicionais(cargo.informacoesAdicionais || "")}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>

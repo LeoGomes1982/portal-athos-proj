@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,6 +69,15 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
     cargo.nivel.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Agrupar cargos por nome
+  const cargosAgrupados = filteredCargos.reduce((acc, cargo) => {
+    if (!acc[cargo.nome]) {
+      acc[cargo.nome] = [];
+    }
+    acc[cargo.nome].push(cargo);
+    return acc;
+  }, {} as Record<string, Cargo[]>);
+
   const handleVisualizarCargo = (cargo: Cargo) => {
     setCargoSelecionado(cargo);
     setIsVisualizarCargoModalOpen(true);
@@ -138,8 +146,8 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
           <div className="flex flex-wrap justify-center gap-4">
             <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-purple-300">
               <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-purple-600 mb-1">{cargos.length}</div>
-                <div className="text-sm font-medium text-slate-600">Total de Cargos</div>
+                <div className="text-2xl font-bold text-purple-600 mb-1">{Object.keys(cargosAgrupados).length}</div>
+                <div className="text-sm font-medium text-slate-600">Funções Diferentes</div>
               </CardContent>
             </Card>
             
@@ -154,16 +162,14 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
 
             <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-blue-300">
               <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-blue-600 mb-1">
-                  {new Set(cargos.map(c => c.nome)).size}
-                </div>
-                <div className="text-sm font-medium text-slate-600">Funções Únicas</div>
+                <div className="text-2xl font-bold text-blue-600 mb-1">{cargos.length}</div>
+                <div className="text-sm font-medium text-slate-600">Total de Níveis</div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Lista de Cargos */}
+        {/* Lista de Cargos Agrupados */}
         <Card className="modern-card animate-slide-up bg-white">
           <CardHeader className="card-header">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -196,77 +202,79 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
           </CardHeader>
           
           <CardContent className="card-content">
-            <div className="space-y-3">
-              {filteredCargos.map((cargo) => (
-                <div 
-                  key={cargo.id}
-                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-400 bg-white rounded-lg p-4 mb-3"
-                  onClick={() => handleVisualizarCargo(cargo)}
-                >
-                  <div className="flex items-center gap-4">
-                    {/* Ícone */}
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-purple-100 border-2 border-purple-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Briefcase className="text-purple-600 w-6 h-6" />
+            <div className="space-y-4">
+              {Object.entries(cargosAgrupados).map(([nomeFuncao, cargosGrupo]) => (
+                <div key={nomeFuncao} className="bg-gray-50 rounded-lg p-4 border">
+                  <h3 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <Briefcase className="text-purple-600 w-5 h-5" />
+                    {nomeFuncao}
+                  </h3>
+                  <div className="space-y-2">
+                    {cargosGrupo.map((cargo) => (
+                      <div 
+                        key={cargo.id}
+                        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-400 bg-white rounded-lg p-3"
+                        onClick={() => handleVisualizarCargo(cargo)}
+                      >
+                        <div className="flex items-center gap-4">
+                          {/* Nível */}
+                          <div className="flex-shrink-0">
+                            <Badge className={`${getNivelColor(cargo.nivel)} text-white text-sm font-medium px-3 py-1 rounded-full shadow-sm`}>
+                              Nível {cargo.nivel}
+                            </Badge>
+                          </div>
+
+                          {/* Detalhes */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-slate-600">Carência: {cargo.carencia} meses</p>
+                          </div>
+
+                          {/* Salário */}
+                          <div className="flex-shrink-0">
+                            <p className="text-lg font-bold text-green-600">{cargo.salarioBase}</p>
+                          </div>
+
+                          {/* Status */}
+                          <div className="flex-shrink-0">
+                            <Badge className={`${cargo.status === 'ativo' ? 'bg-green-500' : 'bg-gray-500'} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
+                              {cargo.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                            </Badge>
+                          </div>
+
+                          {/* Ações */}
+                          <div className="flex-shrink-0 flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditarCargo(cargo);
+                              }}
+                              className="hover:bg-blue-50 hover:border-blue-300"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleExcluirCargo(cargo.id);
+                              }}
+                              className="hover:bg-red-50 hover:border-red-300 text-red-600"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Nome */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-lg font-bold text-slate-800 truncate">{cargo.nome}</p>
-                      <p className="text-sm text-slate-600">Carência: {cargo.carencia} meses</p>
-                    </div>
-
-                    {/* Nível */}
-                    <div className="flex-shrink-0">
-                      <Badge className={`${getNivelColor(cargo.nivel)} text-white text-sm font-medium px-3 py-1 rounded-full shadow-sm`}>
-                        Nível {cargo.nivel}
-                      </Badge>
-                    </div>
-
-                    {/* Salário */}
-                    <div className="flex-shrink-0">
-                      <p className="text-lg font-bold text-green-600">{cargo.salarioBase}</p>
-                    </div>
-
-                    {/* Status */}
-                    <div className="flex-shrink-0">
-                      <Badge className={`${cargo.status === 'ativo' ? 'bg-green-500' : 'bg-gray-500'} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
-                        {cargo.status === 'ativo' ? 'Ativo' : 'Inativo'}
-                      </Badge>
-                    </div>
-
-                    {/* Ações */}
-                    <div className="flex-shrink-0 flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditarCargo(cargo);
-                        }}
-                        className="hover:bg-blue-50 hover:border-blue-300"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleExcluirCargo(cargo.id);
-                        }}
-                        className="hover:bg-red-50 hover:border-red-300 text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    ))}
                   </div>
                 </div>
               ))}
             </div>
 
-            {filteredCargos.length === 0 && (
+            {Object.keys(cargosAgrupados).length === 0 && (
               <div className="text-center py-16 bg-gradient-to-br from-purple-100 to-white rounded-3xl shadow-lg border border-purple-300">
                 <div className="w-24 h-24 bg-purple-200 border-2 border-purple-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Briefcase className="text-purple-500 w-12 h-12" />

@@ -19,8 +19,8 @@ export default function Gerencia() {
       icon: Briefcase,
       description: "Gestão de cargos, níveis e estrutura salarial",
       component: PlanosCargosSubsection,
-      bgColor: "bg-purple-100",
-      textColor: "text-purple-700",
+      bgColor: "bg-white",
+      iconColor: "text-purple-600",
       cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
     },
     {
@@ -29,8 +29,8 @@ export default function Gerencia() {
       icon: TrendingUp,
       description: "Acompanhamento de performance e metas individuais",
       component: ResultadosPessoaisSubsection,
-      bgColor: "bg-purple-100",
-      textColor: "text-purple-700",
+      bgColor: "bg-white",
+      iconColor: "text-blue-600",
       cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
     },
     {
@@ -39,8 +39,8 @@ export default function Gerencia() {
       icon: Target,
       description: "Ferramentas e processos para tomada de decisão",
       component: TomadaDecisaoSubsection,
-      bgColor: "bg-purple-100",
-      textColor: "text-purple-700",
+      bgColor: "bg-white",
+      iconColor: "text-green-600",
       cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
     }
   ];
@@ -90,7 +90,7 @@ export default function Gerencia() {
             >
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
-                  <subsection.icon size={32} className={subsection.textColor} />
+                  <subsection.icon size={32} className={subsection.iconColor} />
                 </div>
                 <div>
                   <h3 className="subsection-title">{subsection.title}</h3>

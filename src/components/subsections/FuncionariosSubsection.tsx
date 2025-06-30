@@ -361,7 +361,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-orange-300 bg-gradient-to-br from-orange-50 to-white relative">
               <CardContent className="text-center p-4">
                 {alertasExperiencia > 0 && (
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
                 )}
                 <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.experiencia}</div>
                 <div className="text-sm font-medium text-orange-700">Em Experiência</div>
@@ -371,7 +371,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
             <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-red-300 bg-gradient-to-br from-red-50 to-white relative">
               <CardContent className="text-center p-4">
                 {alertasAvisoPrevio > 0 && (
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
                 )}
                 <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
                 <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
