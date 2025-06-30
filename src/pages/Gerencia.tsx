@@ -18,21 +18,30 @@ export default function Gerencia() {
       title: "Planos de Cargos e Salários",
       icon: Briefcase,
       description: "Gestão de cargos, níveis e estrutura salarial",
-      component: PlanosCargosSubsection
+      component: PlanosCargosSubsection,
+      bgColor: "bg-purple-100",
+      textColor: "text-purple-700",
+      cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
     },
     {
       id: "resultados-pessoais",
       title: "Resultados Pessoais",
       icon: TrendingUp,
       description: "Acompanhamento de performance e metas individuais",
-      component: ResultadosPessoaisSubsection
+      component: ResultadosPessoaisSubsection,
+      bgColor: "bg-blue-100",
+      textColor: "text-blue-700",
+      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
     },
     {
       id: "tomada-decisao",
       title: "Tomada de Decisão",
       icon: Target,
       description: "Ferramentas e processos para tomada de decisão",
-      component: TomadaDecisaoSubsection
+      component: TomadaDecisaoSubsection,
+      bgColor: "bg-orange-100",
+      textColor: "text-orange-700",
+      cardClass: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150"
     }
   ];
 
@@ -74,32 +83,21 @@ export default function Gerencia() {
         {/* Subsections Grid */}
         <div className="content-grid animate-slide-up">
           {subsections.map((subsection) => (
-            <Card 
+            <div 
               key={subsection.id}
-              className="modern-card group hover:shadow-xl transition-all duration-300 cursor-pointer"
+              className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${subsection.cardClass}`}
               onClick={() => handleSubsectionClick(subsection.id)}
             >
-              <CardHeader className="card-header">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                    <subsection.icon className="w-8 h-8 text-purple-600" />
-                  </div>
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+                  <subsection.icon size={32} className={subsection.textColor} />
                 </div>
-                <CardTitle className="subsection-title text-center">{subsection.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="card-content">
-                <p className="text-description text-center leading-relaxed">
-                  {subsection.description}
-                </p>
-                <div className="mt-6 flex justify-center">
-                  <Button 
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg shadow-md transition-all duration-300"
-                  >
-                    Acessar
-                  </Button>
+                <div>
+                  <h3 className="subsection-title">{subsection.title}</h3>
+                  <p className="text-description leading-relaxed">{subsection.description}</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>
