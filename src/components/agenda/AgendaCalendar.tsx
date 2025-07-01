@@ -26,7 +26,7 @@ const AgendaCalendar = ({ selectedDate, onSelectDate }: AgendaCalendarProps) => 
             selected={selectedDate}
             onSelect={onSelectDate}
             locale={ptBR}
-            className="w-full max-w-sm mx-auto"
+            className="w-full max-w-md mx-auto"
             classNames={{
               months: "w-full",
               month: "w-full space-y-3",
