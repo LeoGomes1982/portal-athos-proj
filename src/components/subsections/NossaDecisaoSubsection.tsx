@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Gavel, Plus, Search, Calendar, User } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -60,100 +59,101 @@ const NossaDecisaoSubsection = () => {
     }
   };
 
+  const aprovadas = decisoes.filter(d => d.status === 'aprovada').length;
+  const pendentes = decisoes.filter(d => d.status === 'pendente').length;
+
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="page-header-icon bg-gradient-to-br from-purple-100 to-purple-200">
-            <Gavel size={20} className="text-purple-600" />
-          </div>
-          <div>
-            <h2 className="section-title mb-0">Nossa Decisão</h2>
-            <p className="text-description">Registro de decisões e aprovações da empresa</p>
-          </div>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+          <Gavel size={24} className="text-purple-600" />
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
-          <Plus size={16} className="mr-2" />
-          Nova Decisão
-        </Button>
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800">Nossa Decisão</h3>
+          <p className="text-sm text-gray-600">Registro de decisões empresariais</p>
+        </div>
       </div>
 
+      {/* Summary */}
+      <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">{decisoes.length}</div>
+              <div className="text-sm text-gray-500">Decisões</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{aprovadas}</div>
+              <div className="text-sm text-gray-500">Aprovadas</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-600">{pendentes}</div>
+              <div className="text-sm text-gray-500">Pendentes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* New Decision Button */}
+      <Button className="mb-4 bg-purple-600 hover:bg-purple-700">
+        <Plus size={16} className="mr-2" />
+        Nova Decisão
+      </Button>
+
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
         <Input
-          placeholder="Buscar decisões por título ou responsável..."
+          placeholder="Buscar decisões..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 text-sm"
         />
       </div>
 
-      {/* Decisions Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredDecisoes.map((decisao) => (
-          <Card key={decisao.id} className="modern-card hover:shadow-lg transition-all duration-300">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start gap-4">
-                <CardTitle className="text-lg font-semibold text-gray-800 line-clamp-2 flex-1">
-                  {decisao.titulo}
-                </CardTitle>
-                <Badge className={getStatusColor(decisao.status)}>
-                  {decisao.status}
-                </Badge>
+      {/* Decisions List */}
+      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {filteredDecisoes.map((decisao) => (
+            <div key={decisao.id} className="border border-gray-200 rounded-lg p-3 hover:shadow-sm transition-shadow">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-gray-800 text-sm line-clamp-1">{decisao.titulo}</h4>
+                <div className="flex gap-1">
+                  <Badge className={`${getStatusColor(decisao.status)} text-xs`}>
+                    {decisao.status}
+                  </Badge>
+                  <Badge className={`${getImpactoColor(decisao.impacto)} text-xs`}>
+                    {decisao.impacto}
+                  </Badge>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-gray-600 text-sm line-clamp-3">
-                {decisao.descricao}
-              </p>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <User size={14} />
+              <p className="text-gray-600 text-xs line-clamp-2 mb-2">{decisao.descricao}</p>
+              
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <User size={12} />
                   <span>{decisao.responsavel}</span>
                 </div>
-                <Badge className={getImpactoColor(decisao.impacto)}>
-                  Impacto {decisao.impacto}
-                </Badge>
+                <div className="flex items-center gap-1">
+                  <Calendar size={12} />
+                  <span>{new Date(decisao.dataDecisao).toLocaleDateString('pt-BR')}</span>
+                </div>
               </div>
-
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <Calendar size={14} />
-                <span>{new Date(decisao.dataDecisao).toLocaleDateString('pt-BR')}</span>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  Visualizar
-                </Button>
-                <Button variant="outline" size="sm" className="flex-1">
-                  Editar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredDecisoes.length === 0 && (
-        <div className="text-center py-12">
-          <Gavel size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">
-            Nenhuma decisão encontrada
-          </h3>
-          <p className="text-gray-500 mb-4">
-            {searchTerm ? "Tente outros termos de busca" : "Comece registrando sua primeira decisão"}
-          </p>
-          {!searchTerm && (
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              <Plus size={16} className="mr-2" />
-              Registrar Primeira Decisão
-            </Button>
+            </div>
+          ))}
+          
+          {filteredDecisoes.length === 0 && (
+            <div className="text-center py-8">
+              <Gavel size={32} className="mx-auto text-gray-400 mb-2" />
+              <p className="text-gray-500 text-sm">
+                {searchTerm ? "Nenhuma decisão encontrada" : "Nenhuma decisão cadastrada"}
+              </p>
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

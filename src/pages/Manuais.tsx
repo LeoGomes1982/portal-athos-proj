@@ -3,7 +3,8 @@ import { useState } from "react";
 import { ArrowLeft, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import ManuaisSection from "@/components/sections/ManuaisSection";
+import ManuaisNormasSubsection from "@/components/subsections/ManuaisNormasSubsection";
+import NossaDecisaoSubsection from "@/components/subsections/NossaDecisaoSubsection";
 
 const Manuais = () => {
   const navigate = useNavigate();
@@ -11,29 +12,46 @@ const Manuais = () => {
   return (
     <div className="app-container">
       <div className="content-wrapper">
+        {/* Back Button */}
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
+
         {/* Header */}
-        <div className="page-header animate-slide-up">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="mr-4"
-          >
-            <ArrowLeft size={16} />
-          </Button>
-          <div className="page-header-icon">
-            <Book size={24} className="text-blue-600" />
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
+            <Book size={32} className="text-white" />
           </div>
-          <div>
-            <h1 className="page-title mb-0">Manuais</h1>
-            <p className="text-description">
-              Gestão de manuais e documentos normativos
-            </p>
+          <h1 className="page-title text-center">
+            Manuais
+          </h1>
+          <p className="text-description text-center max-w-2xl mx-auto">
+            Gestão de manuais e documentos normativos
+          </p>
+        </div>
+
+        {/* Subsections Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-slide-up">
+          <div className="modern-card group relative p-8 border-2 transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <ManuaisNormasSubsection />
+          </div>
+          
+          <div className="modern-card group relative p-8 border-2 transition-all duration-300 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <NossaDecisaoSubsection />
           </div>
         </div>
 
-        {/* Content */}
-        <ManuaisSection />
+        {/* Footer */}
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
+            © 2024 Grupo Athos. Todos os direitos reservados.
+          </p>
+        </div>
       </div>
     </div>
   );

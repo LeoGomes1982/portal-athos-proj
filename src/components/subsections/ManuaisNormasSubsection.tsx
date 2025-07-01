@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { FileText, Plus, Search, Tag, MessageSquare, Calendar } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -53,14 +52,12 @@ const ManuaisNormasSubsection = () => {
 
   const handleSaveArtigo = (novoArtigo: Omit<Artigo, 'id' | 'dataCriacao' | 'dataAtualizacao'>) => {
     if (selectedArtigo) {
-      // Editando artigo existente
       setArtigos(prev => prev.map(artigo => 
         artigo.id === selectedArtigo.id 
           ? { ...artigo, ...novoArtigo, dataAtualizacao: new Date().toISOString().split('T')[0] }
           : artigo
       ));
     } else {
-      // Criando novo artigo
       const artigo: Artigo = {
         ...novoArtigo,
         id: Date.now().toString(),
@@ -84,112 +81,114 @@ const ManuaisNormasSubsection = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="page-header-icon bg-gradient-to-br from-blue-100 to-blue-200">
-            <FileText size={20} className="text-blue-600" />
-          </div>
-          <div>
-            <h2 className="section-title mb-0">Manuais e Normas Internas</h2>
-            <p className="text-description">Biblioteca de artigos e documentos normativos</p>
-          </div>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+          <FileText size={24} className="text-blue-600" />
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-          <Plus size={16} className="mr-2" />
-          Novo Artigo
-        </Button>
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800">Manuais e Normas Internas</h3>
+          <p className="text-sm text-gray-600">Biblioteca de documentos normativos</p>
+        </div>
       </div>
 
+      {/* Summary */}
+      <div className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{artigos.length}</div>
+              <div className="text-sm text-gray-500">Artigos</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {artigos.reduce((acc, artigo) => acc + artigo.comentarios.length, 0)}
+              </div>
+              <div className="text-sm text-gray-500">Comentários</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* New Article Button */}
+      <Button 
+        onClick={() => setIsModalOpen(true)} 
+        className="mb-4 bg-blue-600 hover:bg-blue-700"
+      >
+        <Plus size={16} className="mr-2" />
+        Nova Publicação
+      </Button>
+
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
         <Input
-          placeholder="Buscar artigos por título ou tags..."
+          placeholder="Buscar artigos..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 text-sm"
         />
       </div>
 
-      {/* Articles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredArtigos.map((artigo) => (
-          <Card key={artigo.id} className="modern-card hover:shadow-lg transition-all duration-300 cursor-pointer">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-gray-800 line-clamp-2">
-                {artigo.titulo}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-gray-600 text-sm line-clamp-3">
-                {artigo.conteudo}
-              </p>
-              
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {artigo.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    <Tag size={12} className="mr-1" />
-                    {tag}
-                  </Badge>
-                ))}
+      {/* Articles List */}
+      <div className="flex-1 bg-white rounded-lg border border-gray-200 p-4">
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {filteredArtigos.map((artigo) => (
+            <div key={artigo.id} className="border border-gray-200 rounded-lg p-3 hover:shadow-sm transition-shadow">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-gray-800 text-sm line-clamp-1">{artigo.titulo}</h4>
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewArtigo(artigo)}
+                    className="text-xs px-2 py-1"
+                  >
+                    Ver
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditArtigo(artigo)}
+                    className="text-xs px-2 py-1"
+                  >
+                    Editar
+                  </Button>
+                </div>
               </div>
-
-              {/* Comments Count */}
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <MessageSquare size={14} />
-                  <span>{artigo.comentarios.length} comentários</span>
+              
+              <p className="text-gray-600 text-xs line-clamp-2 mb-2">{artigo.conteudo}</p>
+              
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <Tag size={12} />
+                    <span>{artigo.tags.length}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MessageSquare size={12} />
+                    <span>{artigo.comentarios.length}</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Calendar size={14} />
+                  <Calendar size={12} />
                   <span>{new Date(artigo.dataAtualizacao).toLocaleDateString('pt-BR')}</span>
                 </div>
               </div>
-
-              {/* Actions */}
-              <div className="flex gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleViewArtigo(artigo)}
-                  className="flex-1"
-                >
-                  Visualizar
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEditArtigo(artigo)}
-                  className="flex-1"
-                >
-                  Editar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredArtigos.length === 0 && (
-        <div className="text-center py-12">
-          <FileText size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">
-            Nenhum artigo encontrado
-          </h3>
-          <p className="text-gray-500 mb-4">
-            {searchTerm ? "Tente outros termos de busca" : "Comece criando seu primeiro artigo"}
-          </p>
-          {!searchTerm && (
-            <Button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-              <Plus size={16} className="mr-2" />
-              Criar Primeiro Artigo
-            </Button>
+            </div>
+          ))}
+          
+          {filteredArtigos.length === 0 && (
+            <div className="text-center py-8">
+              <FileText size={32} className="mx-auto text-gray-400 mb-2" />
+              <p className="text-gray-500 text-sm">
+                {searchTerm ? "Nenhum artigo encontrado" : "Nenhum artigo cadastrado"}
+              </p>
+            </div>
           )}
         </div>
-      )}
+      </div>
 
       {/* Modals */}
       <ArtigoModal
