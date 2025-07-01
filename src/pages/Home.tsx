@@ -10,7 +10,8 @@ import {
   UserPlus,
   Calendar,
   Briefcase,
-  Target
+  Target,
+  Book
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -44,6 +45,15 @@ const Home = () => {
       className: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
       iconColor: "text-purple-600",
       onClick: () => navigate("/gerencia")
+    },
+    {
+      id: "manuais",
+      title: "MANUAIS",
+      fullTitle: "Manuais e Documentos Normativos",
+      icon: Book,
+      className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
+      iconColor: "text-blue-600",
+      onClick: () => navigate("/manuais")
     },
     {
       id: "operacoes",

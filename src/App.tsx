@@ -16,6 +16,7 @@ import PortalAdmissao from "./pages/PortalAdmissao";
 import PortalVagas from "./pages/PortalVagas";
 import Agenda from "./pages/Agenda";
 import Gerencia from "./pages/Gerencia";
+import Manuais from "./pages/Manuais";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/comercial/clientes-fornecedores" element={<ClientesFornecedores />} />
           <Route path="/comercial/contratos-propostas" element={<ContratosPropostas />} />
           <Route path="/gerencia" element={<Gerencia />} />
+          <Route path="/manuais" element={<Manuais />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/configuracoes/contratos-propostas" element={<EdicaoContratosPropostas />} />
           <Route path="/portal-admissao" element={<PortalAdmissao />} />
