@@ -37,11 +37,11 @@ const Manuais = () => {
 
         {/* Subsections Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-slide-up">
-          <div className="modern-card group relative p-8 border-2 transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <div className="modern-card group relative p-8 border-2 transition-all duration-300 bg-secondary border-primary/20">
             <ManuaisNormasSubsection />
           </div>
           
-          <div className="modern-card group relative p-8 border-2 transition-all duration-300 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <div className="modern-card group relative p-8 border-2 transition-all duration-300 bg-secondary border-primary/20">
             <NossaDecisaoSubsection />
           </div>
         </div>

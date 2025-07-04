@@ -66,8 +66,8 @@ const NossaDecisaoSubsection = () => {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-          <Gavel size={24} className="text-purple-600" />
+        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+          <Gavel size={24} className="text-primary" />
         </div>
         <div>
           <h3 className="text-xl font-semibold text-gray-800">Nossa Decisão</h3>
@@ -80,23 +80,23 @@ const NossaDecisaoSubsection = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{decisoes.length}</div>
-              <div className="text-sm text-gray-500">Decisões</div>
+              <div className="text-2xl font-bold text-primary">{decisoes.length}</div>
+              <div className="text-sm text-muted-foreground">Decisões</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{aprovadas}</div>
-              <div className="text-sm text-gray-500">Aprovadas</div>
+              <div className="text-2xl font-bold text-primary">{aprovadas}</div>
+              <div className="text-sm text-muted-foreground">Aprovadas</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">{pendentes}</div>
-              <div className="text-sm text-gray-500">Pendentes</div>
+              <div className="text-2xl font-bold text-primary">{pendentes}</div>
+              <div className="text-sm text-muted-foreground">Pendentes</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* New Decision Button */}
-      <Button className="mb-4 bg-purple-600 hover:bg-purple-700">
+      <Button className="mb-4">
         <Plus size={16} className="mr-2" />
         Nova Decisão
       </Button>

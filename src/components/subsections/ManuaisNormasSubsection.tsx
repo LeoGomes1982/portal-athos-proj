@@ -84,8 +84,8 @@ const ManuaisNormasSubsection = () => {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-          <FileText size={24} className="text-blue-600" />
+        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+          <FileText size={24} className="text-primary" />
         </div>
         <div>
           <h3 className="text-xl font-semibold text-gray-800">Manuais e Normas Internas</h3>
@@ -98,14 +98,14 @@ const ManuaisNormasSubsection = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{artigos.length}</div>
-              <div className="text-sm text-gray-500">Artigos</div>
+              <div className="text-2xl font-bold text-primary">{artigos.length}</div>
+              <div className="text-sm text-muted-foreground">Artigos</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-primary">
                 {artigos.reduce((acc, artigo) => acc + artigo.comentarios.length, 0)}
               </div>
-              <div className="text-sm text-gray-500">Comentários</div>
+              <div className="text-sm text-muted-foreground">Comentários</div>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ const ManuaisNormasSubsection = () => {
       {/* New Article Button */}
       <Button 
         onClick={() => setIsModalOpen(true)} 
-        className="mb-4 bg-blue-600 hover:bg-blue-700"
+        className="mb-4"
       >
         <Plus size={16} className="mr-2" />
         Nova Publicação
