@@ -22,8 +22,8 @@ const subsections = [
     title: "Vagas e Talentos",
     description: "Gestão de vagas e processos seletivos",
     icon: Briefcase,
-    bgColor: "bg-emerald-100",
-    textColor: "text-emerald-700"
+    bgColor: "bg-primary/10",
+    textColor: "text-primary"
   },
   {
     id: "processo-seletivo",
@@ -114,7 +114,7 @@ export default function DP() {
 
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
             <FileText size={32} className="text-white" />
           </div>
           <h1 className="page-title text-center">
@@ -130,7 +130,7 @@ export default function DP() {
           {subsections.map((subsection) => (
             <div 
               key={subsection.id}
-              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
+              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-secondary border-primary/20 hover:border-primary/30"
               onClick={() => handleSubsectionClick(subsection.id)}
             >
               <div className="flex flex-col items-center text-center space-y-4">

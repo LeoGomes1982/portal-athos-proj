@@ -43,7 +43,6 @@ export default function RH() {
           <p className="text-gray-500 mb-6">As funcionalidades de RH foram movidas para o Departamento Pessoal</p>
           <Button 
             onClick={() => navigate("/dp")}
-            className="bg-blue-600 hover:bg-blue-700"
           >
             Ir para Departamento Pessoal
           </Button>

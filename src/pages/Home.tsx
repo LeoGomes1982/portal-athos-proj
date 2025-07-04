@@ -24,8 +24,8 @@ const Home = () => {
       title: "DP e RH",
       fullTitle: "Departamento Pessoal e Recursos Humanos",
       icon: FileText,
-      className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
-      iconColor: "text-green-600",
+      className: "bg-secondary border-primary/20 hover:border-primary/30",
+      iconColor: "text-primary",
       onClick: () => navigate("/dp")
     },
     {
