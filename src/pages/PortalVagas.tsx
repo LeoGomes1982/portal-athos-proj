@@ -65,13 +65,28 @@ const PortalVagas = () => {
       descricao: "Gestão de campanhas digitais e análise de métricas",
       requisitos: "Marketing Digital, Google Ads, Facebook Ads",
       salario: "R$ 3.500 - R$ 5.000",
-      status: "ativa",
+      status: "pausada",
       dataPublicacao: "2024-01-10",
       candidatos: 12
+    },
+    {
+      id: "3",
+      titulo: "Designer UX/UI",
+      departamento: "Design",
+      cidade: "Belo Horizonte - MG",
+      cargaHoraria: "40h semanais",
+      jornada: "flexivel",
+      descricao: "Criação de interfaces e experiências digitais",
+      requisitos: "Figma, Adobe XD, prototipagem",
+      salario: "R$ 4.000 - R$ 6.500",
+      status: "pausada",
+      dataPublicacao: "2024-01-08",
+      candidatos: 5
     }
   ]);
 
   const vagasAtivas = vagas.filter(v => v.status === "ativa");
+  const vagasPausadas = vagas.filter(v => v.status === "pausada");
 
   const cards = [
     {
@@ -120,7 +135,7 @@ const PortalVagas = () => {
       <div className="content-wrapper">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
             <Target size={40} className="text-white" />
           </div>
           <h1 className="text-5xl font-bold text-slate-800 mb-4 leading-tight">
@@ -137,13 +152,13 @@ const PortalVagas = () => {
             {cards.map((card) => (
               <Card 
                 key={card.id}
-                className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150"
+                className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-secondary border-primary/20 hover:border-primary/30"
                 onClick={() => setActiveCard(card.id)}
               >
                 <CardContent className="p-0">
                   <div className="flex flex-col items-center text-center space-y-4">
                     <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                      <card.icon size={32} className="text-emerald-600" />
+                      <card.icon size={32} className="text-primary" />
                     </div>
                     <div>
                       <h3 className="subsection-title mb-2">{card.title}</h3>
@@ -169,78 +184,114 @@ const PortalVagas = () => {
               </Button>
             </div>
 
-            {vagasAtivas.length === 0 ? (
+            {/* Vagas Ativas */}
+            <div className="grid grid-cols-1 gap-6 mb-12">
+              {vagasAtivas.map((vaga) => (
+                <Card key={vaga.id} className="modern-card">
+                  <CardHeader className="card-header">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="section-title mb-2">{vaga.titulo}</CardTitle>
+                        <p className="text-description">{vaga.departamento}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
+                          <div className="flex items-center gap-1">
+                            <MapPin size={14} />
+                            {vaga.cidade}
+                          </div>
+                          {vaga.cargaHoraria && (
+                            <div className="flex items-center gap-1">
+                              <Clock size={14} />
+                              {vaga.cargaHoraria}
+                            </div>
+                          )}
+                          {vaga.jornada && (
+                            <div className="flex items-center gap-1">
+                              <Calendar size={14} />
+                              {getJornadaLabel(vaga.jornada)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <Button 
+                          className="primary-btn"
+                          onClick={() => handleCandidatarSe(vaga)}
+                        >
+                          Candidatar-se
+                        </Button>
+                        <div className="flex items-center gap-1 text-sm text-slate-600">
+                          <Users size={16} />
+                          {vaga.candidatos} candidatos
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="card-content">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-semibold text-slate-800 mb-2">Descrição</h4>
+                        <p className="text-description">{vaga.descricao}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-800 mb-2">Requisitos</h4>
+                        <p className="text-description">{vaga.requisitos}</p>
+                      </div>
+                      {vaga.salario && (
+                        <div>
+                          <h4 className="font-semibold text-slate-800 mb-2">Salário</h4>
+                          <p className="text-description">{vaga.salario}</p>
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 mb-2">Publicada em</h4>
+                        <p className="text-description">{new Date(vaga.dataPublicacao).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Vagas Pausadas */}
+            {vagasPausadas.length > 0 && (
+              <div>
+                <h3 className="text-xl font-bold text-slate-800 mb-6">Outras Vagas</h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {vagasPausadas.map((vaga) => (
+                    <Card key={vaga.id} className="modern-card grayscale opacity-60 relative">
+                      <div className="absolute inset-0 bg-slate-100/80 flex items-center justify-center z-10 rounded-lg">
+                        <div className="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium">
+                          Vaga Temporariamente Fechada
+                        </div>
+                      </div>
+                      <CardContent className="card-content p-4">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="font-semibold text-slate-800 mb-1">{vaga.titulo}</h4>
+                            <div className="flex items-center gap-4 text-sm text-slate-600">
+                              <div className="flex items-center gap-1">
+                                <MapPin size={14} />
+                                {vaga.cidade}
+                              </div>
+                              <span>{vaga.departamento}</span>
+                            </div>
+                          </div>
+                          <div className="text-sm text-slate-500">
+                            {vaga.salario}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {vagasAtivas.length === 0 && vagasPausadas.length === 0 && (
               <div className="text-center py-16">
                 <Target size={64} className="text-slate-400 mx-auto mb-4" />
                 <p className="text-lg text-slate-600">Nenhuma vaga disponível no momento.</p>
                 <p className="text-slate-500">Volte em breve para conferir novas oportunidades!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6">
-                {vagasAtivas.map((vaga) => (
-                  <Card key={vaga.id} className="modern-card">
-                    <CardHeader className="card-header">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="section-title mb-2">{vaga.titulo}</CardTitle>
-                          <p className="text-description">{vaga.departamento}</p>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
-                            <div className="flex items-center gap-1">
-                              <MapPin size={14} />
-                              {vaga.cidade}
-                            </div>
-                            {vaga.cargaHoraria && (
-                              <div className="flex items-center gap-1">
-                                <Clock size={14} />
-                                {vaga.cargaHoraria}
-                              </div>
-                            )}
-                            {vaga.jornada && (
-                              <div className="flex items-center gap-1">
-                                <Calendar size={14} />
-                                {getJornadaLabel(vaga.jornada)}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <Button 
-                            className="primary-btn"
-                            onClick={() => handleCandidatarSe(vaga)}
-                          >
-                            Candidatar-se
-                          </Button>
-                          <div className="flex items-center gap-1 text-sm text-slate-600">
-                            <Users size={16} />
-                            {vaga.candidatos} candidatos
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="card-content">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-semibold text-slate-800 mb-2">Descrição</h4>
-                          <p className="text-description">{vaga.descricao}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-slate-800 mb-2">Requisitos</h4>
-                          <p className="text-description">{vaga.requisitos}</p>
-                        </div>
-                        {vaga.salario && (
-                          <div>
-                            <h4 className="font-semibold text-slate-800 mb-2">Salário</h4>
-                            <p className="text-description">{vaga.salario}</p>
-                          </div>
-                        )}
-                        <div>
-                          <h4 className="font-semibold text-slate-800 mb-2">Publicada em</h4>
-                          <p className="text-description">{new Date(vaga.dataPublicacao).toLocaleDateString('pt-BR')}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
               </div>
             )}
           </div>
