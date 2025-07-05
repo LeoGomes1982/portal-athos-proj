@@ -10,7 +10,8 @@ import {
   FolderOpen,
   Archive,
   Briefcase, 
-  UserCheck
+  UserCheck,
+  Shield
 } from "lucide-react";
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
@@ -40,6 +41,14 @@ const subsections = [
     icon: Users,
     bgColor: "bg-blue-100",
     textColor: "text-blue-700"
+  },
+  {
+    id: "cicad",
+    title: "CICAD",
+    description: "Canal de Comunicação Anônima",
+    icon: Shield,
+    bgColor: "bg-green-100",
+    textColor: "text-green-700"
   },
   {
     id: "uniformes",
@@ -80,7 +89,11 @@ export default function DP() {
   const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
 
   const handleSubsectionClick = (subsectionId: string) => {
-    setActiveSubsection(subsectionId);
+    if (subsectionId === "cicad") {
+      navigate("/cicad");
+    } else {
+      setActiveSubsection(subsectionId);
+    }
   };
 
   const handleBackToMain = () => {
