@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star, ChevronLeft, AlertTriangle } from "lucide-react";
+import { Search, Star, ChevronLeft, AlertTriangle, ArrowLeft, Users } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
 import { useNavigate } from "react-router-dom";
 
@@ -234,13 +234,11 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   // Contadores por status (apenas funcionários ativos)
-  const contadores = {
-    total: funcionariosAtivos.length,
-    ferias: funcionariosAtivos.filter(f => f.status === 'ferias').length,
-    experiencia: funcionariosAtivos.filter(f => f.status === 'experiencia').length,
-    aviso: funcionariosAtivos.filter(f => f.status === 'aviso').length,
-    destaque: funcionariosAtivos.filter(f => f.status === 'destaque').length
-  };
+  const funcionariosAtivos2 = funcionariosAtivos.length;
+  const funcionariosFerias = funcionariosAtivos.filter(f => f.status === 'ferias').length;
+  const funcionariosExperiencia = funcionariosAtivos.filter(f => f.status === 'experiencia').length;
+  const funcionariosAviso = funcionariosAtivos.filter(f => f.status === 'aviso').length;
+  const funcionariosDestaque = funcionariosAtivos.filter(f => f.status === 'destaque').length;
 
   // Verificar se há alertas
   const alertasExperiencia = funcionariosAtivos.filter(f => 
@@ -251,205 +249,197 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     f.status === 'aviso' && f.dataFimAvisoPrevio && isProximoDoFim(f.dataFimAvisoPrevio)
   ).length;
 
-  const renderFuncionarioListItem = (funcionario: Funcionario) => {
-    const statusInfo = statusConfig[funcionario.status];
-    
-    // Verificar se deve mostrar alerta
-    const mostrarAlerta = (
-      (funcionario.status === 'experiencia' && funcionario.dataFimExperiencia && isProximoDoFim(funcionario.dataFimExperiencia)) ||
-      (funcionario.status === 'aviso' && funcionario.dataFimAvisoPrevio && isProximoDoFim(funcionario.dataFimAvisoPrevio))
-    );
-
-    return (
-      <div 
-        key={funcionario.id}
-        className="group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-400 bg-white rounded-lg p-4 mb-3"
-        onClick={() => handleFuncionarioClick(funcionario)}
-      >
-        <div className="flex items-center gap-4">
-          {/* Foto */}
-          <div className="flex-shrink-0 relative">
-            {funcionario.status === 'destaque' && (
-              <div className="absolute -top-1 -right-1 animate-bounce">
-                <Star className="w-5 h-5 text-yellow-500 fill-yellow-400 drop-shadow-md" style={{
-                  filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.8)) brightness(1.2)'
-                }} />
-              </div>
-            )}
-            {mostrarAlerta && (
-              <div className="absolute -top-1 -right-1 animate-bounce">
-                <AlertTriangle className="w-5 h-5 text-red-500 fill-red-400 drop-shadow-md" style={{
-                  filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)) brightness(1.2)'
-                }} />
-              </div>
-            )}
-            <div className="w-12 h-12 bg-gray-100 border-2 border-gray-300 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <span className="text-2xl">{funcionario.foto}</span>
-            </div>
-          </div>
-
-          {/* Nome */}
-          <div className="flex-1 min-w-0">
-            <p className="text-lg font-bold text-slate-800 truncate">{funcionario.nome}</p>
-          </div>
-
-          {/* Cargo */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-700 truncate">{funcionario.cargo}</p>
-          </div>
-
-          {/* Data de Admissão */}
-          <div className="flex-shrink-0">
-            <p className="text-sm text-slate-600 font-medium">
-              {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-            </p>
-          </div>
-
-          {/* Status */}
-          <div className="flex-shrink-0">
-            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
-              {statusInfo.label}
-            </Badge>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-200">
-      <div className="p-6 max-w-7xl mx-auto">
-        {/* White page container */}
-        <div className="bg-white rounded-2xl shadow-xl min-h-[calc(100vh-3rem)] p-8">
-          {/* Navigation Button */}
-          <div className="mb-6">
-            <button 
-              onClick={onBack} 
-              className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors duration-300 font-medium"
-            >
-              <ChevronLeft size={16} />
-              Voltar
-            </button>
-          </div>
+    <div className="app-container">
+      <div className="content-wrapper">
+        {/* Back Button */}
+        <Button variant="ghost" className="mb-6" onClick={onBack}>
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
 
-          {/* Page Header */}
-          <div className="text-center mb-12 animate-fade-in">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
-              <span className="text-white text-3xl">👥</span>
-            </div>
-            <h1 className="text-4xl font-bold text-slate-800 mb-2">Gestão de Funcionários</h1>
-            <p className="text-slate-600 text-lg">Departamento Pessoal</p>
+        {/* Header */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+            <Users size={32} className="text-white" />
           </div>
+          <h1 className="page-title text-center">Gestão de Funcionários</h1>
+          <p className="text-description text-center max-w-2xl mx-auto">
+            Controle completo da equipe e colaboradores
+          </p>
+        </div>
 
-          {/* Resumo com contadores - Usando o mesmo azul do fundo */}
-          <Card className="mb-8 bg-gradient-to-br from-blue-100 to-blue-200 border-none shadow-lg">
-            <CardHeader className="border-b border-blue-300/30">
-              <CardTitle className="text-xl font-bold text-blue-800 text-center">
-                📊 Resumo da Equipe
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Users size={20} className="text-primary" />
+                Total Ativos
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="flex flex-wrap justify-center gap-4">
-                <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] bg-white border-white">
-                  <CardContent className="text-center p-4">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.total}</div>
-                    <div className="text-sm font-medium text-slate-600">Funcionários Ativos</div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] bg-white border-white">
-                  <CardContent className="text-center p-4">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">{contadores.ferias}</div>
-                    <div className="text-sm font-medium text-slate-600">Em Férias</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] bg-white border-orange-300 relative">
-                  <CardContent className="text-center p-4">
-                    {alertasExperiencia > 0 && (
-                      <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
-                    )}
-                    <div className="text-2xl font-bold text-orange-600 mb-1">{contadores.experiencia}</div>
-                    <div className="text-sm font-medium text-orange-700">Em Experiência</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] bg-white border-red-300 relative">
-                  <CardContent className="text-center p-4">
-                    {alertasAvisoPrevio > 0 && (
-                      <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
-                    )}
-                    <div className="text-2xl font-bold text-red-600 mb-1">{contadores.aviso}</div>
-                    <div className="text-sm font-medium text-red-700">Em Aviso Prévio</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] bg-white border-yellow-400 shadow-yellow-200/50">
-                  <CardContent className="text-center p-4">
-                    <div className="flex items-center justify-center mb-1">
-                      <div className="relative">
-                        <Star className="text-yellow-500 w-6 h-6 fill-yellow-400 mr-1 drop-shadow-md" style={{
-                          filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) brightness(1.2)'
-                        }} />
-                        <div className="absolute inset-0 animate-pulse opacity-50">
-                          <Star className="text-yellow-300 w-6 h-6 fill-yellow-200" />
-                        </div>
-                      </div>
-                      <span className="text-2xl font-bold text-yellow-700">{contadores.destaque}</span>
-                    </div>
-                    <div className="text-sm font-medium text-yellow-800">Em Destaque</div>
-                  </CardContent>
-                </Card>
-              </div>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-primary mb-2">{funcionariosAtivos2}</div>
+              <p className="text-primary/80">funcionários</p>
             </CardContent>
           </Card>
 
-          {/* Lista de Funcionários Ativos - Usando o mesmo azul do fundo */}
-          <Card className="bg-gradient-to-br from-blue-100 to-blue-200 border-none shadow-lg animate-slide-up">
-            <CardHeader className="border-b border-blue-300/30">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <CardTitle className="text-xl font-bold text-blue-800 flex items-center gap-2 mb-0">
-                  👨‍💼 Funcionários Ativos
-                </CardTitle>
-                
-                <div className="flex items-center gap-4">
-                  {/* Search Input */}
-                  <div className="relative flex-1 min-w-64">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
-                    <Input
-                      placeholder="Buscar funcionário..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-12 h-12 bg-white border-white shadow-lg rounded-2xl text-lg font-medium focus:border-blue-400"
-                    />
-                  </div>
-                </div>
-              </div>
+          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <span className="text-primary text-lg">🏖️</span>
+                Em Férias
+              </CardTitle>
             </CardHeader>
-            
-            {/* Lista de funcionários com fundo branco separado */}
-            <div className="p-6">
-              <div className="bg-white rounded-lg p-6 shadow-sm">
-                <div className="space-y-3">
-                  {funcionariosAtivos.map((funcionario) => renderFuncionarioListItem(funcionario))}
-                </div>
-
-                {funcionariosAtivos.length === 0 && (
-                  <div className="text-center py-16 bg-gradient-to-br from-blue-100 to-white rounded-3xl shadow-lg border border-blue-300">
-                    <div className="w-24 h-24 bg-blue-200 border-2 border-blue-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <span className="text-blue-500 text-4xl">🔍</span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum funcionário ativo encontrado</h3>
-                    <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca</p>
-                  </div>
-                )}
-              </div>
-            </div>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-primary mb-2">{funcionariosFerias}</div>
+              <p className="text-primary/80">funcionários</p>
+            </CardContent>
           </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-orange-100 to-orange-200 border-orange-300 relative">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <span className="text-orange-700 text-lg">⏳</span>
+                Experiência
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              {alertasExperiencia > 0 && (
+                <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
+              )}
+              <div className="text-4xl font-bold text-orange-700 mb-2">{funcionariosExperiencia}</div>
+              <p className="text-orange-700/80">funcionários</p>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-red-100 to-red-200 border-red-300 relative">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <span className="text-red-700 text-lg">⚠️</span>
+                Aviso Prévio
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              {alertasAvisoPrevio > 0 && (
+                <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
+              )}
+              <div className="text-4xl font-bold text-red-700 mb-2">{funcionariosAviso}</div>
+              <p className="text-red-700/80">funcionários</p>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-400 shadow-yellow-200/50">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Star size={20} className="text-yellow-700 fill-yellow-600" />
+                Destaque
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-yellow-700 mb-2">{funcionariosDestaque}</div>
+              <p className="text-yellow-700/80">funcionários</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search Bar */}
+        <div className="flex justify-center mb-8 animate-slide-up">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary w-5 h-5" />
+            <Input
+              placeholder="Buscar funcionário..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 h-12 bg-white border-primary/20 shadow-lg rounded-xl text-lg font-medium focus:border-primary"
+            />
+          </div>
+        </div>
+
+        {/* Funcionários List */}
+        <div className="grid grid-cols-1 gap-4 animate-slide-up">
+          {funcionariosAtivos.map((funcionario) => {
+            const statusInfo = statusConfig[funcionario.status];
+            
+            // Verificar se deve mostrar alerta
+            const mostrarAlerta = (
+              (funcionario.status === 'experiencia' && funcionario.dataFimExperiencia && isProximoDoFim(funcionario.dataFimExperiencia)) ||
+              (funcionario.status === 'aviso' && funcionario.dataFimAvisoPrevio && isProximoDoFim(funcionario.dataFimAvisoPrevio))
+            );
+
+            return (
+              <Card 
+                key={funcionario.id} 
+                className="modern-card cursor-pointer transition-all duration-300 hover:shadow-lg"
+                onClick={() => handleFuncionarioClick(funcionario)}
+              >
+                <CardContent className="card-content p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 flex-1">
+                      {/* Foto */}
+                      <div className="flex-shrink-0 relative">
+                        {funcionario.status === 'destaque' && (
+                          <div className="absolute -top-1 -right-1 animate-bounce">
+                            <Star className="w-5 h-5 text-yellow-500 fill-yellow-400 drop-shadow-md" style={{
+                              filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.8)) brightness(1.2)'
+                            }} />
+                          </div>
+                        )}
+                        {mostrarAlerta && (
+                          <div className="absolute -top-1 -right-1 animate-bounce">
+                            <AlertTriangle className="w-5 h-5 text-red-500 fill-red-400 drop-shadow-md" />
+                          </div>
+                        )}
+                        <div className="w-12 h-12 bg-primary/10 border-2 border-primary/20 rounded-full flex items-center justify-center">
+                          <span className="text-2xl">{funcionario.foto}</span>
+                        </div>
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg font-semibold text-slate-800 mb-1">{funcionario.nome}</h3>
+                            <div className="flex items-center gap-4 text-sm text-slate-600">
+                              <span>{funcionario.cargo}</span>
+                              <span>{funcionario.setor}</span>
+                              <span>{new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}</span>
+                            </div>
+                          </div>
+                          
+                          {/* Status */}
+                          <div className="flex-shrink-0">
+                            <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full`}>
+                              {statusInfo.label}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {funcionariosAtivos.length === 0 && (
+          <div className="text-center py-16 animate-fade-in">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
+            <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
+            © 2024 Grupo Athos. Todos os direitos reservados.
+          </p>
         </div>
       </div>
 
-      {/* Modal de Detalhes Completo */}
+      {/* Modal de Detalhes */}
       {selectedFuncionario && (
         <FuncionarioDetalhesModal
           funcionario={selectedFuncionario}
