@@ -24,6 +24,12 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
     dataOcorrencia: "",
     urgencia: "media"
   });
+  
+  const [nomeEnvolvido, setNomeEnvolvido] = useState("");
+  const [testemunhas, setTestemunhas] = useState("");
+  const [consequencias, setConsequencias] = useState("");
+  
+  const necessitaNome = formulario.tipo === "denuncia_chefia" || formulario.tipo === "denuncia_colega";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +42,32 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
       return;
     }
 
-    onSubmit(formulario);
+    if (necessitaNome && !nomeEnvolvido.trim()) {
+      toast({
+        title: "Nome necessário",
+        description: "Para denúncias envolvendo pessoas específicas, é necessário informar o nome para investigação.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Adicionar informações extras na descrição
+    let descricaoCompleta = formulario.descricao;
+    if (nomeEnvolvido.trim()) {
+      descricaoCompleta += `\n\nPessoa envolvida: ${nomeEnvolvido}`;
+    }
+    if (testemunhas.trim()) {
+      descricaoCompleta += `\n\nTestemunhas: ${testemunhas}`;
+    }
+    if (consequencias.trim()) {
+      descricaoCompleta += `\n\nConsequências observadas: ${consequencias}`;
+    }
+
+    onSubmit({
+      ...formulario,
+      descricao: descricaoCompleta,
+      urgencia: "media" // Urgência será definida pela empresa
+    });
     
     // Reset form
     setFormulario({
@@ -47,6 +78,9 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
       dataOcorrencia: "",
       urgencia: "media"
     });
+    setNomeEnvolvido("");
+    setTestemunhas("");
+    setConsequencias("");
 
     toast({
       title: "Denúncia enviada",
@@ -55,7 +89,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
   };
 
   return (
-    <Card className="modern-card max-w-2xl mx-auto">
+    <Card className="modern-card w-full mx-auto">
       <CardHeader className="card-header">
         <CardTitle className="section-title text-center">
           {isFormularioPublico ? "Canal Anônimo de Denúncias" : "Novo Relato CICAD"}
@@ -67,8 +101,8 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
         )}
       </CardHeader>
       <CardContent className="card-content">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
+        <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-1">
             <Label htmlFor="tipo">Tipo de Relato *</Label>
             <Select value={formulario.tipo} onValueChange={(value: Denuncia['tipo']) => setFormulario({...formulario, tipo: value})}>
               <SelectTrigger>
@@ -84,23 +118,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="urgencia">Nível de Urgência *</Label>
-            <Select value={formulario.urgencia} onValueChange={(value: Denuncia['urgencia']) => setFormulario({...formulario, urgencia: value})}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a urgência" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(urgenciaConfig).map(([key, config]) => (
-                  <SelectItem key={key} value={key}>
-                    {config.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
+          <div className="md:col-span-1">
             <Label htmlFor="assunto">Assunto *</Label>
             <Input
               id="assunto"
@@ -111,7 +129,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
             />
           </div>
 
-          <div>
+          <div className="md:col-span-1">
             <Label htmlFor="setor">Setor (Opcional)</Label>
             <Input
               id="setor"
@@ -121,7 +139,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
             />
           </div>
 
-          <div>
+          <div className="md:col-span-1">
             <Label htmlFor="dataOcorrencia">Data da Ocorrência (Opcional)</Label>
             <Input
               id="dataOcorrencia"
@@ -131,21 +149,57 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
             />
           </div>
 
-          <div>
+          {necessitaNome && (
+            <div className="md:col-span-1">
+              <Label htmlFor="nomeEnvolvido">Nome da Pessoa Envolvida *</Label>
+              <Input
+                id="nomeEnvolvido"
+                value={nomeEnvolvido}
+                onChange={(e) => setNomeEnvolvido(e.target.value)}
+                placeholder="Nome completo da pessoa"
+                required={necessitaNome}
+              />
+            </div>
+          )}
+
+          <div className="md:col-span-1">
+            <Label htmlFor="testemunhas">Testemunhas (Opcional)</Label>
+            <Input
+              id="testemunhas"
+              value={testemunhas}
+              onChange={(e) => setTestemunhas(e.target.value)}
+              placeholder="Nomes de possíveis testemunhas"
+            />
+          </div>
+
+          <div className="md:col-span-2">
             <Label htmlFor="descricao">Descrição Detalhada *</Label>
             <Textarea
               id="descricao"
               value={formulario.descricao}
               onChange={(e) => setFormulario({...formulario, descricao: e.target.value})}
-              placeholder="Descreva detalhadamente a situação, incluindo contexto, pessoas envolvidas (sem nomes se preferir) e impactos observados..."
+              placeholder="Descreva detalhadamente a situação, incluindo contexto, o que aconteceu, quando, onde e como isso afetou você ou outros..."
               rows={6}
               required
             />
           </div>
 
-          <Button type="submit" className="primary-btn w-full">
-            Enviar Relato Anônimo
-          </Button>
+          <div className="md:col-span-2">
+            <Label htmlFor="consequencias">Consequências Observadas (Opcional)</Label>
+            <Textarea
+              id="consequencias"
+              value={consequencias}
+              onChange={(e) => setConsequencias(e.target.value)}
+              placeholder="Quais foram os impactos ou consequências observadas? Como isso afetou o ambiente de trabalho?"
+              rows={3}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <Button type="submit" className="primary-btn w-full">
+              Enviar Relato Anônimo
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

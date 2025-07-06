@@ -9,7 +9,7 @@ import { FormularioCICADComponent } from "@/components/cicad/FormularioCICAD";
 import { DenunciaCard } from "@/components/cicad/DenunciaCard";
 import { ResolucaoCasoModal } from "@/components/cicad/ResolucaoCasoModal";
 import { CICADSummaryCards } from "@/components/cicad/CICADSummaryCards";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import QRCode from 'qrcode';
 import { useToast } from "@/hooks/use-toast";
 
@@ -145,10 +145,13 @@ export default function CICAD() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>QR Code - Formulário CICAD</DialogTitle>
+                <DialogDescription>
+                  Compartilhe este QR Code para acesso direto ao formulário anônimo
+                </DialogDescription>
               </DialogHeader>
               <div className="text-center space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Compartilhe este QR Code para acesso direto ao formulário anônimo
+                  Escaneie o código ou use o link para acesso direto
                 </p>
                 <div className="flex justify-center">
                   <canvas ref={canvasRef} className="border rounded-lg" />
@@ -175,6 +178,9 @@ export default function CICAD() {
           <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nova Denúncia CICAD</DialogTitle>
+              <DialogDescription>
+                Preencha o formulário abaixo para registrar uma nova denúncia no sistema CICAD.
+              </DialogDescription>
             </DialogHeader>
             <FormularioCICADComponent 
               onSubmit={handleNovaDenuncia}
