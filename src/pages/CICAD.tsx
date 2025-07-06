@@ -172,7 +172,7 @@ export default function CICAD() {
 
         {/* Form Dialog */}
         <Dialog open={showFormulario} onOpenChange={setShowFormulario}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nova Denúncia CICAD</DialogTitle>
             </DialogHeader>

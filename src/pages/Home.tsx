@@ -11,7 +11,8 @@ import {
   Calendar,
   Briefcase,
   Target,
-  Book
+  Book,
+  Shield
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -45,6 +46,15 @@ const Home = () => {
       className: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
       iconColor: "text-purple-600",
       onClick: () => navigate("/gerencia")
+    },
+    {
+      id: "cicad",
+      title: "CICAD",
+      fullTitle: "Canal Interno de Comunicação Anônima Direta",
+      icon: Shield,
+      className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
+      iconColor: "text-green-600",
+      onClick: () => navigate("/cicad")
     },
     {
       id: "manuais",
