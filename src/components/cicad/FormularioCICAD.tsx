@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 import { FormularioCICAD, Denuncia } from "@/types/cicad";
 import { tipoConfig, urgenciaConfig } from "@/config/cicadStatus";
 import { useToast } from "@/hooks/use-toast";
@@ -89,17 +91,18 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
   };
 
   return (
-    <Card className="modern-card w-full mx-auto">
-      <CardHeader className="card-header">
-        <CardTitle className="section-title text-center">
-          {isFormularioPublico ? "Canal Anônimo de Denúncias" : "Novo Relato CICAD"}
-        </CardTitle>
-        {isFormularioPublico && (
-          <p className="text-center text-sm text-muted-foreground">
-            Este canal é 100% anônimo. Suas informações não serão rastreadas.
-          </p>
-        )}
-      </CardHeader>
+    <TooltipProvider>
+      <Card className="modern-card w-full mx-auto">
+        <CardHeader className="card-header">
+          <CardTitle className="section-title text-center">
+            {isFormularioPublico ? "Canal Anônimo de Denúncias" : "Novo Relato CICAD"}
+          </CardTitle>
+          {isFormularioPublico && (
+            <p className="text-center text-sm text-muted-foreground">
+              Este canal é 100% anônimo. Suas informações não serão rastreadas.
+            </p>
+          )}
+        </CardHeader>
       <CardContent className="card-content">
         <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1">
@@ -151,7 +154,21 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
 
           {necessitaNome && (
             <div className="md:col-span-1">
-              <Label htmlFor="nomeEnvolvido">Nome da Pessoa Envolvida *</Label>
+              <div className="flex items-center gap-2 mb-2">
+                <Label htmlFor="nomeEnvolvido">Nome da Pessoa Envolvida *</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center cursor-help">
+                      <HelpCircle className="w-3 h-3 text-muted-foreground" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">
+                      Este nome serve para que a comissão interna de investigação saiba de qual ponto partir as investigações relatadas e evita que investiguemos demais líderes e colegas não envolvidos.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <Input
                 id="nomeEnvolvido"
                 value={nomeEnvolvido}
@@ -203,5 +220,6 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
         </form>
       </CardContent>
     </Card>
+    </TooltipProvider>
   );
 }
