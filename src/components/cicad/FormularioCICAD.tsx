@@ -31,7 +31,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
   const [testemunhas, setTestemunhas] = useState("");
   const [consequencias, setConsequencias] = useState("");
   
-  const necessitaNome = formulario.tipo === "denuncia_chefia" || formulario.tipo === "denuncia_colega";
+  const necessitaNome = formulario.tipo === "denuncia_chefia" || formulario.tipo === "denuncia_colega" || formulario.tipo === "assedio" || formulario.tipo === "discriminacao";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
