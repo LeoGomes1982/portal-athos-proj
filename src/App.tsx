@@ -19,6 +19,7 @@ import Gerencia from "./pages/Gerencia";
 import Manuais from "./pages/Manuais";
 import CICAD from "./pages/CICAD";
 import CICADFormulario from "./pages/CICADFormulario";
+import PortalMidiaInterna from "./pages/PortalMidiaInterna";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/configuracoes/contratos-propostas" element={<EdicaoContratosPropostas />} />
           <Route path="/portal-admissao" element={<PortalAdmissao />} />
           <Route path="/portal-vagas" element={<PortalVagas />} />
+          <Route path="/portal-midia-interna" element={<PortalMidiaInterna />} />
           <Route path="/cicad" element={<CICAD />} />
           <Route path="/cicad-formulario" element={<CICADFormulario />} />
           <Route path="*" element={<Home />} />

@@ -119,6 +119,15 @@ const Home = () => {
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
       onClick: () => window.open("/portal-vagas", "_blank")
+    },
+    {
+      id: "portal-midia",
+      title: "PORTAL DE MÍDIA INTERNA",
+      fullTitle: "Gerenciamento de Conteúdo Multimídia",
+      icon: Globe,
+      className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
+      iconColor: "text-blue-600",
+      onClick: () => window.open("/portal-midia-interna", "_blank")
     }
   ];
 
