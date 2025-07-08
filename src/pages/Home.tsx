@@ -122,12 +122,12 @@ const Home = () => {
     },
     {
       id: "portal-midia",
-      title: "PORTAL DE MÍDIA INTERNA",
+      title: "PORTAL DE MÍDIA EXTERNA",
       fullTitle: "Gerenciamento de Conteúdo Multimídia",
       icon: Globe,
       className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
       iconColor: "text-blue-600",
-      onClick: () => window.open("/portal-midia-interna", "_blank")
+      onClick: () => window.open("/portal-midia-externa", "_blank")
     }
   ];
 

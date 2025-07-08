@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Trash2, Upload, Play, Pause, Monitor, Image, Video, Music, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Box, RoundedBox } from "@react-three/drei";
 
 interface Midia {
   id: string;
@@ -18,7 +20,45 @@ interface Midia {
   dataUpload: string;
 }
 
-export default function PortalMidiaInterna() {
+// Componente da TV 3D
+function TelevisionModel({ midias }: { midias: Midia[] }) {
+  const midiasVisiveis = midias.filter(m => m.visivel);
+  
+  return (
+    <group>
+      {/* Base da TV */}
+      <RoundedBox args={[4, 2.5, 0.2]} radius={0.1} smoothness={4} position={[0, 0, 0]}>
+        <meshStandardMaterial color="#2a2a2a" />
+      </RoundedBox>
+      
+      {/* Tela da TV */}
+      <RoundedBox args={[3.6, 2.1, 0.05]} radius={0.05} smoothness={4} position={[0, 0, 0.13]}>
+        <meshStandardMaterial color="#000000" />
+      </RoundedBox>
+      
+      {/* Conteúdo da tela - simulação da playlist */}
+      <RoundedBox args={[3.4, 1.9, 0.01]} radius={0.02} smoothness={4} position={[0, 0, 0.16]}>
+        <meshStandardMaterial 
+          color={midiasVisiveis.length > 0 ? "#1e40af" : "#374151"} 
+          emissive={midiasVisiveis.length > 0 ? "#1e3a8a" : "#111827"}
+          emissiveIntensity={0.3}
+        />
+      </RoundedBox>
+      
+      {/* Base de apoio */}
+      <Box args={[0.8, 0.3, 0.4]} position={[0, -1.5, 0]}>
+        <meshStandardMaterial color="#2a2a2a" />
+      </Box>
+      
+      {/* Pé da TV */}
+      <Box args={[1.2, 0.1, 0.6]} position={[0, -1.8, 0]}>
+        <meshStandardMaterial color="#1a1a1a" />
+      </Box>
+    </group>
+  );
+}
+
+export default function PortalMidiaExterna() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [midias, setMidias] = useState<Midia[]>([]);
@@ -86,12 +126,74 @@ export default function PortalMidiaInterna() {
             <Monitor size={32} className="text-white" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-4">
-            Portal de Mídia Interna
+            Portal de Mídia Externa
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Gerencie e exiba conteúdo multimídia em displays internos. Configure playlists com imagens, vídeos e áudios.
+            Gerencie e exiba conteúdo multimídia em displays externos. Configure playlists com imagens, vídeos e áudios.
           </p>
         </div>
+
+        {/* TV Preview Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Monitor size={20} />
+              Preview da Exibição
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* 3D TV Model */}
+              <div className="lg:w-1/2">
+                <div className="h-96 w-full bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg">
+                  <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+                    <Suspense fallback={null}>
+                      <ambientLight intensity={0.5} />
+                      <pointLight position={[10, 10, 10]} />
+                      <TelevisionModel midias={midias} />
+                      <OrbitControls enablePan={false} enableZoom={false} />
+                    </Suspense>
+                  </Canvas>
+                </div>
+              </div>
+              
+              {/* Playlist Preview */}
+              <div className="lg:w-1/2">
+                <h3 className="font-semibold mb-4">Playlist Ativa ({midiasVisiveis.length} itens)</h3>
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {midiasVisiveis.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Image size={32} className="mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Nenhuma mídia ativa</p>
+                    </div>
+                  ) : (
+                    midiasVisiveis.map((midia, index) => (
+                      <div
+                        key={midia.id}
+                        className={`flex items-center gap-3 p-3 rounded-lg border ${
+                          index === midiaAtual && playlistAtiva ? 'bg-primary/10 border-primary' : 'bg-background'
+                        }`}
+                      >
+                        <div className="w-8 h-8 bg-muted rounded flex items-center justify-center flex-shrink-0">
+                          {midia.tipo === 'imagem' && <Image size={16} />}
+                          {midia.tipo === 'video' && <Video size={16} />}
+                          {midia.tipo === 'audio' && <Music size={16} />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{midia.nome}</p>
+                          <p className="text-xs text-muted-foreground">{midia.tempoExibicao}s</p>
+                        </div>
+                        {index === midiaAtual && playlistAtiva && (
+                          <Play size={16} className="text-primary" />
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Upload Section */}
         <Card className="mb-8">
@@ -235,7 +337,7 @@ export default function PortalMidiaInterna() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-muted-foreground">
-          © 2024 Grupo Athos. Portal de Mídia Interna v1.0
+          © 2024 Grupo Athos. Portal de Mídia Externa v1.0
         </div>
       </div>
     </div>
