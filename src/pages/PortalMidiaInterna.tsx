@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Trash2, Upload, Play, Pause, Monitor, Image, Video, Music, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Box, RoundedBox } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 
 interface Midia {
   id: string;
@@ -27,33 +27,36 @@ function TelevisionModel({ midias }: { midias: Midia[] }) {
   return (
     <group>
       {/* Base da TV */}
-      <RoundedBox args={[4, 2.5, 0.2]} radius={0.1} smoothness={4} position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[4, 2.5, 0.2]} />
         <meshStandardMaterial color="#2a2a2a" />
-      </RoundedBox>
+      </mesh>
       
       {/* Tela da TV */}
-      <RoundedBox args={[3.6, 2.1, 0.05]} radius={0.05} smoothness={4} position={[0, 0, 0.13]}>
+      <mesh position={[0, 0, 0.13]}>
+        <boxGeometry args={[3.6, 2.1, 0.05]} />
         <meshStandardMaterial color="#000000" />
-      </RoundedBox>
+      </mesh>
       
       {/* Conteúdo da tela - simulação da playlist */}
-      <RoundedBox args={[3.4, 1.9, 0.01]} radius={0.02} smoothness={4} position={[0, 0, 0.16]}>
+      <mesh position={[0, 0, 0.16]}>
+        <boxGeometry args={[3.4, 1.9, 0.01]} />
         <meshStandardMaterial 
-          color={midiasVisiveis.length > 0 ? "#1e40af" : "#374151"} 
-          emissive={midiasVisiveis.length > 0 ? "#1e3a8a" : "#111827"}
-          emissiveIntensity={0.3}
+          color={midiasVisiveis.length > 0 ? "#1e40af" : "#374151"}
         />
-      </RoundedBox>
+      </mesh>
       
       {/* Base de apoio */}
-      <Box args={[0.8, 0.3, 0.4]} position={[0, -1.5, 0]}>
+      <mesh position={[0, -1.5, 0]}>
+        <boxGeometry args={[0.8, 0.3, 0.4]} />
         <meshStandardMaterial color="#2a2a2a" />
-      </Box>
+      </mesh>
       
       {/* Pé da TV */}
-      <Box args={[1.2, 0.1, 0.6]} position={[0, -1.8, 0]}>
+      <mesh position={[0, -1.8, 0]}>
+        <boxGeometry args={[1.2, 0.1, 0.6]} />
         <meshStandardMaterial color="#1a1a1a" />
-      </Box>
+      </mesh>
     </group>
   );
 }
@@ -147,7 +150,11 @@ export default function PortalMidiaExterna() {
               <div className="lg:w-1/2">
                 <div className="h-96 w-full bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg">
                   <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
-                    <Suspense fallback={null}>
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-muted-foreground">Carregando modelo 3D...</div>
+                      </div>
+                    }>
                       <ambientLight intensity={0.5} />
                       <pointLight position={[10, 10, 10]} />
                       <TelevisionModel midias={midias} />
