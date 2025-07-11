@@ -243,29 +243,29 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardHeader className="card-header">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Briefcase size={20} className="text-primary" />
+                <Briefcase size={20} className="text-blue-600" />
                 Vagas Ativas
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content">
-              <div className="text-4xl font-bold text-primary mb-2">{vagasAtivas}</div>
-              <p className="text-primary/80">vagas disponíveis</p>
+              <div className="text-4xl font-bold text-blue-600 mb-2">{vagasAtivas}</div>
+              <p className="text-blue-600/80">vagas disponíveis</p>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+          <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <CardHeader className="card-header">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Users size={20} className="text-primary" />
+                <Users size={20} className="text-green-600" />
                 Candidatos Inscritos
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content">
-              <div className="text-4xl font-bold text-primary mb-2">{totalCandidatos}</div>
-              <p className="text-primary/80">candidatos totais</p>
+              <div className="text-4xl font-bold text-green-600 mb-2">{totalCandidatos}</div>
+              <p className="text-green-600/80">candidatos totais</p>
             </CardContent>
           </Card>
         </div>

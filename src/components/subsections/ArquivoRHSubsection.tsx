@@ -144,33 +144,33 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
             </CardContent>
           </Card>
 
-          <Card className="modern-card">
+          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">✋</div>
               <div className="text-2xl font-bold text-blue-600">
                 {funcionariosInativos.filter(f => f.motivo === 'Pedido de Demissão').length}
               </div>
-              <div className="text-sm text-slate-600">Pedido Demissão</div>
+              <div className="text-sm text-blue-600/80">Pedido Demissão</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card">
+          <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">⚠️</div>
               <div className="text-2xl font-bold text-orange-600">
                 {funcionariosInativos.filter(f => f.motivo === 'Demissão sem Justa Causa').length}
               </div>
-              <div className="text-sm text-slate-600">Sem Justa Causa</div>
+              <div className="text-sm text-orange-600/80">Sem Justa Causa</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card">
+          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">🎖️</div>
               <div className="text-2xl font-bold text-purple-600">
                 {funcionariosInativos.filter(f => f.motivo === 'Aposentadoria').length}
               </div>
-              <div className="text-sm text-slate-600">Aposentadorias</div>
+              <div className="text-sm text-purple-600/80">Aposentadorias</div>
             </CardContent>
           </Card>
         </div>
