@@ -60,7 +60,9 @@ export function DocumentCard({ documento, onView, onDownload, onDelete }: Docume
     <Card className={`hover:shadow-lg transition-shadow relative ${vencendo ? 'ring-2 ring-red-400' : ''} ${vencido ? 'ring-2 ring-red-600 bg-red-50' : ''}`}>
       {/* Indicador de notificação */}
       {vencendo && !documento.visualizado && (
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse border-2 border-white"></div>
+        <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-3 border-white shadow-lg z-10 flex items-center justify-center">
+          <div className="w-3 h-3 bg-white rounded-full"></div>
+        </div>
       )}
       
       <CardContent className="p-4">
