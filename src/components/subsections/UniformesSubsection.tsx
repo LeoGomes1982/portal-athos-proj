@@ -229,41 +229,32 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
           <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Shirt size={20} className="text-blue-600" />
-                Total Uniformes
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-blue-600 mb-2">{totalUniformes}</div>
-              <p className="text-blue-600/80">peças em estoque</p>
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👔</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {totalUniformes}
+              </div>
+              <div className="text-sm text-blue-600/80">Total Uniformes</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Package size={20} className="text-orange-600" />
-                Total EPIs
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-orange-600 mb-2">{totalEPIs}</div>
-              <p className="text-orange-600/80">equipamentos disponíveis</p>
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🛡️</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {totalEPIs}
+              </div>
+              <div className="text-sm text-orange-600/80">Total EPIs</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <TrendingUp size={20} className="text-green-600" />
-                Entregas Realizadas
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-green-600 mb-2">{totalEntregas}</div>
-              <p className="text-green-600/80">entregas registradas</p>
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📦</div>
+              <div className="text-2xl font-bold text-green-600">
+                {totalEntregas}
+              </div>
+              <div className="text-sm text-green-600/80">Entregas Realizadas</div>
             </CardContent>
           </Card>
         </div>

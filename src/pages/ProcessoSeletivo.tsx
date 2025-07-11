@@ -122,55 +122,43 @@ export default function ProcessoSeletivo() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Users size={20} className="text-primary" />
-                Total
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-primary mb-2">{totalCandidatos}</div>
-              <p className="text-primary/80">candidatos</p>
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👥</div>
+              <div className="text-2xl font-bold text-slate-600">
+                {totalCandidatos}
+              </div>
+              <div className="text-sm text-slate-600/80">Total</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <UserCheck size={20} className="text-blue-600" />
-                Entrevista
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-blue-600 mb-2">{candidatosEntrevista.length}</div>
-              <p className="text-blue-600/80">candidatos</p>
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">💼</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {candidatosEntrevista.length}
+              </div>
+              <div className="text-sm text-blue-600/80">Entrevista</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <GraduationCap size={20} className="text-yellow-600" />
-                Treinamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-yellow-600 mb-2">{candidatosTreinamento.length}</div>
-              <p className="text-yellow-600/80">candidatos</p>
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🎓</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {candidatosTreinamento.length}
+              </div>
+              <div className="text-sm text-yellow-600/80">Treinamento</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Building size={20} className="text-green-600" />
-                Admissão
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-green-600 mb-2">{candidatosAdmissao.length}</div>
-              <p className="text-green-600/80">candidatos</p>
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🏢</div>
+              <div className="text-2xl font-bold text-green-600">
+                {candidatosAdmissao.length}
+              </div>
+              <div className="text-sm text-green-600/80">Admissão</div>
             </CardContent>
           </Card>
         </div>

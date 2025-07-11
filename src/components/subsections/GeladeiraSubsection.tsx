@@ -101,16 +101,13 @@ export function GeladeiraSubsection({ onBack }: GeladeiraSubsectionProps) {
 
         {/* Summary Card */}
         <div className="flex justify-center mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-teal-100/50 to-teal-200/50 border-teal-200">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <User size={20} className="text-teal-600" />
-                Candidatos Arquivados
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-teal-600 mb-2">{candidatos.length}</div>
-              <p className="text-teal-600/80">candidatos na geladeira</p>
+          <Card className="modern-card bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🧊</div>
+              <div className="text-2xl font-bold text-teal-600">
+                {candidatos.length}
+              </div>
+              <div className="text-sm text-teal-600/80">Candidatos Arquivados</div>
             </CardContent>
           </Card>
         </div>

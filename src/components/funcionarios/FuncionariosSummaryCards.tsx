@@ -21,74 +21,59 @@ export function FuncionariosSummaryCards({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8 animate-slide-up">
-      <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <Users size={20} className="text-primary" />
-            Total Ativos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-primary mb-2">{funcionariosAtivos}</div>
-          <p className="text-primary/80">funcionários</p>
+      <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">👥</div>
+          <div className="text-2xl font-bold text-slate-600">
+            {funcionariosAtivos}
+          </div>
+          <div className="text-sm text-slate-600/80">Total Ativos</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <span className="text-primary text-lg">🏖️</span>
-            Em Férias
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-primary mb-2">{funcionariosFerias}</div>
-          <p className="text-primary/80">funcionários</p>
+      <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">🏖️</div>
+          <div className="text-2xl font-bold text-blue-600">
+            {funcionariosFerias}
+          </div>
+          <div className="text-sm text-blue-600/80">Em Férias</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-orange-100 to-orange-200 border-orange-300 relative">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <span className="text-orange-700 text-lg">⏳</span>
-            Experiência
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
+      <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 relative">
+        <CardContent className="card-content text-center p-4">
           {alertasExperiencia > 0 && (
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
           )}
-          <div className="text-4xl font-bold text-orange-700 mb-2">{funcionariosExperiencia}</div>
-          <p className="text-orange-700/80">funcionários</p>
+          <div className="text-3xl mb-2">⏳</div>
+          <div className="text-2xl font-bold text-orange-600">
+            {funcionariosExperiencia}
+          </div>
+          <div className="text-sm text-orange-600/80">Experiência</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-red-100 to-red-200 border-red-300 relative">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <span className="text-red-700 text-lg">⚠️</span>
-            Aviso Prévio
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
+      <Card className="modern-card bg-gradient-to-br from-red-50 to-red-100 border-red-200 relative">
+        <CardContent className="card-content text-center p-4">
           {alertasAvisoPrevio > 0 && (
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce"></div>
           )}
-          <div className="text-4xl font-bold text-red-700 mb-2">{funcionariosAviso}</div>
-          <p className="text-red-700/80">funcionários</p>
+          <div className="text-3xl mb-2">⚠️</div>
+          <div className="text-2xl font-bold text-red-600">
+            {funcionariosAviso}
+          </div>
+          <div className="text-sm text-red-600/80">Aviso Prévio</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-400 shadow-yellow-200/50">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <Star size={20} className="text-yellow-700 fill-yellow-600" />
-            Destaque
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-yellow-700 mb-2">{funcionariosDestaque}</div>
-          <p className="text-yellow-700/80">funcionários</p>
+      <Card className="modern-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">⭐</div>
+          <div className="text-2xl font-bold text-yellow-600">
+            {funcionariosDestaque}
+          </div>
+          <div className="text-sm text-yellow-600/80">Destaque</div>
         </CardContent>
       </Card>
     </div>

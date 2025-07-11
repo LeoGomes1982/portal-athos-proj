@@ -14,55 +14,43 @@ export function DocumentSummaryCards({ documentos }: DocumentSummaryCardsProps) 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-      <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <Folder size={20} className="text-primary" />
-            Total de Documentos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-primary mb-2">{totalDocumentos}</div>
-          <p className="text-primary/80">documentos arquivados</p>
+      <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">📁</div>
+          <div className="text-2xl font-bold text-slate-600">
+            {totalDocumentos}
+          </div>
+          <div className="text-sm text-slate-600/80">Total de Documentos</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-red-500/10 to-red-500/20 border-red-500/20">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <AlertTriangle size={20} className="text-red-600" />
-            Vencendo
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-red-600 mb-2">{docsVencendo}</div>
-          <p className="text-red-600/80">próximos ao vencimento</p>
+      <Card className="modern-card bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">⚠️</div>
+          <div className="text-2xl font-bold text-red-600">
+            {docsVencendo}
+          </div>
+          <div className="text-sm text-red-600/80">Vencendo</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-green-500/10 to-green-500/20 border-green-500/20">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <Users size={20} className="text-green-600" />
-            Funcionários
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-green-600 mb-2">{documentosFuncionarios}</div>
-          <p className="text-green-600/80">docs de funcionários</p>
+      <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">👥</div>
+          <div className="text-2xl font-bold text-green-600">
+            {documentosFuncionarios}
+          </div>
+          <div className="text-sm text-green-600/80">Funcionários</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-purple-500/10 to-purple-500/20 border-purple-500/20">
-        <CardHeader className="card-header">
-          <CardTitle className="section-title flex items-center gap-2 mb-0">
-            <Building size={20} className="text-purple-600" />
-            Gerais
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="card-content">
-          <div className="text-4xl font-bold text-purple-600 mb-2">{documentosGerais}</div>
-          <p className="text-purple-600/80">documentos gerais</p>
+      <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <CardContent className="card-content text-center p-4">
+          <div className="text-3xl mb-2">🏢</div>
+          <div className="text-2xl font-bold text-purple-600">
+            {documentosGerais}
+          </div>
+          <div className="text-sm text-purple-600/80">Gerais</div>
         </CardContent>
       </Card>
     </div>
