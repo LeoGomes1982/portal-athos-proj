@@ -354,7 +354,7 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
                   <SelectValue placeholder="Selecione o tipo de destinatário" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">🏢 Documento Geral</SelectItem>
+                  <SelectItem value="geral">🏢 Documento Geral</SelectItem>
                   <SelectItem value="funcionario">👤 Funcionário</SelectItem>
                   <SelectItem value="local">📍 Local/Setor</SelectItem>
                 </SelectContent>
