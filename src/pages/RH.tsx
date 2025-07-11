@@ -1,14 +1,25 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { 
   Users
 } from "lucide-react";
+import { NotificationBadge } from "@/components/NotificationBadge";
+import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 
 export default function RH() {
   const navigate = useNavigate();
+  const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
+
+  // Verificar notificações quando o componente monta
+  useEffect(() => {
+    const savedDocs = localStorage.getItem('documentos');
+    if (savedDocs) {
+      checkDocumentosVencendo(JSON.parse(savedDocs));
+    }
+  }, [checkDocumentosVencendo]);
 
   return (
     <div className="app-container">
@@ -25,8 +36,9 @@ export default function RH() {
 
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg relative">
             <Users size={32} className="text-white" />
+            <NotificationBadge show={hasNotifications} />
           </div>
           <h1 className="page-title text-center">
             Recursos Humanos

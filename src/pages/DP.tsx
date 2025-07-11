@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,9 @@ import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsectio
 import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
 import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
 import { GeladeiraSubsection } from "@/components/subsections/GeladeiraSubsection";
+import { DocumentosSubsection } from "@/components/subsections/DocumentosSubsection";
+import { NotificationBadge } from "@/components/NotificationBadge";
+import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 
 const subsections = [
   {
@@ -82,6 +85,15 @@ const subsections = [
 export default function DP() {
   const navigate = useNavigate();
   const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
+  const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
+
+  // Verificar notificações quando o componente monta
+  useEffect(() => {
+    const savedDocs = localStorage.getItem('documentos');
+    if (savedDocs) {
+      checkDocumentosVencendo(JSON.parse(savedDocs));
+    }
+  }, [checkDocumentosVencendo]);
 
   const handleSubsectionClick = (subsectionId: string) => {
     if (subsectionId === "processo-seletivo") {
@@ -115,6 +127,10 @@ export default function DP() {
     return <GeladeiraSubsection onBack={handleBackToMain} />;
   }
 
+  if (activeSubsection === "documentos") {
+    return <DocumentosSubsection onBack={handleBackToMain} />;
+  }
+
   return (
     <div className="app-container">
       <div className="content-wrapper">
@@ -130,8 +146,9 @@ export default function DP() {
 
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg relative">
             <FileText size={32} className="text-white" />
+            <NotificationBadge show={hasNotifications} />
           </div>
           <h1 className="page-title text-center">
             DP e RH
@@ -149,6 +166,11 @@ export default function DP() {
               className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-secondary border-primary/20 hover:border-primary/30"
               onClick={() => handleSubsectionClick(subsection.id)}
             >
+              {/* Notificação para documentos */}
+              {subsection.id === "documentos" && (
+                <NotificationBadge show={hasNotifications} />
+              )}
+              
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
                   <subsection.icon size={32} className={subsection.textColor} />

@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Upload, Search, Plus, Home } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ChevronLeft, Upload, Search, Plus, Home, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentCard } from "@/components/DocumentCard";
 import { useNavigate } from "react-router-dom";
+import { useDocumentNotifications, DocumentoCompleto } from "@/hooks/useDocumentNotifications";
 
 interface DocumentosSubsectionProps {
   onBack: () => void;
@@ -22,61 +24,66 @@ const funcionarios = [
   { id: 5, nome: "Patricia Fernandes", cargo: "Assistente Administrativo", status: "aviso" }
 ];
 
-// Documentos mockados expandidos
-const documentosMock = [
+// Lista de locais para associar documentos
+const locais = [
+  { id: 1, nome: "Sede Principal" },
+  { id: 2, nome: "Filial Norte" },
+  { id: 3, nome: "Filial Sul" },
+  { id: 4, nome: "Escritório Regional" },
+  { id: 5, nome: "Almoxarifado Central" }
+];
+
+// Documentos mockados com sistema de validade
+const documentosMockCompletos: DocumentoCompleto[] = [
   {
     id: 1,
     nome: "Contrato_Ana_Silva.pdf",
     tipo: "Contrato",
     funcionario: "Ana Silva",
+    local: null,
     dataUpload: "2024-06-15",
     tamanho: "2.5 MB",
-    thumbnail: "📄"
+    thumbnail: "📄",
+    temValidade: false,
+    visualizado: false
   },
   {
     id: 2,
     nome: "Manual_Funcionario_2024.pdf",
     tipo: "Manual",
     funcionario: null,
+    local: "Sede Principal",
     dataUpload: "2024-06-10",
     tamanho: "8.2 MB",
-    thumbnail: "📚"
+    thumbnail: "📚",
+    temValidade: true,
+    dataValidade: "2024-12-31",
+    visualizado: false
   },
   {
     id: 3,
     nome: "Exame_Medico_Joao.pdf",
     tipo: "Exame Médico",
     funcionario: "João Santos",
+    local: null,
     dataUpload: "2024-06-08",
     tamanho: "1.8 MB",
-    thumbnail: "🏥"
+    thumbnail: "🏥",
+    temValidade: true,
+    dataValidade: "2025-01-15", // Vence em 2 dias para teste
+    visualizado: false
   },
   {
     id: 4,
     nome: "Politica_Empresa.pdf",
     tipo: "Política",
     funcionario: null,
+    local: "Sede Principal",
     dataUpload: "2024-06-05",
     tamanho: "3.1 MB",
-    thumbnail: "📋"
-  },
-  {
-    id: 5,
-    nome: "Contrato_Maria_Costa.pdf",
-    tipo: "Contrato",
-    funcionario: "Maria Costa",
-    dataUpload: "2024-06-12",
-    tamanho: "2.1 MB",
-    thumbnail: "📄"
-  },
-  {
-    id: 6,
-    nome: "Exame_Carlos.pdf",
-    tipo: "Exame Médico",
-    funcionario: "Carlos Oliveira",
-    dataUpload: "2024-06-07",
-    tamanho: "1.9 MB",
-    thumbnail: "🏥"
+    thumbnail: "📋",
+    temValidade: false,
+    visualizado: false
   }
 ];
 
@@ -84,13 +91,32 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [documentos, setDocumentos] = useState(documentosMock);
+  const [documentos, setDocumentos] = useState<DocumentoCompleto[]>(() => {
+    const saved = localStorage.getItem('documentos');
+    return saved ? JSON.parse(saved) : documentosMockCompletos;
+  });
+  
+  const { documentosVencendo, hasNotifications, checkDocumentosVencendo, marcarComoVisualizado } = useDocumentNotifications();
+  
   const [uploadData, setUploadData] = useState({
     arquivo: null as File | null,
     tipo: "",
-    funcionarioId: "",
-    descricao: ""
+    destinatario: "", // pode ser funcionário ou local
+    tipoDestinatario: "", // "funcionario" ou "local"
+    descricao: "",
+    temValidade: false,
+    dataValidade: ""
   });
+
+  // Verificar documentos vencendo ao carregar
+  useEffect(() => {
+    checkDocumentosVencendo(documentos);
+  }, [documentos, checkDocumentosVencendo]);
+
+  // Salvar no localStorage sempre que documentos mudarem
+  useEffect(() => {
+    localStorage.setItem('documentos', JSON.stringify(documentos));
+  }, [documentos]);
 
   const filteredDocumentos = documentos.filter(doc =>
     doc.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,32 +149,57 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       return;
     }
 
-    const funcionario = uploadData.funcionarioId && uploadData.funcionarioId !== "geral"
-      ? funcionarios.find(f => f.id.toString() === uploadData.funcionarioId)?.nome 
-      : null;
+    if (uploadData.temValidade && !uploadData.dataValidade) {
+      toast({
+        title: "Erro ❌",
+        description: "Defina a data de validade",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    const novoDocumento = {
+    let funcionario = null;
+    let local = null;
+
+    if (uploadData.tipoDestinatario === "funcionario" && uploadData.destinatario) {
+      funcionario = funcionarios.find(f => f.id.toString() === uploadData.destinatario)?.nome || null;
+    } else if (uploadData.tipoDestinatario === "local" && uploadData.destinatario) {
+      local = locais.find(l => l.id.toString() === uploadData.destinatario)?.nome || null;
+    }
+
+    const novoDocumento: DocumentoCompleto = {
       id: documentos.length + 1,
       nome: uploadData.arquivo.name,
       tipo: uploadData.tipo.charAt(0).toUpperCase() + uploadData.tipo.slice(1),
       funcionario: funcionario,
+      local: local,
       dataUpload: new Date().toLocaleDateString('pt-BR'),
       tamanho: (uploadData.arquivo.size / (1024 * 1024)).toFixed(1) + " MB",
-      thumbnail: "📄"
+      thumbnail: "📄",
+      temValidade: uploadData.temValidade,
+      dataValidade: uploadData.temValidade ? uploadData.dataValidade : undefined,
+      visualizado: false
     };
 
     setDocumentos(prev => [novoDocumento, ...prev]);
 
+    const destinatarioTexto = funcionario ? `para ${funcionario}` : 
+                            local ? `para ${local}` : 
+                            'como documento geral';
+
     toast({
       title: "Upload Realizado! 📄",
-      description: `${uploadData.arquivo.name} foi adicionado${funcionario ? ` para ${funcionario}` : ' como documento geral'}`,
+      description: `${uploadData.arquivo.name} foi adicionado ${destinatarioTexto}`,
     });
 
     setUploadData({
       arquivo: null,
       tipo: "",
-      funcionarioId: "",
-      descricao: ""
+      destinatario: "",
+      tipoDestinatario: "",
+      descricao: "",
+      temValidade: false,
+      dataValidade: ""
     });
 
     const fileInput = document.getElementById('arquivo') as HTMLInputElement;
@@ -157,6 +208,11 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
 
   const handleViewDocument = (id: number) => {
     const doc = documentos.find(d => d.id === id);
+    
+    // Marcar como visualizado se estava vencendo
+    const documentosAtualizados = marcarComoVisualizado(id, documentos);
+    setDocumentos(documentosAtualizados);
+    
     toast({
       title: "Visualizar Documento 👁️",
       description: `Abrindo ${doc?.nome}...`,
@@ -289,21 +345,63 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
             </div>
 
             <div>
-              <Label htmlFor="funcionario">Associar ao Funcionário</Label>
-              <Select value={uploadData.funcionarioId} onValueChange={(value) => setUploadData(prev => ({ ...prev, funcionarioId: value }))}>
+              <Label>Tipo de Destinatário</Label>
+              <Select 
+                value={uploadData.tipoDestinatario} 
+                onValueChange={(value) => setUploadData(prev => ({ ...prev, tipoDestinatario: value, destinatario: "" }))}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="🏢 Documento geral ou selecione funcionário" />
+                  <SelectValue placeholder="Selecione o tipo de destinatário" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="geral">🏢 Documento Geral</SelectItem>
-                  {funcionarios.map((funcionario) => (
-                    <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
-                      👤 {funcionario.nome} - {funcionario.cargo}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="">🏢 Documento Geral</SelectItem>
+                  <SelectItem value="funcionario">👤 Funcionário</SelectItem>
+                  <SelectItem value="local">📍 Local/Setor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {uploadData.tipoDestinatario === "funcionario" && (
+              <div>
+                <Label>Funcionário</Label>
+                <Select 
+                  value={uploadData.destinatario} 
+                  onValueChange={(value) => setUploadData(prev => ({ ...prev, destinatario: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o funcionário" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {funcionarios.map((funcionario) => (
+                      <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
+                        👤 {funcionario.nome} - {funcionario.cargo}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {uploadData.tipoDestinatario === "local" && (
+              <div>
+                <Label>Local/Setor</Label>
+                <Select 
+                  value={uploadData.destinatario} 
+                  onValueChange={(value) => setUploadData(prev => ({ ...prev, destinatario: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o local" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locais.map((local) => (
+                      <SelectItem key={local.id} value={local.id.toString()}>
+                        📍 {local.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div>
               <Label htmlFor="descricao">Descrição (Opcional)</Label>
@@ -314,6 +412,28 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
                 placeholder="Descrição do documento..."
               />
             </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="temValidade"
+                checked={uploadData.temValidade}
+                onCheckedChange={(checked) => setUploadData(prev => ({ ...prev, temValidade: checked as boolean }))}
+              />
+              <Label htmlFor="temValidade">Documento tem validade</Label>
+            </div>
+
+            {uploadData.temValidade && (
+              <div>
+                <Label htmlFor="dataValidade">Data de Validade *</Label>
+                <Input
+                  id="dataValidade"
+                  type="date"
+                  value={uploadData.dataValidade}
+                  onChange={(e) => setUploadData(prev => ({ ...prev, dataValidade: e.target.value }))}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+            )}
 
             <Button 
               onClick={handleSubmitUpload}
