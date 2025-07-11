@@ -397,142 +397,152 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             </Card>
           )}
 
-          {/* Tabs para Informações Adicionais e Histórico */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="informacoes">Informações Adicionais</TabsTrigger>
-              <TabsTrigger value="historico">Histórico</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="informacoes" className="mt-4">
-              {/* Endereço e Salário */}
-              {(funcionario.endereco || funcionario.salario) && (
-                <Card className="bg-white border-2 border-blue-200">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                      🏠 Informações Adicionais
-                    </h3>
-                    <div className="space-y-4">
-                      {funcionario.endereco && (
-                        <div>
-                          <label className="text-sm font-medium text-slate-600">Endereço</label>
-                          <p className="text-md font-medium text-slate-700">{funcionario.endereco}</p>
-                        </div>
-                      )}
-                      {funcionario.salario && (
-                        <div>
-                          <label className="text-sm font-medium text-slate-600">Salário</label>
-                          <p className="text-lg font-bold text-blue-700">{funcionario.salario}</p>
-                        </div>
-                      )}
+          {/* Informações Adicionais */}
+          {(funcionario.endereco || funcionario.salario) && (
+            <Card className="bg-white border-2 border-blue-200">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  🏠 Informações Adicionais
+                </h3>
+                <div className="space-y-4">
+                  {funcionario.endereco && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Endereço</label>
+                      <p className="text-md font-medium text-slate-700">{funcionario.endereco}</p>
+                    </div>
+                  )}
+                  {funcionario.salario && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Salário</label>
+                      <p className="text-lg font-bold text-blue-700">{funcionario.salario}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Histórico */}
+          <Card className="bg-white border-2 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                  📋 Histórico
+                </h3>
+                <Button 
+                  onClick={() => setShowNovoRegistro(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  size="sm"
+                >
+                  <Plus size={16} className="mr-1" />
+                  Incluir Registro
+                </Button>
+              </div>
+
+              {/* Formulário para novo registro */}
+              {showNovoRegistro && (
+                <Card className="mb-4 bg-blue-50 border-blue-200">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium text-slate-700 mb-3">Novo Registro</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="classificacao" className="text-sm font-medium text-slate-600">
+                          Classificação
+                        </Label>
+                        <Select
+                          value={novoRegistro.classificacao}
+                          onValueChange={(value) => setNovoRegistro({...novoRegistro, classificacao: value as "positiva" | "neutra" | "negativa"})}
+                        >
+                          <SelectTrigger className="w-full mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="positiva">👍 Positiva</SelectItem>
+                            <SelectItem value="neutra">➖ Neutra</SelectItem>
+                            <SelectItem value="negativa">👎 Negativa</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="comentario" className="text-sm font-medium text-slate-600">
+                          Comentário
+                        </Label>
+                        <Textarea
+                          id="comentario"
+                          placeholder="Descreva o registro..."
+                          value={novoRegistro.comentario}
+                          onChange={(e) => setNovoRegistro({...novoRegistro, comentario: e.target.value})}
+                          className="mt-1 resize-none"
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="registradoPor" className="text-sm font-medium text-slate-600">
+                          Registrado por
+                        </Label>
+                        <Input
+                          id="registradoPor"
+                          value={novoRegistro.registradoPor}
+                          onChange={(e) => setNovoRegistro({...novoRegistro, registradoPor: e.target.value})}
+                          className="mt-1"
+                        />
+                      </div>
+                      
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          onClick={handleSalvarRegistro}
+                          className="bg-green-600 hover:bg-green-700"
+                          size="sm"
+                        >
+                          Salvar
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowNovoRegistro(false)}
+                          size="sm"
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               )}
-            </TabsContent>
 
-            <TabsContent value="historico" className="mt-4">
-              <Card className="bg-white border-2 border-blue-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                      📋 Histórico do Funcionário
-                    </h3>
-                    <Button 
-                      onClick={() => setShowNovoRegistro(true)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Plus size={16} className="mr-2" />
-                      Incluir Registro
-                    </Button>
+              {/* Lista de registros do histórico */}
+              <div className="space-y-3">
+                {historico.length === 0 ? (
+                  <div className="text-center py-8">
+                    <MessageSquare size={48} className="mx-auto text-gray-400 mb-3" />
+                    <p className="text-gray-500">Nenhum registro no histórico</p>
+                    <p className="text-sm text-gray-400">Clique em "Incluir Registro" para adicionar um novo registro</p>
                   </div>
-
-                  {/* Formulário para novo registro */}
-                  {showNovoRegistro && (
-                    <Card className="mb-4 bg-blue-50 border-blue-200">
+                ) : (
+                  historico.map((registro) => (
+                    <Card key={registro.id} className={`border ${getClassificacaoColor(registro.classificacao)}`}>
                       <CardContent className="p-4">
-                        <h4 className="font-medium text-slate-700 mb-3">Novo Registro</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <Label className="text-sm font-medium text-slate-600">Classificação</Label>
-                            <Select 
-                              value={novoRegistro.classificacao} 
-                              onValueChange={(value) => setNovoRegistro({...novoRegistro, classificacao: value as "positiva" | "neutra" | "negativa"})}
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="positiva">👍 Positiva</SelectItem>
-                                <SelectItem value="neutra">➖ Neutra</SelectItem>
-                                <SelectItem value="negativa">👎 Negativa</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium text-slate-600">Comentário</Label>
-                            <Textarea
-                              value={novoRegistro.comentario}
-                              onChange={(e) => setNovoRegistro({...novoRegistro, comentario: e.target.value})}
-                              placeholder="Descreva o registro..."
-                              className="mt-1"
-                              rows={3}
-                            />
-                          </div>
-                          <div className="flex gap-2">
-                            <Button onClick={handleSalvarRegistro} className="bg-green-600 hover:bg-green-700">
-                              Salvar
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              onClick={() => {
-                                setShowNovoRegistro(false);
-                                setNovoRegistro({classificacao: "neutra", comentario: "", registradoPor: "Usuário Atual"});
-                              }}
-                            >
-                              Cancelar
-                            </Button>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-lg">{getClassificacaoIcon(registro.classificacao)}</span>
+                              <span className="font-medium text-sm capitalize">{registro.classificacao}</span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(registro.data).toLocaleString('pt-BR')}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-700 mb-2">{registro.comentario}</p>
+                            <p className="text-xs text-gray-500">Por: {registro.registradoPor}</p>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
-                  )}
-
-                  {/* Lista de registros */}
-                  <div className="space-y-3">
-                    {historico.length === 0 ? (
-                      <div className="text-center py-8">
-                        <MessageSquare size={48} className="mx-auto text-gray-400 mb-2" />
-                        <p className="text-gray-500">Nenhum registro no histórico</p>
-                        <p className="text-sm text-gray-400">Clique em "Incluir Registro" para adicionar o primeiro</p>
-                      </div>
-                    ) : (
-                      historico.map((registro) => (
-                        <Card key={registro.id} className="border-l-4 border-l-blue-500">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Badge className={`text-xs ${getClassificacaoColor(registro.classificacao)}`}>
-                                    {getClassificacaoIcon(registro.classificacao)} {registro.classificacao.charAt(0).toUpperCase() + registro.classificacao.slice(1)}
-                                  </Badge>
-                                  <span className="text-sm text-gray-500">
-                                    {new Date(registro.data).toLocaleDateString('pt-BR')} às {new Date(registro.data).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}
-                                  </span>
-                                </div>
-                                <p className="text-slate-700 mb-2">{registro.comentario}</p>
-                                <p className="text-xs text-gray-500">Registrado por: {registro.registradoPor}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Ações */}
           <div className="flex justify-end gap-3 pt-4 border-t-2 border-blue-200">
