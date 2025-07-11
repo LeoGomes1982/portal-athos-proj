@@ -5,6 +5,7 @@ import { ArrowLeft, Shirt, Package, Settings, TrendingUp, Users } from "lucide-r
 import { GerenciarUniformesModal } from "@/components/modals/GerenciarUniformesModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
+import { DetalhesEquipamentosFuncionarioModal } from "@/components/modals/DetalhesEquipamentosFuncionarioModal";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -31,6 +32,8 @@ interface EntregaRegistro {
 
 export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const [showGerenciarModal, setShowGerenciarModal] = useState(false);
+  const [showDetalhesModal, setShowDetalhesModal] = useState(false);
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<{ id: number; nome: string } | null>(null);
   
   const [estoque, setEstoque] = useState<EstoqueItem[]>([
     {
@@ -198,6 +201,11 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
     return icons[item] || "📦";
   };
 
+  const handleFuncionarioClick = (funcionarioId: number, funcionarioNome: string) => {
+    setFuncionarioSelecionado({ id: funcionarioId, nome: funcionarioNome });
+    setShowDetalhesModal(true);
+  };
+
   return (
     <div className="app-container">
       <div className="content-wrapper">
@@ -323,9 +331,14 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{getItemIcon(entrega.item)}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-slate-800">{entrega.funcionarioNome}</h3>
+                       <div className="flex-1">
+                         <div className="flex items-center gap-2">
+                           <h3 
+                             className="font-semibold text-slate-800 cursor-pointer hover:text-primary transition-colors"
+                             onClick={() => handleFuncionarioClick(entrega.funcionarioId, entrega.funcionarioNome)}
+                           >
+                             {entrega.funcionarioNome}
+                           </h3>
                           {contadoresFuncionarios[entrega.funcionarioId] && (
                             <div className="flex items-center gap-1">
                               {contadoresFuncionarios[entrega.funcionarioId].uniforme > 0 && (
@@ -377,13 +390,21 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <GerenciarUniformesModal
         isOpen={showGerenciarModal}
         onClose={() => setShowGerenciarModal(false)}
         onEntradaEstoque={handleEntradaEstoque}
         onEntregaUniforme={handleEntregaUniforme}
         estoque={estoque}
+      />
+
+      <DetalhesEquipamentosFuncionarioModal
+        isOpen={showDetalhesModal}
+        onClose={() => setShowDetalhesModal(false)}
+        funcionarioId={funcionarioSelecionado?.id || null}
+        funcionarioNome={funcionarioSelecionado?.nome || ""}
+        entregas={entregas}
       />
     </div>
   );
