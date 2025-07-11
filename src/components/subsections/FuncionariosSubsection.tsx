@@ -87,6 +87,15 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     );
   };
 
+  const handleFuncionarioUpdate = (funcionarioAtualizado: Funcionario) => {
+    setFuncionariosList(prev => 
+      prev.map(func => 
+        func.id === funcionarioAtualizado.id ? funcionarioAtualizado : func
+      )
+    );
+    setSelectedFuncionario(funcionarioAtualizado);
+  };
+
   const alertasExperiencia = funcionariosAtivos.filter(f => 
     f.status === 'experiencia' && f.dataFimExperiencia && isProximoDoFim(f.dataFimExperiencia)
   ).length;
@@ -162,6 +171,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onStatusChange={handleStatusChange}
+          onFuncionarioUpdate={handleFuncionarioUpdate}
         />
       )}
     </div>

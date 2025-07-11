@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, AlertTriangle, X, User, Plus, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { EditarFuncionarioModal } from "./EditarFuncionarioModal";
 
 interface HistoricoRegistro {
   id: string;
@@ -42,6 +43,7 @@ interface FuncionarioDetalhesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStatusChange: (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => void;
+  onFuncionarioUpdate?: (funcionario: Funcionario) => void;
 }
 
 const statusConfig = {
@@ -53,7 +55,7 @@ const statusConfig = {
   destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700", bgColor: "#FFFBEB" }
 };
 
-export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange }: FuncionarioDetalhesModalProps) {
+export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange, onFuncionarioUpdate }: FuncionarioDetalhesModalProps) {
   const { toast } = useToast();
   const [statusAtual, setStatusAtual] = useState(funcionario.status);
   const [showDateInput, setShowDateInput] = useState(false);
@@ -69,6 +71,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     comentario: "",
     registradoPor: "Usuário Atual" // Em uma aplicação real, seria obtido do contexto de autenticação
   });
+  
+  // Estado para o modal de edição
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
@@ -183,6 +188,17 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
       case "neutra": return "bg-gray-100 text-gray-700 border-gray-200";
       default: return "bg-gray-100 text-gray-700 border-gray-200";
     }
+  };
+
+  const handleEditarFuncionario = () => {
+    setShowEditModal(true);
+  };
+
+  const handleSalvarEdicaoFuncionario = (funcionarioEditado: Funcionario) => {
+    if (onFuncionarioUpdate) {
+      onFuncionarioUpdate(funcionarioEditado);
+    }
+    setShowEditModal(false);
   };
 
   const statusInfo = statusConfig[statusAtual];
@@ -527,7 +543,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             >
               Fechar
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+            <Button 
+              onClick={handleEditarFuncionario}
+              className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+            >
               📝 Editar Funcionário
             </Button>
             <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
@@ -535,6 +554,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             </Button>
           </div>
         </div>
+
+        {/* Modal de Edição */}
+        <EditarFuncionarioModal
+          funcionario={funcionario}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSalvarEdicaoFuncionario}
+        />
       </div>
     </div>
   );
