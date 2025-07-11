@@ -312,49 +312,6 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
           </div>
         </div>
 
-        {/* Funcionários com Equipamentos */}
-        {Object.keys(contadoresFuncionarios).length > 0 && (
-          <div className="mb-8 animate-slide-up">
-            <h2 className="section-title mb-4">Funcionários com Equipamentos</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(contadoresFuncionarios).map(([funcionarioId, contador]) => (
-                <Card key={funcionarioId} className="modern-card">
-                  <CardContent className="card-content p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/30 rounded-full">
-                          <Users size={20} className="text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-800">{contador.nome}</h3>
-                          <p className="text-sm text-slate-600">ID: {funcionarioId}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {contador.uniforme > 0 && (
-                          <Badge 
-                            variant="secondary" 
-                            className="bg-blue-500 text-white hover:bg-blue-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
-                          >
-                            {contador.uniforme}
-                          </Badge>
-                        )}
-                        {contador.epi > 0 && (
-                          <Badge 
-                            variant="secondary" 
-                            className="bg-green-500 text-white hover:bg-green-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
-                          >
-                            {contador.epi}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Entregas Recentes */}
         <div className="animate-slide-up">
@@ -366,8 +323,30 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{getItemIcon(entrega.item)}</span>
-                      <div>
-                        <h3 className="font-semibold text-slate-800">{entrega.funcionarioNome}</h3>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-slate-800">{entrega.funcionarioNome}</h3>
+                          {contadoresFuncionarios[entrega.funcionarioId] && (
+                            <div className="flex items-center gap-1">
+                              {contadoresFuncionarios[entrega.funcionarioId].uniforme > 0 && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-blue-500 text-white hover:bg-blue-600 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                                >
+                                  {contadoresFuncionarios[entrega.funcionarioId].uniforme}
+                                </Badge>
+                              )}
+                              {contadoresFuncionarios[entrega.funcionarioId].epi > 0 && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-green-500 text-white hover:bg-green-600 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                                >
+                                  {contadoresFuncionarios[entrega.funcionarioId].epi}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
                         <p className="text-sm text-slate-600">
                           {entrega.item} - Tamanho {entrega.tamanho} - Qtd: {entrega.quantidade}
                         </p>
