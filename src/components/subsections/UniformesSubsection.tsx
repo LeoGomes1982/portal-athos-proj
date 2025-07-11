@@ -121,15 +121,15 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const totalEPIs = estoque.filter(item => item.categoria === "epi").reduce((sum, item) => sum + item.quantidade, 0);
   const totalEntregas = entregas.length;
 
-  // Função para contar entregas por funcionário e categoria
+  // Função para contar total de entregas por funcionário
   const getContadoresPorFuncionario = () => {
-    const contadores: { [funcionarioId: number]: { uniforme: number; epi: number; nome: string } } = {};
+    const contadores: { [funcionarioId: number]: { total: number; nome: string } } = {};
     
     entregas.forEach((entrega) => {
       if (!contadores[entrega.funcionarioId]) {
-        contadores[entrega.funcionarioId] = { uniforme: 0, epi: 0, nome: entrega.funcionarioNome };
+        contadores[entrega.funcionarioId] = { total: 0, nome: entrega.funcionarioNome };
       }
-      contadores[entrega.funcionarioId][entrega.categoria] += entrega.quantidade;
+      contadores[entrega.funcionarioId].total += entrega.quantidade;
     });
     
     return contadores;
@@ -339,26 +339,14 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
                            >
                              {entrega.funcionarioNome}
                            </h3>
-                          {contadoresFuncionarios[entrega.funcionarioId] && (
-                            <div className="flex items-center gap-1">
-                              {contadoresFuncionarios[entrega.funcionarioId].uniforme > 0 && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className="bg-blue-500 text-white hover:bg-blue-600 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
-                                >
-                                  {contadoresFuncionarios[entrega.funcionarioId].uniforme}
-                                </Badge>
-                              )}
-                              {contadoresFuncionarios[entrega.funcionarioId].epi > 0 && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className="bg-green-500 text-white hover:bg-green-600 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs font-bold"
-                                >
-                                  {contadoresFuncionarios[entrega.funcionarioId].epi}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
+                           {contadoresFuncionarios[entrega.funcionarioId] && (
+                             <Badge 
+                               variant="secondary" 
+                               className="bg-blue-500 text-white hover:bg-blue-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                             >
+                               {contadoresFuncionarios[entrega.funcionarioId].total}
+                             </Badge>
+                           )}
                         </div>
                         <p className="text-sm text-slate-600">
                           {entrega.item} - Tamanho {entrega.tamanho} - Qtd: {entrega.quantidade}
