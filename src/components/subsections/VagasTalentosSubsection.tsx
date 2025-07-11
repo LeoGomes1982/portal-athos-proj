@@ -107,6 +107,11 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
     ]
   });
 
+  // Estado para candidatos na geladeira
+  const [candidatosGeladeira, setCandidatosGeladeira] = useState<Candidato[]>(() => {
+    const saved = localStorage.getItem('candidatosGeladeira');
+    return saved ? JSON.parse(saved) : [];
+  });
   const vagasAtivas = vagas.filter(v => v.status === "ativa").length;
   const totalCandidatos = vagas.reduce((sum, vaga) => sum + vaga.candidatos, 0);
 
@@ -179,6 +184,30 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
     // Salva no localStorage para simular envio para processo seletivo
     const processoAtual = JSON.parse(localStorage.getItem('processoSeletivo') || '[]');
     localStorage.setItem('processoSeletivo', JSON.stringify([...processoAtual, processoSeletivoData]));
+  };
+
+  const handleEnviarParaGeladeira = (candidato: Candidato) => {
+    // Remove o candidato da lista de candidatos de vagas
+    setCandidatos(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(vagaId => {
+        updated[vagaId] = updated[vagaId].filter(c => c.id !== candidato.id);
+      });
+      return updated;
+    });
+
+    // Adiciona o candidato à geladeira com dados da vaga
+    const candidatoComVaga = {
+      ...candidato,
+      vaga: vagaSelecionada?.titulo || '',
+      vagaId: vagaSelecionada?.id || '',
+      dataArquivamento: new Date().toISOString(),
+      comentarios: ''
+    };
+
+    const novosGeladeira = [...candidatosGeladeira, candidatoComVaga];
+    setCandidatosGeladeira(novosGeladeira);
+    localStorage.setItem('candidatosGeladeira', JSON.stringify(novosGeladeira));
   };
 
   const getJornadaLabel = (jornada: string) => {
@@ -361,6 +390,7 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
             candidatos={candidatos[vagaSelecionada.id] || []}
             onClassificarCandidato={handleClassificarCandidato}
             onEnviarParaProcessoSeletivo={handleEnviarParaProcessoSeletivo}
+            onEnviarParaGeladeira={handleEnviarParaGeladeira}
           />
         </>
       )}

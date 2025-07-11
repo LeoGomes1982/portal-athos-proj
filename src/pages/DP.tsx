@@ -11,12 +11,14 @@ import {
   Archive,
   Briefcase, 
   UserCheck,
-  Shield
+  Shield,
+  Refrigerator
 } from "lucide-react";
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
 import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
 import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
+import { GeladeiraSubsection } from "@/components/subsections/GeladeiraSubsection";
 
 const subsections = [
   {
@@ -63,7 +65,7 @@ const subsections = [
     id: "geladeira",
     title: "Geladeira",
     description: "Arquivos do RH",
-    icon: FolderOpen,
+    icon: Refrigerator,
     bgColor: "bg-teal-100",
     textColor: "text-teal-700"
   },
@@ -107,6 +109,10 @@ export default function DP() {
 
   if (activeSubsection === "uniformes-epis") {
     return <UniformesSubsection onBack={handleBackToMain} />;
+  }
+
+  if (activeSubsection === "geladeira") {
+    return <GeladeiraSubsection onBack={handleBackToMain} />;
   }
 
   return (

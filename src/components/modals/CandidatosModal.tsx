@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { X, User, Phone, Mail, MapPin, FileText, Eye, Star, ArrowRight } from "lucide-react";
+import { X, User, Phone, Mail, MapPin, FileText, Eye, Star, ArrowRight, Refrigerator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Candidato {
@@ -27,6 +27,7 @@ interface CandidatosModalProps {
   candidatos: Candidato[];
   onClassificarCandidato?: (candidatoId: string, classificacao: number) => void;
   onEnviarParaProcessoSeletivo?: (candidato: Candidato) => void;
+  onEnviarParaGeladeira?: (candidato: Candidato) => void;
 }
 
 export function CandidatosModal({ 
@@ -35,7 +36,8 @@ export function CandidatosModal({
   vaga, 
   candidatos,
   onClassificarCandidato,
-  onEnviarParaProcessoSeletivo
+  onEnviarParaProcessoSeletivo,
+  onEnviarParaGeladeira
 }: CandidatosModalProps) {
   const { toast } = useToast();
   
@@ -60,30 +62,47 @@ export function CandidatosModal({
     });
   };
 
+  const handleEnviarGeladeira = (candidato: Candidato) => {
+    onEnviarParaGeladeira?.(candidato);
+    toast({
+      title: "Candidato arquivado",
+      description: `${candidato.nome} foi enviado para a geladeira`,
+    });
+  };
+
   const StarRating = ({ candidato }: { candidato: Candidato }) => {
     const classificacao = candidato.classificacao || 0;
     
     return (
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((estrela) => (
-          <button
-            key={estrela}
-            onClick={() => handleClassificacao(candidato.id, estrela)}
-            className="hover:scale-110 transition-transform"
-          >
-            <Star
-              size={16}
-              className={`${
-                estrela <= classificacao
-                  ? "text-yellow-500 fill-yellow-500"
-                  : "text-gray-300"
-              }`}
-            />
-          </button>
-        ))}
-        <span className="text-xs text-slate-600 ml-1">
-          ({classificacao}/5)
-        </span>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((estrela) => (
+            <button
+              key={estrela}
+              onClick={() => handleClassificacao(candidato.id, estrela)}
+              className="hover:scale-110 transition-transform"
+            >
+              <Star
+                size={16}
+                className={`${
+                  estrela <= classificacao
+                    ? "text-yellow-500 fill-yellow-500"
+                    : "text-gray-300"
+                }`}
+              />
+            </button>
+          ))}
+          <span className="text-xs text-slate-600 ml-1">
+            ({classificacao}/5)
+          </span>
+        </div>
+        <button
+          onClick={() => handleEnviarGeladeira(candidato)}
+          className="p-1 hover:bg-teal-100 rounded transition-colors"
+          title="Enviar para Geladeira"
+        >
+          <Refrigerator size={16} className="text-teal-600" />
+        </button>
       </div>
     );
   };
