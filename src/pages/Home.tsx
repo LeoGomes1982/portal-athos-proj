@@ -122,7 +122,7 @@ const Home = () => {
       icon: UserPlus,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => window.open("/portal-admissao", "_blank")
+      onClick: () => navigate("/portal-admissao")
     },
     {
       id: "portal-vagas",
@@ -131,7 +131,7 @@ const Home = () => {
       icon: Target,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => window.open("/portal-vagas", "_blank")
+      onClick: () => navigate("/portal-vagas")
     },
     {
       id: "portal-midia",
@@ -140,7 +140,7 @@ const Home = () => {
       icon: Globe,
       className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
       iconColor: "text-blue-600",
-      onClick: () => window.open("/portal-midia-externa", "_blank")
+      onClick: () => navigate("/portal-midia-externa")
     }
   ];
 
