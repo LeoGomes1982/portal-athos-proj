@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Folder, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
+import { useDocumentNotifications, DocumentoCompleto } from "@/hooks/useDocumentNotifications";
 import { useDocumentStorage } from "@/hooks/useDocumentStorage";
 import { NovoDocumentoModal } from "@/components/modals/DocumentosModal";
+import { DocumentViewModal } from "@/components/modals/DocumentViewModal";
 import { DocumentSummaryCards } from "@/components/documentos/DocumentSummaryCards";
 import { DocumentSearch } from "@/components/documentos/DocumentSearch";
 import { DocumentGrid } from "@/components/documentos/DocumentGrid";
@@ -20,6 +21,8 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const { marcarComoVisualizado } = useDocumentNotifications();
   const { documentos, adicionarDocumento, atualizarDocumentos } = useDocumentStorage();
   const [showNovoDocumentoModal, setShowNovoDocumentoModal] = useState(false);
+  const [showDocumentViewModal, setShowDocumentViewModal] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<DocumentoCompleto | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredDocumentos = documentos.filter(doc =>
@@ -30,20 +33,32 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
 
   const handleViewDocument = (id: number) => {
     const doc = documentos.find(d => d.id === id);
-    const documentosAtualizados = marcarComoVisualizado(id, documentos);
-    atualizarDocumentos(documentosAtualizados);
-    toast({
-      title: "Visualizar Documento 👁️",
-      description: `Abrindo ${doc?.nome}...`,
-    });
+    if (doc) {
+      setSelectedDocument(doc);
+      setShowDocumentViewModal(true);
+      
+      // Marcar como visualizado
+      const documentosAtualizados = marcarComoVisualizado(id, documentos);
+      atualizarDocumentos(documentosAtualizados);
+    }
   };
 
   const handleDownloadDocument = (id: number) => {
     const doc = documentos.find(d => d.id === id);
-    toast({
-      title: "Download Iniciado 📥",
-      description: `Baixando ${doc?.nome}...`,
-    });
+    if (doc) {
+      // Simular download do arquivo
+      const link = document.createElement('a');
+      link.href = '#'; // Em um caso real, seria a URL do documento
+      link.download = doc.nome;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Download Iniciado 📥",
+        description: `Baixando ${doc.nome}...`,
+      });
+    }
   };
 
   const handleDeleteDocument = (id: number) => {
@@ -113,11 +128,22 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal de Novo Documento */}
       <NovoDocumentoModal
         isOpen={showNovoDocumentoModal}
         onClose={() => setShowNovoDocumentoModal(false)}
         onSubmit={adicionarDocumento}
+      />
+
+      {/* Modal de Visualização */}
+      <DocumentViewModal
+        isOpen={showDocumentViewModal}
+        onClose={() => {
+          setShowDocumentViewModal(false);
+          setSelectedDocument(null);
+        }}
+        documento={selectedDocument}
+        onDownload={handleDownloadDocument}
       />
     </div>
   );
