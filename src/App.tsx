@@ -19,7 +19,7 @@ import Gerencia from "./pages/Gerencia";
 import Manuais from "./pages/Manuais";
 import CICAD from "./pages/CICAD";
 import CICADFormulario from "./pages/CICADFormulario";
-import PortalMidiaExterna from "./pages/PortalMidiaInterna";
+import PortalMidiaExterna from "./pages/PortalMidiaExterna";
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 
 const queryClient = new QueryClient();
