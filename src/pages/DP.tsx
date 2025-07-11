@@ -81,7 +81,11 @@ export default function DP() {
   const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
 
   const handleSubsectionClick = (subsectionId: string) => {
-    setActiveSubsection(subsectionId);
+    if (subsectionId === "processo-seletivo") {
+      navigate("/processo-seletivo");
+    } else {
+      setActiveSubsection(subsectionId);
+    }
   };
 
   const handleBackToMain = () => {
@@ -98,11 +102,6 @@ export default function DP() {
 
   if (activeSubsection === "vagas-talentos") {
     return <VagasTalentosSubsection onBack={handleBackToMain} />;
-  }
-
-  if (activeSubsection === "processo-seletivo") {
-    navigate("/processo-seletivo");
-    return null;
   }
 
   return (

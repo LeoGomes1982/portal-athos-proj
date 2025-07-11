@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Users, UserCheck, GraduationCap, Building, Plus, ArrowRight } from "lucide-react";
@@ -20,21 +20,24 @@ interface Candidato {
   vagaId: string;
 }
 
-interface ProcessoSeletivoModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const ProcessoSeletivoModal = ({ isOpen, onClose }: ProcessoSeletivoModalProps) => {
+export default function ProcessoSeletivo() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   
   // Estado para os candidatos em cada coluna
   const [candidatosEntrevista, setCandidatosEntrevista] = useState<Candidato[]>([
-    // Candidatos de exemplo que virão do processo de vagas
+    // Carrega candidatos do localStorage se existirem
   ]);
   
   const [candidatosTreinamento, setCandidatosTreinamento] = useState<Candidato[]>([]);
   const [candidatosAdmissao, setCandidatosAdmissao] = useState<Candidato[]>([]);
+
+  // Carrega dados do processo seletivo do localStorage ao montar o componente
+  useEffect(() => {
+    const processoData = JSON.parse(localStorage.getItem('processoSeletivo') || '[]');
+    const candidatosCarregados = processoData.map((item: any) => item.candidato);
+    setCandidatosEntrevista(candidatosCarregados);
+  }, []);
 
   const moverCandidato = (candidato: Candidato, origem: string, destino: string) => {
     // Remove da origem
@@ -88,125 +91,8 @@ const ProcessoSeletivoModal = ({ isOpen, onClose }: ProcessoSeletivoModalProps) 
     </Card>
   );
 
-  if (!isOpen) return null;
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content max-w-7xl" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Users size={24} className="text-blue-600" />
-              </div>
-              <div>
-                <h2 className="modal-title">Processo Seletivo</h2>
-                <p className="text-description">Kanban de candidatos em processo</p>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="secondary-btn p-2 h-auto"
-            >
-              <ArrowLeft size={20} />
-            </Button>
-          </div>
-        </div>
-
-        <div className="modal-body">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Coluna Entrevista */}
-            <Card className="modern-card">
-              <CardHeader className="card-header bg-blue-50">
-                <CardTitle className="section-title flex items-center gap-2 mb-0">
-                  <UserCheck size={20} className="text-blue-600" />
-                  Entrevista
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-                    {candidatosEntrevista.length}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="card-content p-4 min-h-96">
-                {candidatosEntrevista.length === 0 ? (
-                  <div className="text-center py-8">
-                    <UserCheck size={32} className="text-slate-400 mx-auto mb-2" />
-                    <p className="text-slate-500 text-sm">Nenhum candidato em entrevista</p>
-                  </div>
-                ) : (
-                  candidatosEntrevista.map(candidato => (
-                    <CandidatoCard key={candidato.id} candidato={candidato} etapa="entrevista" />
-                  ))
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Coluna Treinamento */}
-            <Card className="modern-card">
-              <CardHeader className="card-header bg-yellow-50">
-                <CardTitle className="section-title flex items-center gap-2 mb-0">
-                  <GraduationCap size={20} className="text-yellow-600" />
-                  Treinamento
-                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
-                    {candidatosTreinamento.length}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="card-content p-4 min-h-96">
-                {candidatosTreinamento.length === 0 ? (
-                  <div className="text-center py-8">
-                    <GraduationCap size={32} className="text-slate-400 mx-auto mb-2" />
-                    <p className="text-slate-500 text-sm">Nenhum candidato em treinamento</p>
-                  </div>
-                ) : (
-                  candidatosTreinamento.map(candidato => (
-                    <CandidatoCard key={candidato.id} candidato={candidato} etapa="treinamento" />
-                  ))
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Coluna Admissão */}
-            <Card className="modern-card">
-              <CardHeader className="card-header bg-green-50">
-                <CardTitle className="section-title flex items-center gap-2 mb-0">
-                  <Building size={20} className="text-green-600" />
-                  Admissão
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
-                    {candidatosAdmissao.length}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="card-content p-4 min-h-96">
-                {candidatosAdmissao.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Building size={32} className="text-slate-400 mx-auto mb-2" />
-                    <p className="text-slate-500 text-sm">Nenhum candidato para admissão</p>
-                  </div>
-                ) : (
-                  candidatosAdmissao.map(candidato => (
-                    <CandidatoCard key={candidato.id} candidato={candidato} etapa="admissao" />
-                  ))
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function ProcessoSeletivo() {
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-
-  // Estatísticas globais
-  const totalCandidatos = 0; // Será atualizado conforme candidatos chegam
-  const candidatosEntrevista = 0;
-  const candidatosTreinamento = 0;
-  const candidatosAdmissao = 0;
+  // Estatísticas
+  const totalCandidatos = candidatosEntrevista.length + candidatosTreinamento.length + candidatosAdmissao.length;
 
   return (
     <div className="app-container">
@@ -257,7 +143,7 @@ export default function ProcessoSeletivo() {
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content">
-              <div className="text-4xl font-bold text-blue-600 mb-2">{candidatosEntrevista}</div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">{candidatosEntrevista.length}</div>
               <p className="text-blue-600/80">candidatos</p>
             </CardContent>
           </Card>
@@ -270,7 +156,7 @@ export default function ProcessoSeletivo() {
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content">
-              <div className="text-4xl font-bold text-yellow-600 mb-2">{candidatosTreinamento}</div>
+              <div className="text-4xl font-bold text-yellow-600 mb-2">{candidatosTreinamento.length}</div>
               <p className="text-yellow-600/80">candidatos</p>
             </CardContent>
           </Card>
@@ -283,30 +169,88 @@ export default function ProcessoSeletivo() {
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content">
-              <div className="text-4xl font-bold text-green-600 mb-2">{candidatosAdmissao}</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">{candidatosAdmissao.length}</div>
               <p className="text-green-600/80">candidatos</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Action Button */}
-        <div className="flex justify-center mb-8 animate-slide-up">
-          <Button 
-            className="primary-btn flex items-center gap-2"
-            onClick={() => setShowModal(true)}
-          >
-            <Plus size={20} />
-            Gerenciar Processo Seletivo
-          </Button>
-        </div>
+        {/* Kanban Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
+          {/* Coluna Entrevista */}
+          <Card className="modern-card">
+            <CardHeader className="card-header bg-blue-50">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <UserCheck size={20} className="text-blue-600" />
+                Entrevista
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                  {candidatosEntrevista.length}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content p-4 min-h-96">
+              {candidatosEntrevista.length === 0 ? (
+                <div className="text-center py-8">
+                  <UserCheck size={32} className="text-slate-400 mx-auto mb-2" />
+                  <p className="text-slate-500 text-sm">Nenhum candidato em entrevista</p>
+                </div>
+              ) : (
+                candidatosEntrevista.map(candidato => (
+                  <CandidatoCard key={candidato.id} candidato={candidato} etapa="entrevista" />
+                ))
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Info Section */}
-        <div className="text-center py-16 animate-fade-in">
-          <div className="text-6xl mb-4">🎯</div>
-          <h3 className="text-xl font-bold text-gray-600 mb-2">Processo Seletivo Kanban</h3>
-          <p className="text-gray-500 mb-6">
-            Acompanhe o progresso dos candidatos através das etapas: Entrevista → Treinamento → Admissão
-          </p>
+          {/* Coluna Treinamento */}
+          <Card className="modern-card">
+            <CardHeader className="card-header bg-yellow-50">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <GraduationCap size={20} className="text-yellow-600" />
+                Treinamento
+                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+                  {candidatosTreinamento.length}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content p-4 min-h-96">
+              {candidatosTreinamento.length === 0 ? (
+                <div className="text-center py-8">
+                  <GraduationCap size={32} className="text-slate-400 mx-auto mb-2" />
+                  <p className="text-slate-500 text-sm">Nenhum candidato em treinamento</p>
+                </div>
+              ) : (
+                candidatosTreinamento.map(candidato => (
+                  <CandidatoCard key={candidato.id} candidato={candidato} etapa="treinamento" />
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Coluna Admissão */}
+          <Card className="modern-card">
+            <CardHeader className="card-header bg-green-50">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Building size={20} className="text-green-600" />
+                Admissão
+                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                  {candidatosAdmissao.length}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content p-4 min-h-96">
+              {candidatosAdmissao.length === 0 ? (
+                <div className="text-center py-8">
+                  <Building size={32} className="text-slate-400 mx-auto mb-2" />
+                  <p className="text-slate-500 text-sm">Nenhum candidato para admissão</p>
+                </div>
+              ) : (
+                candidatosAdmissao.map(candidato => (
+                  <CandidatoCard key={candidato.id} candidato={candidato} etapa="admissao" />
+                ))
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Footer */}
@@ -316,12 +260,6 @@ export default function ProcessoSeletivo() {
           </p>
         </div>
       </div>
-
-      {/* Modal */}
-      <ProcessoSeletivoModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
     </div>
   );
 }
