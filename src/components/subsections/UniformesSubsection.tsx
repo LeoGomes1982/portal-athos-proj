@@ -121,7 +121,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const totalEPIs = estoque.filter(item => item.categoria === "epi").reduce((sum, item) => sum + item.quantidade, 0);
   const totalEntregas = entregas.length;
 
-  // Função para contar total de entregas por funcionário
+  // Função para contar total de registros por funcionário
   const getContadoresPorFuncionario = () => {
     const contadores: { [funcionarioId: number]: { total: number; nome: string } } = {};
     
@@ -129,7 +129,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
       if (!contadores[entrega.funcionarioId]) {
         contadores[entrega.funcionarioId] = { total: 0, nome: entrega.funcionarioNome };
       }
-      contadores[entrega.funcionarioId].total += entrega.quantidade;
+      contadores[entrega.funcionarioId].total += 1; // Conta o registro, não a quantidade
     });
     
     return contadores;
@@ -329,9 +329,8 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
               <Card key={entrega.id} className="modern-card">
                 <CardContent className="card-content p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{getItemIcon(entrega.item)}</span>
-                       <div className="flex-1">
+                     <div className="flex items-center gap-3">
+                        <div className="flex-1">
                          <div className="flex items-center gap-2">
                            <h3 
                              className="font-semibold text-slate-800 cursor-pointer hover:text-primary transition-colors"
