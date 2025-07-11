@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { X, User, Phone, Mail, MapPin, FileText, Eye } from "lucide-react";
+import { X, User, Phone, Mail, MapPin, FileText, Eye, Star, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Candidato {
   id: string;
@@ -12,6 +13,7 @@ interface Candidato {
   sobreMim: string;
   experiencias: string;
   dataInscricao: string;
+  classificacao?: number;
 }
 
 interface CandidatosModalProps {
@@ -23,10 +25,68 @@ interface CandidatosModalProps {
     departamento: string;
   };
   candidatos: Candidato[];
+  onClassificarCandidato?: (candidatoId: string, classificacao: number) => void;
+  onEnviarParaProcessoSeletivo?: (candidato: Candidato) => void;
 }
 
-export function CandidatosModal({ isOpen, onClose, vaga, candidatos }: CandidatosModalProps) {
+export function CandidatosModal({ 
+  isOpen, 
+  onClose, 
+  vaga, 
+  candidatos,
+  onClassificarCandidato,
+  onEnviarParaProcessoSeletivo
+}: CandidatosModalProps) {
+  const { toast } = useToast();
+  
   if (!isOpen) return null;
+
+  // Ordena candidatos por classificação (maiores primeiro)
+  const candidatosOrdenados = [...candidatos].sort((a, b) => (b.classificacao || 0) - (a.classificacao || 0));
+
+  const handleClassificacao = (candidatoId: string, estrelas: number) => {
+    onClassificarCandidato?.(candidatoId, estrelas);
+    toast({
+      title: "Candidato classificado",
+      description: `Candidato classificado com ${estrelas} estrela${estrelas !== 1 ? 's' : ''}`,
+    });
+  };
+
+  const handleEnviarProcessoSeletivo = (candidato: Candidato) => {
+    onEnviarParaProcessoSeletivo?.(candidato);
+    toast({
+      title: "Candidato enviado",
+      description: `${candidato.nome} foi enviado para o processo seletivo`,
+    });
+  };
+
+  const StarRating = ({ candidato }: { candidato: Candidato }) => {
+    const classificacao = candidato.classificacao || 0;
+    
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((estrela) => (
+          <button
+            key={estrela}
+            onClick={() => handleClassificacao(candidato.id, estrela)}
+            className="hover:scale-110 transition-transform"
+          >
+            <Star
+              size={16}
+              className={`${
+                estrela <= classificacao
+                  ? "text-yellow-500 fill-yellow-500"
+                  : "text-gray-300"
+              }`}
+            />
+          </button>
+        ))}
+        <span className="text-xs text-slate-600 ml-1">
+          ({classificacao}/5)
+        </span>
+      </div>
+    );
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -61,7 +121,7 @@ export function CandidatosModal({ isOpen, onClose, vaga, candidatos }: Candidato
             </div>
           ) : (
             <div className="space-y-4">
-              {candidatos.map((candidato) => (
+              {candidatosOrdenados.map((candidato) => (
                 <div key={candidato.id} className="modern-card p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
@@ -69,11 +129,22 @@ export function CandidatosModal({ isOpen, onClose, vaga, candidatos }: Candidato
                       <p className="text-sm text-slate-600">
                         Inscrito em: {new Date(candidato.dataInscricao).toLocaleDateString('pt-BR')}
                       </p>
+                      <StarRating candidato={candidato} />
                     </div>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                      <Eye size={16} />
-                      Ver Detalhes
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <Eye size={16} />
+                        Ver Detalhes
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                        onClick={() => handleEnviarProcessoSeletivo(candidato)}
+                      >
+                        <ArrowRight size={16} />
+                        Enviar para Processo Seletivo
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

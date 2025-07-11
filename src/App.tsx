@@ -20,6 +20,7 @@ import Manuais from "./pages/Manuais";
 import CICAD from "./pages/CICAD";
 import CICADFormulario from "./pages/CICADFormulario";
 import PortalMidiaExterna from "./pages/PortalMidiaInterna";
+import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/portal-midia-externa" element={<PortalMidiaExterna />} />
           <Route path="/cicad" element={<CICAD />} />
           <Route path="/cicad-formulario" element={<CICADFormulario />} />
+          <Route path="/processo-seletivo" element={<ProcessoSeletivo />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>

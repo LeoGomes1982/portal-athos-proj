@@ -36,6 +36,7 @@ interface Candidato {
   sobreMim: string;
   experiencias: string;
   dataInscricao: string;
+  classificacao?: number;
 }
 
 export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps) {
@@ -75,7 +76,7 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
   ]);
 
   // Simulando candidatos para demonstração
-  const [candidatos] = useState<{ [vagaId: string]: Candidato[] }>({
+  const [candidatos, setCandidatos] = useState<{ [vagaId: string]: Candidato[] }>({
     "1": [
       {
         id: "1",
@@ -86,7 +87,8 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
         curriculo: null,
         sobreMim: "Desenvolvedor com 3 anos de experiência em React",
         experiencias: "Trabalhei em startup de tecnologia desenvolvendo interfaces web",
-        dataInscricao: "2024-01-16"
+        dataInscricao: "2024-01-16",
+        classificacao: 0
       }
     ],
     "2": [
@@ -99,7 +101,8 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
         curriculo: null,
         sobreMim: "Analista de marketing com foco em digital",
         experiencias: "5 anos de experiência em campanhas digitais e análise de dados",
-        dataInscricao: "2024-01-12"
+        dataInscricao: "2024-01-12",
+        classificacao: 0
       }
     ]
   });
@@ -137,6 +140,45 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
         ? { ...v, status: v.status === "ativa" ? "pausada" : "ativa" }
         : v
     ));
+  };
+
+  const handleClassificarCandidato = (candidatoId: string, classificacao: number) => {
+    setCandidatos(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(vagaId => {
+        updated[vagaId] = updated[vagaId].map(candidato =>
+          candidato.id === candidatoId ? { ...candidato, classificacao } : candidato
+        );
+      });
+      return updated;
+    });
+  };
+
+  const handleEnviarParaProcessoSeletivo = (candidato: Candidato) => {
+    // Remove o candidato da lista de candidatos de vagas
+    setCandidatos(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(vagaId => {
+        updated[vagaId] = updated[vagaId].filter(c => c.id !== candidato.id);
+      });
+      return updated;
+    });
+
+    // Aqui você pode adicionar lógica para enviar o candidato para o processo seletivo
+    // Por exemplo, salvar em localStorage ou enviar para uma API
+    const processoSeletivoData = {
+      candidato: {
+        ...candidato,
+        vaga: vagaSelecionada?.titulo || '',
+        vagaId: vagaSelecionada?.id || ''
+      },
+      etapa: 'entrevista',
+      dataEnvio: new Date().toISOString()
+    };
+    
+    // Salva no localStorage para simular envio para processo seletivo
+    const processoAtual = JSON.parse(localStorage.getItem('processoSeletivo') || '[]');
+    localStorage.setItem('processoSeletivo', JSON.stringify([...processoAtual, processoSeletivoData]));
   };
 
   const getJornadaLabel = (jornada: string) => {
@@ -317,6 +359,8 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
             }}
             vaga={vagaSelecionada}
             candidatos={candidatos[vagaSelecionada.id] || []}
+            onClassificarCandidato={handleClassificarCandidato}
+            onEnviarParaProcessoSeletivo={handleEnviarParaProcessoSeletivo}
           />
         </>
       )}

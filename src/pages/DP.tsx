@@ -29,10 +29,10 @@ const subsections = [
   {
     id: "processo-seletivo",
     title: "Processo Seletivo",
-    description: "Gestão de seleções",
+    description: "Kanban de candidatos em processo",
     icon: UserCheck,
-    bgColor: "bg-indigo-100",
-    textColor: "text-indigo-700"
+    bgColor: "bg-blue-50",
+    textColor: "text-blue-600"
   },
   {
     id: "funcionarios",
@@ -98,6 +98,11 @@ export default function DP() {
 
   if (activeSubsection === "vagas-talentos") {
     return <VagasTalentosSubsection onBack={handleBackToMain} />;
+  }
+
+  if (activeSubsection === "processo-seletivo") {
+    navigate("/processo-seletivo");
+    return null;
   }
 
   return (
