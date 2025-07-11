@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, Upload, Search, Plus, Home, AlertTriangle } from "lucide-react";
+import { ChevronLeft, Upload, Search, Plus, Home, AlertTriangle, ArrowLeft, Folder, Users, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentCard } from "@/components/DocumentCard";
 import { useNavigate } from "react-router-dom";
 import { useDocumentNotifications, DocumentoCompleto } from "@/hooks/useDocumentNotifications";
+import { NovoDocumentoModal } from "@/components/modals/DocumentosModal";
 
 interface DocumentosSubsectionProps {
   onBack: () => void;
@@ -90,13 +91,21 @@ const documentosMockCompletos: DocumentoCompleto[] = [
 export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { marcarComoVisualizado } = useDocumentNotifications();
+  const [showNovoDocumentoModal, setShowNovoDocumentoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [documentos, setDocumentos] = useState<DocumentoCompleto[]>(() => {
-    const saved = localStorage.getItem('documentos');
-    return saved ? JSON.parse(saved) : documentosMockCompletos;
-  });
-  
-  const { documentosVencendo, hasNotifications, checkDocumentosVencendo, marcarComoVisualizado } = useDocumentNotifications();
+  const [documentos, setDocumentos] = useState<DocumentoCompleto[]>(documentosMockCompletos);
+
+  const handleAdicionarDocumento = (documento: any) => {
+    const novoDocumento = {
+      ...documento,
+      id: documentos.length + 1,
+      dataUpload: new Date().toLocaleDateString('pt-BR'),
+      thumbnail: "📄",
+      visualizado: false
+    };
+    setDocumentos(prev => [novoDocumento, ...prev]);
+  };
   
   const [uploadData, setUploadData] = useState({
     arquivo: null as File | null,
@@ -108,111 +117,16 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
     dataValidade: ""
   });
 
-  // Verificar documentos vencendo ao carregar
-  useEffect(() => {
-    checkDocumentosVencendo(documentos);
-  }, [documentos, checkDocumentosVencendo]);
-
-  // Salvar no localStorage sempre que documentos mudarem
-  useEffect(() => {
-    localStorage.setItem('documentos', JSON.stringify(documentos));
-  }, [documentos]);
-
   const filteredDocumentos = documentos.filter(doc =>
     doc.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
     doc.tipo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (doc.funcionario && doc.funcionario.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "Arquivo muito grande ❌",
-          description: "O arquivo deve ter no máximo 10MB",
-          variant: "destructive"
-        });
-        return;
-      }
-      setUploadData(prev => ({ ...prev, arquivo: file }));
-    }
-  };
-
-  const handleSubmitUpload = () => {
-    if (!uploadData.arquivo || !uploadData.tipo) {
-      toast({
-        title: "Erro ❌",
-        description: "Selecione um arquivo e defina o tipo",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (uploadData.temValidade && !uploadData.dataValidade) {
-      toast({
-        title: "Erro ❌",
-        description: "Defina a data de validade",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    let funcionario = null;
-    let local = null;
-
-    if (uploadData.tipoDestinatario === "funcionario" && uploadData.destinatario) {
-      funcionario = funcionarios.find(f => f.id.toString() === uploadData.destinatario)?.nome || null;
-    } else if (uploadData.tipoDestinatario === "local" && uploadData.destinatario) {
-      local = locais.find(l => l.id.toString() === uploadData.destinatario)?.nome || null;
-    }
-
-    const novoDocumento: DocumentoCompleto = {
-      id: documentos.length + 1,
-      nome: uploadData.arquivo.name,
-      tipo: uploadData.tipo.charAt(0).toUpperCase() + uploadData.tipo.slice(1),
-      funcionario: funcionario,
-      local: local,
-      dataUpload: new Date().toLocaleDateString('pt-BR'),
-      tamanho: (uploadData.arquivo.size / (1024 * 1024)).toFixed(1) + " MB",
-      thumbnail: "📄",
-      temValidade: uploadData.temValidade,
-      dataValidade: uploadData.temValidade ? uploadData.dataValidade : undefined,
-      visualizado: false
-    };
-
-    setDocumentos(prev => [novoDocumento, ...prev]);
-
-    const destinatarioTexto = funcionario ? `para ${funcionario}` : 
-                            local ? `para ${local}` : 
-                            'como documento geral';
-
-    toast({
-      title: "Upload Realizado! 📄",
-      description: `${uploadData.arquivo.name} foi adicionado ${destinatarioTexto}`,
-    });
-
-    setUploadData({
-      arquivo: null,
-      tipo: "",
-      destinatario: "",
-      tipoDestinatario: "",
-      descricao: "",
-      temValidade: false,
-      dataValidade: ""
-    });
-
-    const fileInput = document.getElementById('arquivo') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-  };
 
   const handleViewDocument = (id: number) => {
     const doc = documentos.find(d => d.id === id);
-    
-    // Marcar como visualizado se estava vencendo
-    const documentosAtualizados = marcarComoVisualizado(id, documentos);
-    setDocumentos(documentosAtualizados);
-    
+    setDocumentos(marcarComoVisualizado(id, documentos));
     toast({
       title: "Visualizar Documento 👁️",
       description: `Abrindo ${doc?.nome}...`,
@@ -229,225 +143,105 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
 
   const handleDeleteDocument = (id: number) => {
     const doc = documentos.find(d => d.id === id);
-    setDocumentos(prev => prev.filter(d => d.id !== id));
     toast({
       title: "Documento Excluído 🗑️",
       description: `${doc?.nome} foi removido`,
     });
   };
 
-  const documentosPorFuncionario = documentos.filter(d => d.funcionario).length;
-  const documentosGerais = documentos.filter(d => !d.funcionario).length;
+  const totalDocumentos = documentos.length;
+  const docsVencendo = documentos.filter(d => d.temValidade && d.dataValidade).length;
+  const documentosFuncionarios = documentos.filter(d => d.funcionario).length;
+  const documentosGerais = documentos.filter(d => !d.funcionario && !d.local).length;
 
   return (
-    <div className="space-y-6">
-      <div className="navigation-buttons">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onBack}
-          className="back-button"
-        >
-          <ChevronLeft className="w-4 h-4" />
+    <div className="app-container">
+      <div className="content-wrapper">
+        {/* Back Button */}
+        <Button variant="ghost" className="mb-6" onClick={onBack}>
+          <ArrowLeft size={16} />
           Voltar
         </Button>
-        <Button 
-          variant="default" 
-          size="sm" 
-          onClick={() => navigate("/")}
-          className="home-button"
-        >
-          <Home className="w-4 h-4" />
-          Home
-        </Button>
-      </div>
 
-      <div className="flex items-center gap-4 mb-6">
-        <h1 className="text-3xl font-bold text-blue-600">📄 Gestão de Documentos</h1>
-      </div>
+        {/* Header */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+            <Folder size={32} className="text-white" />
+          </div>
+          <h1 className="page-title text-center">Gestão de Documentos</h1>
+          <p className="text-description text-center max-w-2xl mx-auto">
+            Sua estante virtual para armazenar e gerenciar todos os documentos importantes
+          </p>
+        </div>
 
-      {/* Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">📄</div>
-            <div className="text-2xl font-bold text-blue-600">{documentos.length}</div>
-            <div className="text-sm text-gray-600">Total Documentos</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">👥</div>
-            <div className="text-2xl font-bold text-green-600">{documentosPorFuncionario}</div>
-            <div className="text-sm text-gray-600">Por Funcionário</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">🏢</div>
-            <div className="text-2xl font-bold text-purple-600">{documentosGerais}</div>
-            <div className="text-sm text-gray-600">Documentos Gerais</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">📅</div>
-            <div className="text-lg font-bold text-orange-600">Hoje</div>
-            <div className="text-sm text-gray-600">Último Upload</div>
-          </CardContent>
-        </Card>
-      </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Folder size={20} className="text-primary" />
+                Total de Documentos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-primary mb-2">{totalDocumentos}</div>
+              <p className="text-primary/80">documentos arquivados</p>
+            </CardContent>
+          </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upload de Documentos */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
-              Anexar Documento
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="arquivo">Selecionar Arquivo *</Label>
-              <Input
-                id="arquivo"
-                type="file"
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                onChange={handleFileUpload}
-                className="cursor-pointer"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                PDF, DOC, DOCX, JPG, PNG (máx. 10MB)
-              </p>
-              {uploadData.arquivo && (
-                <p className="text-sm text-green-600 mt-1">
-                  ✅ {uploadData.arquivo.name}
-                </p>
-              )}
-            </div>
+          <Card className="modern-card bg-gradient-to-br from-red-500/10 to-red-500/20 border-red-500/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <AlertTriangle size={20} className="text-red-600" />
+                Vencendo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-red-600 mb-2">{docsVencendo}</div>
+              <p className="text-red-600/80">próximos ao vencimento</p>
+            </CardContent>
+          </Card>
 
-            <div>
-              <Label htmlFor="tipo">Tipo de Documento *</Label>
-              <Select value={uploadData.tipo} onValueChange={(value) => setUploadData(prev => ({ ...prev, tipo: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="contrato">📝 Contrato</SelectItem>
-                  <SelectItem value="exame">🏥 Exame Médico</SelectItem>
-                  <SelectItem value="manual">📚 Manual</SelectItem>
-                  <SelectItem value="politica">📋 Política</SelectItem>
-                  <SelectItem value="certificado">🏆 Certificado</SelectItem>
-                  <SelectItem value="outros">📄 Outros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <Card className="modern-card bg-gradient-to-br from-green-500/10 to-green-500/20 border-green-500/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Users size={20} className="text-green-600" />
+                Funcionários
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-green-600 mb-2">{documentosFuncionarios}</div>
+              <p className="text-green-600/80">docs de funcionários</p>
+            </CardContent>
+          </Card>
 
-            <div>
-              <Label>Tipo de Destinatário</Label>
-              <Select 
-                value={uploadData.tipoDestinatario} 
-                onValueChange={(value) => setUploadData(prev => ({ ...prev, tipoDestinatario: value, destinatario: "" }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo de destinatário" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="geral">🏢 Documento Geral</SelectItem>
-                  <SelectItem value="funcionario">👤 Funcionário</SelectItem>
-                  <SelectItem value="local">📍 Local/Setor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <Card className="modern-card bg-gradient-to-br from-purple-500/10 to-purple-500/20 border-purple-500/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Building size={20} className="text-purple-600" />
+                Gerais
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-purple-600 mb-2">{documentosGerais}</div>
+              <p className="text-purple-600/80">documentos gerais</p>
+            </CardContent>
+          </Card>
+        </div>
 
-            {uploadData.tipoDestinatario === "funcionario" && (
-              <div>
-                <Label>Funcionário</Label>
-                <Select 
-                  value={uploadData.destinatario} 
-                  onValueChange={(value) => setUploadData(prev => ({ ...prev, destinatario: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o funcionário" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {funcionarios.map((funcionario) => (
-                      <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
-                        👤 {funcionario.nome} - {funcionario.cargo}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+        {/* Action Button */}
+        <div className="flex justify-center mb-8 animate-slide-up">
+          <Button 
+            className="primary-btn flex items-center gap-2"
+            onClick={() => setShowNovoDocumentoModal(true)}
+          >
+            <Plus size={20} />
+            Adicionar Documento
+          </Button>
+        </div>
 
-            {uploadData.tipoDestinatario === "local" && (
-              <div>
-                <Label>Local/Setor</Label>
-                <Select 
-                  value={uploadData.destinatario} 
-                  onValueChange={(value) => setUploadData(prev => ({ ...prev, destinatario: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o local" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locais.map((local) => (
-                      <SelectItem key={local.id} value={local.id.toString()}>
-                        📍 {local.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <div>
-              <Label htmlFor="descricao">Descrição (Opcional)</Label>
-              <Input
-                id="descricao"
-                value={uploadData.descricao}
-                onChange={(e) => setUploadData(prev => ({ ...prev, descricao: e.target.value }))}
-                placeholder="Descrição do documento..."
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="temValidade"
-                checked={uploadData.temValidade}
-                onCheckedChange={(checked) => setUploadData(prev => ({ ...prev, temValidade: checked as boolean }))}
-              />
-              <Label htmlFor="temValidade">Documento tem validade</Label>
-            </div>
-
-            {uploadData.temValidade && (
-              <div>
-                <Label htmlFor="dataValidade">Data de Validade *</Label>
-                <Input
-                  id="dataValidade"
-                  type="date"
-                  value={uploadData.dataValidade}
-                  onChange={(e) => setUploadData(prev => ({ ...prev, dataValidade: e.target.value }))}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            )}
-
-            <Button 
-              onClick={handleSubmitUpload}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              disabled={!uploadData.arquivo || !uploadData.tipo}
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Anexar Documento
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Lista de Documentos */}
-        <div className="lg:col-span-2 space-y-4">
+        {/* Documentos List */}
+        <div className="space-y-4 animate-slide-up">
           {/* Busca */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -476,11 +270,25 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📄</div>
               <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum documento encontrado</h3>
-              <p className="text-gray-500">Tente ajustar os filtros de busca ou anexe um novo documento</p>
+              <p className="text-gray-500">Tente ajustar os filtros de busca ou adicione um novo documento</p>
             </div>
           )}
         </div>
+
+        {/* Footer */}
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
+            © 2024 Grupo Athos. Todos os direitos reservados.
+          </p>
+        </div>
       </div>
+
+      {/* Modal */}
+      <NovoDocumentoModal
+        isOpen={showNovoDocumentoModal}
+        onClose={() => setShowNovoDocumentoModal(false)}
+        onSubmit={handleAdicionarDocumento}
+      />
     </div>
   );
 }

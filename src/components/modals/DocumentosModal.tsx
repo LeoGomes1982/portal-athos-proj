@@ -1,174 +1,321 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FileText, Plus, Upload, Download, ExternalLink, File } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { X, Upload, Plus, FileText, Eye, Download } from "lucide-react";
+import { funcionariosIniciais } from "@/data/funcionarios";
+import { useToast } from "@/hooks/use-toast";
 
-interface Documento {
-  id: string;
-  nome: string;
-  tipo: 'arquivo' | 'contrato' | 'proposta';
-  data: string;
-  tamanho?: string;
-  url?: string;
-}
-
-interface DocumentosModalProps {
+interface NovoDocumentoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  clienteNome: string;
-  clienteId: string;
+  onSubmit: (documento: any) => void;
 }
 
-const DocumentosModal = ({ isOpen, onClose, clienteNome, clienteId }: DocumentosModalProps) => {
+export function NovoDocumentoModal({ isOpen, onClose, onSubmit }: NovoDocumentoModalProps) {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-
-  // Dados mockados - em produção viriam de uma API
-  const [documentos] = useState<Documento[]>([
-    {
-      id: "1",
-      nome: "Contrato de Prestação de Serviços - Janeiro 2024",
-      tipo: "contrato",
-      data: "2024-01-15",
-      url: "/contratos/contrato-janeiro-2024"
-    },
-    {
-      id: "2",
-      nome: "Proposta Comercial - Novos Serviços",
-      tipo: "proposta", 
-      data: "2024-01-10",
-      url: "/propostas/proposta-novos-servicos"
-    },
-    {
-      id: "3",
-      nome: "Documento Fiscal.pdf",
-      tipo: "arquivo",
-      data: "2024-01-08",
-      tamanho: "2.3 MB"
-    }
-  ]);
+  const [formData, setFormData] = useState({
+    nome: "",
+    tipoDestinatario: "",
+    destinatario: "",
+    temValidade: false,
+    dataValidade: "",
+    arquivo: null as File | null
+  });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setIsUploading(true);
+      setFormData(prev => ({ 
+        ...prev, 
+        arquivo: file,
+        nome: prev.nome || file.name 
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.arquivo) {
+      toast({
+        title: "Erro",
+        description: "Por favor, selecione um arquivo.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.nome || !formData.tipoDestinatario) {
+      toast({
+        title: "Erro", 
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.tipoDestinatario !== "geral" && !formData.destinatario) {
+      toast({
+        title: "Erro",
+        description: "Por favor, selecione um destinatário.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.temValidade && !formData.dataValidade) {
+      toast({
+        title: "Erro",
+        description: "Por favor, defina a data de validade.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
       // Simular upload
-      setTimeout(() => {
-        setIsUploading(false);
-        // Aqui adicionaria o arquivo à lista
-      }, 2000);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const novoDocumento = {
+        id: Date.now().toString(),
+        nome: formData.nome,
+        tipo: formData.arquivo.type,
+        tamanho: formData.arquivo.size,
+        tipoDestinatario: formData.tipoDestinatario,
+        destinatario: formData.destinatario || "Geral",
+        temValidade: formData.temValidade,
+        dataValidade: formData.temValidade ? formData.dataValidade : null,
+        dataUpload: new Date().toISOString(),
+        url: URL.createObjectURL(formData.arquivo),
+        visualizado: false
+      };
+
+      onSubmit(novoDocumento);
+      
+      // Reset form
+      setFormData({
+        nome: "",
+        tipoDestinatario: "",
+        destinatario: "",
+        temValidade: false,
+        dataValidade: "",
+        arquivo: null
+      });
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Documento enviado com sucesso!",
+      });
+
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao enviar documento. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const getTipoIcon = (tipo: string) => {
-    switch (tipo) {
-      case 'contrato': return <FileText className="text-blue-600" size={20} />;
-      case 'proposta': return <FileText className="text-green-600" size={20} />;
-      default: return <File className="text-gray-600" size={20} />;
-    }
+  const handleChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const getTipoLabel = (tipo: string) => {
-    switch (tipo) {
-      case 'contrato': return 'Contrato';
-      case 'proposta': return 'Proposta';
-      default: return 'Arquivo';
-    }
-  };
+  const locais = [
+    "Escritório Central",
+    "Filial São Paulo", 
+    "Filial Rio de Janeiro",
+    "Almoxarifado",
+    "Departamento Financeiro",
+    "Recursos Humanos",
+    "Tecnologia da Informação"
+  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Documentos - {clienteNome}
+            <Plus size={20} />
+            Adicionar Documento
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Arquivos e Documentos</h3>
-            <div className="flex gap-2">
-              <Label htmlFor="file-upload" className="cursor-pointer">
-                <Button disabled={isUploading}>
-                  <Upload size={16} className="mr-2" />
-                  {isUploading ? 'Enviando...' : 'Upload Arquivo'}
-                </Button>
-              </Label>
-              <Input
-                id="file-upload"
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Upload de Arquivo */}
+          <div className="space-y-2">
+            <Label htmlFor="arquivo" className="text-sm font-medium">
+              Arquivo *
+            </Label>
+            <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+              <input
+                ref={fileInputRef}
                 type="file"
-                className="hidden"
+                id="arquivo"
                 onChange={handleFileUpload}
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
+                className="hidden"
+                accept="*/*"
               />
+              <Upload className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Selecionar Arquivo
+                </Button>
+                {formData.arquivo && (
+                  <p className="text-sm text-slate-600">
+                    Arquivo selecionado: {formData.arquivo.name}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-3">
-            {documentos.map((documento) => (
-              <div key={documento.id} className="bg-white border rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
-                      {getTipoIcon(documento.tipo)}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-slate-800">{documento.nome}</h4>
-                      <div className="flex items-center gap-4 text-sm text-slate-600">
-                        <span className="bg-slate-100 px-2 py-1 rounded text-xs">
-                          {getTipoLabel(documento.tipo)}
-                        </span>
-                        <span>{new Date(documento.data).toLocaleDateString('pt-BR')}</span>
-                        {documento.tamanho && <span>{documento.tamanho}</span>}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    {documento.tipo === 'contrato' || documento.tipo === 'proposta' ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => window.open(documento.url, '_blank')}
-                      >
-                        <ExternalLink size={16} className="mr-1" />
-                        Visualizar
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          // Simular download
-                          const link = document.createElement('a');
-                          link.href = '#';
-                          link.download = documento.nome;
-                          link.click();
-                        }}
-                      >
-                        <Download size={16} className="mr-1" />
-                        Download
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Nome do Documento */}
+          <div className="space-y-2">
+            <Label htmlFor="nome" className="text-sm font-medium">
+              Nome do Documento *
+            </Label>
+            <Input
+              id="nome"
+              value={formData.nome}
+              onChange={(e) => handleChange("nome", e.target.value)}
+              placeholder="Digite o nome do documento"
+              className="w-full"
+            />
           </div>
 
-          {documentos.length === 0 && (
-            <div className="text-center py-8 text-slate-500">
-              <FileText size={48} className="mx-auto mb-4 opacity-50" />
-              <p>Nenhum documento encontrado</p>
+          {/* Tipo de Destinatário */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">
+              Destinatário *
+            </Label>
+            <Select 
+              value={formData.tipoDestinatario} 
+              onValueChange={(value) => {
+                handleChange("tipoDestinatario", value);
+                handleChange("destinatario", "");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo de destinatário" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="geral">🏢 Documento Geral</SelectItem>
+                <SelectItem value="funcionario">👤 Funcionário</SelectItem>
+                <SelectItem value="local">📍 Local/Setor</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Destinatário Específico */}
+          {formData.tipoDestinatario === "funcionario" && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                Funcionário
+              </Label>
+              <Select value={formData.destinatario} onValueChange={(value) => handleChange("destinatario", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um funcionário" />
+                </SelectTrigger>
+                <SelectContent>
+                  {funcionariosIniciais.map((funcionario) => (
+                    <SelectItem key={funcionario.id} value={funcionario.nome}>
+                      {funcionario.nome} - {funcionario.cargo}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
-        </div>
+
+          {formData.tipoDestinatario === "local" && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">
+                Local/Setor
+              </Label>
+              <Select value={formData.destinatario} onValueChange={(value) => handleChange("destinatario", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um local ou setor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locais.map((local, index) => (
+                    <SelectItem key={index} value={local}>
+                      {local}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Validade */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="temValidade"
+                checked={formData.temValidade}
+                onChange={(e) => handleChange("temValidade", e.target.checked)}
+                className="rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label htmlFor="temValidade" className="text-sm font-medium">
+                Este documento possui validade
+              </Label>
+            </div>
+
+            {formData.temValidade && (
+              <div className="space-y-2">
+                <Label htmlFor="dataValidade" className="text-sm font-medium">
+                  Data de Validade
+                </Label>
+                <Input
+                  id="dataValidade"
+                  type="date"
+                  value={formData.dataValidade}
+                  onChange={(e) => handleChange("dataValidade", e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Botões */}
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isUploading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={isUploading}
+              className="min-w-[120px]"
+            >
+              {isUploading ? "Enviando..." : "Adicionar"}
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default DocumentosModal;
+}

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import PessoasModal from "@/components/modals/PessoasModal";
-import DocumentosModal from "@/components/modals/DocumentosModal";
+import { NovoDocumentoModal } from "@/components/modals/DocumentosModal";
 import HistoricoModal from "@/components/modals/HistoricoModal";
 
 interface ClienteFornecedor {
@@ -896,11 +896,13 @@ const ClientesFornecedores = () => {
             clienteNome={selectedClient.nome}
             clienteId={selectedClient.id}
           />
-          <DocumentosModal
+          <NovoDocumentoModal
             isOpen={isDocumentosModalOpen}
             onClose={() => setIsDocumentosModalOpen(false)}
-            clienteNome={selectedClient.nome}
-            clienteId={selectedClient.id}
+            onSubmit={(documento) => {
+              console.log('Documento adicionado:', documento);
+              setIsDocumentosModalOpen(false);
+            }}
           />
           <HistoricoModal
             isOpen={isHistoricoModalOpen}
