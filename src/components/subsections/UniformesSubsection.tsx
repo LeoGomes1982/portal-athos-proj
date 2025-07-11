@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shirt, Package, Settings, TrendingUp } from "lucide-react";
+import { ArrowLeft, Shirt, Package, Settings, TrendingUp, Users } from "lucide-react";
 import { GerenciarUniformesModal } from "@/components/modals/GerenciarUniformesModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Badge } from "@/components/ui/badge";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -116,6 +117,22 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const totalUniformes = estoque.filter(item => item.categoria === "uniforme").reduce((sum, item) => sum + item.quantidade, 0);
   const totalEPIs = estoque.filter(item => item.categoria === "epi").reduce((sum, item) => sum + item.quantidade, 0);
   const totalEntregas = entregas.length;
+
+  // Função para contar entregas por funcionário e categoria
+  const getContadoresPorFuncionario = () => {
+    const contadores: { [funcionarioId: number]: { uniforme: number; epi: number; nome: string } } = {};
+    
+    entregas.forEach((entrega) => {
+      if (!contadores[entrega.funcionarioId]) {
+        contadores[entrega.funcionarioId] = { uniforme: 0, epi: 0, nome: entrega.funcionarioNome };
+      }
+      contadores[entrega.funcionarioId][entrega.categoria] += entrega.quantidade;
+    });
+    
+    return contadores;
+  };
+
+  const contadoresFuncionarios = getContadoresPorFuncionario();
 
   const handleEntradaEstoque = (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number } }) => {
     setEstoque(prev => {
@@ -294,6 +311,50 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
             </Carousel>
           </div>
         </div>
+
+        {/* Funcionários com Equipamentos */}
+        {Object.keys(contadoresFuncionarios).length > 0 && (
+          <div className="mb-8 animate-slide-up">
+            <h2 className="section-title mb-4">Funcionários com Equipamentos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(contadoresFuncionarios).map(([funcionarioId, contador]) => (
+                <Card key={funcionarioId} className="modern-card">
+                  <CardContent className="card-content p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/30 rounded-full">
+                          <Users size={20} className="text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-800">{contador.nome}</h3>
+                          <p className="text-sm text-slate-600">ID: {funcionarioId}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {contador.uniforme > 0 && (
+                          <Badge 
+                            variant="secondary" 
+                            className="bg-blue-500 text-white hover:bg-blue-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                          >
+                            {contador.uniforme}
+                          </Badge>
+                        )}
+                        {contador.epi > 0 && (
+                          <Badge 
+                            variant="secondary" 
+                            className="bg-green-500 text-white hover:bg-green-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                          >
+                            {contador.epi}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Entregas Recentes */}
         <div className="animate-slide-up">
