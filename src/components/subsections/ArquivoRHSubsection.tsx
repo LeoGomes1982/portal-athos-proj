@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Search, Home } from "lucide-react";
+import { ArrowLeft, Archive, Settings, User, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { GerenciarArquivoModal } from "@/components/modals/GerenciarArquivoModal";
 
 interface ArquivoRHSubsectionProps {
   onBack: () => void;
@@ -86,6 +87,7 @@ const getMotivoIcon = (motivo: string) => {
 export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [showGerenciarModal, setShowGerenciarModal] = useState(false);
 
   const filteredFuncionarios = funcionariosInativos.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,134 +110,152 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="navigation-buttons">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onBack}
-          className="back-button"
-        >
-          <ChevronLeft className="w-4 h-4" />
+    <div className="app-container">
+      <div className="content-wrapper">
+        {/* Back Button */}
+        <Button variant="ghost" className="mb-6" onClick={onBack}>
+          <ArrowLeft size={16} />
           Voltar
         </Button>
-        <Button 
-          variant="default" 
-          size="sm" 
-          onClick={() => navigate("/")}
-          className="home-button"
-        >
-          <Home className="w-4 h-4" />
-          Home
-        </Button>
-      </div>
 
-      <div className="flex items-center gap-4 mb-6">
-        <h1 className="text-3xl font-bold text-blue-600">📦 Arquivo de RH</h1>
-      </div>
+        {/* Header */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+            <Archive size={32} className="text-white" />
+          </div>
+          <h1 className="page-title text-center">Arquivo de RH</h1>
+          <p className="text-description text-center max-w-2xl mx-auto">
+            Gestão de registros de funcionários inativos e histórico da empresa
+          </p>
+        </div>
 
-      {/* Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">📦</div>
-            <div className="text-2xl font-bold text-gray-600">{funcionariosInativos.length}</div>
-            <div className="text-sm text-gray-600">Funcionários Inativos</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">✋</div>
-            <div className="text-2xl font-bold text-blue-600">
-              {funcionariosInativos.filter(f => f.motivo === 'Pedido de Demissão').length}
-            </div>
-            <div className="text-sm text-gray-600">Pedido Demissão</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">⚠️</div>
-            <div className="text-2xl font-bold text-orange-600">
-              {funcionariosInativos.filter(f => f.motivo === 'Demissão sem Justa Causa').length}
-            </div>
-            <div className="text-sm text-gray-600">Sem Justa Causa</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="text-center p-4">
-            <div className="text-3xl mb-2">🎖️</div>
-            <div className="text-2xl font-bold text-purple-600">
-              {funcionariosInativos.filter(f => f.motivo === 'Aposentadoria').length}
-            </div>
-            <div className="text-sm text-gray-600">Aposentadorias</div>
-          </CardContent>
-        </Card>
-      </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+            <CardHeader className="card-header">
+              <CardTitle className="section-title flex items-center gap-2 mb-0">
+                <Archive size={20} className="text-primary" />
+                Total Inativos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="card-content">
+              <div className="text-4xl font-bold text-primary mb-2">{funcionariosInativos.length}</div>
+              <p className="text-primary/80">funcionários arquivados</p>
+            </CardContent>
+          </Card>
 
-      {/* Busca */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-        <Input
-          placeholder="Buscar no arquivo..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+          <Card className="modern-card">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">✋</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {funcionariosInativos.filter(f => f.motivo === 'Pedido de Demissão').length}
+              </div>
+              <div className="text-sm text-slate-600">Pedido Demissão</div>
+            </CardContent>
+          </Card>
 
-      {/* Lista Minimalista */}
-      <Card>
-        <CardHeader>
-          <CardTitle>📋 Funcionários Inativos</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="space-y-0">
-            {filteredFuncionarios.map((funcionario, index) => (
-              <div
-                key={funcionario.id}
-                className={`flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer ${
-                  index !== filteredFuncionarios.length - 1 ? 'border-b border-gray-100' : ''
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
-                    📁
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-800">{funcionario.nome}</div>
-                    <div className="text-sm text-gray-500">{funcionario.cargo}</div>
-                    <div className="text-xs text-gray-400">
-                      Tempo na empresa: {calcularTempoEmpresa(funcionario.dataAdmissao, funcionario.dataDemissao)}
+          <Card className="modern-card">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">⚠️</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {funcionariosInativos.filter(f => f.motivo === 'Demissão sem Justa Causa').length}
+              </div>
+              <div className="text-sm text-slate-600">Sem Justa Causa</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🎖️</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {funcionariosInativos.filter(f => f.motivo === 'Aposentadoria').length}
+              </div>
+              <div className="text-sm text-slate-600">Aposentadorias</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Button */}
+        <div className="flex justify-center mb-8 animate-slide-up">
+          <Button 
+            className="primary-btn flex items-center gap-2"
+            onClick={() => setShowGerenciarModal(true)}
+          >
+            <Settings size={20} />
+            Gerenciar Arquivo de RH
+          </Button>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative max-w-md mx-auto mb-8 animate-slide-up">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Input
+            placeholder="Buscar funcionário arquivado..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        {/* Employee List */}
+        <div className="grid grid-cols-1 gap-4 animate-slide-up">
+          {filteredFuncionarios.map((funcionario, index) => (
+            <Card key={funcionario.id} className="modern-card">
+              <CardContent className="card-content p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center text-slate-600">
+                      <User size={20} />
                     </div>
-                  </div>
-                </div>
-                
-                <div className="text-right flex items-center gap-3">
-                  <div>
-                    <div className="text-sm font-medium text-gray-700">
-                      {new Date(funcionario.dataDemissao).toLocaleDateString('pt-BR')}
+                    <div>
+                      <div className="font-semibold text-slate-800">{funcionario.nome}</div>
+                      <div className="text-sm text-slate-600">{funcionario.cargo}</div>
+                      <div className="text-xs text-slate-500">
+                        Tempo na empresa: {calcularTempoEmpresa(funcionario.dataAdmissao, funcionario.dataDemissao)}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">Data de Saída</div>
                   </div>
                   
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getMotivoColor(funcionario.motivo)}`}>
-                    <span>{getMotivoIcon(funcionario.motivo)}</span>
-                    <span className="hidden sm:inline">{funcionario.motivo}</span>
+                  <div className="text-right flex items-center gap-3">
+                    <div>
+                      <div className="text-sm font-medium text-slate-700">
+                        {new Date(funcionario.dataDemissao).toLocaleDateString('pt-BR')}
+                      </div>
+                      <div className="text-xs text-slate-500">Data de Saída</div>
+                    </div>
+                    
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getMotivoColor(funcionario.motivo)}`}>
+                      <span>{getMotivoIcon(funcionario.motivo)}</span>
+                      <span className="hidden sm:inline">{funcionario.motivo}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {filteredFuncionarios.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum registro encontrado</h3>
-          <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      )}
+
+        {filteredFuncionarios.length === 0 && (
+          <div className="text-center py-12 animate-fade-in">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-slate-600 mb-2">Nenhum registro encontrado</h3>
+            <p className="text-slate-500">Tente ajustar os filtros de busca</p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
+            © 2024 Grupo Athos. Todos os direitos reservados.
+          </p>
+        </div>
+      </div>
+
+      {/* Modal */}
+      <GerenciarArquivoModal
+        isOpen={showGerenciarModal}
+        onClose={() => setShowGerenciarModal(false)}
+      />
     </div>
   );
 }
