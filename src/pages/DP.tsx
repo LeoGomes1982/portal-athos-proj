@@ -16,6 +16,7 @@ import {
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
 import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
+import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
 
 const subsections = [
   {
@@ -43,9 +44,9 @@ const subsections = [
     textColor: "text-blue-700"
   },
   {
-    id: "uniformes",
-    title: "Uniformes",
-    description: "Controle de uniformes",
+    id: "uniformes-epis",
+    title: "Uniformes e EPIs",
+    description: "Controle de estoque e entrega de uniformes e EPIs",
     icon: Shirt,
     bgColor: "bg-purple-100",
     textColor: "text-purple-700"
@@ -102,6 +103,10 @@ export default function DP() {
 
   if (activeSubsection === "vagas-talentos") {
     return <VagasTalentosSubsection onBack={handleBackToMain} />;
+  }
+
+  if (activeSubsection === "uniformes-epis") {
+    return <UniformesSubsection onBack={handleBackToMain} />;
   }
 
   return (

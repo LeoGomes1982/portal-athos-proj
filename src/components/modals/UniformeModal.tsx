@@ -5,79 +5,42 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { funcionariosIniciais } from "@/data/funcionarios";
 
 interface UniformeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit?: (dados: { funcionarioId: number; funcionarioNome: string; item: string; categoria: "uniforme" | "epi"; tamanho: string; quantidade: number }) => void;
+  estoque?: Array<{ id: string; nome: string; categoria: "uniforme" | "epi"; quantidade: number; tamanhos: { [tamanho: string]: number } }>;
 }
 
-interface Funcionario {
-  id: number;
-  nome: string;
-  cargo: string;
-  setor: string;
-  status: "ativo" | "ferias" | "experiencia" | "aviso" | "inativo";
-}
-
-// Dados dos funcionários (mesma estrutura da página de funcionários)
-const funcionarios: Funcionario[] = [
-  {
-    id: 1,
-    nome: "Ana Silva",
-    cargo: "Analista de Sistemas",
-    setor: "TI",
-    status: "ativo"
-  },
-  {
-    id: 2,
-    nome: "João Santos",
-    cargo: "Desenvolvedor",
-    setor: "TI",
-    status: "ferias"
-  },
-  {
-    id: 3,
-    nome: "Maria Costa",
-    cargo: "Gerente de Vendas",
-    setor: "Comercial",
-    status: "ativo"
-  },
-  {
-    id: 4,
-    nome: "Carlos Oliveira",
-    cargo: "Analista Financeiro",
-    setor: "Financeiro",
-    status: "experiencia"
-  },
-  {
-    id: 5,
-    nome: "Patricia Fernandes",
-    cargo: "Assistente Administrativo",
-    setor: "Administrativo",
-    status: "aviso"
-  }
-];
-
-// Filtrar funcionários ativos e em experiência
-const funcionariosDisponiveis = funcionarios.filter(funcionario => 
-  funcionario.status === "ativo" || funcionario.status === "experiencia"
+// Filtrar funcionários ativos, em férias e em experiência
+const funcionariosDisponiveis = funcionariosIniciais.filter(funcionario => 
+  funcionario.status === "ativo" || funcionario.status === "ferias" || funcionario.status === "experiencia"
 );
 
-const pecasUniforme = [
-  { value: "camisa", label: "👔 Camisa", icon: "👔" },
-  { value: "camiseta", label: "👕 Camiseta", icon: "👕" },
-  { value: "calca", label: "👖 Calça", icon: "👖" },
-  { value: "jaqueta", label: "🧥 Jaqueta", icon: "🧥" },
-  { value: "sapato", label: "👞 Sapato", icon: "👞" }
+const itensUniformes = [
+  { value: "Camisa", label: "👔 Camisa", categoria: "uniforme" as const },
+  { value: "Camiseta", label: "👕 Camiseta", categoria: "uniforme" as const },
+  { value: "Calça", label: "👖 Calça", categoria: "uniforme" as const },
+  { value: "Jaqueta", label: "🧥 Jaqueta", categoria: "uniforme" as const },
+  { value: "Sapato", label: "👞 Sapato", categoria: "uniforme" as const }
 ];
 
-const tamanhos = ["PP", "P", "M", "G", "GG", "XG", "XXG"];
+const itensEPIs = [
+  { value: "Fone de ouvido", label: "🎧 Fone de ouvido", categoria: "epi" as const },
+  { value: "Luvas", label: "🧤 Luvas", categoria: "epi" as const },
+  { value: "Botina", label: "🥾 Botina", categoria: "epi" as const }
+];
 
-export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
+const todosItens = [...itensUniformes, ...itensEPIs];
+
+export function UniformeModal({ isOpen, onClose, onSubmit, estoque = [] }: UniformeModalProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     funcionarioId: "",
-    peca: "",
+    item: "",
+    categoria: "" as "uniforme" | "epi" | "",
     tamanho: "",
     quantidade: "1",
     dataEntrega: new Date().toISOString().split('T')[0],
@@ -88,8 +51,31 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleItemChange = (itemNome: string) => {
+    const item = todosItens.find(i => i.value === itemNome);
+    setFormData(prev => ({
+      ...prev,
+      item: itemNome,
+      categoria: item?.categoria || "",
+      tamanho: "" // Reset tamanho quando item muda
+    }));
+  };
+
+  const getItemEstoque = () => {
+    return estoque.find(item => item.nome === formData.item);
+  };
+
+  const getTamanhosDisponiveis = () => {
+    const itemEstoque = getItemEstoque();
+    if (!itemEstoque) return [];
+    
+    return Object.entries(itemEstoque.tamanhos)
+      .filter(([_, quantidade]) => quantidade > 0)
+      .map(([tamanho, quantidade]) => ({ tamanho, quantidade }));
+  };
+
   const handleSubmit = () => {
-    if (!formData.funcionarioId || !formData.peca || !formData.tamanho) {
+    if (!formData.funcionarioId || !formData.item || !formData.tamanho) {
       toast({
         title: "Erro ❌",
         description: "Preencha todos os campos obrigatórios",
@@ -99,17 +85,41 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
     }
 
     const funcionario = funcionariosDisponiveis.find(f => f.id.toString() === formData.funcionarioId);
-    const peca = pecasUniforme.find(p => p.value === formData.peca);
+    const item = todosItens.find(i => i.value === formData.item);
+    const itemEstoque = getItemEstoque();
+    const quantidadeDisponivel = itemEstoque?.tamanhos[formData.tamanho] || 0;
+    const quantidadeSolicitada = parseInt(formData.quantidade);
+
+    if (quantidadeSolicitada > quantidadeDisponivel) {
+      toast({
+        title: "Erro ❌",
+        description: `Quantidade insuficiente em estoque. Disponível: ${quantidadeDisponivel}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (onSubmit && funcionario && item && (formData.categoria === "uniforme" || formData.categoria === "epi")) {
+      onSubmit({
+        funcionarioId: funcionario.id,
+        funcionarioNome: funcionario.nome,
+        item: formData.item,
+        categoria: formData.categoria,
+        tamanho: formData.tamanho,
+        quantidade: quantidadeSolicitada
+      });
+    }
 
     toast({
       title: "Entrega Registrada! 🎉",
-      description: `${peca?.icon} ${peca?.label.replace(/👔|👕|👖|🧥|👞/, '').trim()} (${formData.tamanho}) entregue para ${funcionario?.nome}`,
+      description: `${item?.label} (${formData.tamanho}) entregue para ${funcionario?.nome}`,
     });
     
     // Reset form
     setFormData({
       funcionarioId: "",
-      peca: "",
+      item: "",
+      categoria: "",
       tamanho: "",
       quantidade: "1",
       dataEntrega: new Date().toISOString().split('T')[0],
@@ -131,7 +141,7 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
         <div className="space-y-4">
           <div>
             <Label htmlFor="funcionario">Funcionário Disponível *</Label>
-            <Select onValueChange={(value) => handleInputChange("funcionarioId", value)}>
+            <Select value={formData.funcionarioId} onValueChange={(value) => handleInputChange("funcionarioId", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="👤 Selecione o funcionário" />
               </SelectTrigger>
@@ -146,15 +156,22 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
           </div>
 
           <div>
-            <Label htmlFor="peca">Peça de Uniforme *</Label>
-            <Select onValueChange={(value) => handleInputChange("peca", value)}>
+            <Label htmlFor="item">Item *</Label>
+            <Select value={formData.item} onValueChange={handleItemChange}>
               <SelectTrigger>
-                <SelectValue placeholder="👕 Selecione a peça" />
+                <SelectValue placeholder="📦 Selecione o item" />
               </SelectTrigger>
               <SelectContent>
-                {pecasUniforme.map((peca) => (
-                  <SelectItem key={peca.value} value={peca.value}>
-                    {peca.label}
+                <div className="px-2 py-1 text-sm font-medium text-slate-600">Uniformes</div>
+                {itensUniformes.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+                <div className="px-2 py-1 text-sm font-medium text-slate-600 mt-2">EPIs</div>
+                {itensEPIs.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -164,16 +181,19 @@ export function UniformeModal({ isOpen, onClose }: UniformeModalProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="tamanho">Tamanho *</Label>
-              <Select onValueChange={(value) => handleInputChange("tamanho", value)}>
+              <Select value={formData.tamanho} onValueChange={(value) => handleInputChange("tamanho", value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="📏 Tamanho" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tamanhos.map((tamanho) => (
+                  {getTamanhosDisponiveis().map(({ tamanho, quantidade }) => (
                     <SelectItem key={tamanho} value={tamanho}>
-                      📏 {tamanho}
+                      📏 {tamanho} (disponível: {quantidade})
                     </SelectItem>
                   ))}
+                  {getTamanhosDisponiveis().length === 0 && formData.item && (
+                    <div className="px-2 py-1 text-sm text-red-600">Nenhum tamanho disponível</div>
+                  )}
                 </SelectContent>
               </Select>
             </div>
