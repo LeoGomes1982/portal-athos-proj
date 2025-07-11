@@ -131,16 +131,13 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
-            <CardHeader className="card-header">
-              <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Archive size={20} className="text-primary" />
-                Total Inativos
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="card-content">
-              <div className="text-4xl font-bold text-primary mb-2">{funcionariosInativos.length}</div>
-              <p className="text-primary/80">funcionários arquivados</p>
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📁</div>
+              <div className="text-2xl font-bold text-slate-600">
+                {funcionariosInativos.length}
+              </div>
+              <div className="text-sm text-slate-600/80">Total Inativos</div>
             </CardContent>
           </Card>
 
