@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shirt, Package, Settings, TrendingUp } from "lucide-react";
 import { GerenciarUniformesModal } from "@/components/modals/GerenciarUniformesModal";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -256,33 +257,41 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         {/* Estoque Atual */}
         <div className="mb-8 animate-slide-up">
           <h2 className="section-title mb-4">Estoque Atual</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {estoque.map((item) => (
-              <Card key={item.id} className="modern-card">
-                <CardContent className="card-content p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl">{getItemIcon(item.nome)}</span>
-                    <div>
-                      <h3 className="font-semibold text-slate-800">{item.nome}</h3>
-                      <p className="text-sm text-slate-600 capitalize">{item.categoria}</p>
-                    </div>
-                  </div>
-                  <div className="text-lg font-bold text-primary mb-2">
-                    Total: {item.quantidade} peças
-                  </div>
-                  <div className="text-xs text-slate-600">
-                    <strong>Tamanhos:</strong>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {Object.entries(item.tamanhos).map(([tamanho, qty]) => (
-                        <span key={tamanho} className="bg-slate-100 px-2 py-1 rounded">
-                          {tamanho}: {qty}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="relative px-12">
+            <Carousel className="w-full">
+              <CarouselContent className="-ml-4">
+                {estoque.map((item) => (
+                  <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="modern-card">
+                      <CardContent className="card-content p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-2xl">{getItemIcon(item.nome)}</span>
+                          <div>
+                            <h3 className="font-semibold text-slate-800">{item.nome}</h3>
+                            <p className="text-sm text-slate-600 capitalize">{item.categoria}</p>
+                          </div>
+                        </div>
+                        <div className="text-lg font-bold text-primary mb-2">
+                          Total: {item.quantidade} peças
+                        </div>
+                        <div className="text-xs text-slate-600">
+                          <strong>Tamanhos:</strong>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {Object.entries(item.tamanhos).map(([tamanho, qty]) => (
+                              <span key={tamanho} className="bg-slate-100 px-2 py-1 rounded">
+                                {tamanho}: {qty}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           </div>
         </div>
 
