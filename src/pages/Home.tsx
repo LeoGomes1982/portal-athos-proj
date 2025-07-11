@@ -1,4 +1,5 @@
 
+import { useEffect } from "react";
 import { 
   Users, 
   FileText, 
@@ -15,9 +16,20 @@ import {
   Shield
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { NotificationBadge } from "@/components/NotificationBadge";
+import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
+
+  // Verificar notificações quando o componente monta
+  useEffect(() => {
+    const savedDocs = localStorage.getItem('documentos');
+    if (savedDocs) {
+      checkDocumentosVencendo(JSON.parse(savedDocs));
+    }
+  }, [checkDocumentosVencendo]);
 
   const gestaoInternaSection = [
     {
@@ -27,7 +39,8 @@ const Home = () => {
       icon: FileText,
       className: "bg-secondary border-primary/20 hover:border-primary/30",
       iconColor: "text-primary",
-      onClick: () => navigate("/dp")
+      onClick: () => navigate("/dp"),
+      hasNotification: true
     },
     {
       id: "agenda",
@@ -166,6 +179,11 @@ const Home = () => {
               className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
               onClick={section.onClick}
             >
+              {/* Notificação para DP e RH */}
+              {section.hasNotification && (
+                <NotificationBadge show={hasNotifications} />
+              )}
+              
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                   <section.icon size={32} className={section.iconColor} />

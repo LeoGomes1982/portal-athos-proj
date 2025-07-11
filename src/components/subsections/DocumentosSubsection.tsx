@@ -94,7 +94,19 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
   const { marcarComoVisualizado } = useDocumentNotifications();
   const [showNovoDocumentoModal, setShowNovoDocumentoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [documentos, setDocumentos] = useState<DocumentoCompleto[]>(documentosMockCompletos);
+  const [documentos, setDocumentos] = useState<DocumentoCompleto[]>([]);
+
+  // Carregar documentos do localStorage quando o componente monta
+  useEffect(() => {
+    const savedDocs = localStorage.getItem('documentos');
+    if (savedDocs) {
+      setDocumentos(JSON.parse(savedDocs));
+    } else {
+      // Se não há documentos salvos, usar os dados mock e salvar
+      setDocumentos(documentosMockCompletos);
+      localStorage.setItem('documentos', JSON.stringify(documentosMockCompletos));
+    }
+  }, []);
 
   const handleAdicionarDocumento = (documento: any) => {
     const novoDocumento = {
@@ -104,7 +116,11 @@ export function DocumentosSubsection({ onBack }: DocumentosSubsectionProps) {
       thumbnail: "📄",
       visualizado: false
     };
-    setDocumentos(prev => [novoDocumento, ...prev]);
+    const novosDocumentos = [novoDocumento, ...documentos];
+    setDocumentos(novosDocumentos);
+    
+    // Salvar no localStorage
+    localStorage.setItem('documentos', JSON.stringify(novosDocumentos));
   };
   
   const [uploadData, setUploadData] = useState({

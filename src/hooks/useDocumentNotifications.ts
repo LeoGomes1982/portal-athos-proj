@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface DocumentoCompleto {
   id: number;
@@ -17,7 +17,7 @@ export interface DocumentoCompleto {
 export function useDocumentNotifications() {
   const [documentosVencendo, setDocumentosVencendo] = useState<DocumentoCompleto[]>([]);
 
-  const checkDocumentosVencendo = (documentos: DocumentoCompleto[]) => {
+  const checkDocumentosVencendo = useCallback((documentos: DocumentoCompleto[]) => {
     const hoje = new Date();
     const doisDiasDepois = new Date();
     doisDiasDepois.setDate(hoje.getDate() + 2);
@@ -30,7 +30,7 @@ export function useDocumentNotifications() {
     });
 
     setDocumentosVencendo(vencendo);
-  };
+  }, []);
 
   const marcarComoVisualizado = (documentoId: number, documentos: DocumentoCompleto[]) => {
     const documentosAtualizados = documentos.map(doc =>
