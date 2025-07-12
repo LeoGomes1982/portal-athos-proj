@@ -54,6 +54,48 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
 
   const funcionariosAtivos = filteredFuncionarios.filter(f => f.status !== 'inativo');
 
+  // Função para verificar se funcionário tem documentos vencendo
+  const verificarDocumentosVencendo = (funcionarioId: number) => {
+    const documentosKey = `documentos_funcionario_${funcionarioId}`;
+    const savedDocumentos = localStorage.getItem(documentosKey);
+    
+    if (savedDocumentos) {
+      const documentos = JSON.parse(savedDocumentos);
+      const hoje = new Date();
+      const doisDiasDepois = new Date();
+      doisDiasDepois.setDate(hoje.getDate() + 2);
+      
+      return documentos.some((doc: any) => {
+        if (!doc.temValidade || !doc.dataValidade || doc.visualizado) return false;
+        const dataValidade = new Date(doc.dataValidade);
+        return dataValidade <= doisDiasDepois && dataValidade >= hoje;
+      });
+    }
+    
+    return false;
+  };
+
+  // Ordenar funcionários: documentos vencendo primeiro, depois destaque, depois os demais
+  const funcionariosOrdenados = [...funcionariosAtivos].sort((a, b) => {
+    const aTemDocVencendo = verificarDocumentosVencendo(a.id);
+    const bTemDocVencendo = verificarDocumentosVencendo(b.id);
+    const aEhDestaque = a.status === 'destaque';
+    const bEhDestaque = b.status === 'destaque';
+
+    // Prioridade 1: Documentos vencendo
+    if (aTemDocVencendo && !bTemDocVencendo) return -1;
+    if (!aTemDocVencendo && bTemDocVencendo) return 1;
+
+    // Prioridade 2: Funcionários destaque (só se nenhum tem docs vencendo)
+    if (!aTemDocVencendo && !bTemDocVencendo) {
+      if (aEhDestaque && !bEhDestaque) return -1;
+      if (!aEhDestaque && bEhDestaque) return 1;
+    }
+
+    // Ordem alfabética para os demais
+    return a.nome.localeCompare(b.nome);
+  });
+
   const handleFuncionarioClick = (funcionario: Funcionario) => {
     setSelectedFuncionario(funcionario);
     setIsModalOpen(true);
@@ -141,7 +183,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         </div>
 
         <div className="grid grid-cols-1 gap-4 animate-slide-up">
-          {funcionariosAtivos.map((funcionario) => (
+          {funcionariosOrdenados.map((funcionario) => (
             <FuncionarioCard 
               key={funcionario.id}
               funcionario={funcionario}
@@ -150,7 +192,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           ))}
         </div>
 
-        {funcionariosAtivos.length === 0 && (
+        {funcionariosOrdenados.length === 0 && (
           <div className="text-center py-16 animate-fade-in">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
