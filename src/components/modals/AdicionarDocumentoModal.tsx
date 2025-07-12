@@ -171,7 +171,7 @@ export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId
                     {dataValidade ? format(dataValidade, "dd/MM/yyyy") : "Selecione a data de vencimento"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-[70]" align="start">
                   <Calendar
                     mode="single"
                     selected={dataValidade}

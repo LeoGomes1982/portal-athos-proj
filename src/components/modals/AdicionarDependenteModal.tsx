@@ -92,7 +92,7 @@ export function AdicionarDependenteModal({ isOpen, onClose, onSave, funcionarioI
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md z-[60]">
         <DialogHeader>
           <DialogTitle>Adicionar Dependente</DialogTitle>
         </DialogHeader>
@@ -138,7 +138,7 @@ export function AdicionarDependenteModal({ isOpen, onClose, onSave, funcionarioI
                   {dataNascimento ? format(dataNascimento, "dd/MM/yyyy") : "Selecione a data"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 z-[70]" align="start">
                 <Calendar
                   mode="single"
                   selected={dataNascimento}
