@@ -59,14 +59,6 @@ const subsections = [
     textColor: "text-purple-700"
   },
   {
-    id: "destaque",
-    title: "Destaque",
-    description: "Informações importantes",
-    icon: Users,
-    bgColor: "bg-yellow-100",
-    textColor: "text-yellow-700"
-  },
-  {
     id: "geladeira",
     title: "Geladeira",
     description: "Arquivos do RH",
