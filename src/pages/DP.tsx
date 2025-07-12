@@ -19,7 +19,7 @@ import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsectio
 import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
 import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
 import { GeladeiraSubsection } from "@/components/subsections/GeladeiraSubsection";
-import { DocumentosSubsection } from "@/components/subsections/DocumentosSubsection";
+
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 
@@ -75,7 +75,7 @@ const subsections = [
   {
     id: "arquivo",
     title: "Arquivo",
-    description: "Arquivo de documentos",
+    description: "Arquivo de funcionários inativos",
     icon: Archive,
     bgColor: "bg-red-100",
     textColor: "text-red-700"
@@ -127,9 +127,6 @@ export default function DP() {
     return <GeladeiraSubsection onBack={handleBackToMain} />;
   }
 
-  if (activeSubsection === "documentos") {
-    return <DocumentosSubsection onBack={handleBackToMain} />;
-  }
 
   return (
     <div className="app-container">
