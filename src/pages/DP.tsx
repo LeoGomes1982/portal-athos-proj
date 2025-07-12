@@ -88,7 +88,7 @@ export default function DP() {
   const navigate = useNavigate();
   const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
-  const { funcionariosComAvisos, hasAvisos } = useAvisoVencimentos();
+  const { funcionariosComAvisos, hasAvisos, totalDocumentosVencendo, totalExperienciaVencendo, totalAvisoVencendo } = useAvisoVencimentos();
   const [showAvisosModal, setShowAvisosModal] = useState(false);
 
   // Verificar notificações quando o componente monta
@@ -176,12 +176,17 @@ export default function DP() {
                 </div>
                 <div>
                   <h3 className="subsection-title text-red-700">Aviso</h3>
-                  <p className="text-red-600 leading-relaxed">
-                    {funcionariosComAvisos.some(f => f.documentosVencendo > 0) && 'Documentos vencendo'}
-                    {funcionariosComAvisos.some(f => f.documentosVencendo > 0) && 
-                     (funcionariosComAvisos.some(f => f.experienciaVencendo || f.avisoVencendo)) && ' • '}
-                    {funcionariosComAvisos.some(f => f.experienciaVencendo || f.avisoVencendo) && 'Contratos terminando'}
-                  </p>
+                  <div className="text-red-600 leading-relaxed text-sm space-y-1">
+                    {totalDocumentosVencendo > 0 && (
+                      <p>• Documentos vencendo ({totalDocumentosVencendo})</p>
+                    )}
+                    {totalAvisoVencendo > 0 && (
+                      <p>• Aviso prévio vencendo ({totalAvisoVencendo})</p>
+                    )}
+                    {totalExperienciaVencendo > 0 && (
+                      <p>• Experiência vencendo ({totalExperienciaVencendo})</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -229,7 +234,7 @@ export default function DP() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
               <FileText className="h-5 w-5" />
-              Documentos Vencendo
+              Avisos Importantes
             </DialogTitle>
           </DialogHeader>
           

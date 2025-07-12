@@ -89,9 +89,17 @@ export function useAvisoVencimentos() {
 
   const hasAvisos = funcionariosComAvisos.length > 0;
 
+  // Contadores por tipo de aviso
+  const totalDocumentosVencendo = funcionariosComAvisos.reduce((total, func) => total + func.documentosVencendo, 0);
+  const totalExperienciaVencendo = funcionariosComAvisos.filter(func => func.experienciaVencendo).length;
+  const totalAvisoVencendo = funcionariosComAvisos.filter(func => func.avisoVencendo).length;
+
   return {
     funcionariosComAvisos,
     hasAvisos,
-    verificarVencimentos
+    verificarVencimentos,
+    totalDocumentosVencendo,
+    totalExperienciaVencendo,
+    totalAvisoVencendo
   };
 }
