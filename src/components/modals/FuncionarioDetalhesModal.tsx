@@ -279,15 +279,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             </Card>
           )}
 
-          {/* Informações Principais */}
+          {/* Cards organizados por seção - correspondentes às abas do formulário de admissão */}
+          
+          {/* Card Profissional */}
           <Card className="bg-white border-2 border-blue-200">
             <CardContent className="p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                💼 Informações Profissionais
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Nome Completo</label>
-                    <p className="text-lg font-bold text-slate-800">{funcionario.nome}</p>
-                  </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">Cargo</label>
                     <p className="text-md font-medium text-slate-700">{funcionario.cargo}</p>
@@ -298,6 +299,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       {funcionario.setor}
                     </Badge>
                   </div>
+                  {funcionario.salario && (
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Salário</label>
+                      <p className="text-lg font-bold text-blue-700">{funcionario.salario}</p>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -353,33 +360,18 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             </CardContent>
           </Card>
 
-          {/* Informações de Contato */}
+          {/* Card Pessoal */}
           <Card className="bg-white border-2 border-blue-200">
             <CardContent className="p-6">
               <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                📞 Informações de Contato
+                👤 Informações Pessoais
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-slate-600">Telefone</label>
-                  <p className="text-md font-medium text-slate-700">{funcionario.telefone}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-600">E-mail</label>
-                  <p className="text-md font-medium text-slate-700 break-all">{funcionario.email}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Documentos Pessoais */}
-          {(funcionario.cpf || funcionario.rg) && (
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  📋 Documentos Pessoais
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Nome Completo</label>
+                    <p className="text-lg font-bold text-slate-800">{funcionario.nome}</p>
+                  </div>
                   {funcionario.cpf && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">CPF</label>
@@ -393,17 +385,41 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Estado Civil</label>
+                    <p className="text-md font-medium text-slate-700">-</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Data de Nascimento</label>
+                    <p className="text-md font-medium text-slate-700">-</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Naturalidade</label>
+                    <p className="text-md font-medium text-slate-700">-</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Informações Adicionais */}
-          {(funcionario.endereco || funcionario.salario) && (
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  🏠 Informações Adicionais
-                </h3>
+          {/* Card Contato */}
+          <Card className="bg-white border-2 border-blue-200">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                📞 Informações de Contato
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Telefone</label>
+                    <p className="text-md font-medium text-slate-700">{funcionario.telefone}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">E-mail</label>
+                    <p className="text-md font-medium text-slate-700 break-all">{funcionario.email}</p>
+                  </div>
+                </div>
                 <div className="space-y-4">
                   {funcionario.endereco && (
                     <div>
@@ -411,16 +427,68 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       <p className="text-md font-medium text-slate-700">{funcionario.endereco}</p>
                     </div>
                   )}
-                  {funcionario.salario && (
-                    <div>
-                      <label className="text-sm font-medium text-slate-600">Salário</label>
-                      <p className="text-lg font-bold text-blue-700">{funcionario.salario}</p>
-                    </div>
-                  )}
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">CEP</label>
+                    <p className="text-md font-medium text-slate-700">-</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card Documentos */}
+          <Card className="bg-white border-2 border-blue-200">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                📄 Documentos
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">RG</label>
+                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">CPF</label>
+                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Comprovante de Endereço</label>
+                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Carteira de Trabalho</label>
+                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Título de Eleitor</label>
+                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600">Certificado de Reservista</label>
+                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card Dependentes */}
+          <Card className="bg-white border-2 border-blue-200">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                👨‍👩‍👧‍👦 Dependentes
+              </h3>
+              <div className="space-y-4">
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-2">👶</div>
+                  <p className="text-slate-500">Nenhum dependente cadastrado</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Histórico */}
           <Card className="bg-white border-2 border-blue-200">
