@@ -98,9 +98,15 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
               {temAlertaCritico && (
                 <div className="absolute -top-1 -right-1 animate-pulse z-10">
                   <div className="relative">
-                    <FileX className="w-6 h-6 text-red-600 fill-red-500 drop-shadow-lg" style={{
-                      filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.9)) brightness(1.2)'
-                    }} />
+                    {periodoVencendo?.tipo === 'aviso' ? (
+                      <AlertTriangle className="w-6 h-6 text-red-600 fill-red-500 drop-shadow-lg" style={{
+                        filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.9)) brightness(1.2)'
+                      }} />
+                    ) : (
+                      <FileX className="w-6 h-6 text-red-600 fill-red-500 drop-shadow-lg" style={{
+                        filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.9)) brightness(1.2)'
+                      }} />
+                    )}
                     <div className="absolute inset-0 w-6 h-6 bg-red-500 rounded-full opacity-30 animate-ping"></div>
                   </div>
                 </div>
