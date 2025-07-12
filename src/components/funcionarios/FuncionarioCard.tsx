@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, AlertTriangle, FileX } from "lucide-react";
+import { Star, AlertTriangle, FileX, Hourglass } from "lucide-react";
 import { Funcionario } from "@/types/funcionario";
 import { statusConfig } from "@/config/funcionarioStatus";
 import { isProximoDoFim } from "@/utils/funcionarioUtils";
@@ -102,12 +102,18 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
                       <AlertTriangle className="w-6 h-6 text-red-600 fill-red-500 drop-shadow-lg" style={{
                         filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.9)) brightness(1.2)'
                       }} />
+                    ) : periodoVencendo?.tipo === 'experiencia' ? (
+                      <Hourglass className="w-6 h-6 text-orange-600 fill-orange-500 drop-shadow-lg" style={{
+                        filter: 'drop-shadow(0 0 8px rgba(251, 146, 60, 0.9)) brightness(1.2)'
+                      }} />
                     ) : (
                       <FileX className="w-6 h-6 text-red-600 fill-red-500 drop-shadow-lg" style={{
                         filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.9)) brightness(1.2)'
                       }} />
                     )}
-                    <div className="absolute inset-0 w-6 h-6 bg-red-500 rounded-full opacity-30 animate-ping"></div>
+                    <div className={`absolute inset-0 w-6 h-6 rounded-full opacity-30 animate-ping ${
+                      periodoVencendo?.tipo === 'experiencia' ? 'bg-orange-500' : 'bg-red-500'
+                    }`}></div>
                   </div>
                 </div>
               )}
