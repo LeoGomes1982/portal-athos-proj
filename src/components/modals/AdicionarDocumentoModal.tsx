@@ -31,6 +31,8 @@ interface AdicionarDocumentoModalProps {
 }
 
 export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId }: AdicionarDocumentoModalProps) {
+  console.log("AdicionarDocumentoModal renderizado - isOpen:", isOpen);
+  
   const [nome, setNome] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [temValidade, setTemValidade] = useState(false);
@@ -106,7 +108,7 @@ export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md z-[60]">
         <DialogHeader>
           <DialogTitle>Adicionar Documento</DialogTitle>
         </DialogHeader>
