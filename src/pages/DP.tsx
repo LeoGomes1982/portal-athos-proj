@@ -22,6 +22,8 @@ import { GeladeiraSubsection } from "@/components/subsections/GeladeiraSubsectio
 
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
+import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const subsections = [
   {
@@ -57,12 +59,12 @@ const subsections = [
     textColor: "text-purple-700"
   },
   {
-    id: "documentos",
-    title: "Documentos",
-    description: "Documentação pessoal",
-    icon: FileText,
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-700"
+    id: "destaque",
+    title: "Destaque",
+    description: "Informações importantes",
+    icon: Users,
+    bgColor: "bg-yellow-100",
+    textColor: "text-yellow-700"
   },
   {
     id: "geladeira",
@@ -86,6 +88,8 @@ export default function DP() {
   const navigate = useNavigate();
   const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
+  const { funcionariosComAvisos, hasAvisos } = useAvisoVencimentos();
+  const [showAvisosModal, setShowAvisosModal] = useState(false);
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -161,11 +165,19 @@ export default function DP() {
             <div 
               key={subsection.id}
               className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-secondary border-primary/20 hover:border-primary/30"
-              onClick={() => handleSubsectionClick(subsection.id)}
+              onClick={() => {
+                if (subsection.id === "aviso") {
+                  setShowAvisosModal(true);
+                } else {
+                  handleSubsectionClick(subsection.id);
+                }
+              }}
             >
-              {/* Notificação para documentos */}
-              {subsection.id === "documentos" && (
-                <NotificationBadge show={hasNotifications} />
+              {/* Badge de avisos */}
+              {subsection.id === "aviso" && hasAvisos && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{funcionariosComAvisos.length}</span>
+                </div>
               )}
               
               <div className="flex flex-col items-center text-center space-y-4">
@@ -179,6 +191,28 @@ export default function DP() {
               </div>
             </div>
           ))}
+          
+          {/* Card Aviso - só aparece quando há avisos */}
+          {hasAvisos && (
+            <div 
+              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-red-50 border-red-200 hover:border-red-300 animate-pulse"
+              onClick={() => setShowAvisosModal(true)}
+            >
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center">
+                <span className="text-white text-xs font-bold">{funcionariosComAvisos.length}</span>
+              </div>
+              
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                  <FileText size={32} className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className="subsection-title text-red-700">Aviso</h3>
+                  <p className="text-red-600 leading-relaxed">Documentos vencendo em breve</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -188,6 +222,35 @@ export default function DP() {
           </p>
         </div>
       </div>
+
+      {/* Modal de Avisos */}
+      <Dialog open={showAvisosModal} onOpenChange={setShowAvisosModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <FileText className="h-5 w-5" />
+              Documentos Vencendo
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-3">
+            {funcionariosComAvisos.map((funcionario) => (
+              <div key={funcionario.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
+                <p className="font-medium text-red-800">{funcionario.nome}</p>
+                <p className="text-sm text-red-600">
+                  {funcionario.documentosVencendo} documento{funcionario.documentosVencendo > 1 ? 's' : ''} vencendo em 2 dias
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end">
+            <Button onClick={() => setShowAvisosModal(false)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -8,8 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
+import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
+import { useFuncionarioData } from "@/hooks/useFuncionarioData";
+import { format } from "date-fns";
 
 
 interface HistoricoRegistro {
@@ -75,6 +79,19 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   // Estados para edição inline
   const [isEditing, setIsEditing] = useState(false);
   const [editedFuncionario, setEditedFuncionario] = useState<Funcionario>(funcionario);
+
+  // Estados para modais de dependentes e documentos
+  const [showDependenteModal, setShowDependenteModal] = useState(false);
+  const [showDocumentoModal, setShowDocumentoModal] = useState(false);
+  
+  const { 
+    dependentes, 
+    documentos, 
+    adicionarDependente, 
+    adicionarDocumento,
+    removerDependente,
+    removerDocumento
+  } = useFuncionarioData(funcionario.id);
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
@@ -575,47 +592,79 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                  📄 Documentos
+                  <FileText className="h-5 w-5" />
+                  Documentos
                 </h3>
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => setShowDocumentoModal(true)}
                   className="text-blue-600 border-blue-300 hover:bg-blue-50"
                 >
                   <Plus size={16} className="mr-1" />
                   Adicionar Documento
                 </Button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">RG</label>
-                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">CPF</label>
-                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Comprovante de Endereço</label>
-                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
-                  </div>
+              {documentos.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-2">📄</div>
+                  <p className="text-slate-500">Nenhum documento anexado</p>
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Carteira de Trabalho</label>
-                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Título de Eleitor</label>
-                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Certificado de Reservista</label>
-                    <p className="text-sm text-slate-500">📄 Documento anexado</p>
-                  </div>
+              ) : (
+                <div className="space-y-3">
+                  {documentos.map((documento) => (
+                    <div key={documento.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-700">{documento.nome}</p>
+                        <p className="text-sm text-slate-500">
+                          {documento.nomeArquivo}
+                          {documento.temValidade && documento.dataValidade && (
+                            <span className="ml-2 text-orange-600">
+                              • Vence em {format(new Date(documento.dataValidade), "dd/MM/yyyy")}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            const url = URL.createObjectURL(documento.arquivo);
+                            window.open(url, '_blank');
+                          }}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            const url = URL.createObjectURL(documento.arquivo);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = documento.nomeArquivo;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          }}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => removerDocumento(documento.id)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
@@ -624,23 +673,49 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                  👨‍👩‍👧‍👦 Dependentes
+                  <Users className="h-5 w-5" />
+                  Dependentes
                 </h3>
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => setShowDependenteModal(true)}
                   className="text-blue-600 border-blue-300 hover:bg-blue-50"
                 >
                   <Plus size={16} className="mr-1" />
                   Adicionar Dependente
                 </Button>
               </div>
-              <div className="space-y-4">
+              {dependentes.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-4xl mb-2">👶</div>
                   <p className="text-slate-500">Nenhum dependente cadastrado</p>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-3">
+                  {dependentes.map((dependente) => (
+                    <div key={dependente.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-700">{dependente.nome}</p>
+                        <p className="text-sm text-slate-500">
+                          {dependente.grauParentesco} • {dependente.dataNascimento} • {dependente.cpf}
+                        </p>
+                        {dependente.nomeArquivo && (
+                          <p className="text-xs text-blue-600">📄 {dependente.nomeArquivo}</p>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => removerDependente(dependente.id)}
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -781,6 +856,21 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           </div>
         </div>
       </div>
+
+      {/* Modais */}
+      <AdicionarDependenteModal
+        isOpen={showDependenteModal}
+        onClose={() => setShowDependenteModal(false)}
+        onSave={adicionarDependente}
+        funcionarioId={funcionario.id}
+      />
+
+      <AdicionarDocumentoModal
+        isOpen={showDocumentoModal}
+        onClose={() => setShowDocumentoModal(false)}
+        onSave={adicionarDocumento}
+        funcionarioId={funcionario.id}
+      />
     </div>
   );
 }
