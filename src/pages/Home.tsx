@@ -18,10 +18,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
+import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 
 const Home = () => {
   const navigate = useNavigate();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
+  const { hasAvisos } = useAvisoVencimentos();
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -40,7 +42,8 @@ const Home = () => {
       className: "bg-secondary border-primary/20 hover:border-primary/30",
       iconColor: "text-primary",
       onClick: () => navigate("/dp"),
-      hasNotification: true
+      hasNotification: true,
+      hasAvisos: true
     },
     {
       id: "agenda",
@@ -182,6 +185,13 @@ const Home = () => {
               {/* Notificação para DP e RH */}
               {section.hasNotification && (
                 <NotificationBadge show={hasNotifications} />
+              )}
+              
+              {/* Aviso de documentos vencendo para DP e RH */}
+              {section.hasAvisos && hasAvisos && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
               )}
               
               <div className="flex flex-col items-center text-center space-y-4">
