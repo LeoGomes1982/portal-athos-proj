@@ -75,19 +75,42 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return false;
   };
 
-  // Ordenar funcionários: documentos vencendo primeiro, depois destaque, depois os demais
+  // Função para verificar se período de experiência ou aviso prévio está vencendo
+  const verificarPeriodosVencendo = (funcionario: Funcionario) => {
+    const hoje = new Date();
+    const doisDiasDepois = new Date();
+    doisDiasDepois.setDate(hoje.getDate() + 2);
+
+    if (funcionario.status === 'experiencia' && funcionario.dataFimExperiencia) {
+      const dataFim = new Date(funcionario.dataFimExperiencia);
+      return dataFim <= doisDiasDepois && dataFim >= hoje;
+    }
+
+    if (funcionario.status === 'aviso' && funcionario.dataFimAvisoPrevio) {
+      const dataFim = new Date(funcionario.dataFimAvisoPrevio);
+      return dataFim <= doisDiasDepois && dataFim >= hoje;
+    }
+
+    return false;
+  };
+
+  // Ordenar funcionários: alertas críticos primeiro (docs vencendo ou períodos terminando), depois destaque, depois os demais
   const funcionariosOrdenados = [...funcionariosAtivos].sort((a, b) => {
     const aTemDocVencendo = verificarDocumentosVencendo(a.id);
     const bTemDocVencendo = verificarDocumentosVencendo(b.id);
+    const aPeriodoVencendo = verificarPeriodosVencendo(a);
+    const bPeriodoVencendo = verificarPeriodosVencendo(b);
+    const aTemAlertaCritico = aTemDocVencendo || aPeriodoVencendo;
+    const bTemAlertaCritico = bTemDocVencendo || bPeriodoVencendo;
     const aEhDestaque = a.status === 'destaque';
     const bEhDestaque = b.status === 'destaque';
 
-    // Prioridade 1: Documentos vencendo
-    if (aTemDocVencendo && !bTemDocVencendo) return -1;
-    if (!aTemDocVencendo && bTemDocVencendo) return 1;
+    // Prioridade 1: Alertas críticos (documentos vencendo ou períodos terminando)
+    if (aTemAlertaCritico && !bTemAlertaCritico) return -1;
+    if (!aTemAlertaCritico && bTemAlertaCritico) return 1;
 
-    // Prioridade 2: Funcionários destaque (só se nenhum tem docs vencendo)
-    if (!aTemDocVencendo && !bTemDocVencendo) {
+    // Prioridade 2: Funcionários destaque (só se nenhum tem alertas críticos)
+    if (!aTemAlertaCritico && !bTemAlertaCritico) {
       if (aEhDestaque && !bEhDestaque) return -1;
       if (!aEhDestaque && bEhDestaque) return 1;
     }

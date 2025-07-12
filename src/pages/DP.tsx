@@ -176,7 +176,12 @@ export default function DP() {
                 </div>
                 <div>
                   <h3 className="subsection-title text-red-700">Aviso</h3>
-                  <p className="text-red-600 leading-relaxed">Documentos vencendo em breve</p>
+                  <p className="text-red-600 leading-relaxed">
+                    {funcionariosComAvisos.some(f => f.documentosVencendo > 0) && 'Documentos vencendo'}
+                    {funcionariosComAvisos.some(f => f.documentosVencendo > 0) && 
+                     (funcionariosComAvisos.some(f => f.experienciaVencendo || f.avisoVencendo)) && ' • '}
+                    {funcionariosComAvisos.some(f => f.experienciaVencendo || f.avisoVencendo) && 'Contratos terminando'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -232,9 +237,17 @@ export default function DP() {
             {funcionariosComAvisos.map((funcionario) => (
               <div key={funcionario.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
                 <p className="font-medium text-red-800">{funcionario.nome}</p>
-                <p className="text-sm text-red-600">
-                  {funcionario.documentosVencendo} documento{funcionario.documentosVencendo > 1 ? 's' : ''} vencendo em 2 dias
-                </p>
+                <div className="text-sm text-red-600 space-y-1">
+                  {funcionario.documentosVencendo > 0 && (
+                    <p>{funcionario.documentosVencendo} documento{funcionario.documentosVencendo > 1 ? 's' : ''} vencendo em 2 dias</p>
+                  )}
+                  {funcionario.experienciaVencendo && (
+                    <p>Período de experiência termina em {new Date(funcionario.dataFimExperiencia!).toLocaleDateString('pt-BR')}</p>
+                  )}
+                  {funcionario.avisoVencendo && (
+                    <p>Aviso prévio termina em {new Date(funcionario.dataFimAvisoPrevio!).toLocaleDateString('pt-BR')}</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>

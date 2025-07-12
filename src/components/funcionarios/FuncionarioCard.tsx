@@ -40,12 +40,37 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
     return false;
   };
 
+  // Verificar se período de experiência ou aviso prévio está vencendo
+  const verificarPeriodosVencendo = () => {
+    const hoje = new Date();
+    const doisDiasDepois = new Date();
+    doisDiasDepois.setDate(hoje.getDate() + 2);
+
+    if (funcionario.status === 'experiencia' && funcionario.dataFimExperiencia) {
+      const dataFim = new Date(funcionario.dataFimExperiencia);
+      if (dataFim <= doisDiasDepois && dataFim >= hoje) {
+        return { tipo: 'experiencia', data: funcionario.dataFimExperiencia };
+      }
+    }
+
+    if (funcionario.status === 'aviso' && funcionario.dataFimAvisoPrevio) {
+      const dataFim = new Date(funcionario.dataFimAvisoPrevio);
+      if (dataFim <= doisDiasDepois && dataFim >= hoje) {
+        return { tipo: 'aviso', data: funcionario.dataFimAvisoPrevio };
+      }
+    }
+
+    return null;
+  };
+
   const temDocumentosVencendo = verificarDocumentosVencendo();
+  const periodoVencendo = verificarPeriodosVencendo();
+  const temAlertaCritico = temDocumentosVencendo || periodoVencendo;
 
   return (
     <Card 
       className={`modern-card cursor-pointer transition-all duration-300 hover:shadow-lg ${
-        temDocumentosVencendo ? 'border-red-300 bg-red-50/50' : 
+        temAlertaCritico ? 'border-red-300 bg-red-50/50' : 
         funcionario.status === 'destaque' ? 'border-yellow-300 bg-yellow-50/50' : ''
       }`}
       onClick={() => onClick(funcionario)}
@@ -55,7 +80,7 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
           <div className="flex items-center gap-4 flex-1">
             {/* Foto */}
             <div className="flex-shrink-0 relative">
-              {funcionario.status === 'destaque' && !temDocumentosVencendo && (
+              {funcionario.status === 'destaque' && !temAlertaCritico && (
                 <div className="absolute -top-1 -right-1 animate-pulse z-10">
                   <div className="relative">
                     <Star className="w-6 h-6 text-yellow-600 fill-yellow-500 drop-shadow-lg" style={{
@@ -65,12 +90,12 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
                   </div>
                 </div>
               )}
-              {mostrarAlertaStatus && !temDocumentosVencendo && funcionario.status !== 'destaque' && (
+              {mostrarAlertaStatus && !temAlertaCritico && funcionario.status !== 'destaque' && (
                 <div className="absolute -top-1 -right-1 animate-bounce z-10">
                   <AlertTriangle className="w-5 h-5 text-red-500 fill-red-400 drop-shadow-md" />
                 </div>
               )}
-              {temDocumentosVencendo && (
+              {temAlertaCritico && (
                 <div className="absolute -top-1 -right-1 animate-pulse z-10">
                   <div className="relative">
                     <FileX className="w-6 h-6 text-red-600 fill-red-500 drop-shadow-lg" style={{
@@ -81,7 +106,7 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
                 </div>
               )}
               <div className={`w-12 h-12 border-2 rounded-full flex items-center justify-center ${
-                temDocumentosVencendo ? 'bg-red-100 border-red-300' : 
+                temAlertaCritico ? 'bg-red-100 border-red-300' : 
                 funcionario.status === 'destaque' ? 'bg-yellow-100 border-yellow-300' : 
                 'bg-primary/10 border-primary/20'
               }`}>
@@ -94,12 +119,12 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
               <div className="flex items-center gap-4">
                 <div className="flex-1 min-w-0">
                   <h3 className={`text-lg font-semibold mb-1 ${
-                    temDocumentosVencendo ? 'text-red-700' : 
+                    temAlertaCritico ? 'text-red-700' : 
                     funcionario.status === 'destaque' ? 'text-yellow-700' : 
                     'text-slate-800'
                   }`}>{funcionario.nome}</h3>
                   <div className={`flex items-center gap-4 text-sm ${
-                    temDocumentosVencendo ? 'text-red-600' : 
+                    temAlertaCritico ? 'text-red-600' : 
                     funcionario.status === 'destaque' ? 'text-yellow-600' : 
                     'text-slate-600'
                   }`}>
@@ -111,7 +136,12 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
                         Documentos vencendo
                       </Badge>
                     )}
-                    {funcionario.status === 'destaque' && !temDocumentosVencendo && (
+                    {periodoVencendo && (
+                      <Badge variant="destructive" className="animate-pulse text-xs">
+                        {periodoVencendo.tipo === 'experiencia' ? 'Experiência terminando' : 'Aviso prévio terminando'}
+                      </Badge>
+                    )}
+                    {funcionario.status === 'destaque' && !temAlertaCritico && (
                       <Badge className="bg-yellow-500 text-white animate-pulse text-xs hover:bg-yellow-600">
                         Funcionário Destaque
                       </Badge>
