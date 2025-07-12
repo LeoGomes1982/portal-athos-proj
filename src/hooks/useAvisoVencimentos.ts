@@ -15,13 +15,17 @@ export function useAvisoVencimentos() {
   const [funcionariosComAvisos, setFuncionariosComAvisos] = useState<FuncionarioComAvisos[]>([]);
 
   const verificarVencimentos = () => {
+    // Carregar funcionários atualizados do localStorage
+    const savedFuncionarios = localStorage.getItem('funcionarios_list');
+    const funcionarios = savedFuncionarios ? JSON.parse(savedFuncionarios) : funcionariosIniciais;
+
     const hoje = new Date();
     const doisDiasDepois = new Date();
     doisDiasDepois.setDate(hoje.getDate() + 2);
 
     const funcionariosComDocumentosVencendo: FuncionarioComAvisos[] = [];
 
-    funcionariosIniciais.forEach(funcionario => {
+    funcionarios.forEach((funcionario: any) => {
       const documentosKey = `documentos_funcionario_${funcionario.id}`;
       const savedDocumentos = localStorage.getItem(documentosKey);
       

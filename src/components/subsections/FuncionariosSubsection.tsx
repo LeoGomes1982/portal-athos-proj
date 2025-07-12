@@ -15,30 +15,50 @@ interface FuncionariosSubsectionProps {
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [funcionariosList, setFuncionariosList] = useState(funcionariosIniciais);
+  const [funcionariosList, setFuncionariosList] = useState<Funcionario[]>([]);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Carregar funcionários do localStorage ou usar dados iniciais
+  useEffect(() => {
+    const savedFuncionarios = localStorage.getItem('funcionarios_list');
+    if (savedFuncionarios) {
+      setFuncionariosList(JSON.parse(savedFuncionarios));
+    } else {
+      setFuncionariosList(funcionariosIniciais);
+      localStorage.setItem('funcionarios_list', JSON.stringify(funcionariosIniciais));
+    }
+  }, []);
 
   // Verificar automaticamente as datas e atualizar status
   useEffect(() => {
     const verificarDatas = () => {
-      setFuncionariosList(prev => prev.map(func => {
-        let novoStatus = func.status;
+      setFuncionariosList(prev => {
+        const updated = prev.map(func => {
+          let novoStatus = func.status;
 
-        if (func.status === 'experiencia' && func.dataFimExperiencia) {
-          if (dataJaPassou(func.dataFimExperiencia)) {
-            novoStatus = 'ativo';
+          if (func.status === 'experiencia' && func.dataFimExperiencia) {
+            if (dataJaPassou(func.dataFimExperiencia)) {
+              novoStatus = 'ativo';
+            }
           }
+
+          if (func.status === 'aviso' && func.dataFimAvisoPrevio) {
+            if (dataJaPassou(func.dataFimAvisoPrevio)) {
+              novoStatus = 'inativo';
+            }
+          }
+
+          return { ...func, status: novoStatus };
+        });
+
+        // Salvar automaticamente as mudanças no localStorage
+        if (JSON.stringify(updated) !== JSON.stringify(prev)) {
+          localStorage.setItem('funcionarios_list', JSON.stringify(updated));
         }
 
-        if (func.status === 'aviso' && func.dataFimAvisoPrevio) {
-          if (dataJaPassou(func.dataFimAvisoPrevio)) {
-            novoStatus = 'inativo';
-          }
-        }
-
-        return { ...func, status: novoStatus };
-      }));
+        return updated;
+      });
     };
 
     verificarDatas();
@@ -125,8 +145,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
-    setFuncionariosList(prev => 
-      prev.map(func => {
+    setFuncionariosList(prev => {
+      const updated = prev.map(func => {
         if (func.id === funcionarioId) {
           const updatedFunc = { ...func, status: novoStatus };
           
@@ -148,16 +168,24 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           return updatedFunc;
         }
         return func;
-      })
-    );
+      });
+
+      // Salvar automaticamente no localStorage
+      localStorage.setItem('funcionarios_list', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const handleFuncionarioUpdate = (funcionarioAtualizado: Funcionario) => {
-    setFuncionariosList(prev => 
-      prev.map(func => 
+    setFuncionariosList(prev => {
+      const updated = prev.map(func => 
         func.id === funcionarioAtualizado.id ? funcionarioAtualizado : func
-      )
-    );
+      );
+      
+      // Salvar automaticamente no localStorage
+      localStorage.setItem('funcionarios_list', JSON.stringify(updated));
+      return updated;
+    });
     setSelectedFuncionario(funcionarioAtualizado);
   };
 
