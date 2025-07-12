@@ -299,7 +299,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
 
         {/* Estoque Atual */}
         <div className="mb-8 animate-slide-up">
-          <h2 className="section-title mb-4">Estoque Atual</h2>
+          <h2 className="section-title mb-4 text-center">Estoque Atual</h2>
           <div className="relative px-12">
             <Carousel className="w-full">
               <CarouselContent className="-ml-4">
@@ -341,7 +341,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
 
         {/* Lista de Funcionários com Entregas */}
         <div className="animate-slide-up">
-          <h2 className="section-title mb-4">Funcionários com Entregas</h2>
+          <h2 className="section-title mb-4 text-center">Funcionários com Entregas</h2>
           <div className="grid grid-cols-1 gap-4">
             {Object.entries(contadoresFuncionarios).map(([funcionarioId, dados]) => {
               const ultimaEntrega = dados.ultimaEntrega;
