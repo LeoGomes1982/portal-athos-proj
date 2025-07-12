@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, AlertTriangle, X, User, Plus, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { EditarFuncionarioModal } from "./EditarFuncionarioModal";
+
 
 interface HistoricoRegistro {
   id: string;
@@ -72,8 +72,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     registradoPor: "Usuário Atual" // Em uma aplicação real, seria obtido do contexto de autenticação
   });
   
-  // Estado para o modal de edição
-  const [showEditModal, setShowEditModal] = useState(false);
+  // Estados para edição inline
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedFuncionario, setEditedFuncionario] = useState<Funcionario>(funcionario);
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
@@ -191,18 +192,40 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   };
 
   const handleEditarFuncionario = () => {
-    setShowEditModal(true);
+    setIsEditing(true);
   };
 
-  const handleSalvarEdicaoFuncionario = (funcionarioEditado: Funcionario) => {
+  const handleSalvarEdicao = () => {
     if (onFuncionarioUpdate) {
-      onFuncionarioUpdate(funcionarioEditado);
+      onFuncionarioUpdate(editedFuncionario);
     }
-    setShowEditModal(false);
+    setIsEditing(false);
+    toast({
+      title: "Funcionário Atualizado",
+      description: "Informações salvas com sucesso!",
+    });
   };
+
+  const handleCancelarEdicao = () => {
+    setEditedFuncionario(funcionario);
+    setIsEditing(false);
+  };
+
+  const handleInputChange = (field: keyof Funcionario, value: string) => {
+    setEditedFuncionario(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Atualizar funcionário editado quando o funcionário original mudar
+  useEffect(() => {
+    setEditedFuncionario(funcionario);
+  }, [funcionario]);
 
   const statusInfo = statusConfig[statusAtual];
   const isDestaque = statusAtual === 'destaque';
+  const currentFuncionario = isEditing ? editedFuncionario : funcionario;
 
   if (!isOpen) return null;
 
@@ -230,17 +253,47 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </div>
                   )}
                 </h2>
-                <p className="text-slate-600">{funcionario.nome}</p>
+                <p className="text-slate-600">{currentFuncionario.nome}</p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="p-2 h-auto hover:bg-blue-100"
-            >
-              <X size={20} />
-            </Button>
+            <div className="flex items-center gap-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancelarEdicao}
+                    className="h-auto"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSalvarEdicao}
+                    className="bg-green-600 hover:bg-green-700 h-auto"
+                  >
+                    Salvar
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEditarFuncionario}
+                  className="h-auto"
+                >
+                  Editar
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="p-2 h-auto hover:bg-blue-100"
+              >
+                <X size={20} />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -291,27 +344,60 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600">Cargo</label>
-                    <p className="text-md font-medium text-slate-700">{funcionario.cargo}</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedFuncionario.cargo}
+                        onChange={(e) => handleInputChange('cargo', e.target.value)}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <p className="text-md font-medium text-slate-700">{currentFuncionario.cargo}</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">Setor</label>
-                    <Badge variant="secondary" className="font-medium bg-blue-100 text-blue-700 border-blue-200">
-                      {funcionario.setor}
-                    </Badge>
+                    {isEditing ? (
+                      <Input
+                        value={editedFuncionario.setor}
+                        onChange={(e) => handleInputChange('setor', e.target.value)}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <Badge variant="secondary" className="font-medium bg-blue-100 text-blue-700 border-blue-200">
+                        {currentFuncionario.setor}
+                      </Badge>
+                    )}
                   </div>
-                  {funcionario.salario && (
+                  {currentFuncionario.salario && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">Salário</label>
-                      <p className="text-lg font-bold text-blue-700">{funcionario.salario}</p>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.salario || ''}
+                          onChange={(e) => handleInputChange('salario', e.target.value)}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-lg font-bold text-blue-700">{currentFuncionario.salario}</p>
+                      )}
                     </div>
                   )}
                 </div>
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600">Data de Admissão</label>
-                    <p className="text-md font-medium text-slate-700">
-                      {new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}
-                    </p>
+                    {isEditing ? (
+                      <Input
+                        type="date"
+                        value={editedFuncionario.dataAdmissao}
+                        onChange={(e) => handleInputChange('dataAdmissao', e.target.value)}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <p className="text-md font-medium text-slate-700">
+                        {new Date(currentFuncionario.dataAdmissao).toLocaleDateString('pt-BR')}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">Status Atual</label>
@@ -370,18 +456,42 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600">Nome Completo</label>
-                    <p className="text-lg font-bold text-slate-800">{funcionario.nome}</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedFuncionario.nome}
+                        onChange={(e) => handleInputChange('nome', e.target.value)}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <p className="text-lg font-bold text-slate-800">{currentFuncionario.nome}</p>
+                    )}
                   </div>
-                  {funcionario.cpf && (
+                  {currentFuncionario.cpf && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">CPF</label>
-                      <p className="text-md font-medium text-slate-700">{funcionario.cpf}</p>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.cpf || ''}
+                          onChange={(e) => handleInputChange('cpf', e.target.value)}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.cpf}</p>
+                      )}
                     </div>
                   )}
-                  {funcionario.rg && (
+                  {currentFuncionario.rg && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">RG</label>
-                      <p className="text-md font-medium text-slate-700">{funcionario.rg}</p>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.rg || ''}
+                          onChange={(e) => handleInputChange('rg', e.target.value)}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.rg}</p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -413,18 +523,42 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-slate-600">Telefone</label>
-                    <p className="text-md font-medium text-slate-700">{funcionario.telefone}</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedFuncionario.telefone}
+                        onChange={(e) => handleInputChange('telefone', e.target.value)}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <p className="text-md font-medium text-slate-700">{currentFuncionario.telefone}</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-sm font-medium text-slate-600">E-mail</label>
-                    <p className="text-md font-medium text-slate-700 break-all">{funcionario.email}</p>
+                    {isEditing ? (
+                      <Input
+                        value={editedFuncionario.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        className="mt-1"
+                      />
+                    ) : (
+                      <p className="text-md font-medium text-slate-700 break-all">{currentFuncionario.email}</p>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-4">
-                  {funcionario.endereco && (
+                  {currentFuncionario.endereco && (
                     <div>
                       <label className="text-sm font-medium text-slate-600">Endereço</label>
-                      <p className="text-md font-medium text-slate-700">{funcionario.endereco}</p>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.endereco || ''}
+                          onChange={(e) => handleInputChange('endereco', e.target.value)}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.endereco}</p>
+                      )}
                     </div>
                   )}
                   <div>
@@ -439,9 +573,19 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           {/* Card Documentos */}
           <Card className="bg-white border-2 border-blue-200">
             <CardContent className="p-6">
-              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                📄 Documentos
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                  📄 Documentos
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                >
+                  <Plus size={16} className="mr-1" />
+                  Adicionar Documento
+                </Button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
@@ -478,9 +622,19 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           {/* Card Dependentes */}
           <Card className="bg-white border-2 border-blue-200">
             <CardContent className="p-6">
-              <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                👨‍👩‍👧‍👦 Dependentes
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                  👨‍👩‍👧‍👦 Dependentes
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                >
+                  <Plus size={16} className="mr-1" />
+                  Adicionar Dependente
+                </Button>
+              </div>
               <div className="space-y-4">
                 <div className="text-center py-8">
                   <div className="text-4xl mb-2">👶</div>
@@ -621,25 +775,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             >
               Fechar
             </Button>
-            <Button 
-              onClick={handleEditarFuncionario}
-              className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-            >
-              📝 Editar Funcionário
-            </Button>
             <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
               📄 Ver Documentos
             </Button>
           </div>
         </div>
-
-        {/* Modal de Edição */}
-        <EditarFuncionarioModal
-          funcionario={funcionario}
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleSalvarEdicaoFuncionario}
-        />
       </div>
     </div>
   );
