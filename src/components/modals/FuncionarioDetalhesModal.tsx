@@ -243,6 +243,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const statusInfo = statusConfig[statusAtual];
   const isDestaque = statusAtual === 'destaque';
   const currentFuncionario = isEditing ? editedFuncionario : funcionario;
+  
+  // Verificar se há documentos vencendo
+  const temDocumentosVencendo = documentos.some((doc: any) => {
+    if (!doc.temValidade || !doc.dataValidade || doc.visualizado) return false;
+    const hoje = new Date();
+    const doisDiasDepois = new Date();
+    doisDiasDepois.setDate(hoje.getDate() + 2);
+    const dataValidade = new Date(doc.dataValidade);
+    return dataValidade <= doisDiasDepois && dataValidade >= hoje;
+  });
 
   if (!isOpen) return null;
 
@@ -254,15 +264,15 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-white rounded-t-2xl border-b-2 border-blue-200 p-6">
+          <div className={`bg-white rounded-t-2xl border-b-2 p-6 ${temDocumentosVencendo ? 'bg-red-50 border-red-300 animate-pulse' : 'border-blue-200'}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <User size={24} className="text-blue-600" />
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${temDocumentosVencendo ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
+                  <User size={24} className={temDocumentosVencendo ? 'text-red-600' : 'text-blue-600'} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    Detalhes do Funcionário
+                  <h2 className={`text-3xl font-bold flex items-center gap-2 ${temDocumentosVencendo ? 'text-red-700 animate-pulse' : 'text-slate-800'}`}>
+                    {currentFuncionario.nome}
                     {funcionario.status === 'destaque' && (
                       <div className="relative">
                         <Star className="w-8 h-8 text-yellow-500 fill-yellow-400 drop-shadow-lg animate-pulse" style={{
@@ -270,8 +280,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                         }} />
                       </div>
                     )}
+                    {temDocumentosVencendo && (
+                      <div className="relative">
+                        <AlertTriangle className="w-8 h-8 text-red-500 fill-red-400 drop-shadow-lg animate-pulse" />
+                      </div>
+                    )}
                   </h2>
-                  <p className="text-slate-600">{currentFuncionario.nome}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">

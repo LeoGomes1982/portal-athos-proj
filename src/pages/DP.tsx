@@ -159,43 +159,11 @@ export default function DP() {
           </p>
         </div>
 
-        {/* Subsections Grid */}
-        <div className="content-grid animate-slide-up">
-          {subsections.map((subsection) => (
+        {/* Card Aviso - aparece em cima centralizado quando há avisos */}
+        {hasAvisos && (
+          <div className="flex justify-center mb-8 animate-fade-in">
             <div 
-              key={subsection.id}
-              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-secondary border-primary/20 hover:border-primary/30"
-              onClick={() => {
-                if (subsection.id === "aviso") {
-                  setShowAvisosModal(true);
-                } else {
-                  handleSubsectionClick(subsection.id);
-                }
-              }}
-            >
-              {/* Badge de avisos */}
-              {subsection.id === "aviso" && hasAvisos && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">{funcionariosComAvisos.length}</span>
-                </div>
-              )}
-              
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
-                  <subsection.icon size={32} className={subsection.textColor} />
-                </div>
-                <div>
-                  <h3 className="subsection-title">{subsection.title}</h3>
-                  <p className="text-description leading-relaxed">{subsection.description}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-          
-          {/* Card Aviso - só aparece quando há avisos */}
-          {hasAvisos && (
-            <div 
-              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-red-50 border-red-200 hover:border-red-300 animate-pulse"
+              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-red-50 border-red-200 hover:border-red-300 animate-pulse max-w-md"
               onClick={() => setShowAvisosModal(true)}
             >
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center">
@@ -212,7 +180,34 @@ export default function DP() {
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Subsections Grid */}
+        <div className="content-grid animate-slide-up">
+          {subsections.map((subsection) => (
+            <div 
+              key={subsection.id}
+              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-secondary border-primary/20 hover:border-primary/30"
+              onClick={() => {
+                if (subsection.id === "aviso") {
+                  setShowAvisosModal(true);
+                } else {
+                  handleSubsectionClick(subsection.id);
+                }
+              }}
+            >
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+                  <subsection.icon size={32} className={subsection.textColor} />
+                </div>
+                <div>
+                  <h3 className="subsection-title">{subsection.title}</h3>
+                  <p className="text-description leading-relaxed">{subsection.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Footer */}
