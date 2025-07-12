@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shirt, Package, Settings, TrendingUp, Users } from "lucide-react";
+import { ArrowLeft, Shirt, Package, Settings, TrendingUp, Users, User } from "lucide-react";
 import { GerenciarUniformesModal } from "@/components/modals/GerenciarUniformesModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { DetalhesEquipamentosFuncionarioModal } from "@/components/modals/DetalhesEquipamentosFuncionarioModal";
+import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
+import { funcionariosIniciais } from "@/data/funcionarios";
+import { Funcionario } from "@/types/funcionario";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -33,7 +36,9 @@ interface EntregaRegistro {
 export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const [showGerenciarModal, setShowGerenciarModal] = useState(false);
   const [showDetalhesModal, setShowDetalhesModal] = useState(false);
+  const [showFuncionarioModal, setShowFuncionarioModal] = useState(false);
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<{ id: number; nome: string } | null>(null);
+  const [funcionarioDetalhes, setFuncionarioDetalhes] = useState<Funcionario | null>(null);
   
   const [estoque, setEstoque] = useState<EstoqueItem[]>([
     {
@@ -123,13 +128,18 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
 
   // Função para contar total de registros por funcionário
   const getContadoresPorFuncionario = () => {
-    const contadores: { [funcionarioId: number]: { total: number; nome: string } } = {};
+    const contadores: { [funcionarioId: number]: { total: number; nome: string; ultimaEntrega: EntregaRegistro } } = {};
     
     entregas.forEach((entrega) => {
       if (!contadores[entrega.funcionarioId]) {
-        contadores[entrega.funcionarioId] = { total: 0, nome: entrega.funcionarioNome };
+        contadores[entrega.funcionarioId] = { total: 0, nome: entrega.funcionarioNome, ultimaEntrega: entrega };
       }
       contadores[entrega.funcionarioId].total += 1; // Conta o registro, não a quantidade
+      
+      // Atualizar última entrega se for mais recente
+      if (new Date(entrega.dataEntrega) > new Date(contadores[entrega.funcionarioId].ultimaEntrega.dataEntrega)) {
+        contadores[entrega.funcionarioId].ultimaEntrega = entrega;
+      }
     });
     
     return contadores;
@@ -201,9 +211,26 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
     return icons[item] || "📦";
   };
 
-  const handleFuncionarioClick = (funcionarioId: number, funcionarioNome: string) => {
-    setFuncionarioSelecionado({ id: funcionarioId, nome: funcionarioNome });
-    setShowDetalhesModal(true);
+  const handleFuncionarioClick = (funcionarioId: number) => {
+    // Carregar dados do funcionário
+    const savedFuncionarios = localStorage.getItem('funcionarios_list');
+    const funcionariosList = savedFuncionarios ? JSON.parse(savedFuncionarios) : funcionariosIniciais;
+    const funcionario = funcionariosList.find((f: Funcionario) => f.id === funcionarioId);
+    
+    if (funcionario) {
+      setFuncionarioDetalhes(funcionario);
+      setShowFuncionarioModal(true);
+    }
+  };
+
+  const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
+    // Implementar mudança de status se necessário
+    console.log('Status change:', funcionarioId, novoStatus, dataFim);
+  };
+
+  const handleFuncionarioUpdate = (funcionario: Funcionario) => {
+    // Implementar atualização do funcionário se necessário
+    console.log('Funcionario update:', funcionario);
   };
 
   return (
@@ -312,51 +339,49 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         </div>
 
 
-        {/* Entregas Recentes */}
+        {/* Lista de Funcionários com Entregas */}
         <div className="animate-slide-up">
-          <h2 className="section-title mb-4">Entregas Recentes</h2>
+          <h2 className="section-title mb-4">Funcionários com Entregas</h2>
           <div className="grid grid-cols-1 gap-4">
-            {entregas.slice(-5).reverse().map((entrega) => (
-              <Card key={entrega.id} className="modern-card">
-                <CardContent className="card-content p-4">
-                  <div className="flex items-center justify-between">
-                     <div className="flex items-center gap-3">
-                        <div className="flex-1">
-                         <div className="flex items-center gap-2">
-                           <h3 
-                             className="font-semibold text-slate-800 cursor-pointer hover:text-primary transition-colors"
-                             onClick={() => handleFuncionarioClick(entrega.funcionarioId, entrega.funcionarioNome)}
-                           >
-                             {entrega.funcionarioNome}
-                           </h3>
-                           {contadoresFuncionarios[entrega.funcionarioId] && (
-                             <Badge 
-                               variant="secondary" 
-                               className="bg-blue-500 text-white hover:bg-blue-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
-                             >
-                               {contadoresFuncionarios[entrega.funcionarioId].total}
-                             </Badge>
-                           )}
+            {Object.entries(contadoresFuncionarios).map(([funcionarioId, dados]) => {
+              const ultimaEntrega = dados.ultimaEntrega;
+              return (
+                <Card key={funcionarioId} className="modern-card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleFuncionarioClick(Number(funcionarioId))}>
+                  <CardContent className="card-content p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                          <User size={20} className="text-primary" />
                         </div>
-                        <p className="text-sm text-slate-600">
-                          {entrega.item} - Tamanho {entrega.tamanho} - Qtd: {entrega.quantidade}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-slate-800">
+                            {dados.nome}
+                          </h3>
+                          <Badge 
+                            variant="secondary" 
+                            className="bg-blue-500 text-white hover:bg-blue-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
+                          >
+                            {dados.total}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-slate-600 mb-1">
+                          {new Date(ultimaEntrega.dataEntrega).toLocaleDateString('pt-BR')}
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          ultimaEntrega.categoria === 'uniforme' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : 'bg-orange-100 text-orange-800'
+                        }`}>
+                          {ultimaEntrega.categoria === 'uniforme' ? 'Uniforme' : 'EPI'}
+                        </span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm text-slate-600">{entrega.dataEntrega}</div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        entrega.categoria === 'uniforme' 
-                          ? 'bg-blue-100 text-blue-800' 
-                          : 'bg-orange-100 text-orange-800'
-                      }`}>
-                        {entrega.categoria === 'uniforme' ? 'Uniforme' : 'EPI'}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
 
@@ -384,6 +409,16 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         funcionarioNome={funcionarioSelecionado?.nome || ""}
         entregas={entregas}
       />
+
+      {funcionarioDetalhes && (
+        <FuncionarioDetalhesModal
+          funcionario={funcionarioDetalhes}
+          isOpen={showFuncionarioModal}
+          onClose={() => setShowFuncionarioModal(false)}
+          onStatusChange={handleStatusChange}
+          onFuncionarioUpdate={handleFuncionarioUpdate}
+        />
+      )}
     </div>
   );
 }
