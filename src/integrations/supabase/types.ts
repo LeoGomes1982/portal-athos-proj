@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      denuncias: {
+        Row: {
+          assunto: string
+          consequencias: string | null
+          created_at: string
+          data_envio: string
+          data_ocorrencia: string | null
+          descricao: string
+          id: string
+          nome_envolvido: string | null
+          resolucao: string | null
+          setor: string
+          status: string
+          testemunhas: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          assunto: string
+          consequencias?: string | null
+          created_at?: string
+          data_envio?: string
+          data_ocorrencia?: string | null
+          descricao: string
+          id?: string
+          nome_envolvido?: string | null
+          resolucao?: string | null
+          setor: string
+          status?: string
+          testemunhas?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          assunto?: string
+          consequencias?: string | null
+          created_at?: string
+          data_envio?: string
+          data_ocorrencia?: string | null
+          descricao?: string
+          id?: string
+          nome_envolvido?: string | null
+          resolucao?: string | null
+          setor?: string
+          status?: string
+          testemunhas?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

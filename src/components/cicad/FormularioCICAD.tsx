@@ -10,6 +10,7 @@ import { HelpCircle } from "lucide-react";
 import { FormularioCICAD, Denuncia } from "@/types/cicad";
 import { tipoConfig, urgenciaConfig } from "@/config/cicadStatus";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FormularioCICADProps {
   onSubmit: (formulario: FormularioCICAD) => void;
@@ -33,7 +34,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
   
   const necessitaNome = formulario.tipo === "denuncia_chefia" || formulario.tipo === "denuncia_colega" || formulario.tipo === "assedio" || formulario.tipo === "discriminacao";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formulario.assunto || !formulario.descricao) {
       toast({
@@ -53,40 +54,64 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
       return;
     }
 
-    // Adicionar informações extras na descrição
-    let descricaoCompleta = formulario.descricao;
-    if (nomeEnvolvido.trim()) {
-      descricaoCompleta += `\n\nPessoa envolvida: ${nomeEnvolvido}`;
-    }
-    if (testemunhas.trim()) {
-      descricaoCompleta += `\n\nTestemunhas: ${testemunhas}`;
-    }
-    if (consequencias.trim()) {
-      descricaoCompleta += `\n\nConsequências observadas: ${consequencias}`;
-    }
+    try {
+      // Salvar diretamente no Supabase
+      const { error } = await supabase
+        .from('denuncias')
+        .insert({
+          tipo: formulario.tipo,
+          assunto: formulario.assunto,
+          setor: formulario.setor || null,
+          data_ocorrencia: formulario.dataOcorrencia || null,
+          nome_envolvido: nomeEnvolvido.trim() || null,
+          testemunhas: testemunhas.trim() || null,
+          descricao: formulario.descricao,
+          consequencias: consequencias.trim() || null,
+          status: 'pendente' // Será mapeado para 'em_investigacao' na interface
+        });
 
-    onSubmit({
-      ...formulario,
-      descricao: descricaoCompleta
-    });
-    
-    // Reset form
-    setFormulario({
-      tipo: "outro",
-      assunto: "",
-      descricao: "",
-      setor: "",
-      dataOcorrencia: "",
-      urgencia: "media"
-    });
-    setNomeEnvolvido("");
-    setTestemunhas("");
-    setConsequencias("");
+      if (error) {
+        console.error('Erro ao salvar denúncia:', error);
+        toast({
+          title: "Erro ao enviar",
+          description: "Ocorreu um erro ao enviar a denúncia. Tente novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    toast({
-      title: "Denúncia enviada",
-      description: "Sua denúncia foi enviada de forma anônima. Obrigado por nos ajudar a melhorar o ambiente de trabalho."
-    });
+      // Reset form
+      setFormulario({
+        tipo: "outro",
+        assunto: "",
+        descricao: "",
+        setor: "",
+        dataOcorrencia: "",
+        urgencia: "media"
+      });
+      setNomeEnvolvido("");
+      setTestemunhas("");
+      setConsequencias("");
+
+      toast({
+        title: "Denúncia enviada",
+        description: "Sua denúncia foi enviada de forma anônima. Obrigado por nos ajudar a melhorar o ambiente de trabalho."
+      });
+
+      // Chamar onSubmit para compatibilidade
+      onSubmit({
+        ...formulario,
+        descricao: formulario.descricao
+      });
+
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

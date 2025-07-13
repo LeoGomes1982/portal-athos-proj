@@ -13,6 +13,7 @@ import { CICADSummaryCards } from "@/components/cicad/CICADSummaryCards";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import QRCode from 'qrcode';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CICAD() {
   const navigate = useNavigate();
@@ -20,23 +21,8 @@ export default function CICAD() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { hasNewDenuncias, checkNewDenuncias } = useCICADAlerts();
   
-  // Carregar denúncias do localStorage ou usar as iniciais
-  const [denuncias, setDenuncias] = useState<Denuncia[]>(() => {
-    try {
-      const saved = localStorage.getItem('cicad_denuncias');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : denunciasIniciais;
-      }
-      // Se não existir no localStorage, salvar as iniciais
-      localStorage.setItem('cicad_denuncias', JSON.stringify(denunciasIniciais));
-      return denunciasIniciais;
-    } catch (error) {
-      console.error('Erro ao carregar denúncias:', error);
-      localStorage.setItem('cicad_denuncias', JSON.stringify(denunciasIniciais));
-      return denunciasIniciais;
-    }
-  });
+  // Estado para gerenciar denúncias
+  const [denuncias, setDenuncias] = useState<Denuncia[]>([]);
   
   const [showFormulario, setShowFormulario] = useState(false);
   const [showResolucaoModal, setShowResolucaoModal] = useState(false);
@@ -45,32 +31,84 @@ export default function CICAD() {
 
   const formularioUrl = `${window.location.origin}/cicad-formulario`;
 
-  // Salvar denúncias no localStorage sempre que mudar
+  // Carregar denúncias do Supabase
+  const carregarDenuncias = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('denuncias')
+        .select('*')
+        .order('data_envio', { ascending: false });
+
+      if (error) {
+        console.error('Erro ao carregar denúncias:', error);
+        return;
+      }
+
+      // Converter dados do Supabase para o formato esperado
+      const denunciasFormatadas: Denuncia[] = data.map(item => {
+        // Mapear status do Supabase para os tipos corretos da aplicação
+        let status: Denuncia['status'] = 'em_investigacao';
+        if (item.status === 'resolvido') {
+          status = 'encerrado';
+        } else if (item.status === 'pendente') {
+          status = 'em_investigacao';
+        } else if (item.status === 'arquivado') {
+          status = 'arquivado';
+        }
+
+        return {
+          id: item.id,
+          tipo: item.tipo as Denuncia['tipo'],
+          assunto: item.assunto,
+          setor: item.setor || "",
+          dataOcorrencia: item.data_ocorrencia || "",
+          nomeEnvolvido: item.nome_envolvido || undefined,
+          testemunhas: item.testemunhas || undefined,
+          descricao: item.descricao,
+          consequencias: item.consequencias || undefined,
+          dataSubmissao: item.data_envio.split('T')[0],
+          status,
+          resolucao: item.resolucao || undefined,
+          urgencia: 'media' as const // Default para compatibilidade
+        };
+      });
+
+      setDenuncias(denunciasFormatadas);
+      checkNewDenuncias();
+    } catch (error) {
+      console.error('Erro inesperado ao carregar denúncias:', error);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('cicad_denuncias', JSON.stringify(denuncias));
-    checkNewDenuncias();
-  }, [denuncias, checkNewDenuncias]);
+    carregarDenuncias();
+
+    // Configurar real-time updates
+    const channel = supabase
+      .channel('denuncias-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'denuncias'
+        },
+        () => {
+          // Recarregar denúncias quando houver mudanças
+          carregarDenuncias();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [checkNewDenuncias]);
 
   const handleNovaDenuncia = (formulario: FormularioCICAD) => {
-    const novaDenuncia: Denuncia = {
-      ...formulario,
-      id: Date.now().toString(),
-      status: "em_investigacao",
-      dataSubmissao: new Date().toISOString().split('T')[0]
-    };
-    
-    const novasDenuncias = [novaDenuncia, ...denuncias];
-    setDenuncias(novasDenuncias);
-    
-    // Salvar no localStorage imediatamente
-    localStorage.setItem('cicad_denuncias', JSON.stringify(novasDenuncias));
-    
+    // Não precisa fazer nada aqui, pois o FormularioCICADComponent
+    // já salva diretamente no Supabase e o real-time atualiza a lista
     setShowFormulario(false);
-    
-    toast({
-      title: "Denúncia registrada",
-      description: "A denúncia foi registrada com sucesso no sistema CICAD."
-    });
   };
 
   const handleResolverCaso = (denuncia: Denuncia) => {
@@ -78,24 +116,48 @@ export default function CICAD() {
     setShowResolucaoModal(true);
   };
 
-  const handleSubmitResolucao = (denunciaId: string, status: Denuncia['status'], resolucao: string) => {
-    const novasDenuncias = denuncias.map(d => 
-      d.id === denunciaId 
-        ? { ...d, status, resolucao }
-        : d
-    );
-    setDenuncias(novasDenuncias);
-    
-    // Salvar no localStorage imediatamente
-    localStorage.setItem('cicad_denuncias', JSON.stringify(novasDenuncias));
-    
-    setShowResolucaoModal(false);
-    setDenunciaSelecionada(null);
-    
-    toast({
-      title: "Caso atualizado",
-      description: "O status do caso foi atualizado com sucesso."
-    });
+  const handleSubmitResolucao = async (denunciaId: string, status: Denuncia['status'], resolucao: string) => {
+    try {
+      // Mapear status da aplicação para o formato do Supabase
+      let supabaseStatus: string = status;
+      if (status === 'encerrado') {
+        supabaseStatus = 'resolvido';
+      }
+
+      const { error } = await supabase
+        .from('denuncias')
+        .update({ 
+          status: supabaseStatus, 
+          resolucao,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', denunciaId);
+
+      if (error) {
+        console.error('Erro ao atualizar denúncia:', error);
+        toast({
+          title: "Erro ao atualizar",
+          description: "Ocorreu um erro ao atualizar o caso. Tente novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setShowResolucaoModal(false);
+      setDenunciaSelecionada(null);
+      
+      toast({
+        title: "Caso atualizado",
+        description: "O status do caso foi atualizado com sucesso."
+      });
+    } catch (error) {
+      console.error('Erro inesperado ao atualizar:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const generateQRCode = async () => {
