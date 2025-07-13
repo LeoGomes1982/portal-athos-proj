@@ -41,91 +41,14 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<{ id: number; nome: string } | null>(null);
   const [funcionarioDetalhes, setFuncionarioDetalhes] = useState<Funcionario | null>(null);
   
-  const [estoque, setEstoque] = useState<EstoqueItem[]>([
-    {
-      id: "1",
-      nome: "Camisa",
-      categoria: "uniforme",
-      quantidade: 50,
-      tamanhos: { "P": 10, "M": 15, "G": 15, "GG": 10 }
-    },
-    {
-      id: "2", 
-      nome: "Camiseta",
-      categoria: "uniforme",
-      quantidade: 30,
-      tamanhos: { "P": 8, "M": 10, "G": 8, "GG": 4 }
-    },
-    {
-      id: "3",
-      nome: "Calça",
-      categoria: "uniforme", 
-      quantidade: 25,
-      tamanhos: { "P": 5, "M": 8, "G": 8, "GG": 4 }
-    },
-    {
-      id: "4",
-      nome: "Jaqueta",
-      categoria: "uniforme",
-      quantidade: 20,
-      tamanhos: { "P": 4, "M": 6, "G": 6, "GG": 4 }
-    },
-    {
-      id: "5",
-      nome: "Sapato",
-      categoria: "uniforme",
-      quantidade: 15,
-      tamanhos: { "38": 3, "40": 4, "42": 4, "44": 4 }
-    },
-    {
-      id: "6",
-      nome: "Fone de ouvido",
-      categoria: "epi",
-      quantidade: 12,
-      tamanhos: { "Único": 12 }
-    },
-    {
-      id: "7",
-      nome: "Luvas",
-      categoria: "epi",
-      quantidade: 25,
-      tamanhos: { "P": 8, "M": 10, "G": 7 }
-    },
-    {
-      id: "8",
-      nome: "Botina",
-      categoria: "epi",
-      quantidade: 18,
-      tamanhos: { "38": 4, "40": 5, "42": 5, "44": 4 }
-    }
-  ]);
+  const [estoque, setEstoque] = useState<EstoqueItem[]>([]);
 
-  const [entregas, setEntregas] = useState<EntregaRegistro[]>([
-    {
-      id: "1",
-      funcionarioId: 1,
-      funcionarioNome: "Ana Silva",
-      item: "Camisa",
-      categoria: "uniforme",
-      tamanho: "M",
-      quantidade: 2,
-      dataEntrega: "2024-01-15"
-    },
-    {
-      id: "2",
-      funcionarioId: 2,
-      funcionarioNome: "João Santos",
-      item: "Fone de ouvido",
-      categoria: "epi",
-      tamanho: "Único",
-      quantidade: 1,
-      dataEntrega: "2024-01-10"
-    }
-  ]);
+  const [entregas, setEntregas] = useState<EntregaRegistro[]>([]);
 
   const totalUniformes = estoque.filter(item => item.categoria === "uniforme").reduce((sum, item) => sum + item.quantidade, 0);
   const totalEPIs = estoque.filter(item => item.categoria === "epi").reduce((sum, item) => sum + item.quantidade, 0);
   const totalEntregas = entregas.length;
+  const valorTotalEstoque = estoque.reduce((sum, item) => sum + (item.valorCompra || 0), 0);
 
   // Função para contar total de registros por funcionário
   const getContadoresPorFuncionario = () => {
@@ -280,7 +203,10 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
               <div className="text-2xl font-bold text-blue-600">
                 {totalUniformes}
               </div>
-              <div className="text-sm text-blue-600/80">Total Uniformes</div>
+              <div className="text-sm text-blue-600/80 mb-1">Total Uniformes</div>
+              <div className="text-xs text-blue-500 font-medium">
+                Valor: R$ {estoque.filter(item => item.categoria === "uniforme").reduce((sum, item) => sum + (item.valorCompra || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
             </CardContent>
           </Card>
 
@@ -290,7 +216,10 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
               <div className="text-2xl font-bold text-orange-600">
                 {totalEPIs}
               </div>
-              <div className="text-sm text-orange-600/80">Total EPIs</div>
+              <div className="text-sm text-orange-600/80 mb-1">Total EPIs</div>
+              <div className="text-xs text-orange-500 font-medium">
+                Valor: R$ {estoque.filter(item => item.categoria === "epi").reduce((sum, item) => sum + (item.valorCompra || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
             </CardContent>
           </Card>
 
