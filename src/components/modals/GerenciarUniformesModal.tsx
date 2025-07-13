@@ -3,14 +3,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Plus, Shirt, Package } from "lucide-react";
 import { EntradaUniformeModal } from "./EntradaUniformeModal";
-import { EntregaUniformeModal } from "./EntregaUniformeModal";
+import { NovaEntregaUniformeModal } from "./NovaEntregaUniformeModal";
 
 interface GerenciarUniformesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onEntradaEstoque: (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number } }) => void;
-  onEntregaUniforme: (dados: { funcionarioId: number; funcionarioNome: string; item: string; categoria: "uniforme" | "epi"; tamanho: string; quantidade: number }) => void;
-  estoque: Array<{ id: string; nome: string; categoria: "uniforme" | "epi"; quantidade: number; tamanhos: { [tamanho: string]: number } }>;
+  onEntradaEstoque: (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number }; valor?: number }) => void;
+  onEntregaUniforme: (dados: { 
+    clienteId: string; 
+    clienteNome: string; 
+    itens: Array<{
+      item: string; 
+      categoria: "uniforme" | "epi"; 
+      tamanho: string; 
+      quantidade: number;
+      valorUnitario: number;
+    }>;
+    valorTotal: number;
+    dataEntrega: string;
+  }) => void;
+  estoque: Array<{ id: string; nome: string; categoria: "uniforme" | "epi"; quantidade: number; tamanhos: { [tamanho: string]: number }; valorCompra?: number }>;
 }
 
 export function GerenciarUniformesModal({ 
@@ -104,7 +116,7 @@ export function GerenciarUniformesModal({
         }}
       />
 
-      <EntregaUniformeModal
+      <NovaEntregaUniformeModal
         isOpen={showEntregaModal}
         onClose={handleEntregaClose}
         onSubmit={(dados) => {

@@ -5,10 +5,6 @@ import { ArrowLeft, Shirt, Package, Settings, TrendingUp, Users, User } from "lu
 import { GerenciarUniformesModal } from "@/components/modals/GerenciarUniformesModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
-import { DetalhesEquipamentosFuncionarioModal } from "@/components/modals/DetalhesEquipamentosFuncionarioModal";
-import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
-import { funcionariosIniciais } from "@/data/funcionarios";
-import { Funcionario } from "@/types/funcionario";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -25,21 +21,21 @@ interface EstoqueItem {
 
 interface EntregaRegistro {
   id: string;
-  funcionarioId: number;
-  funcionarioNome: string;
-  item: string;
-  categoria: "uniforme" | "epi";
-  tamanho: string;
-  quantidade: number;
+  clienteId: string;
+  clienteNome: string;
+  itens: Array<{
+    item: string;
+    categoria: "uniforme" | "epi";
+    tamanho: string;
+    quantidade: number;
+    valorUnitario: number;
+  }>;
+  valorTotal: number;
   dataEntrega: string;
 }
 
 export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const [showGerenciarModal, setShowGerenciarModal] = useState(false);
-  const [showDetalhesModal, setShowDetalhesModal] = useState(false);
-  const [showFuncionarioModal, setShowFuncionarioModal] = useState(false);
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<{ id: number; nome: string } | null>(null);
-  const [funcionarioDetalhes, setFuncionarioDetalhes] = useState<Funcionario | null>(null);
   
   const [estoque, setEstoque] = useState<EstoqueItem[]>([]);
 
@@ -50,26 +46,27 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   const totalEntregas = entregas.length;
   const valorTotalEstoque = estoque.reduce((sum, item) => sum + (item.valorCompra || 0), 0);
 
-  // Função para contar total de registros por funcionário
-  const getContadoresPorFuncionario = () => {
-    const contadores: { [funcionarioId: number]: { total: number; nome: string; ultimaEntrega: EntregaRegistro } } = {};
+  // Função para contar total de registros por cliente
+  const getContadoresPorCliente = () => {
+    const contadores: { [clienteId: string]: { total: number; nome: string; ultimaEntrega: EntregaRegistro; valorTotal: number } } = {};
     
     entregas.forEach((entrega) => {
-      if (!contadores[entrega.funcionarioId]) {
-        contadores[entrega.funcionarioId] = { total: 0, nome: entrega.funcionarioNome, ultimaEntrega: entrega };
+      if (!contadores[entrega.clienteId]) {
+        contadores[entrega.clienteId] = { total: 0, nome: entrega.clienteNome, ultimaEntrega: entrega, valorTotal: 0 };
       }
-      contadores[entrega.funcionarioId].total += 1; // Conta o registro, não a quantidade
+      contadores[entrega.clienteId].total += 1;
+      contadores[entrega.clienteId].valorTotal += entrega.valorTotal;
       
       // Atualizar última entrega se for mais recente
-      if (new Date(entrega.dataEntrega) > new Date(contadores[entrega.funcionarioId].ultimaEntrega.dataEntrega)) {
-        contadores[entrega.funcionarioId].ultimaEntrega = entrega;
+      if (new Date(entrega.dataEntrega) > new Date(contadores[entrega.clienteId].ultimaEntrega.dataEntrega)) {
+        contadores[entrega.clienteId].ultimaEntrega = entrega;
       }
     });
     
     return contadores;
   };
 
-  const contadoresFuncionarios = getContadoresPorFuncionario();
+  const contadoresClientes = getContadoresPorCliente();
 
   const [compras, setCompras] = useState<Array<{ id: string; item: string; valor: number; data: string; quantidade: number }>>([]);
 
@@ -118,25 +115,42 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
     }
   };
 
-  const handleEntregaUniforme = (dados: { funcionarioId: number; funcionarioNome: string; item: string; categoria: "uniforme" | "epi"; tamanho: string; quantidade: number }) => {
+  const handleEntregaUniforme = (dados: { 
+    clienteId: string; 
+    clienteNome: string; 
+    itens: Array<{
+      item: string; 
+      categoria: "uniforme" | "epi"; 
+      tamanho: string; 
+      quantidade: number;
+      valorUnitario: number;
+    }>;
+    valorTotal: number;
+    dataEntrega: string;
+  }) => {
     // Registrar entrega
     const novaEntrega: EntregaRegistro = {
       id: Date.now().toString(),
-      ...dados,
-      dataEntrega: new Date().toISOString().split('T')[0]
+      clienteId: dados.clienteId,
+      clienteNome: dados.clienteNome,
+      itens: dados.itens,
+      valorTotal: dados.valorTotal,
+      dataEntrega: dados.dataEntrega
     };
-    setEntregas(prev => [...prev, novaEntrega]);
+    setEntregas(prev => [novaEntrega, ...prev]);
 
-    // Atualizar estoque
-    setEstoque(prev => prev.map(item => {
-      if (item.nome === dados.item) {
-        const novosTamanhos = { ...item.tamanhos };
-        novosTamanhos[dados.tamanho] = Math.max(0, (novosTamanhos[dados.tamanho] || 0) - dados.quantidade);
-        const novaQuantidade = Object.values(novosTamanhos).reduce((sum, qty) => sum + qty, 0);
-        return { ...item, tamanhos: novosTamanhos, quantidade: novaQuantidade };
-      }
-      return item;
-    }));
+    // Atualizar estoque para cada item
+    dados.itens.forEach(itemEntrega => {
+      setEstoque(prev => prev.map(item => {
+        if (item.nome === itemEntrega.item) {
+          const novosTamanhos = { ...item.tamanhos };
+          novosTamanhos[itemEntrega.tamanho] = Math.max(0, (novosTamanhos[itemEntrega.tamanho] || 0) - itemEntrega.quantidade);
+          const novaQuantidade = Object.values(novosTamanhos).reduce((sum, qty) => sum + qty, 0);
+          return { ...item, tamanhos: novosTamanhos, quantidade: novaQuantidade };
+        }
+        return item;
+      }));
+    });
   };
 
   const getItemIcon = (item: string) => {
@@ -153,26 +167,19 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
     return icons[item] || "📦";
   };
 
-  const handleFuncionarioClick = (funcionarioId: number) => {
-    // Carregar dados do funcionário
-    const savedFuncionarios = localStorage.getItem('funcionarios_list');
-    const funcionariosList = savedFuncionarios ? JSON.parse(savedFuncionarios) : funcionariosIniciais;
-    const funcionario = funcionariosList.find((f: Funcionario) => f.id === funcionarioId);
-    
-    if (funcionario) {
-      setFuncionarioDetalhes(funcionario);
-      setShowFuncionarioModal(true);
-    }
+  const handleClienteClick = (clienteId: string) => {
+    // Implementar se necessário - abrir detalhes do cliente
+    console.log('Cliente clicado:', clienteId);
   };
 
-  const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
+  const handleStatusChange = (clienteId: string, novoStatus: string, dataFim?: string) => {
     // Implementar mudança de status se necessário
-    console.log('Status change:', funcionarioId, novoStatus, dataFim);
+    console.log('Status change:', clienteId, novoStatus, dataFim);
   };
 
-  const handleFuncionarioUpdate = (funcionario: Funcionario) => {
-    // Implementar atualização do funcionário se necessário
-    console.log('Funcionario update:', funcionario);
+  const handleClienteUpdate = (cliente: any) => {
+    // Implementar atualização do cliente se necessário
+    console.log('Cliente update:', cliente);
   };
 
   return (
@@ -315,23 +322,6 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         estoque={estoque}
       />
 
-      <DetalhesEquipamentosFuncionarioModal
-        isOpen={showDetalhesModal}
-        onClose={() => setShowDetalhesModal(false)}
-        funcionarioId={funcionarioSelecionado?.id || null}
-        funcionarioNome={funcionarioSelecionado?.nome || ""}
-        entregas={entregas}
-      />
-
-      {funcionarioDetalhes && (
-        <FuncionarioDetalhesModal
-          funcionario={funcionarioDetalhes}
-          isOpen={showFuncionarioModal}
-          onClose={() => setShowFuncionarioModal(false)}
-          onStatusChange={handleStatusChange}
-          onFuncionarioUpdate={handleFuncionarioUpdate}
-        />
-      )}
     </div>
   );
 }
