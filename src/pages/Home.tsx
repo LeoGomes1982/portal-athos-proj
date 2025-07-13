@@ -28,6 +28,7 @@ const Home = () => {
   const { hasAvisos } = useAvisoVencimentos();
   const { hasUrgentTasks, urgentTasks } = useAgendaAlerts();
   const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
+  const [showUserTooltip, setShowUserTooltip] = useState(false);
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -56,13 +57,7 @@ const Home = () => {
       icon: Calendar,
       className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
       iconColor: "text-indigo-600",
-      onClick: () => {
-        if (hasUrgentTasks) {
-          setShowUrgentTasksModal(true);
-        } else {
-          navigate("/agenda");
-        }
-      },
+      onClick: () => navigate("/agenda"),
       hasUrgentTasks: true
     },
     {
@@ -191,7 +186,25 @@ const Home = () => {
             <div 
               key={section.id}
               className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
-              onClick={section.onClick}
+              onClick={(e) => {
+                // Se for o card da agenda e tiver tarefas urgentes, mostrar tooltip ao clicar na área superior
+                if (section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda") {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const clickY = e.clientY - rect.top;
+                  
+                  // Se clicou na metade superior, mostrar tooltip
+                  if (clickY < rect.height / 2) {
+                    e.preventDefault();
+                    setShowUserTooltip(!showUserTooltip);
+                    return;
+                  }
+                }
+                
+                // Comportamento normal de navegação
+                if (section.onClick) {
+                  section.onClick();
+                }
+              }}
             >
               {/* Notificação para DP e RH */}
               {section.hasNotification && (
@@ -200,9 +213,21 @@ const Home = () => {
               
               {/* Aviso de tarefas urgentes para Agenda */}
               {section.hasUrgentTasks && hasUrgentTasks && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                  <span className="text-white text-xs font-bold">!</span>
-                </div>
+                <>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  
+                  {/* Tooltip com nome do usuário */}
+                  {showUserTooltip && (
+                    <div className="absolute -top-12 -right-8 bg-white border-2 border-red-200 rounded-lg shadow-lg px-3 py-2 z-20 min-w-max">
+                      <div className="text-xs text-red-600 font-medium">
+                        {urgentTasks.length > 0 && urgentTasks[0].criadoPor}
+                      </div>
+                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-red-200"></div>
+                    </div>
+                  )}
+                </>
               )}
               
               {/* Aviso de documentos vencendo para DP e RH */}
@@ -219,6 +244,11 @@ const Home = () => {
                 <div>
                   <h3 className="subsection-title mb-2">{section.title}</h3>
                   <p className="text-description leading-relaxed">{section.fullTitle}</p>
+                  {section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda" && (
+                    <p className="text-xs text-red-600 mt-2 font-medium">
+                      Clique na parte superior para ver detalhes
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
