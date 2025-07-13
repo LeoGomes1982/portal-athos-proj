@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
@@ -83,6 +83,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   // Estados para modais de dependentes e documentos
   const [showDependenteModal, setShowDependenteModal] = useState(false);
   const [showDocumentoModal, setShowDocumentoModal] = useState(false);
+  
+  // Estados para uniformes e EPIs
+  const [uniformes, setUniformes] = useState<any[]>([]);
+  const [showUniformeForm, setShowUniformeForm] = useState(false);
+  const [novoUniforme, setNovoUniforme] = useState({
+    peca: '',
+    tamanho: '',
+    tipo: 'Uniforme',
+    dataEntrega: new Date().toISOString().split('T')[0]
+  });
   
   const { 
     dependentes, 
@@ -187,6 +197,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
       } else {
         setHistorico([]);
       }
+      
+      // Carregar uniformes
+      const uniformesSalvos = localStorage.getItem(`uniformes_funcionario_${funcionario.id}`);
+      if (uniformesSalvos) {
+        setUniformes(JSON.parse(uniformesSalvos));
+      } else {
+        setUniformes([]);
+      }
     }
   }, [isOpen, funcionario.id]);
 
@@ -240,6 +258,52 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     setEditedFuncionario(funcionario);
   }, [funcionario]);
 
+  // Funções para uniformes
+  const handleSalvarUniforme = () => {
+    if (!novoUniforme.peca.trim() || !novoUniforme.tamanho.trim()) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos obrigatórios",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const uniforme = {
+      id: Date.now().toString(),
+      ...novoUniforme,
+      dataRegistro: new Date().toISOString()
+    };
+
+    const novosUniformes = [uniforme, ...uniformes];
+    setUniformes(novosUniformes);
+    localStorage.setItem(`uniformes_funcionario_${funcionario.id}`, JSON.stringify(novosUniformes));
+    
+    setShowUniformeForm(false);
+    setNovoUniforme({
+      peca: '',
+      tamanho: '',
+      tipo: 'Uniforme',
+      dataEntrega: new Date().toISOString().split('T')[0]
+    });
+
+    toast({
+      title: "Uniforme/EPI Adicionado",
+      description: "Registro salvo com sucesso",
+    });
+  };
+
+  const handleRemoverUniforme = (uniformeId: string) => {
+    const novosUniformes = uniformes.filter(u => u.id !== uniformeId);
+    setUniformes(novosUniformes);
+    localStorage.setItem(`uniformes_funcionario_${funcionario.id}`, JSON.stringify(novosUniformes));
+    
+    toast({
+      title: "Registro Removido",
+      description: "Uniforme/EPI removido com sucesso",
+    });
+  };
+
   const statusInfo = statusConfig[statusAtual];
   const isDestaque = statusAtual === 'destaque';
   const currentFuncionario = isEditing ? editedFuncionario : funcionario;
@@ -264,14 +328,26 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className={`bg-white rounded-t-2xl border-b-2 p-6 ${temDocumentosVencendo ? 'bg-red-50 border-red-300 animate-pulse' : 'border-blue-200'}`}>
+          <div className={`rounded-t-2xl border-b-2 p-6 ${
+            funcionario.status === 'destaque' 
+              ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300' 
+              : temDocumentosVencendo 
+                ? 'bg-red-50 border-red-300 animate-pulse' 
+                : 'bg-white border-blue-200'
+          }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${temDocumentosVencendo ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
                   <User size={24} className={temDocumentosVencendo ? 'text-red-600' : 'text-blue-600'} />
                 </div>
                 <div>
-                  <h2 className={`text-3xl font-bold flex items-center gap-2 ${temDocumentosVencendo ? 'text-red-700 animate-pulse' : 'text-slate-800'}`}>
+                  <h2 className={`text-3xl font-bold flex items-center gap-2 ${
+                    funcionario.status === 'destaque' 
+                      ? 'text-yellow-700' 
+                      : temDocumentosVencendo 
+                        ? 'text-red-700 animate-pulse' 
+                        : 'text-slate-800'
+                  }`}>
                     {currentFuncionario.nome}
                     {funcionario.status === 'destaque' && (
                       <div className="relative">
@@ -728,6 +804,144 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           size="sm"
                           variant="ghost"
                           onClick={() => removerDependente(dependente.id)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Card Uniformes e EPIs */}
+            <Card className="bg-white border-2 border-blue-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                    <Shirt className="h-5 w-5" />
+                    Uniformes e EPIs
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowUniformeForm(true)}
+                    className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                  >
+                    <Plus size={16} className="mr-1" />
+                    Adicionar Uniforme
+                  </Button>
+                </div>
+
+                {/* Formulário para novo uniforme */}
+                {showUniformeForm && (
+                  <Card className="mb-4 bg-blue-50 border-blue-200">
+                    <CardContent className="p-4">
+                      <h4 className="font-medium text-slate-700 mb-3">Novo Uniforme/EPI</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="peca" className="text-sm font-medium text-slate-600">
+                            Peça de Roupa/EPI
+                          </Label>
+                          <Input
+                            id="peca"
+                            placeholder="Ex: Camisa, Calça, Capacete..."
+                            value={novoUniforme.peca}
+                            onChange={(e) => setNovoUniforme({...novoUniforme, peca: e.target.value})}
+                            className="mt-1"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="tamanho" className="text-sm font-medium text-slate-600">
+                            Tamanho
+                          </Label>
+                          <Input
+                            id="tamanho"
+                            placeholder="Ex: P, M, G, GG, 38, 40..."
+                            value={novoUniforme.tamanho}
+                            onChange={(e) => setNovoUniforme({...novoUniforme, tamanho: e.target.value})}
+                            className="mt-1"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="tipo" className="text-sm font-medium text-slate-600">
+                            Tipo
+                          </Label>
+                          <Select
+                            value={novoUniforme.tipo}
+                            onValueChange={(value) => setNovoUniforme({...novoUniforme, tipo: value})}
+                          >
+                            <SelectTrigger className="w-full mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Uniforme">Uniforme</SelectItem>
+                              <SelectItem value="EPI">EPI</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="dataEntrega" className="text-sm font-medium text-slate-600">
+                            Data de Entrega
+                          </Label>
+                          <Input
+                            id="dataEntrega"
+                            type="date"
+                            value={novoUniforme.dataEntrega}
+                            onChange={(e) => setNovoUniforme({...novoUniforme, dataEntrega: e.target.value})}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 pt-3">
+                        <Button 
+                          onClick={handleSalvarUniforme}
+                          className="bg-green-600 hover:bg-green-700"
+                          size="sm"
+                        >
+                          Salvar
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowUniformeForm(false)}
+                          size="sm"
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {uniformes.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-2">👕</div>
+                    <p className="text-slate-500">Nenhum uniforme/EPI registrado</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {uniformes.map((uniforme) => (
+                      <div key={uniforme.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-medium text-slate-700">{uniforme.peca}</p>
+                            <Badge variant={uniforme.tipo === 'EPI' ? 'destructive' : 'secondary'} className="text-xs">
+                              {uniforme.tipo}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-slate-500">
+                            Tamanho: {uniforme.tamanho} • Entregue em: {new Date(uniforme.dataEntrega).toLocaleDateString('pt-BR')}
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleRemoverUniforme(uniforme.id)}
                           className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />
