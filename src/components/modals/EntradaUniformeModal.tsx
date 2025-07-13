@@ -10,7 +10,7 @@ import { Plus, Minus } from "lucide-react";
 interface EntradaUniformeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number } }) => void;
+  onSubmit: (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number }; valor?: number }) => void;
 }
 
 const itensUniformes = [
@@ -36,7 +36,8 @@ export function EntradaUniformeModal({ isOpen, onClose, onSubmit }: EntradaUnifo
   const [formData, setFormData] = useState({
     item: "",
     categoria: "" as "uniforme" | "epi" | "",
-    tamanhos: {} as { [tamanho: string]: number }
+    tamanhos: {} as { [tamanho: string]: number },
+    valor: ""
   });
 
   const handleItemChange = (itemNome: string) => {
@@ -91,10 +92,13 @@ export function EntradaUniformeModal({ isOpen, onClose, onSubmit }: EntradaUnifo
       return;
     }
 
+    const valor = formData.valor ? parseFloat(formData.valor.replace(',', '.')) : undefined;
+    
     onSubmit({
       item: formData.item,
       categoria: formData.categoria,
-      tamanhos: formData.tamanhos
+      tamanhos: formData.tamanhos,
+      valor: valor
     });
 
     toast({
@@ -106,7 +110,8 @@ export function EntradaUniformeModal({ isOpen, onClose, onSubmit }: EntradaUnifo
     setFormData({
       item: "",
       categoria: "",
-      tamanhos: {}
+      tamanhos: {},
+      valor: ""
     });
     
     onClose();
@@ -213,6 +218,26 @@ export function EntradaUniformeModal({ isOpen, onClose, onSubmit }: EntradaUnifo
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {formData.item && (
+            <div>
+              <Label htmlFor="valor">Valor da Compra (R$)</Label>
+              <Input
+                id="valor"
+                type="text"
+                placeholder="0,00"
+                value={formData.valor}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/[^\d,]/g, '');
+                  setFormData(prev => ({ ...prev, valor: value }));
+                }}
+                className="mt-1"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Campo opcional. Use vírgula para decimais (ex: 150,50)
+              </p>
             </div>
           )}
         </div>

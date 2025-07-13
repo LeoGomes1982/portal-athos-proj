@@ -20,6 +20,7 @@ interface EstoqueItem {
   categoria: "uniforme" | "epi";
   quantidade: number;
   tamanhos: { [tamanho: string]: number };
+  valorCompra?: number;
 }
 
 interface EntregaRegistro {
@@ -147,7 +148,11 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
 
   const contadoresFuncionarios = getContadoresPorFuncionario();
 
-  const handleEntradaEstoque = (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number } }) => {
+  const [compras, setCompras] = useState<Array<{ id: string; item: string; valor: number; data: string; quantidade: number }>>([]);
+
+  const totalValorCompras = compras.reduce((sum, compra) => sum + compra.valor, 0);
+
+  const handleEntradaEstoque = (dados: { item: string; categoria: "uniforme" | "epi"; tamanhos: { [tamanho: string]: number }; valor?: number }) => {
     setEstoque(prev => {
       const itemExistente = prev.find(item => item.nome === dados.item);
       
@@ -170,10 +175,24 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
           nome: dados.item,
           categoria: dados.categoria,
           quantidade: novaQuantidade,
-          tamanhos: dados.tamanhos
+          tamanhos: dados.tamanhos,
+          valorCompra: dados.valor
         }];
       }
     });
+
+    // Registrar compra se valor foi informado
+    if (dados.valor && dados.valor > 0) {
+      const totalQuantidade = Object.values(dados.tamanhos).reduce((sum, qty) => sum + qty, 0);
+      const novaCompra = {
+        id: Date.now().toString(),
+        item: dados.item,
+        valor: dados.valor,
+        data: new Date().toISOString().split('T')[0],
+        quantidade: totalQuantidade
+      };
+      setCompras(prev => [novaCompra, ...prev]);
+    }
   };
 
   const handleEntregaUniforme = (dados: { funcionarioId: number; funcionarioNome: string; item: string; categoria: "uniforme" | "epi"; tamanho: string; quantidade: number }) => {
@@ -254,7 +273,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
           <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">👔</div>
@@ -282,6 +301,16 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
                 {totalEntregas}
               </div>
               <div className="text-sm text-green-600/80">Entregas Realizadas</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">💰</div>
+              <div className="text-2xl font-bold text-purple-600">
+                R$ {totalValorCompras.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
+              <div className="text-sm text-purple-600/80">Valor das Compras</div>
             </CardContent>
           </Card>
         </div>
@@ -339,51 +368,6 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         </div>
 
 
-        {/* Lista de Funcionários com Entregas */}
-        <div className="animate-slide-up">
-          <h2 className="section-title mb-4 text-center">👥 Funcionários com Entregas</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {Object.entries(contadoresFuncionarios).map(([funcionarioId, dados]) => {
-              const ultimaEntrega = dados.ultimaEntrega;
-              return (
-                <Card key={funcionarioId} className="modern-card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleFuncionarioClick(Number(funcionarioId))}>
-                  <CardContent className="card-content p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <User size={20} className="text-primary" />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-slate-800">
-                            {dados.nome}
-                          </h3>
-                          <Badge 
-                            variant="secondary" 
-                            className="bg-blue-500 text-white hover:bg-blue-600 w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs font-bold"
-                          >
-                            {dados.total}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-slate-600 mb-1">
-                          {new Date(ultimaEntrega.dataEntrega).toLocaleDateString('pt-BR')}
-                        </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          ultimaEntrega.categoria === 'uniforme' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-orange-100 text-orange-800'
-                        }`}>
-                          {ultimaEntrega.categoria === 'uniforme' ? 'Uniforme' : 'EPI'}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Footer */}
         <div className="text-center mt-16 animate-fade-in">
