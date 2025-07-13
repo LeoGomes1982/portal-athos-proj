@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { 
   FileText, 
   Users, 
-  Shirt,
   FolderOpen,
   Archive,
   Briefcase, 
@@ -17,7 +16,6 @@ import {
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
 import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
-import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
 import { GeladeiraSubsection } from "@/components/subsections/GeladeiraSubsection";
 
 import { NotificationBadge } from "@/components/NotificationBadge";
@@ -49,14 +47,6 @@ const subsections = [
     icon: Users,
     bgColor: "bg-blue-100",
     textColor: "text-blue-700"
-  },
-  {
-    id: "uniformes-epis",
-    title: "Uniformes e EPIs",
-    description: "Controle de estoque e entrega de uniformes e EPIs",
-    icon: Shirt,
-    bgColor: "bg-purple-100",
-    textColor: "text-purple-700"
   },
   {
     id: "geladeira",
@@ -115,9 +105,6 @@ export default function DP() {
     return <VagasTalentosSubsection onBack={handleBackToMain} />;
   }
 
-  if (activeSubsection === "uniformes-epis") {
-    return <UniformesSubsection onBack={handleBackToMain} />;
-  }
 
   if (activeSubsection === "geladeira") {
     return <GeladeiraSubsection onBack={handleBackToMain} />;

@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Briefcase, TrendingUp, Target } from "lucide-react";
+import { ChevronLeft, Briefcase, TrendingUp, Target, Shirt } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PlanosCargosSubsection } from "@/components/subsections/PlanosCargosSubsection";
 import { ResultadosPessoaisSubsection } from "@/components/subsections/ResultadosPessoaisSubsection";
 import { TomadaDecisaoSubsection } from "@/components/subsections/TomadaDecisaoSubsection";
+import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
 
 export default function Gerencia() {
   const navigate = useNavigate();
@@ -19,6 +20,16 @@ export default function Gerencia() {
       icon: Briefcase,
       description: "Gestão de cargos, níveis e estrutura salarial",
       component: PlanosCargosSubsection,
+      bgColor: "bg-white",
+      iconColor: "text-purple-600",
+      cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
+    },
+    {
+      id: "uniformes-epis",
+      title: "Uniformes e EPIs",
+      icon: Shirt,
+      description: "Controle de estoque e entrega de uniformes e EPIs",
+      component: UniformesSubsection,
       bgColor: "bg-white",
       iconColor: "text-purple-600",
       cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
