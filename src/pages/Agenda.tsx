@@ -240,52 +240,30 @@ const Agenda = () => {
           {/* Calendar and High Priority Tasks - Same Height */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <Card className="modern-card h-fit">
-                <CardContent className="card-content p-6">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                    <Calendar size={20} />
-                    Calendário
-                  </h3>
-                  <AgendaCalendar 
-                    selectedDate={selectedDate}
-                    onSelectDate={setSelectedDate}
-                  />
-                </CardContent>
-              </Card>
+              <AgendaCalendar 
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+              />
             </div>
             
             <div className="lg:col-span-1">
-              <Card className="modern-card h-fit">
-                <CardContent className="card-content p-6">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                    <Clock size={20} />
-                    Prioridade Alta
-                  </h3>
-                  <HighPriorityTasks 
-                    compromissos={compromissosMuitoImportantes}
-                    onSelectCompromisso={handleSelectCompromisso}
-                    onToggleConcluido={toggleConcluido}
-                  />
-                </CardContent>
-              </Card>
+              <HighPriorityTasks 
+                compromissos={compromissosMuitoImportantes}
+                onSelectCompromisso={handleSelectCompromisso}
+                onToggleConcluido={toggleConcluido}
+              />
             </div>
           </div>
 
           {/* Daily Schedule - Full Width */}
-          <Card className="modern-card">
-            <CardContent className="card-content p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <Users size={20} />
-                Agenda do Dia - {selectedDate ? format(selectedDate, 'dd/MM/yyyy') : 'Hoje'}
-              </h3>
-              <DailySchedule 
-                selectedDate={selectedDate}
-                compromissos={compromissos}
-                onToggleConcluido={toggleConcluido}
-                onSelectCompromisso={handleSelectCompromisso}
-              />
-            </CardContent>
-          </Card>
+          <div className="w-full">
+            <DailySchedule 
+              selectedDate={selectedDate}
+              compromissos={compromissos}
+              onToggleConcluido={toggleConcluido}
+              onSelectCompromisso={handleSelectCompromisso}
+            />
+          </div>
         </div>
 
         {/* Footer */}
