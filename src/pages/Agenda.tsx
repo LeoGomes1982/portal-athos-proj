@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Plus, ChevronRight, Clock, Users, MapPin } from "lucide-react";
+import { Calendar, Plus, ChevronRight, Clock, Users, MapPin, ArrowLeft } from "lucide-react";
 import AgendaCalendar from "@/components/agenda/AgendaCalendar";
 import DailySchedule from "@/components/agenda/DailySchedule";
 import HighPriorityTasks from "@/components/agenda/HighPriorityTasks";
@@ -25,6 +26,7 @@ interface Compromisso {
 }
 
 const Agenda = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showResumoModal, setShowResumoModal] = useState(false);
   const [showNovoCompromisso, setShowNovoCompromisso] = useState(false);
@@ -172,6 +174,12 @@ const Agenda = () => {
   return (
     <div className="app-container">
       <div className="content-wrapper">
+        {/* Back Button */}
+        <Button variant="ghost" className="mb-6" onClick={() => navigate('/')}>
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
+
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
