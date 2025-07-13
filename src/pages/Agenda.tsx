@@ -170,6 +170,19 @@ const Agenda = () => {
   const compromissosHoje = compromissos.filter(c => c.data === format(selectedDate || new Date(), 'yyyy-MM-dd'));
   const compromissosConcluidos = compromissos.filter(c => c.concluido).length;
   const proximosCompromissos = compromissos.filter(c => new Date(c.data) >= new Date() && !c.concluido).length;
+  
+  // Verificar se há compromissos urgentes (3 estrelas e falta 1 dia)
+  const hoje = new Date();
+  const amanha = new Date(hoje);
+  amanha.setDate(hoje.getDate() + 1);
+  const amanhaStr = amanha.toISOString().split('T')[0];
+  
+  const compromissosUrgentes = compromissos.filter(c => 
+    c.prioridade === 'muito-importante' && 
+    c.data === amanhaStr && 
+    !c.concluido
+  );
+  const hasUrgentTasks = compromissosUrgentes.length > 0;
 
   return (
     <div className="app-container">
@@ -213,8 +226,13 @@ const Agenda = () => {
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 relative">
             <CardContent className="card-content text-center p-4">
+              {hasUrgentTasks && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <span className="text-white text-xs font-bold">⚠</span>
+                </div>
+              )}
               <div className="text-3xl mb-2">⏰</div>
               <div className="text-2xl font-bold text-purple-600">
                 {proximosCompromissos}

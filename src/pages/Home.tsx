@@ -19,11 +19,13 @@ import { useNavigate } from "react-router-dom";
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
+import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 
 const Home = () => {
   const navigate = useNavigate();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();
+  const { hasUrgentTasks } = useAgendaAlerts();
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -52,7 +54,8 @@ const Home = () => {
       icon: Calendar,
       className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
       iconColor: "text-indigo-600",
-      onClick: () => navigate("/agenda")
+      onClick: () => navigate("/agenda"),
+      hasUrgentTasks: true
     },
     {
       id: "gerencia",
@@ -185,6 +188,13 @@ const Home = () => {
               {/* Notificação para DP e RH */}
               {section.hasNotification && (
                 <NotificationBadge show={hasNotifications} />
+              )}
+              
+              {/* Aviso de tarefas urgentes para Agenda */}
+              {section.hasUrgentTasks && hasUrgentTasks && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <span className="text-white text-xs font-bold">⚠</span>
+                </div>
               )}
               
               {/* Aviso de documentos vencendo para DP e RH */}
