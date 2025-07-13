@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import AgendaHeader from "@/components/agenda/AgendaHeader";
-import AgendaActionButtons from "@/components/agenda/AgendaActionButtons";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Calendar, Plus, ChevronRight, Clock, Users, MapPin } from "lucide-react";
 import AgendaCalendar from "@/components/agenda/AgendaCalendar";
 import DailySchedule from "@/components/agenda/DailySchedule";
 import HighPriorityTasks from "@/components/agenda/HighPriorityTasks";
@@ -164,48 +165,137 @@ const Agenda = () => {
   };
 
   const compromissosMuitoImportantes = compromissos.filter(c => c.prioridade === 'muito-importante' && !c.concluido);
+  const compromissosHoje = compromissos.filter(c => c.data === format(selectedDate || new Date(), 'yyyy-MM-dd'));
+  const compromissosConcluidos = compromissos.filter(c => c.concluido).length;
+  const proximosCompromissos = compromissos.filter(c => new Date(c.data) >= new Date() && !c.concluido).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-200/80 via-violet-150/60 to-purple-300/70">
-      <div className="content-wrapper animate-fade-in bg-white/80 backdrop-blur-sm border border-purple-300/80 shadow-xl">
-        <AgendaHeader />
-        
-        <AgendaActionButtons 
-          onShowSummary={() => setShowResumoModal(true)}
-          onShowNewAppointment={() => setShowNovoCompromisso(true)}
-        />
+    <div className="app-container">
+      <div className="content-wrapper">
+        {/* Header */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+            <Calendar size={32} className="text-white" />
+          </div>
+          <h1 className="page-title text-center">Agenda</h1>
+          <p className="text-description text-center max-w-2xl mx-auto">
+            Gerencie compromissos, reuniões e tarefas importantes
+          </p>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📅</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {compromissosHoje.length}
+              </div>
+              <div className="text-sm text-blue-600/80">Compromissos Hoje</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">✅</div>
+              <div className="text-2xl font-bold text-green-600">
+                {compromissosConcluidos}
+              </div>
+              <div className="text-sm text-green-600/80">Concluídos</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">⏰</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {proximosCompromissos}
+              </div>
+              <div className="text-sm text-purple-600/80">Próximos</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-4 mb-8 animate-slide-up">
+          <Button 
+            className="primary-btn flex items-center gap-2"
+            onClick={() => setShowNovoCompromisso(true)}
+          >
+            <Plus size={20} />
+            Novo Compromisso
+          </Button>
+          <Button 
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => setShowResumoModal(true)}
+          >
+            <Calendar size={20} />
+            Ver Resumo
+          </Button>
+        </div>
 
         {/* Main Content */}
-        <div className="space-y-8">
+        <div className="space-y-8 animate-slide-up">
           {/* Calendar and High Priority Tasks - Same Height */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <AgendaCalendar 
-                selectedDate={selectedDate}
-                onSelectDate={setSelectedDate}
-              />
+              <Card className="modern-card h-fit">
+                <CardContent className="card-content p-6">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                    <Calendar size={20} />
+                    Calendário
+                  </h3>
+                  <AgendaCalendar 
+                    selectedDate={selectedDate}
+                    onSelectDate={setSelectedDate}
+                  />
+                </CardContent>
+              </Card>
             </div>
             
             <div className="lg:col-span-1">
-              <HighPriorityTasks 
-                compromissos={compromissosMuitoImportantes}
-                onSelectCompromisso={handleSelectCompromisso}
-                onToggleConcluido={toggleConcluido}
-              />
+              <Card className="modern-card h-fit">
+                <CardContent className="card-content p-6">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                    <Clock size={20} />
+                    Prioridade Alta
+                  </h3>
+                  <HighPriorityTasks 
+                    compromissos={compromissosMuitoImportantes}
+                    onSelectCompromisso={handleSelectCompromisso}
+                    onToggleConcluido={toggleConcluido}
+                  />
+                </CardContent>
+              </Card>
             </div>
           </div>
 
           {/* Daily Schedule - Full Width */}
-          <div className="w-full">
-            <DailySchedule 
-              selectedDate={selectedDate}
-              compromissos={compromissos}
-              onToggleConcluido={toggleConcluido}
-              onSelectCompromisso={handleSelectCompromisso}
-            />
-          </div>
+          <Card className="modern-card">
+            <CardContent className="card-content p-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <Users size={20} />
+                Agenda do Dia - {selectedDate ? format(selectedDate, 'dd/MM/yyyy') : 'Hoje'}
+              </h3>
+              <DailySchedule 
+                selectedDate={selectedDate}
+                compromissos={compromissos}
+                onToggleConcluido={toggleConcluido}
+                onSelectCompromisso={handleSelectCompromisso}
+              />
+            </CardContent>
+          </Card>
         </div>
 
+        {/* Footer */}
+        <div className="text-center mt-16 animate-fade-in">
+          <p className="text-description">
+            © 2024 Grupo Athos. Todos os direitos reservados.
+          </p>
+        </div>
+
+        {/* Modals */}
         <AgendaSummaryModal 
           open={showResumoModal}
           onOpenChange={setShowResumoModal}
