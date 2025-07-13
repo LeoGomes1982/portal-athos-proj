@@ -67,8 +67,7 @@ export function FormularioCICADComponent({ onSubmit, isFormularioPublico = false
 
     onSubmit({
       ...formulario,
-      descricao: descricaoCompleta,
-      urgencia: "media" // Urgência será definida pela empresa
+      descricao: descricaoCompleta
     });
     
     // Reset form

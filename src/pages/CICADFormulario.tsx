@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FormularioCICAD } from "@/types/cicad";
+import { FormularioCICAD, Denuncia } from "@/types/cicad";
 import { FormularioCICADComponent } from "@/components/cicad/FormularioCICAD";
 import { Shield, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,9 +8,29 @@ export default function CICADFormulario() {
   const [enviado, setEnviado] = useState(false);
 
   const handleSubmit = (formulario: FormularioCICAD) => {
-    // Aqui você enviaria para uma API ou salvaria localmente
-    console.log('Formulário enviado:', formulario);
-    setEnviado(true);
+    try {
+      // Criar nova denúncia
+      const novaDenuncia: Denuncia = {
+        ...formulario,
+        id: Date.now().toString(),
+        status: "em_investigacao",
+        dataSubmissao: new Date().toISOString().split('T')[0]
+      };
+
+      // Carregar denúncias existentes do localStorage
+      const denunciasExistentes = JSON.parse(localStorage.getItem('cicad_denuncias') || '[]');
+      const novasDenuncias = [novaDenuncia, ...denunciasExistentes];
+      
+      // Salvar no localStorage
+      localStorage.setItem('cicad_denuncias', JSON.stringify(novasDenuncias));
+      
+      console.log('Denúncia salva com sucesso:', novaDenuncia);
+      setEnviado(true);
+    } catch (error) {
+      console.error('Erro ao salvar denúncia:', error);
+      // Mesmo com erro, marcar como enviado para não perder o formulário
+      setEnviado(true);
+    }
   };
 
   if (enviado) {

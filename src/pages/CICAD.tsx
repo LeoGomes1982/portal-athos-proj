@@ -22,8 +22,20 @@ export default function CICAD() {
   
   // Carregar denúncias do localStorage ou usar as iniciais
   const [denuncias, setDenuncias] = useState<Denuncia[]>(() => {
-    const saved = localStorage.getItem('cicad_denuncias');
-    return saved ? JSON.parse(saved) : denunciasIniciais;
+    try {
+      const saved = localStorage.getItem('cicad_denuncias');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : denunciasIniciais;
+      }
+      // Se não existir no localStorage, salvar as iniciais
+      localStorage.setItem('cicad_denuncias', JSON.stringify(denunciasIniciais));
+      return denunciasIniciais;
+    } catch (error) {
+      console.error('Erro ao carregar denúncias:', error);
+      localStorage.setItem('cicad_denuncias', JSON.stringify(denunciasIniciais));
+      return denunciasIniciais;
+    }
   });
   
   const [showFormulario, setShowFormulario] = useState(false);
@@ -46,8 +58,19 @@ export default function CICAD() {
       status: "em_investigacao",
       dataSubmissao: new Date().toISOString().split('T')[0]
     };
-    setDenuncias([novaDenuncia, ...denuncias]);
+    
+    const novasDenuncias = [novaDenuncia, ...denuncias];
+    setDenuncias(novasDenuncias);
+    
+    // Salvar no localStorage imediatamente
+    localStorage.setItem('cicad_denuncias', JSON.stringify(novasDenuncias));
+    
     setShowFormulario(false);
+    
+    toast({
+      title: "Denúncia registrada",
+      description: "A denúncia foi registrada com sucesso no sistema CICAD."
+    });
   };
 
   const handleResolverCaso = (denuncia: Denuncia) => {
@@ -56,13 +79,23 @@ export default function CICAD() {
   };
 
   const handleSubmitResolucao = (denunciaId: string, status: Denuncia['status'], resolucao: string) => {
-    setDenuncias(denuncias.map(d => 
+    const novasDenuncias = denuncias.map(d => 
       d.id === denunciaId 
         ? { ...d, status, resolucao }
         : d
-    ));
+    );
+    setDenuncias(novasDenuncias);
+    
+    // Salvar no localStorage imediatamente
+    localStorage.setItem('cicad_denuncias', JSON.stringify(novasDenuncias));
+    
     setShowResolucaoModal(false);
     setDenunciaSelecionada(null);
+    
+    toast({
+      title: "Caso atualizado",
+      description: "O status do caso foi atualizado com sucesso."
+    });
   };
 
   const generateQRCode = async () => {
