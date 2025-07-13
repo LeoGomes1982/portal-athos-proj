@@ -961,9 +961,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     📋 Histórico
                   </h3>
                   <Button 
-                    onClick={() => setShowNovoRegistro(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    variant="outline"
                     size="sm"
+                    onClick={() => setShowNovoRegistro(true)}
+                    className="text-blue-600 border-blue-300 hover:bg-blue-50"
                   >
                     <Plus size={16} className="mr-1" />
                     Incluir Registro
