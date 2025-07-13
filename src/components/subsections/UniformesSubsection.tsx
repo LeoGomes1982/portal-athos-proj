@@ -5,6 +5,7 @@ import { ArrowLeft, Shirt, Package, Settings, TrendingUp, Users, User } from "lu
 import { GerenciarUniformesModal } from "@/components/modals/GerenciarUniformesModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
+import { adicionarRegistroHistorico } from "@/utils/historicoUtils";
 
 interface UniformesSubsectionProps {
   onBack: () => void;
@@ -151,6 +152,18 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         return item;
       }));
     });
+
+    // Adicionar registro no histórico do cliente
+    const totalItens = dados.itens.reduce((sum, item) => sum + item.quantidade, 0);
+    const listaItens = dados.itens.map(item => `${item.quantidade}x ${item.item} (${item.tamanho})`).join(', ');
+    
+    adicionarRegistroHistorico(
+      dados.clienteId,
+      'Entrega de Uniformes e EPIs',
+      `Entrega realizada: ${listaItens}. Valor total: R$ ${dados.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. Data da entrega: ${new Date(dados.dataEntrega).toLocaleDateString('pt-BR')}.`,
+      'positivo',
+      'Sistema - Uniformes'
+    );
   };
 
   const getItemIcon = (item: string) => {
