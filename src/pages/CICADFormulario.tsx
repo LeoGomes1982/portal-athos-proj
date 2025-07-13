@@ -5,7 +5,7 @@ import { Shield, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 
-export default function CICADFormulario() {
+function CICADFormulario() {
   const [enviado, setEnviado] = useState(false);
 
   const handleSubmit = async (formulario: FormularioCICAD) => {
@@ -73,3 +73,5 @@ export default function CICADFormulario() {
     </div>
   );
 }
+
+export default CICADFormulario;
