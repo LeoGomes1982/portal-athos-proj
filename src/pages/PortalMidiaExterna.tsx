@@ -1,4 +1,4 @@
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, Suspense, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,8 +21,9 @@ interface Midia {
 }
 
 // Componente da TV 3D
-function TelevisionModel({ midias }: { midias: Midia[] }) {
+function TelevisionModel({ midias, playlistAtiva, midiaAtual }: { midias: Midia[], playlistAtiva: boolean, midiaAtual: number }) {
   const midiasVisiveis = midias.filter(m => m.visivel);
+  const midiaAtiva = midiasVisiveis[midiaAtual];
   
   return (
     <group>
@@ -38,13 +39,88 @@ function TelevisionModel({ midias }: { midias: Midia[] }) {
         <meshStandardMaterial color="#000000" />
       </mesh>
       
-      {/* Conteúdo da tela - simulação da playlist */}
+      {/* Conteúdo da tela */}
       <mesh position={[0, 0, 0.16]}>
         <boxGeometry args={[3.4, 1.9, 0.01]} />
         <meshStandardMaterial 
-          color={midiasVisiveis.length > 0 ? "#1e40af" : "#374151"}
+          color={playlistAtiva && midiasVisiveis.length > 0 ? "#1e40af" : "#374151"}
         />
       </mesh>
+      
+      {/* Miniatura da mídia atual quando playlist estiver ativa */}
+      {playlistAtiva && midiaAtiva && (
+        <>
+          {/* Fundo da miniatura */}
+          <mesh position={[0, 0, 0.17]}>
+            <boxGeometry args={[2.5, 1.4, 0.005]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          
+          {/* Indicador do tipo de mídia */}
+          <mesh position={[0, 0, 0.175]}>
+            <boxGeometry args={[2.2, 1.1, 0.005]} />
+            <meshStandardMaterial 
+              color={
+                midiaAtiva.tipo === 'imagem' ? "#10b981" :
+                midiaAtiva.tipo === 'video' ? "#f59e0b" : "#8b5cf6"
+              }
+            />
+          </mesh>
+          
+          {/* Texto da mídia (representado por retângulos) */}
+          <mesh position={[0, 0.3, 0.18]}>
+            <boxGeometry args={[1.8, 0.1, 0.002]} />
+            <meshStandardMaterial color="#1f2937" />
+          </mesh>
+          
+          <mesh position={[0, 0.1, 0.18]}>
+            <boxGeometry args={[1.5, 0.08, 0.002]} />
+            <meshStandardMaterial color="#6b7280" />
+          </mesh>
+          
+          {/* Barra de progresso */}
+          <mesh position={[0, -0.4, 0.18]}>
+            <boxGeometry args={[2.0, 0.05, 0.002]} />
+            <meshStandardMaterial color="#e5e7eb" />
+          </mesh>
+          
+          <mesh position={[-0.5, -0.4, 0.182]}>
+            <boxGeometry args={[1.0, 0.05, 0.002]} />
+            <meshStandardMaterial color="#3b82f6" />
+          </mesh>
+        </>
+      )}
+      
+      {/* Playlist em miniatura no canto da tela quando ativa */}
+      {playlistAtiva && midiasVisiveis.length > 1 && (
+        <>
+          {/* Container da playlist */}
+          <mesh position={[1.2, 0.5, 0.17]}>
+            <boxGeometry args={[0.8, 1.2, 0.005]} />
+            <meshStandardMaterial color="#000000" opacity={0.8} transparent />
+          </mesh>
+          
+          {/* Itens da playlist */}
+          {midiasVisiveis.slice(0, 4).map((_, index) => (
+            <mesh key={index} position={[1.2, 0.8 - (index * 0.25), 0.175]}>
+              <boxGeometry args={[0.6, 0.15, 0.002]} />
+              <meshStandardMaterial 
+                color={index === midiaAtual ? "#3b82f6" : "#4b5563"}
+                opacity={index === midiaAtual ? 1 : 0.6}
+                transparent
+              />
+            </mesh>
+          ))}
+          
+          {/* Indicador de mais itens */}
+          {midiasVisiveis.length > 4 && (
+            <mesh position={[1.2, -0.4, 0.175]}>
+              <boxGeometry args={[0.4, 0.08, 0.002]} />
+              <meshStandardMaterial color="#6b7280" />
+            </mesh>
+          )}
+        </>
+      )}
       
       {/* Base de apoio */}
       <mesh position={[0, -1.5, 0]}>
@@ -112,6 +188,9 @@ export default function PortalMidiaExterna() {
 
   const togglePlaylist = () => {
     setPlaylistAtiva(!playlistAtiva);
+    if (!playlistAtiva) {
+      setMidiaAtual(0); // Reiniciar do primeiro item
+    }
     toast({
       title: playlistAtiva ? "Playlist pausada" : "Playlist iniciada",
       description: playlistAtiva ? "A exibição foi pausada" : "Iniciando reprodução das mídias"
@@ -119,6 +198,30 @@ export default function PortalMidiaExterna() {
   };
 
   const midiasVisiveis = midias.filter(m => m.visivel);
+
+  // Gerenciar progressão automática da playlist
+  useEffect(() => {
+    if (!playlistAtiva || midiasVisiveis.length === 0) return;
+
+    const midiaAtiva = midiasVisiveis[midiaAtual];
+    if (!midiaAtiva) return;
+
+    const timer = setTimeout(() => {
+      setMidiaAtual(prev => {
+        const proximoIndex = (prev + 1) % midiasVisiveis.length;
+        return proximoIndex;
+      });
+    }, midiaAtiva.tempoExibicao * 1000);
+
+    return () => clearTimeout(timer);
+  }, [playlistAtiva, midiaAtual, midiasVisiveis]);
+
+  // Resetar mídia atual quando playlist for pausada
+  useEffect(() => {
+    if (!playlistAtiva) {
+      setMidiaAtual(0);
+    }
+  }, [playlistAtiva]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 p-4">
@@ -157,7 +260,7 @@ export default function PortalMidiaExterna() {
                     }>
                       <ambientLight intensity={0.5} />
                       <pointLight position={[10, 10, 10]} />
-                      <TelevisionModel midias={midias} />
+                      <TelevisionModel midias={midias} playlistAtiva={playlistAtiva} midiaAtual={midiaAtual} />
                       <OrbitControls enablePan={false} enableZoom={false} />
                     </Suspense>
                   </Canvas>
