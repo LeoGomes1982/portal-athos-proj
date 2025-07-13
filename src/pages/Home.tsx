@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { 
   Users, 
   FileText, 
@@ -20,12 +20,14 @@ import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
+import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
 
 const Home = () => {
   const navigate = useNavigate();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();
-  const { hasUrgentTasks } = useAgendaAlerts();
+  const { hasUrgentTasks, urgentTasks } = useAgendaAlerts();
+  const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -54,7 +56,13 @@ const Home = () => {
       icon: Calendar,
       className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
       iconColor: "text-indigo-600",
-      onClick: () => navigate("/agenda"),
+      onClick: () => {
+        if (hasUrgentTasks) {
+          setShowUrgentTasksModal(true);
+        } else {
+          navigate("/agenda");
+        }
+      },
       hasUrgentTasks: true
     },
     {
@@ -192,8 +200,8 @@ const Home = () => {
               
               {/* Aviso de tarefas urgentes para Agenda */}
               {section.hasUrgentTasks && hasUrgentTasks && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                  <span className="text-white text-xs font-bold">⚠</span>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <span className="text-white text-xs font-bold">!</span>
                 </div>
               )}
               
@@ -255,6 +263,13 @@ const Home = () => {
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
+
+        {/* Modal de Tarefas Urgentes */}
+        <UrgentTasksModal
+          open={showUrgentTasksModal}
+          onOpenChange={setShowUrgentTasksModal}
+          compromissosUrgentes={urgentTasks}
+        />
       </div>
     </div>
   );

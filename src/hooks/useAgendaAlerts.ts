@@ -15,6 +15,7 @@ interface Compromisso {
 
 export const useAgendaAlerts = () => {
   const [hasUrgentTasks, setHasUrgentTasks] = useState(false);
+  const [urgentTasks, setUrgentTasks] = useState<Compromisso[]>([]);
 
   const checkUrgentTasks = () => {
     try {
@@ -38,10 +39,12 @@ export const useAgendaAlerts = () => {
         !compromisso.concluido
       );
 
+      setUrgentTasks(urgentTasks);
       setHasUrgentTasks(urgentTasks.length > 0);
     } catch (error) {
       console.error('Erro ao verificar tarefas urgentes:', error);
       setHasUrgentTasks(false);
+      setUrgentTasks([]);
     }
   };
 
@@ -54,5 +57,5 @@ export const useAgendaAlerts = () => {
     return () => clearInterval(interval);
   }, []);
 
-  return { hasUrgentTasks, checkUrgentTasks };
+  return { hasUrgentTasks, urgentTasks, checkUrgentTasks };
 };

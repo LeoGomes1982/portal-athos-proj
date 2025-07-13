@@ -229,8 +229,8 @@ const Agenda = () => {
           <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 relative">
             <CardContent className="card-content text-center p-4">
               {hasUrgentTasks && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                  <span className="text-white text-xs font-bold">⚠</span>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <span className="text-white text-xs font-bold">!</span>
                 </div>
               )}
               <div className="text-3xl mb-2">⏰</div>
