@@ -20,6 +20,7 @@ import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
+import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
 
 const Home = () => {
@@ -27,6 +28,7 @@ const Home = () => {
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();
   const { hasUrgentTasks, urgentTasks } = useAgendaAlerts();
+  const { hasNewDenuncias, markAsChecked } = useCICADAlerts();
   const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
   const [showUserTooltip, setShowUserTooltip] = useState(false);
 
@@ -76,7 +78,11 @@ const Home = () => {
       icon: Shield,
       className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
       iconColor: "text-green-600",
-      onClick: () => navigate("/cicad")
+      onClick: () => {
+        markAsChecked(); // Marcar como verificado quando clicar
+        navigate("/cicad");
+      },
+      hasNewDenuncias: true
     },
     {
       id: "manuais",
@@ -228,6 +234,13 @@ const Home = () => {
                     </div>
                   )}
                 </>
+              )}
+              
+              {/* Aviso de novas denúncias para CICAD */}
+              {section.hasNewDenuncias && hasNewDenuncias && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
               )}
               
               {/* Aviso de documentos vencendo para DP e RH */}

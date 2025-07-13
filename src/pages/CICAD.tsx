@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Shield, Plus, QrCode, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Denuncia, FormularioCICAD } from "@/types/cicad";
 import { denunciasIniciais } from "@/data/cicad";
+import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { FormularioCICADComponent } from "@/components/cicad/FormularioCICAD";
 import { DenunciaCard } from "@/components/cicad/DenunciaCard";
 import { ResolucaoCasoModal } from "@/components/cicad/ResolucaoCasoModal";
@@ -17,13 +18,26 @@ export default function CICAD() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [denuncias, setDenuncias] = useState<Denuncia[]>(denunciasIniciais);
+  const { hasNewDenuncias, checkNewDenuncias } = useCICADAlerts();
+  
+  // Carregar denúncias do localStorage ou usar as iniciais
+  const [denuncias, setDenuncias] = useState<Denuncia[]>(() => {
+    const saved = localStorage.getItem('cicad_denuncias');
+    return saved ? JSON.parse(saved) : denunciasIniciais;
+  });
+  
   const [showFormulario, setShowFormulario] = useState(false);
   const [showResolucaoModal, setShowResolucaoModal] = useState(false);
   const [denunciaSelecionada, setDenunciaSelecionada] = useState<Denuncia | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
 
   const formularioUrl = `${window.location.origin}/cicad-formulario`;
+
+  // Salvar denúncias no localStorage sempre que mudar
+  useEffect(() => {
+    localStorage.setItem('cicad_denuncias', JSON.stringify(denuncias));
+    checkNewDenuncias();
+  }, [denuncias, checkNewDenuncias]);
 
   const handleNovaDenuncia = (formulario: FormularioCICAD) => {
     const novaDenuncia: Denuncia = {
@@ -116,7 +130,14 @@ export default function CICAD() {
         </div>
 
         {/* Summary Cards */}
-        <CICADSummaryCards denuncias={denuncias} />
+        <div className="relative">
+          {hasNewDenuncias && (
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+              <span className="text-white text-xs font-bold">!</span>
+            </div>
+          )}
+          <CICADSummaryCards denuncias={denuncias} />
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-8 animate-slide-up">
