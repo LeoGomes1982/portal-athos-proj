@@ -44,8 +44,15 @@ const Agenda = () => {
     prioridade: 'normal' as 'normal' | 'importante' | 'muito-importante'
   });
 
-  const usuarios = ['user1', 'user2', 'user3', 'user4'];
-  const usuarioAtual = 'user1';
+  const usuarios = [
+    'leandrogomes@grupoathosbrasil.com',
+    'dp@grupoathosbrasil.com', 
+    'financeiro@grupoathosbrasil.com',
+    'gerencia@grupoathosbrasil.com',
+    'thiago@grupoathosbrasil.com',
+    'diego@grupoathosbrasil.com'
+  ];
+  const usuarioAtual = 'leandrogomes@grupoathosbrasil.com';
 
   // Carregar compromissos do localStorage
   useEffect(() => {
@@ -82,10 +89,10 @@ const Agenda = () => {
         descricao: 'Planejamento mensal da equipe',
         data: format(new Date(), 'yyyy-MM-dd'),
         horario: '09:00',
-        participantes: ['user1', 'user2', 'user3'],
+        participantes: ['leandrogomes@grupoathosbrasil.com', 'dp@grupoathosbrasil.com', 'gerencia@grupoathosbrasil.com'],
         tipo: 'reuniao',
         concluido: false,
-        criadoPor: 'user1',
+        criadoPor: 'leandrogomes@grupoathosbrasil.com',
         prioridade: 'muito-importante'
       },
       {
@@ -94,10 +101,10 @@ const Agenda = () => {
         descricao: 'Revisar contratos pendentes',
         data: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
         horario: '14:00',
-        participantes: ['user1', 'user4'],
+        participantes: ['leandrogomes@grupoathosbrasil.com', 'gerencia@grupoathosbrasil.com'],
         tipo: 'tarefa',
         concluido: false,
-        criadoPor: 'user4',
+        criadoPor: 'gerencia@grupoathosbrasil.com',
         prioridade: 'importante'
       }
     ];
