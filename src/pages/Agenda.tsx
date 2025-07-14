@@ -282,10 +282,11 @@ const Agenda = () => {
           {/* Calendar and High Priority Tasks - Same Height */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <AgendaCalendar 
-                selectedDate={selectedDate}
-                onSelectDate={setSelectedDate}
-              />
+          <AgendaCalendar 
+            selectedDate={selectedDate} 
+            onSelectDate={setSelectedDate}
+            compromissos={compromissos}
+          />
             </div>
             
             <div className="lg:col-span-1">

@@ -3,14 +3,33 @@ import React from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+interface Compromisso {
+  id: string;
+  titulo: string;
+  descricao: string;
+  data: string;
+  horario: string;
+  participantes: string[];
+  tipo: 'reuniao' | 'tarefa' | 'evento';
+  concluido: boolean;
+  criadoPor: string;
+  prioridade: 'normal' | 'importante' | 'muito-importante';
+}
 
 interface AgendaCalendarProps {
   selectedDate: Date | undefined;
   onSelectDate: (date: Date | undefined) => void;
+  compromissos: Compromisso[];
 }
 
-const AgendaCalendar = ({ selectedDate, onSelectDate }: AgendaCalendarProps) => {
+const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCalendarProps) => {
+  const hasCompromisso = (date: Date) => {
+    const dateString = format(date, 'yyyy-MM-dd');
+    return compromissos.some(compromisso => compromisso.data === dateString);
+  };
   return (
     <Card className="modern-card animate-slide-up bg-white/95 backdrop-blur-sm border-purple-200/60 shadow-md h-[500px] flex flex-col">
       <CardHeader className="card-header flex-shrink-0">
@@ -41,11 +60,17 @@ const AgendaCalendar = ({ selectedDate, onSelectDate }: AgendaCalendarProps) => 
               head_cell: "text-purple-600 rounded-md flex-1 h-10 font-semibold text-sm flex items-center justify-center",
               row: "flex w-full mt-1",
               cell: "relative p-1 text-center text-sm focus-within:relative focus-within:z-20 flex-1",
-              day: "h-10 w-full p-0 font-medium aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-purple-300 hover:bg-purple-50 flex items-center justify-center text-sm transition-all",
+              day: "h-10 w-full p-0 font-medium aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-purple-300 hover:bg-purple-50 flex items-center justify-center text-sm transition-all relative",
               day_selected: "bg-purple-600/20 text-purple-800 hover:bg-purple-600/30 border-purple-400/50 shadow-md scale-105",
               day_today: "bg-purple-100 text-purple-900 border-purple-400 font-bold",
               day_outside: "text-gray-400 opacity-50",
               day_disabled: "text-gray-300 opacity-30",
+            }}
+            modifiers={{
+              hasCompromisso: (date) => hasCompromisso(date)
+            }}
+            modifiersClassNames={{
+              hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:z-10"
             }}
           />
         </div>
