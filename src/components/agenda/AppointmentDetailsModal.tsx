@@ -2,7 +2,8 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Circle, Star } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, Circle, Star, Trash2 } from 'lucide-react';
 import { format } from "date-fns";
 
 interface Compromisso {
@@ -23,6 +24,7 @@ interface AppointmentDetailsModalProps {
   onOpenChange: (open: boolean) => void;
   compromisso: Compromisso | null;
   onToggleConcluido: (id: string) => void;
+  onDeleteCompromisso: (id: string) => void;
   setCompromisso: React.Dispatch<React.SetStateAction<Compromisso | null>>;
 }
 
@@ -31,6 +33,7 @@ const AppointmentDetailsModal = ({
   onOpenChange, 
   compromisso, 
   onToggleConcluido, 
+  onDeleteCompromisso,
   setCompromisso 
 }: AppointmentDetailsModalProps) => {
   const getPriorityStars = (prioridade: string) => {
@@ -123,6 +126,18 @@ const AppointmentDetailsModal = ({
                   {compromisso.concluido ? 'Concluído' : 'Pendente'}
                 </span>
               </div>
+            </div>
+
+            <div className="flex justify-end pt-4 border-t">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => onDeleteCompromisso(compromisso.id)}
+                className="flex items-center gap-2"
+              >
+                <Trash2 size={16} />
+                Excluir Compromisso
+              </Button>
             </div>
           </div>
         )}

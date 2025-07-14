@@ -161,6 +161,22 @@ const Agenda = () => {
     }
   };
 
+  const deleteCompromisso = (id: string) => {
+    const novosCompromissos = compromissos.filter(c => c.id !== id);
+    setCompromissos(novosCompromissos);
+    
+    try {
+      localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
+      console.log('Compromisso excluído:', id);
+    } catch (error) {
+      console.error('Erro ao excluir compromisso:', error);
+    }
+    
+    // Fechar o modal se estiver aberto
+    setShowDetalhesCompromisso(false);
+    setCompromissoSelecionado(null);
+  };
+
   const handleSelectCompromisso = (compromisso: Compromisso) => {
     setCompromissoSelecionado(compromisso);
     setShowDetalhesCompromisso(true);
@@ -321,6 +337,7 @@ const Agenda = () => {
           onOpenChange={setShowDetalhesCompromisso}
           compromisso={compromissoSelecionado}
           onToggleConcluido={toggleConcluido}
+          onDeleteCompromisso={deleteCompromisso}
           setCompromisso={setCompromissoSelecionado}
         />
       </div>
