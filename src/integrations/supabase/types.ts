@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      candidaturas: {
+        Row: {
+          created_at: string
+          curriculo: string | null
+          email: string
+          endereco: string
+          experiencias: string | null
+          id: string
+          nome: string
+          sobre_mim: string | null
+          status: string
+          telefone: string
+          updated_at: string
+          vaga_id: string
+        }
+        Insert: {
+          created_at?: string
+          curriculo?: string | null
+          email: string
+          endereco: string
+          experiencias?: string | null
+          id?: string
+          nome: string
+          sobre_mim?: string | null
+          status?: string
+          telefone: string
+          updated_at?: string
+          vaga_id: string
+        }
+        Update: {
+          created_at?: string
+          curriculo?: string | null
+          email?: string
+          endereco?: string
+          experiencias?: string | null
+          id?: string
+          nome?: string
+          sobre_mim?: string | null
+          status?: string
+          telefone?: string
+          updated_at?: string
+          vaga_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidaturas_vaga_id_fkey"
+            columns: ["vaga_id"]
+            isOneToOne: false
+            referencedRelation: "vagas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compromissos: {
+        Row: {
+          concluido: boolean
+          created_at: string
+          criado_por: string
+          data: string
+          descricao: string | null
+          horario: string
+          id: string
+          participantes: string[]
+          prioridade: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          concluido?: boolean
+          created_at?: string
+          criado_por: string
+          data: string
+          descricao?: string | null
+          horario: string
+          id?: string
+          participantes?: string[]
+          prioridade?: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          concluido?: boolean
+          created_at?: string
+          criado_por?: string
+          data?: string
+          descricao?: string | null
+          horario?: string
+          id?: string
+          participantes?: string[]
+          prioridade?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       denuncias: {
         Row: {
           assunto: string
@@ -61,6 +159,99 @@ export type Database = {
           status?: string
           testemunhas?: string | null
           tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      funcionarios: {
+        Row: {
+          cargo: string
+          created_at: string
+          data_admissao: string | null
+          departamento: string
+          email: string | null
+          foto_url: string | null
+          id: string
+          nome: string
+          salario: number | null
+          status: string
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          cargo: string
+          created_at?: string
+          data_admissao?: string | null
+          departamento: string
+          email?: string | null
+          foto_url?: string | null
+          id?: string
+          nome: string
+          salario?: number | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cargo?: string
+          created_at?: string
+          data_admissao?: string | null
+          departamento?: string
+          email?: string | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          salario?: number | null
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vagas: {
+        Row: {
+          beneficios: string | null
+          cidade: string
+          created_at: string
+          criado_por: string
+          departamento: string
+          descricao: string | null
+          id: string
+          requisitos: string | null
+          salario: string | null
+          status: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          beneficios?: string | null
+          cidade: string
+          created_at?: string
+          criado_por: string
+          departamento: string
+          descricao?: string | null
+          id?: string
+          requisitos?: string | null
+          salario?: string | null
+          status?: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          beneficios?: string | null
+          cidade?: string
+          created_at?: string
+          criado_por?: string
+          departamento?: string
+          descricao?: string | null
+          id?: string
+          requisitos?: string | null
+          salario?: string | null
+          status?: string
+          tipo?: string
+          titulo?: string
           updated_at?: string
         }
         Relationships: []

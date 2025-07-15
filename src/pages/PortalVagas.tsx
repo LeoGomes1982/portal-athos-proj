@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, Building2, MapPin, Clock, Calendar, Users } from "lucide-react";
 import { CandidaturaModal } from "@/components/modals/CandidaturaModal";
+import { useVagas } from "@/hooks/useVagas";
+import { useCandidaturas } from "@/hooks/useCandidaturas";
 
 interface Vaga {
   id: string;
@@ -37,53 +39,41 @@ const PortalVagas = () => {
   const [activeCard, setActiveCard] = useState<string | null>(null);
   const [showCandidaturaModal, setShowCandidaturaModal] = useState(false);
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null);
-  const [candidatos, setCandidatos] = useState<Candidato[]>([]);
+  
+  const { vagas: vagasSupabase } = useVagas();
+  const { criarCandidatura } = useCandidaturas();
 
-  // Simulando vagas vindas da página Vagas e Talentos
-  const [vagas] = useState<Vaga[]>([
-    {
-      id: "1",
-      titulo: "Desenvolvedor Frontend",
-      departamento: "Tecnologia",
-      cidade: "São Paulo - SP",
-      cargaHoraria: "40h semanais",
-      jornada: "hibrido",
-      descricao: "Desenvolvimento de interfaces web utilizando React e TypeScript",
-      requisitos: "React, TypeScript, CSS, conhecimento em APIs REST",
-      salario: "R$ 5.000 - R$ 7.000",
-      status: "ativa",
-      dataPublicacao: "2024-01-15",
-      candidatos: 8
-    },
-    {
-      id: "2", 
-      titulo: "Analista de Marketing",
-      departamento: "Marketing",
-      cidade: "Rio de Janeiro - RJ",
-      cargaHoraria: "44h semanais",
-      jornada: "integral",
-      descricao: "Gestão de campanhas digitais e análise de métricas",
-      requisitos: "Marketing Digital, Google Ads, Facebook Ads",
-      salario: "R$ 3.500 - R$ 5.000",
-      status: "pausada",
-      dataPublicacao: "2024-01-10",
-      candidatos: 12
-    },
-    {
-      id: "3",
-      titulo: "Designer UX/UI",
-      departamento: "Design",
-      cidade: "Belo Horizonte - MG",
-      cargaHoraria: "40h semanais",
-      jornada: "flexivel",
-      descricao: "Criação de interfaces e experiências digitais",
-      requisitos: "Figma, Adobe XD, prototipagem",
-      salario: "R$ 4.000 - R$ 6.500",
-      status: "pausada",
-      dataPublicacao: "2024-01-08",
-      candidatos: 5
+  // Mapear vagas do Supabase para o formato local
+  const vagas = vagasSupabase.map(v => ({
+    id: v.id,
+    titulo: v.titulo,
+    departamento: v.departamento,
+    cidade: v.cidade,
+    cargaHoraria: "40h semanais",
+    jornada: v.tipo || "integral",
+    descricao: v.descricao || "",
+    requisitos: v.requisitos || "",
+    salario: v.salario || "",
+    status: v.status as "ativa" | "pausada" | "encerrada",
+    dataPublicacao: v.created_at ? new Date(v.created_at).toISOString().split('T')[0] : "",
+    candidatos: 0
+  }));
+
+  const handleSubmitCandidatura = async (dados: any) => {
+    if (vagaSelecionada) {
+      await criarCandidatura({
+        vaga_id: vagaSelecionada.id,
+        nome: dados.nome,
+        telefone: dados.telefone,
+        endereco: dados.endereco,
+        email: dados.email,
+        curriculo: dados.curriculo,
+        sobre_mim: dados.sobreMim,
+        experiencias: dados.experiencias,
+        status: 'pendente'
+      });
     }
-  ]);
+  };
 
   const vagasAtivas = vagas.filter(v => v.status === "ativa");
   const vagasPausadas = vagas.filter(v => v.status === "pausada");
@@ -121,14 +111,6 @@ const PortalVagas = () => {
     setShowCandidaturaModal(true);
   };
 
-  const handleSubmitCandidatura = (dados: any) => {
-    const novoCandidato: Candidato = {
-      id: Date.now().toString(),
-      ...dados,
-      dataInscricao: new Date().toISOString()
-    };
-    setCandidatos([...candidatos, novoCandidato]);
-  };
 
   return (
     <div className="app-container">

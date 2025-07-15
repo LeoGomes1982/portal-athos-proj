@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Plus, ChevronRight, Clock, Users, MapPin, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import AgendaCalendar from "@/components/agenda/AgendaCalendar";
 import DailySchedule from "@/components/agenda/DailySchedule";
 import HighPriorityTasks from "@/components/agenda/HighPriorityTasks";
@@ -54,30 +56,42 @@ const Agenda = () => {
   ];
   const usuarioAtual = 'leandrogomes@grupoathosbrasil.com';
 
-  // Carregar compromissos do localStorage
+  // Carregar compromissos do Supabase
   useEffect(() => {
-    const savedCompromissos = localStorage.getItem('agenda_compromissos');
-    if (savedCompromissos) {
+    const carregarCompromissos = async () => {
       try {
-        const parsedCompromissos = JSON.parse(savedCompromissos);
-        // Adicionar prioridade aos compromissos existentes se não tiverem
-        const compromissosComPrioridade = parsedCompromissos.map((c: any) => ({
-          ...c,
-          prioridade: c.prioridade || 'normal'
+        const { data, error } = await supabase
+          .from('compromissos')
+          .select('*')
+          .order('data', { ascending: true });
+
+        if (error) {
+          console.error('Erro ao carregar compromissos:', error);
+          toast.error('Erro ao carregar compromissos');
+          return;
+        }
+
+        const compromissosFormatados = data.map(c => ({
+          id: c.id,
+          titulo: c.titulo,
+          descricao: c.descricao || '',
+          data: c.data,
+          horario: c.horario,
+          participantes: c.participantes || [],
+          tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento',
+          concluido: c.concluido,
+          criadoPor: c.criado_por,
+          prioridade: c.prioridade as 'normal' | 'importante' | 'muito-importante'
         }));
-        setCompromissos(compromissosComPrioridade);
-        console.log('Compromissos carregados:', compromissosComPrioridade);
+
+        setCompromissos(compromissosFormatados);
       } catch (error) {
         console.error('Erro ao carregar compromissos:', error);
-        const compromissosIniciais = criarCompromissosIniciais();
-        setCompromissos(compromissosIniciais);
-        localStorage.setItem('agenda_compromissos', JSON.stringify(compromissosIniciais));
+        toast.error('Erro ao carregar compromissos');
       }
-    } else {
-      const compromissosIniciais = criarCompromissosIniciais();
-      setCompromissos(compromissosIniciais);
-      localStorage.setItem('agenda_compromissos', JSON.stringify(compromissosIniciais));
-    }
+    };
+
+    carregarCompromissos();
   }, []);
 
   // Função para criar compromissos iniciais
@@ -110,78 +124,115 @@ const Agenda = () => {
     ];
   };
 
-  // Salvar compromissos no localStorage sempre que mudar
-  useEffect(() => {
-    if (compromissos.length > 0) {
-      try {
-        localStorage.setItem('agenda_compromissos', JSON.stringify(compromissos));
-        console.log('Compromissos salvos:', compromissos);
-      } catch (error) {
-        console.error('Erro ao salvar compromissos:', error);
-      }
-    }
-  }, [compromissos]);
-
-  const handleCriarCompromisso = () => {
+  const handleCriarCompromisso = async () => {
     if (novoCompromisso.titulo && novoCompromisso.data && novoCompromisso.horario) {
-      const compromisso: Compromisso = {
-        id: Date.now().toString(),
-        ...novoCompromisso,
-        concluido: false,
-        criadoPor: usuarioAtual
-      };
-      
-      const novosCompromissos = [...compromissos, compromisso];
-      setCompromissos(novosCompromissos);
-      
       try {
-        localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
-        console.log('Novo compromisso salvo:', compromisso);
+        const { data, error } = await supabase
+          .from('compromissos')
+          .insert({
+            titulo: novoCompromisso.titulo,
+            descricao: novoCompromisso.descricao,
+            data: novoCompromisso.data,
+            horario: novoCompromisso.horario,
+            participantes: novoCompromisso.participantes,
+            tipo: novoCompromisso.tipo,
+            concluido: false,
+            criado_por: usuarioAtual,
+            prioridade: novoCompromisso.prioridade
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Erro ao criar compromisso:', error);
+          toast.error('Erro ao criar compromisso');
+          return;
+        }
+
+        const novoCompromissoFormatado: Compromisso = {
+          id: data.id,
+          titulo: data.titulo,
+          descricao: data.descricao || '',
+          data: data.data,
+          horario: data.horario,
+          participantes: data.participantes || [],
+          tipo: data.tipo as 'reuniao' | 'tarefa' | 'evento',
+          concluido: data.concluido,
+          criadoPor: data.criado_por,
+          prioridade: data.prioridade as 'normal' | 'importante' | 'muito-importante'
+        };
+
+        setCompromissos(prev => [...prev, novoCompromissoFormatado]);
+        
+        setNovoCompromisso({
+          titulo: '',
+          descricao: '',
+          data: '',
+          horario: '',
+          participantes: [],
+          tipo: 'reuniao',
+          prioridade: 'normal'
+        });
+        setShowNovoCompromisso(false);
+        toast.success('Compromisso criado com sucesso!');
       } catch (error) {
-        console.error('Erro ao salvar novo compromisso:', error);
+        console.error('Erro ao criar compromisso:', error);
+        toast.error('Erro ao criar compromisso');
       }
-      
-      setNovoCompromisso({
-        titulo: '',
-        descricao: '',
-        data: '',
-        horario: '',
-        participantes: [],
-        tipo: 'reuniao',
-        prioridade: 'normal'
-      });
-      setShowNovoCompromisso(false);
     }
   };
 
-  const toggleConcluido = (id: string) => {
-    const novosCompromissos = compromissos.map(c => 
-      c.id === id ? { ...c, concluido: !c.concluido } : c
-    );
-    setCompromissos(novosCompromissos);
-    
+  const toggleConcluido = async (id: string) => {
+    const compromisso = compromissos.find(c => c.id === id);
+    if (!compromisso) return;
+
     try {
-      localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
-      console.log('Status de compromisso atualizado:', id);
+      const { error } = await supabase
+        .from('compromissos')
+        .update({ concluido: !compromisso.concluido })
+        .eq('id', id);
+
+      if (error) {
+        console.error('Erro ao atualizar status:', error);
+        toast.error('Erro ao atualizar status do compromisso');
+        return;
+      }
+
+      setCompromissos(prev => 
+        prev.map(c => c.id === id ? { ...c, concluido: !c.concluido } : c)
+      );
+      
+      toast.success('Status atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
+      toast.error('Erro ao atualizar status do compromisso');
     }
   };
 
-  const deleteCompromisso = (id: string) => {
-    const novosCompromissos = compromissos.filter(c => c.id !== id);
-    setCompromissos(novosCompromissos);
-    
+  const deleteCompromisso = async (id: string) => {
     try {
-      localStorage.setItem('agenda_compromissos', JSON.stringify(novosCompromissos));
-      console.log('Compromisso excluído:', id);
+      const { error } = await supabase
+        .from('compromissos')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Erro ao excluir compromisso:', error);
+        toast.error('Erro ao excluir compromisso');
+        return;
+      }
+
+      setCompromissos(prev => prev.filter(c => c.id !== id));
+      
+      // Fechar o modal se estiver aberto
+      setShowDetalhesCompromisso(false);
+      setCompromissoSelecionado(null);
+      
+      toast.success('Compromisso excluído com sucesso!');
     } catch (error) {
       console.error('Erro ao excluir compromisso:', error);
+      toast.error('Erro ao excluir compromisso');
     }
-    
-    // Fechar o modal se estiver aberto
-    setShowDetalhesCompromisso(false);
-    setCompromissoSelecionado(null);
   };
 
   const handleSelectCompromisso = (compromisso: Compromisso) => {
