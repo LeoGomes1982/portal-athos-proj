@@ -253,33 +253,28 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
         </div>
 
         {/* QR Code */}
-        <div className="flex justify-center mb-8 animate-fade-in">
-          <Card className="modern-card">
-            <CardContent className="card-content text-center p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <QrCode size={24} className="text-primary" />
-                <h3 className="text-lg font-semibold">Portal de Vagas - QR Code</h3>
-              </div>
-              <div id="qr-code" className="mb-4 flex justify-center">
-                <canvas id="qr-canvas" className="border rounded-lg"></canvas>
-              </div>
-              <Button 
-                onClick={() => {
-                  const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
-                  if (canvas) {
-                    const link = document.createElement('a');
-                    link.download = 'portal-vagas-qr.png';
-                    link.href = canvas.toDataURL();
-                    link.click();
-                  }
-                }}
-                className="flex items-center gap-2"
-              >
-                <Download size={16} />
-                Baixar QR Code
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="flex justify-center mb-8 animate-slide-up">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={() => {
+              const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+              if (canvas) {
+                const link = document.createElement('a');
+                link.download = 'portal-vagas-qr.png';
+                link.href = canvas.toDataURL();
+                link.click();
+              }
+            }}
+          >
+            <QrCode size={20} />
+            QR Code do Formulário
+          </Button>
+        </div>
+
+        {/* QR Code Modal (hidden canvas for generation) */}
+        <div className="hidden">
+          <canvas id="qr-canvas" className="border rounded-lg"></canvas>
         </div>
 
         {/* Summary Cards */}

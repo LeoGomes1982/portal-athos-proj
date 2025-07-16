@@ -51,7 +51,7 @@ const subsections = [
   {
     id: "geladeira",
     title: "Geladeira",
-    description: "Arquivos do RH",
+    description: "Arquivos de candidatos",
     icon: Refrigerator,
     bgColor: "bg-teal-100",
     textColor: "text-teal-700"
