@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
+import { X, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Funcionario {
   id: number;
@@ -47,11 +48,15 @@ interface FormData {
   profissao: string;
   experienciaProfissional: string;
   pis: string;
+  valeTransporte: string;
+  valorValeTransporte: string;
+  quantidadeVales: string;
   
   // Informações Pessoais
   nome: string;
   cpf: string;
   rg: string;
+  orgaoEmissorRG: string;
   dataNascimento: string;
   estadoCivil: string;
   nacionalidade: string;
@@ -59,6 +64,10 @@ interface FormData {
   nomePai: string;
   nomeMae: string;
   nomeConjuge: string;
+  racaEtnia: string;
+  ctpsNumero: string;
+  ctpsSerie: string;
+  ctpsEstado: string;
   foto: File | null;
   
   // Informações de Contato
@@ -106,9 +115,13 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
     profissao: "",
     experienciaProfissional: "",
     pis: "",
+    valeTransporte: "",
+    valorValeTransporte: "",
+    quantidadeVales: "",
     nome: "",
     cpf: "",
     rg: "",
+    orgaoEmissorRG: "",
     dataNascimento: "",
     estadoCivil: "",
     nacionalidade: "Brasileiro",
@@ -116,6 +129,10 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
     nomePai: "",
     nomeMae: "",
     nomeConjuge: "",
+    racaEtnia: "",
+    ctpsNumero: "",
+    ctpsSerie: "",
+    ctpsEstado: "",
     foto: null,
     telefone: "",
     email: "",
@@ -395,6 +412,43 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
                   </Select>
                 </div>
                 <div className="md:col-span-2">
+                  <Label htmlFor="valeTransporte">Utiliza Vale Transporte?</Label>
+                  <Select value={formData.valeTransporte} onValueChange={(value) => handleInputChange("valeTransporte", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sim">Sim</SelectItem>
+                      <SelectItem value="nao">Não</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {formData.valeTransporte === "sim" && (
+                  <>
+                    <div>
+                      <Label htmlFor="valorValeTransporte">Valor de cada vale</Label>
+                      <Input
+                        id="valorValeTransporte"
+                        value={formData.valorValeTransporte}
+                        onChange={(e) => handleInputChange("valorValeTransporte", e.target.value)}
+                        placeholder="R$ 0,00"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="quantidadeVales">Quantos vales por dia</Label>
+                      <Input
+                        id="quantidadeVales"
+                        type="number"
+                        value={formData.quantidadeVales}
+                        onChange={(e) => handleInputChange("quantidadeVales", e.target.value)}
+                        placeholder="2"
+                      />
+                    </div>
+                  </>
+                )}
+                
+                <div className="md:col-span-2">
                   <Label htmlFor="experienciaProfissional">Experiência Profissional</Label>
                   <Textarea
                     id="experienciaProfissional"
@@ -440,6 +494,69 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
                       value={formData.rg}
                       onChange={(e) => handleInputChange("rg", e.target.value)}
                       placeholder="00.000.000-0"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="orgaoEmissorRG">Órgão Emissor RG</Label>
+                    <Input
+                      id="orgaoEmissorRG"
+                      value={formData.orgaoEmissorRG}
+                      onChange={(e) => handleInputChange("orgaoEmissorRG", e.target.value)}
+                      placeholder="SSP/SP"
+                    />
+                  </div>
+                  <div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center gap-2">
+                            <Label htmlFor="racaEtnia">Raça/Etnia</Label>
+                            <Info size={16} className="text-slate-400 hover:text-slate-600" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Registro obrigatório segundo portaria Ministério do Trabalho e Emprego</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Select value={formData.racaEtnia} onValueChange={(value) => handleInputChange("racaEtnia", value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="amarela">Amarela</SelectItem>
+                        <SelectItem value="branca">Branca</SelectItem>
+                        <SelectItem value="parda">Parda</SelectItem>
+                        <SelectItem value="indigena">Indígena</SelectItem>
+                        <SelectItem value="preta">Preta</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="ctpsNumero">CTPS - Número</Label>
+                    <Input
+                      id="ctpsNumero"
+                      value={formData.ctpsNumero}
+                      onChange={(e) => handleInputChange("ctpsNumero", e.target.value)}
+                      placeholder="0000000"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="ctpsSerie">CTPS - Série</Label>
+                    <Input
+                      id="ctpsSerie"
+                      value={formData.ctpsSerie}
+                      onChange={(e) => handleInputChange("ctpsSerie", e.target.value)}
+                      placeholder="000"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="ctpsEstado">CTPS - Estado</Label>
+                    <Input
+                      id="ctpsEstado"
+                      value={formData.ctpsEstado}
+                      onChange={(e) => handleInputChange("ctpsEstado", e.target.value)}
+                      placeholder="SP"
                     />
                   </div>
                   <div>
@@ -648,7 +765,19 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  👨‍👩‍👧‍👦 Dependentes
+                  <div className="flex items-center gap-2">
+                    <span>👨‍👩‍👧‍👦 Dependentes</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info size={16} className="text-slate-400 hover:text-slate-600" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Adicione o cônjuge e os dependentes MENORES de 14 anos</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Button onClick={addDependente} size="sm" className="bg-green-600 hover:bg-green-700">
                     + Adicionar Dependente
                   </Button>

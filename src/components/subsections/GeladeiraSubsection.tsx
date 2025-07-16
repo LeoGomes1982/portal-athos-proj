@@ -94,6 +94,7 @@ export function GeladeiraSubsection({ onBack }: GeladeiraSubsectionProps) {
             <Refrigerator size={32} className="text-white" />
           </div>
           <h1 className="page-title text-center">Geladeira</h1>
+          <p className="text-sm text-slate-600 text-center mb-2">Arquivos de candidatos</p>
           <p className="text-description text-center max-w-2xl mx-auto">
             Candidatos arquivados para futuras oportunidades
           </p>

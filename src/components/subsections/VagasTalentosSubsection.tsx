@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Briefcase, Users, Plus, MapPin, Clock, Calendar, Edit, Eye } from "lucide-react";
+import { ArrowLeft, Briefcase, Users, Plus, MapPin, Clock, Calendar, Edit, Eye, QrCode, Download } from "lucide-react";
+import QRCode from 'qrcode';
 import { NovaVagaModal } from "@/components/modals/NovaVagaModal";
 import { EditarVagaModal } from "@/components/modals/EditarVagaModal";
 import { CandidatosModal } from "@/components/modals/CandidatosModal";
@@ -50,6 +51,28 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
   
   const { vagas, loading: vagasLoading, criarVaga, atualizarVaga, excluirVaga } = useVagas();
   const { candidaturas, loading: candidaturasLoading, carregarCandidaturasPorVaga } = useCandidaturas();
+
+  // Gerar QR Code para o Portal de Vagas
+  useEffect(() => {
+    const generateQRCode = async () => {
+      const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+      if (canvas) {
+        const portalUrl = `${window.location.origin}/portal-vagas`;
+        await QRCode.toCanvas(canvas, portalUrl, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#3b82f6',
+            light: '#ffffff'
+          }
+        });
+      }
+    };
+
+    if (document.getElementById('qr-canvas')) {
+      generateQRCode();
+    }
+  }, []);
 
   // Cargar candidaturas quando as vagas mudarem
   useEffect(() => {
@@ -227,6 +250,36 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
           <p className="text-description text-center max-w-2xl mx-auto">
             Gestão completa de vagas e processos seletivos
           </p>
+        </div>
+
+        {/* QR Code */}
+        <div className="flex justify-center mb-8 animate-fade-in">
+          <Card className="modern-card">
+            <CardContent className="card-content text-center p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <QrCode size={24} className="text-primary" />
+                <h3 className="text-lg font-semibold">Portal de Vagas - QR Code</h3>
+              </div>
+              <div id="qr-code" className="mb-4 flex justify-center">
+                <canvas id="qr-canvas" className="border rounded-lg"></canvas>
+              </div>
+              <Button 
+                onClick={() => {
+                  const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+                  if (canvas) {
+                    const link = document.createElement('a');
+                    link.download = 'portal-vagas-qr.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Download size={16} />
+                Baixar QR Code
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Summary Cards */}
