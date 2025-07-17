@@ -240,7 +240,7 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
   };
 
   const handleSubmit = () => {
-    // Validação básica
+    // Validação básica - apenas campos essenciais
     if (!formData.nome || !formData.email) {
       toast({
         title: "Erro ❌",
