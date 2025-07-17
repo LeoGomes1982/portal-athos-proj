@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
@@ -36,10 +37,20 @@ interface Funcionario {
   status: "ativo" | "ferias" | "experiencia" | "aviso" | "inativo" | "destaque";
   cpf?: string;
   rg?: string;
+  orgaoEmissorRG?: string;
   endereco?: string;
   salario?: string;
   dataFimExperiencia?: string;
   dataFimAvisoPrevio?: string;
+  dataNascimento?: string;
+  estadoCivil?: string;
+  racaEtnia?: string;
+  ctpsNumero?: string;
+  ctpsSerie?: string;
+  ctpsEstado?: string;
+  valeTransporte?: string;
+  valorValeTransporte?: string;
+  quantidadeVales?: string;
 }
 
 interface FuncionarioDetalhesModalProps {
@@ -546,11 +557,60 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                         <label className="text-sm font-medium text-slate-600">Fim do Aviso Prévio</label>
                         <p className="text-md font-medium text-red-700">
                           {new Date(funcionario.dataFimAvisoPrevio).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                         </p>
+                       </div>
+                     )}
+                     
+                     <div>
+                       <label className="text-sm font-medium text-slate-600">Utiliza Vale Transporte?</label>
+                       {isEditing ? (
+                         <Select value={editedFuncionario.valeTransporte || ''} onValueChange={(value) => handleInputChange('valeTransporte', value)}>
+                           <SelectTrigger className="mt-1">
+                             <SelectValue placeholder="Selecione" />
+                           </SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="sim">Sim</SelectItem>
+                             <SelectItem value="nao">Não</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       ) : (
+                         <p className="text-md font-medium text-slate-700">{currentFuncionario.valeTransporte || '-'}</p>
+                       )}
+                     </div>
+                     
+                     {(editedFuncionario.valeTransporte === "sim" || currentFuncionario.valeTransporte === "sim") && (
+                       <>
+                         <div>
+                           <label className="text-sm font-medium text-slate-600">Valor de cada vale</label>
+                           {isEditing ? (
+                             <Input
+                               value={editedFuncionario.valorValeTransporte || ''}
+                               onChange={(e) => handleInputChange('valorValeTransporte', e.target.value)}
+                               placeholder="R$ 0,00"
+                               className="mt-1"
+                             />
+                           ) : (
+                             <p className="text-md font-medium text-slate-700">{currentFuncionario.valorValeTransporte || '-'}</p>
+                           )}
+                         </div>
+                         <div>
+                           <label className="text-sm font-medium text-slate-600">Quantos vales por dia</label>
+                           {isEditing ? (
+                             <Input
+                               type="number"
+                               value={editedFuncionario.quantidadeVales || ''}
+                               onChange={(e) => handleInputChange('quantidadeVales', e.target.value)}
+                               placeholder="2"
+                               className="mt-1"
+                             />
+                           ) : (
+                             <p className="text-md font-medium text-slate-700">{currentFuncionario.quantidadeVales || '-'}</p>
+                           )}
+                         </div>
+                       </>
+                     )}
+                   </div>
+                 </div>
               </CardContent>
             </Card>
 
@@ -574,47 +634,150 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                         <p className="text-lg font-bold text-slate-800">{currentFuncionario.nome}</p>
                       )}
                     </div>
-                    {currentFuncionario.cpf && (
-                      <div>
-                        <label className="text-sm font-medium text-slate-600">CPF</label>
-                        {isEditing ? (
-                          <Input
-                            value={editedFuncionario.cpf || ''}
-                            onChange={(e) => handleInputChange('cpf', e.target.value)}
-                            className="mt-1"
-                          />
-                        ) : (
-                          <p className="text-md font-medium text-slate-700">{currentFuncionario.cpf}</p>
-                        )}
-                      </div>
-                    )}
-                    {currentFuncionario.rg && (
-                      <div>
-                        <label className="text-sm font-medium text-slate-600">RG</label>
-                        {isEditing ? (
-                          <Input
-                            value={editedFuncionario.rg || ''}
-                            onChange={(e) => handleInputChange('rg', e.target.value)}
-                            className="mt-1"
-                          />
-                        ) : (
-                          <p className="text-md font-medium text-slate-700">{currentFuncionario.rg}</p>
-                        )}
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">CPF</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.cpf || ''}
+                          onChange={(e) => handleInputChange('cpf', e.target.value)}
+                          placeholder="000.000.000-00"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.cpf || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">RG</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.rg || ''}
+                          onChange={(e) => handleInputChange('rg', e.target.value)}
+                          placeholder="00.000.000-0"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.rg || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Órgão Emissor RG</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.orgaoEmissorRG || ''}
+                          onChange={(e) => handleInputChange('orgaoEmissorRG', e.target.value)}
+                          placeholder="SSP/SP"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.orgaoEmissorRG || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-2">
+                              <label className="text-sm font-medium text-slate-600">Raça/Etnia</label>
+                              <Info size={16} className="text-slate-400 hover:text-slate-600" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Registro obrigatório segundo portaria Ministério do Trabalho e Emprego</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      {isEditing ? (
+                        <Select value={editedFuncionario.racaEtnia || ''} onValueChange={(value) => handleInputChange('racaEtnia', value)}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="amarela">Amarela</SelectItem>
+                            <SelectItem value="branca">Branca</SelectItem>
+                            <SelectItem value="parda">Parda</SelectItem>
+                            <SelectItem value="indigena">Indígena</SelectItem>
+                            <SelectItem value="preta">Preta</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.racaEtnia || '-'}</p>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Estado Civil</label>
-                      <p className="text-md font-medium text-slate-700">-</p>
-                    </div>
-                    <div>
                       <label className="text-sm font-medium text-slate-600">Data de Nascimento</label>
-                      <p className="text-md font-medium text-slate-700">-</p>
+                      {isEditing ? (
+                        <Input
+                          type="date"
+                          value={editedFuncionario.dataNascimento || ''}
+                          onChange={(e) => handleInputChange('dataNascimento', e.target.value)}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">
+                          {currentFuncionario.dataNascimento ? new Date(currentFuncionario.dataNascimento).toLocaleDateString('pt-BR') : '-'}
+                        </p>
+                      )}
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Naturalidade</label>
-                      <p className="text-md font-medium text-slate-700">-</p>
+                      <label className="text-sm font-medium text-slate-600">Estado Civil</label>
+                      {isEditing ? (
+                        <Select value={editedFuncionario.estadoCivil || ''} onValueChange={(value) => handleInputChange('estadoCivil', value)}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="solteiro">Solteiro(a)</SelectItem>
+                            <SelectItem value="casado">Casado(a)</SelectItem>
+                            <SelectItem value="divorciado">Divorciado(a)</SelectItem>
+                            <SelectItem value="viuvo">Viúvo(a)</SelectItem>
+                            <SelectItem value="uniao-estavel">União Estável</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.estadoCivil || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">CTPS - Número</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.ctpsNumero || ''}
+                          onChange={(e) => handleInputChange('ctpsNumero', e.target.value)}
+                          placeholder="0000000"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.ctpsNumero || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">CTPS - Série</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.ctpsSerie || ''}
+                          onChange={(e) => handleInputChange('ctpsSerie', e.target.value)}
+                          placeholder="000"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.ctpsSerie || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">CTPS - Estado</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.ctpsEstado || ''}
+                          onChange={(e) => handleInputChange('ctpsEstado', e.target.value)}
+                          placeholder="SP"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.ctpsEstado || '-'}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -768,10 +931,22 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             <Card className="bg-white border-2 border-blue-200">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Dependentes
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Dependentes
+                    </h3>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info size={16} className="text-slate-400 hover:text-slate-600" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Adicione o cônjuge e os dependentes MENORES de 14 anos</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
