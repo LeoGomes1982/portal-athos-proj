@@ -1,7 +1,8 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowLeft, Briefcase, Users, Plus, MapPin, Clock, Calendar, Edit, Eye, QrCode, Download } from "lucide-react";
 import QRCode from 'qrcode';
 import { NovaVagaModal } from "@/components/modals/NovaVagaModal";
@@ -46,33 +47,38 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
   const [showNovaVagaModal, setShowNovaVagaModal] = useState(false);
   const [showEditarVagaModal, setShowEditarVagaModal] = useState(false);
   const [showCandidatosModal, setShowCandidatosModal] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
   const [vagaSelecionada, setVagaSelecionada] = useState<any>(null);
   const [candidatosPorVaga, setCandidatosPorVaga] = useState<{ [vagaId: string]: any[] }>({});
   
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { vagas, loading: vagasLoading, criarVaga, atualizarVaga, excluirVaga } = useVagas();
   const { candidaturas, loading: candidaturasLoading, carregarCandidaturasPorVaga } = useCandidaturas();
 
-  // Gerar QR Code para o Portal de Vagas
-  useEffect(() => {
-    const generateQRCode = async () => {
-      const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
-      if (canvas) {
-        const portalUrl = `${window.location.origin}/portal-vagas`;
-        await QRCode.toCanvas(canvas, portalUrl, {
-          width: 200,
-          margin: 2,
-          color: {
-            dark: '#3b82f6',
-            light: '#ffffff'
-          }
-        });
-      }
-    };
+  const portalUrl = `${window.location.origin}/portal-vagas`;
 
-    if (document.getElementById('qr-canvas')) {
-      generateQRCode();
+  // Gerar QR Code para o Portal de Vagas
+  const generateQRCode = async () => {
+    if (canvasRef.current) {
+      await QRCode.toCanvas(canvasRef.current, portalUrl, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#3b82f6',
+          light: '#ffffff'
+        }
+      });
     }
-  }, []);
+  };
+
+  const downloadQRCode = () => {
+    if (canvasRef.current) {
+      const link = document.createElement('a');
+      link.download = 'portal-vagas-qr.png';
+      link.href = canvasRef.current.toDataURL();
+      link.click();
+    }
+  };
 
   // Cargar candidaturas quando as vagas mudarem
   useEffect(() => {
@@ -254,27 +260,49 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
 
         {/* QR Code */}
         <div className="flex justify-center mb-8 animate-slide-up">
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={() => {
-              const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
-              if (canvas) {
-                const link = document.createElement('a');
-                link.download = 'portal-vagas-qr.png';
-                link.href = canvas.toDataURL();
-                link.click();
-              }
-            }}
-          >
-            <QrCode size={20} />
-            QR Code do Formulário
-          </Button>
-        </div>
-
-        {/* QR Code Modal (hidden canvas for generation) */}
-        <div className="hidden">
-          <canvas id="qr-canvas" className="border rounded-lg"></canvas>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setShowQRModal(true);
+                  setTimeout(generateQRCode, 100);
+                }}
+              >
+                <QrCode size={20} />
+                QR Code das Vagas
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>QR Code - Portal de Vagas</DialogTitle>
+                <DialogDescription>
+                  Compartilhe este QR Code para acesso direto ao portal de vagas
+                </DialogDescription>
+              </DialogHeader>
+              <div className="text-center space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Escaneie o código ou use o link para acesso direto
+                </p>
+                <div className="flex justify-center">
+                  <canvas ref={canvasRef} className="border rounded-lg" />
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={downloadQRCode}
+                    className="primary-btn flex items-center gap-2 flex-1"
+                  >
+                    <Download size={16} />
+                    Baixar QR Code
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  URL: {portalUrl}
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Summary Cards */}
