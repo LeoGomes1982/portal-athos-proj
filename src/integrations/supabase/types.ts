@@ -208,6 +208,132 @@ export type Database = {
         }
         Relationships: []
       }
+      funcionarios_sync: {
+        Row: {
+          bairro: string | null
+          cargo: string
+          cep: string | null
+          cidade: string | null
+          complemento: string | null
+          cpf: string | null
+          created_at: string | null
+          ctps_estado: string | null
+          ctps_numero: string | null
+          ctps_serie: string | null
+          data_admissao: string | null
+          data_fim_aviso_previo: string | null
+          data_fim_experiencia: string | null
+          data_nascimento: string | null
+          email: string | null
+          endereco: string | null
+          estado: string | null
+          estado_civil: string | null
+          foto: string | null
+          funcionario_id: number
+          id: number
+          nacionalidade: string | null
+          naturalidade: string | null
+          nome: string
+          nome_conjuge: string | null
+          nome_mae: string | null
+          nome_pai: string | null
+          numero: string | null
+          orgao_emissor_rg: string | null
+          quantidade_vales: string | null
+          raca_etnia: string | null
+          rg: string | null
+          salario: string | null
+          setor: string | null
+          status: string | null
+          telefone: string | null
+          updated_at: string | null
+          vale_transporte: string | null
+          valor_vale_transporte: string | null
+        }
+        Insert: {
+          bairro?: string | null
+          cargo: string
+          cep?: string | null
+          cidade?: string | null
+          complemento?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          ctps_estado?: string | null
+          ctps_numero?: string | null
+          ctps_serie?: string | null
+          data_admissao?: string | null
+          data_fim_aviso_previo?: string | null
+          data_fim_experiencia?: string | null
+          data_nascimento?: string | null
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          estado_civil?: string | null
+          foto?: string | null
+          funcionario_id: number
+          id?: number
+          nacionalidade?: string | null
+          naturalidade?: string | null
+          nome: string
+          nome_conjuge?: string | null
+          nome_mae?: string | null
+          nome_pai?: string | null
+          numero?: string | null
+          orgao_emissor_rg?: string | null
+          quantidade_vales?: string | null
+          raca_etnia?: string | null
+          rg?: string | null
+          salario?: string | null
+          setor?: string | null
+          status?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+          vale_transporte?: string | null
+          valor_vale_transporte?: string | null
+        }
+        Update: {
+          bairro?: string | null
+          cargo?: string
+          cep?: string | null
+          cidade?: string | null
+          complemento?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          ctps_estado?: string | null
+          ctps_numero?: string | null
+          ctps_serie?: string | null
+          data_admissao?: string | null
+          data_fim_aviso_previo?: string | null
+          data_fim_experiencia?: string | null
+          data_nascimento?: string | null
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          estado_civil?: string | null
+          foto?: string | null
+          funcionario_id?: number
+          id?: number
+          nacionalidade?: string | null
+          naturalidade?: string | null
+          nome?: string
+          nome_conjuge?: string | null
+          nome_mae?: string | null
+          nome_pai?: string | null
+          numero?: string | null
+          orgao_emissor_rg?: string | null
+          quantidade_vales?: string | null
+          raca_etnia?: string | null
+          rg?: string | null
+          salario?: string | null
+          setor?: string | null
+          status?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+          vale_transporte?: string | null
+          valor_vale_transporte?: string | null
+        }
+        Relationships: []
+      }
       vagas: {
         Row: {
           beneficios: string | null

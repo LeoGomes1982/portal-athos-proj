@@ -8,6 +8,7 @@ import { FuncionariosSummaryCards } from "@/components/funcionarios/Funcionarios
 import { Funcionario } from "@/types/funcionario";
 import { funcionariosIniciais } from "@/data/funcionarios";
 import { isProximoDoFim, dataJaPassou } from "@/utils/funcionarioUtils";
+import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
 
 interface FuncionariosSubsectionProps {
   onBack: () => void;
@@ -15,25 +16,17 @@ interface FuncionariosSubsectionProps {
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [funcionariosList, setFuncionariosList] = useState<Funcionario[]>([]);
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Carregar funcionários do localStorage ou usar dados iniciais
-  useEffect(() => {
-    const savedFuncionarios = localStorage.getItem('funcionarios_list');
-    if (savedFuncionarios) {
-      setFuncionariosList(JSON.parse(savedFuncionarios));
-    } else {
-      setFuncionariosList(funcionariosIniciais);
-      localStorage.setItem('funcionarios_list', JSON.stringify(funcionariosIniciais));
-    }
-  }, []);
+  
+  // Usar o hook de sincronização
+  const { funcionarios, setFuncionarios, updateFuncionario, isLoading } = useFuncionarioSync();
+  const funcionariosList = funcionarios;
 
   // Verificar automaticamente as datas e atualizar status
   useEffect(() => {
     const verificarDatas = () => {
-      setFuncionariosList(prev => {
+      setFuncionarios(prev => {
         const updated = prev.map(func => {
           let novoStatus = func.status;
 
@@ -52,11 +45,6 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           return { ...func, status: novoStatus };
         });
 
-        // Salvar automaticamente as mudanças no localStorage
-        if (JSON.stringify(updated) !== JSON.stringify(prev)) {
-          localStorage.setItem('funcionarios_list', JSON.stringify(updated));
-        }
-
         return updated;
       });
     };
@@ -64,7 +52,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     verificarDatas();
     const interval = setInterval(verificarDatas, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [setFuncionarios]);
 
   const filteredFuncionarios = funcionariosList.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -145,7 +133,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
-    setFuncionariosList(prev => {
+    setFuncionarios(prev => {
       const updated = prev.map(func => {
         if (func.id === funcionarioId) {
           const updatedFunc = { ...func, status: novoStatus };
@@ -170,22 +158,17 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         return func;
       });
 
-      // Salvar automaticamente no localStorage
-      localStorage.setItem('funcionarios_list', JSON.stringify(updated));
       return updated;
     });
   };
 
   const handleFuncionarioUpdate = (funcionarioAtualizado: Funcionario) => {
-    setFuncionariosList(prev => {
-      const updated = prev.map(func => 
+    updateFuncionario(funcionarioAtualizado);
+    setFuncionarios(prev => 
+      prev.map(func => 
         func.id === funcionarioAtualizado.id ? funcionarioAtualizado : func
-      );
-      
-      // Salvar automaticamente no localStorage
-      localStorage.setItem('funcionarios_list', JSON.stringify(updated));
-      return updated;
-    });
+      )
+    );
     setSelectedFuncionario(funcionarioAtualizado);
   };
 
@@ -233,22 +216,32 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 animate-slide-up">
-          {funcionariosOrdenados.map((funcionario) => (
-            <FuncionarioCard 
-              key={funcionario.id}
-              funcionario={funcionario}
-              onClick={handleFuncionarioClick}
-            />
-          ))}
-        </div>
-
-        {funcionariosOrdenados.length === 0 && (
+        {isLoading ? (
           <div className="text-center py-16 animate-fade-in">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
-            <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+            <div className="text-6xl mb-4">⏳</div>
+            <h3 className="text-xl font-bold text-gray-600 mb-2">Carregando funcionários...</h3>
+            <p className="text-gray-500">Sincronizando dados em tempo real</p>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-4 animate-slide-up">
+              {funcionariosOrdenados.map((funcionario) => (
+                <FuncionarioCard 
+                  key={funcionario.id}
+                  funcionario={funcionario}
+                  onClick={handleFuncionarioClick}
+                />
+              ))}
+            </div>
+
+            {funcionariosOrdenados.length === 0 && (
+              <div className="text-center py-16 animate-fade-in">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
+                <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+              </div>
+            )}
+          </>
         )}
 
         <div className="text-center mt-16 animate-fade-in">

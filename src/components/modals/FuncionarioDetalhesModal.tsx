@@ -39,11 +39,22 @@ interface Funcionario {
   rg?: string;
   orgaoEmissorRG?: string;
   endereco?: string;
+  cep?: string;
+  cidade?: string;
+  estado?: string;
+  bairro?: string;
+  numero?: string;
+  complemento?: string;
   salario?: string;
   dataFimExperiencia?: string;
   dataFimAvisoPrevio?: string;
   dataNascimento?: string;
   estadoCivil?: string;
+  nacionalidade?: string;
+  naturalidade?: string;
+  nomePai?: string;
+  nomeMae?: string;
+  nomeConjuge?: string;
   racaEtnia?: string;
   ctpsNumero?: string;
   ctpsSerie?: string;
@@ -834,7 +845,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     )}
                     <div>
                       <label className="text-sm font-medium text-slate-600">CEP</label>
-                      <p className="text-md font-medium text-slate-700">-</p>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.cep || ''}
+                          onChange={(e) => handleInputChange('cep', e.target.value)}
+                          placeholder="00000-000"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.cep || '-'}</p>
+                      )}
                     </div>
                   </div>
                 </div>
