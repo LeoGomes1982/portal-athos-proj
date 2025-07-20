@@ -37,7 +37,15 @@ const Manuais = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-slide-up">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📋</div>
+              <div className="text-2xl font-bold text-slate-600">20</div>
+              <div className="text-sm text-slate-600/80">Total Documentos</div>
+            </CardContent>
+          </Card>
+
           <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">📚</div>
@@ -69,7 +77,41 @@ const Manuais = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content p-4 min-h-96">
-              <ManuaisNormasSubsection />
+              {/* Lista de Manuais */}
+              <div className="space-y-3">
+                <Card className="modern-card">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-slate-800 mb-1">Manual de Conduta</h4>
+                    <p className="text-sm text-slate-600 mb-2">Regras de comportamento empresarial</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Atualizado em 15/01/2024</span>
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Ativo</span>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="modern-card">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-slate-800 mb-1">Manual de Segurança</h4>
+                    <p className="text-sm text-slate-600 mb-2">Procedimentos de segurança no trabalho</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Atualizado em 10/01/2024</span>
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Ativo</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="modern-card">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-slate-800 mb-1">Manual de Procedimentos</h4>
+                    <p className="text-sm text-slate-600 mb-2">Guia de processos internos</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Atualizado em 05/01/2024</span>
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Ativo</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </CardContent>
           </Card>
 
@@ -77,7 +119,7 @@ const Manuais = () => {
           <Card className="modern-card">
             <CardHeader className="card-header bg-green-50">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <ArrowLeft size={20} className="text-green-600" />
+                <Book size={20} className="text-green-600" />
                 Nossa Decisão
                 <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
                   8
@@ -85,7 +127,41 @@ const Manuais = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="card-content p-4 min-h-96">
-              <NossaDecisaoSubsection />
+              {/* Lista de Normas */}
+              <div className="space-y-3">
+                <Card className="modern-card">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-slate-800 mb-1">Política de Férias</h4>
+                    <p className="text-sm text-slate-600 mb-2">Regras para solicitação de férias</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Criado em 20/12/2023</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Vigente</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="modern-card">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-slate-800 mb-1">Código de Ética</h4>
+                    <p className="text-sm text-slate-600 mb-2">Princípios éticos da empresa</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Criado em 15/12/2023</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Vigente</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="modern-card">
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-slate-800 mb-1">Regulamento Interno</h4>
+                    <p className="text-sm text-slate-600 mb-2">Normas internas de funcionamento</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500">Criado em 10/12/2023</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Vigente</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </CardContent>
           </Card>
         </div>

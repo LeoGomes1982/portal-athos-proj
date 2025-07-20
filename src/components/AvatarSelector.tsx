@@ -65,6 +65,14 @@ const avatarOptions: AvatarOption[] = [
   // Sonolento - Feminino
   { emoji: "😪", name: "Sonolenta", category: "sonolento-feminino" },
   { emoji: "💤", name: "Dorminhoca", category: "sonolento-feminino" },
+  
+  // Musculação - Masculino
+  { emoji: "💪", name: "Forte", category: "musculacao-masculino" },
+  { emoji: "🏋️‍♂️", name: "Halterofilista", category: "musculacao-masculino" },
+  
+  // Musculação - Feminino
+  { emoji: "🏋️‍♀️", name: "Halterofilista", category: "musculacao-feminino" },
+  { emoji: "🤸‍♀️", name: "Atlética", category: "musculacao-feminino" },
 ];
 
 const categories = [
@@ -75,6 +83,7 @@ const categories = [
   { id: "meditativo", label: "Meditativo", masculine: "meditativo-masculino", feminine: "meditativo-feminino" },
   { id: "ansioso", label: "Ansioso", masculine: "ansioso-masculino", feminine: "ansioso-feminino" },
   { id: "sonolento", label: "Sonolento", masculine: "sonolento-masculino", feminine: "sonolento-feminino" },
+  { id: "musculacao", label: "Musculação", masculine: "musculacao-masculino", feminine: "musculacao-feminino" },
 ];
 
 interface AvatarSelectorProps {
