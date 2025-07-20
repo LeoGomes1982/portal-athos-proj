@@ -13,6 +13,7 @@ import HighPriorityTasks from "@/components/agenda/HighPriorityTasks";
 import AgendaSummaryModal from "@/components/agenda/AgendaSummaryModal";
 import NewAppointmentModal from "@/components/agenda/NewAppointmentModal";
 import AppointmentDetailsModal from "@/components/agenda/AppointmentDetailsModal";
+import EditAppointmentModal from "@/components/agenda/EditAppointmentModal";
 
 interface Compromisso {
   id: string;
@@ -33,6 +34,7 @@ const Agenda = () => {
   const [showResumoModal, setShowResumoModal] = useState(false);
   const [showNovoCompromisso, setShowNovoCompromisso] = useState(false);
   const [showDetalhesCompromisso, setShowDetalhesCompromisso] = useState(false);
+  const [showEditCompromisso, setShowEditCompromisso] = useState(false);
   const [compromissoSelecionado, setCompromissoSelecionado] = useState<Compromisso | null>(null);
   const [compromissos, setCompromissos] = useState<Compromisso[]>([]);
   
@@ -240,6 +242,44 @@ const Agenda = () => {
     setShowDetalhesCompromisso(true);
   };
 
+  const handleEditCompromisso = (compromisso: Compromisso) => {
+    setCompromissoSelecionado(compromisso);
+    setShowDetalhesCompromisso(false);
+    setShowEditCompromisso(true);
+  };
+
+  const handleUpdateCompromisso = async (updatedCompromisso: Compromisso) => {
+    try {
+      const { error } = await supabase
+        .from('compromissos')
+        .update({
+          titulo: updatedCompromisso.titulo,
+          descricao: updatedCompromisso.descricao,
+          data: updatedCompromisso.data,
+          horario: updatedCompromisso.horario,
+          participantes: updatedCompromisso.participantes,
+          tipo: updatedCompromisso.tipo,
+          prioridade: updatedCompromisso.prioridade
+        })
+        .eq('id', updatedCompromisso.id);
+
+      if (error) {
+        console.error('Erro ao atualizar compromisso:', error);
+        toast.error('Erro ao atualizar compromisso');
+        return;
+      }
+
+      setCompromissos(prev => 
+        prev.map(c => c.id === updatedCompromisso.id ? updatedCompromisso : c)
+      );
+      
+      toast.success('Compromisso atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar compromisso:', error);
+      toast.error('Erro ao atualizar compromisso');
+    }
+  };
+
   const compromissosMuitoImportantes = compromissos.filter(c => c.prioridade === 'muito-importante' && !c.concluido);
   const compromissosHoje = compromissos.filter(c => c.data === format(selectedDate || new Date(), 'yyyy-MM-dd'));
   const compromissosConcluidos = compromissos.filter(c => c.concluido).length;
@@ -398,6 +438,16 @@ const Agenda = () => {
           onToggleConcluido={toggleConcluido}
           onDeleteCompromisso={deleteCompromisso}
           setCompromisso={setCompromissoSelecionado}
+          onEditCompromisso={handleEditCompromisso}
+          currentUser={usuarioAtual}
+        />
+
+        <EditAppointmentModal
+          open={showEditCompromisso}
+          onOpenChange={setShowEditCompromisso}
+          compromisso={compromissoSelecionado}
+          onUpdateAppointment={handleUpdateCompromisso}
+          usuarios={usuarios}
         />
       </div>
     </div>

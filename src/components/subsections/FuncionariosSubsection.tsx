@@ -226,11 +226,16 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           <>
             <div className="grid grid-cols-1 gap-4 animate-slide-up">
               {funcionariosOrdenados.map((funcionario) => (
-                <FuncionarioCard 
-                  key={funcionario.id}
-                  funcionario={funcionario}
-                  onClick={handleFuncionarioClick}
-                />
+              <FuncionarioCard
+                key={funcionario.id}
+                funcionario={funcionario}
+                onClick={handleFuncionarioClick}
+                onUpdateAvatar={async (funcionarioId, newAvatar) => {
+                  const funcionarioAtualizado = { ...funcionario, foto: newAvatar };
+                  await updateFuncionario(funcionarioAtualizado);
+                  handleFuncionarioUpdate(funcionarioAtualizado);
+                }}
+              />
               ))}
             </div>
 

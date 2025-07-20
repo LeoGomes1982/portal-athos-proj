@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Circle, Star, Trash2 } from 'lucide-react';
+import { CheckCircle2, Circle, Star, Trash2, Edit } from 'lucide-react';
 import { format } from "date-fns";
 
 interface Compromisso {
@@ -26,6 +26,8 @@ interface AppointmentDetailsModalProps {
   onToggleConcluido: (id: string) => void;
   onDeleteCompromisso: (id: string) => void;
   setCompromisso: React.Dispatch<React.SetStateAction<Compromisso | null>>;
+  onEditCompromisso?: (compromisso: Compromisso) => void;
+  currentUser?: string;
 }
 
 const AppointmentDetailsModal = ({ 
@@ -34,7 +36,9 @@ const AppointmentDetailsModal = ({
   compromisso, 
   onToggleConcluido, 
   onDeleteCompromisso,
-  setCompromisso 
+  setCompromisso,
+  onEditCompromisso,
+  currentUser = 'leandrogomes@grupoathosbrasil.com'
 }: AppointmentDetailsModalProps) => {
   const getPriorityStars = (prioridade: string) => {
     const starCount = prioridade === 'muito-importante' ? 3 : prioridade === 'importante' ? 2 : 1;
@@ -128,7 +132,20 @@ const AppointmentDetailsModal = ({
               </div>
             </div>
 
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              {/* Só permite editar se for o criador do compromisso */}
+              {currentUser === compromisso.criadoPor && onEditCompromisso && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEditCompromisso(compromisso)}
+                  className="flex items-center gap-2"
+                >
+                  <Edit size={16} />
+                  Editar
+                </Button>
+              )}
+              
               <Button
                 variant="destructive"
                 size="sm"
@@ -136,7 +153,7 @@ const AppointmentDetailsModal = ({
                 className="flex items-center gap-2"
               >
                 <Trash2 size={16} />
-                Excluir Compromisso
+                Excluir
               </Button>
             </div>
           </div>

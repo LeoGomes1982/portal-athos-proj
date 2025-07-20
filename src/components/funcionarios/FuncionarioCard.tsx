@@ -4,13 +4,17 @@ import { Star, AlertTriangle, FileX, Hourglass } from "lucide-react";
 import { Funcionario } from "@/types/funcionario";
 import { statusConfig } from "@/config/funcionarioStatus";
 import { isProximoDoFim } from "@/utils/funcionarioUtils";
+import { AvatarSelector } from "@/components/AvatarSelector";
+import { useState } from "react";
 
 interface FuncionarioCardProps {
   funcionario: Funcionario;
   onClick: (funcionario: Funcionario) => void;
+  onUpdateAvatar?: (funcionarioId: number, newAvatar: string) => void;
 }
 
-export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) {
+export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: FuncionarioCardProps) {
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const statusInfo = statusConfig[funcionario.status];
   
   // Verificar se deve mostrar alerta de status
@@ -117,11 +121,18 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
                   </div>
                 </div>
               )}
-              <div className={`w-12 h-12 border-2 rounded-full flex items-center justify-center ${
-                temAlertaCritico ? 'bg-red-100 border-red-300' : 
-                funcionario.status === 'destaque' ? 'bg-yellow-100 border-yellow-300' : 
-                'bg-primary/10 border-primary/20'
-              }`}>
+              <div 
+                className={`w-12 h-12 border-2 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 transition-transform ${
+                  temAlertaCritico ? 'bg-red-100 border-red-300' : 
+                  funcionario.status === 'destaque' ? 'bg-yellow-100 border-yellow-300' : 
+                  'bg-primary/10 border-primary/20'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAvatarSelector(true);
+                }}
+                title="Clique para alterar o avatar"
+              >
                 <span className="text-2xl">{funcionario.foto}</span>
               </div>
             </div>
@@ -172,6 +183,17 @@ export function FuncionarioCard({ funcionario, onClick }: FuncionarioCardProps) 
           </div>
         </div>
       </CardContent>
+      
+      <AvatarSelector
+        open={showAvatarSelector}
+        onOpenChange={setShowAvatarSelector}
+        currentAvatar={funcionario.foto}
+        onSelectAvatar={(newAvatar) => {
+          if (onUpdateAvatar) {
+            onUpdateAvatar(funcionario.id, newAvatar);
+          }
+        }}
+      />
     </Card>
   );
 }
