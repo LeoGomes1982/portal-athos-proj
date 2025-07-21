@@ -161,6 +161,14 @@ export function useFuncionarioSync() {
           localStorage.setItem('funcionarios_list', JSON.stringify(updated));
           return updated;
         });
+      } else {
+        // Atualizar estado local imediatamente após sucesso
+        setFuncionarios(prev => {
+          const updated = prev.map(f => f.id === funcionario.id ? funcionario : f);
+          localStorage.setItem('funcionarios_list', JSON.stringify(updated));
+          return updated;
+        });
+        console.log('Funcionário atualizado com sucesso no Supabase');
       }
     } catch (error) {
       console.error('Erro ao conectar com Supabase:', error);
