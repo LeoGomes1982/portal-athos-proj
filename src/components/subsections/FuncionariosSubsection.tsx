@@ -163,6 +163,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   };
 
   const handleFuncionarioUpdate = (funcionarioAtualizado: Funcionario) => {
+    console.log('handleFuncionarioUpdate chamado:', funcionarioAtualizado.nome, funcionarioAtualizado.id);
+    console.log('updateFuncionario disponível?', !!updateFuncionario);
     updateFuncionario(funcionarioAtualizado);
     setSelectedFuncionario(funcionarioAtualizado);
   };

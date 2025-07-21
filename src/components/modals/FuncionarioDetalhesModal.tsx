@@ -253,7 +253,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   };
 
   const handleSalvarEdicao = () => {
+    console.log('handleSalvarEdicao chamado com:', editedFuncionario.nome, editedFuncionario.id);
+    console.log('onFuncionarioUpdate existe?', !!onFuncionarioUpdate);
     if (onFuncionarioUpdate) {
+      console.log('Chamando onFuncionarioUpdate...');
       onFuncionarioUpdate(editedFuncionario);
     }
     setIsEditing(false);
