@@ -144,17 +144,20 @@ export function useFuncionarioSync() {
   });
 
   const updateFuncionario = async (funcionario: Funcionario) => {
+    console.log('updateFuncionario chamado com:', funcionario.nome, funcionario.id);
     try {
       const dbData = formatToDatabase(funcionario);
+      console.log('Dados formatados para DB:', dbData);
       
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('funcionarios_sync')
         .upsert(dbData, { 
           onConflict: 'funcionario_id' 
-        });
+        })
+        .select();
 
       if (error) {
-        console.error('Erro ao atualizar funcionário:', error);
+        console.error('Erro ao atualizar funcionário no Supabase:', error);
         // Fallback para localStorage
         setFuncionarios(prev => {
           const updated = prev.map(f => f.id === funcionario.id ? funcionario : f);
@@ -162,13 +165,13 @@ export function useFuncionarioSync() {
           return updated;
         });
       } else {
+        console.log('Funcionário atualizado com sucesso no Supabase:', data);
         // Atualizar estado local imediatamente após sucesso
         setFuncionarios(prev => {
           const updated = prev.map(f => f.id === funcionario.id ? funcionario : f);
           localStorage.setItem('funcionarios_list', JSON.stringify(updated));
           return updated;
         });
-        console.log('Funcionário atualizado com sucesso no Supabase');
       }
     } catch (error) {
       console.error('Erro ao conectar com Supabase:', error);

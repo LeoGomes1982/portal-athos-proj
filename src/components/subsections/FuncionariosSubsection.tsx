@@ -164,11 +164,6 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
 
   const handleFuncionarioUpdate = (funcionarioAtualizado: Funcionario) => {
     updateFuncionario(funcionarioAtualizado);
-    setFuncionarios(prev => 
-      prev.map(func => 
-        func.id === funcionarioAtualizado.id ? funcionarioAtualizado : func
-      )
-    );
     setSelectedFuncionario(funcionarioAtualizado);
   };
 
