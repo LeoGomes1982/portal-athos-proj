@@ -188,7 +188,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-blue-50/30 rounded-lg shadow-lg m-6 p-8">
+      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
         <Button variant="ghost" className="mb-6" onClick={onBack}>
           <ArrowLeft size={16} />
           Voltar
