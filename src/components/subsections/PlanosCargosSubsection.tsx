@@ -138,35 +138,50 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
           </div>
         </div>
 
-        {/* Resumo */}
-        <div className="bg-white rounded-3xl shadow-lg border border-purple-300 p-6 mb-8">
-          <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
-            📊 Resumo dos Cargos
-          </h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-purple-300">
-              <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-purple-600 mb-1">{Object.keys(cargosAgrupados).length}</div>
-                <div className="text-sm font-medium text-slate-600">Funções Diferentes</div>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-green-300">
-              <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-green-600 mb-1">
-                  {cargos.filter(c => c.status === 'ativo').length}
-                </div>
-                <div className="text-sm font-medium text-slate-600">Cargos Ativos</div>
-              </CardContent>
-            </Card>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">💼</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {Object.keys(cargosAgrupados).length}
+              </div>
+              <div className="text-sm text-purple-600/80 mb-1">Funções Diferentes</div>
+              <div className="text-xs text-purple-500 font-medium">
+                Tipos de cargos únicos
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-md transition-all duration-300 min-w-[140px] border-blue-300">
-              <CardContent className="text-center p-4">
-                <div className="text-2xl font-bold text-blue-600 mb-1">{cargos.length}</div>
-                <div className="text-sm font-medium text-slate-600">Total de Níveis</div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">✅</div>
+              <div className="text-2xl font-bold text-green-600">
+                {cargos.filter(c => c.status === 'ativo').length}
+              </div>
+              <div className="text-sm text-green-600/80">Cargos Ativos</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📈</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {cargos.length}
+              </div>
+              <div className="text-sm text-blue-600/80">Total de Níveis</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">⏱️</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {Math.round(cargos.reduce((sum, cargo) => sum + cargo.carencia, 0) / cargos.length) || 0}
+              </div>
+              <div className="text-sm text-orange-600/80">Carência Média (meses)</div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Lista de Cargos Agrupados */}
