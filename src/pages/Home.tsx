@@ -137,7 +137,7 @@ const Home = () => {
       icon: UserPlus,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => navigate("/portal-admissao")
+      onClick: () => window.open("/portal-admissao", "_blank", "noopener,noreferrer")
     },
     {
       id: "portal-vagas",
@@ -146,7 +146,7 @@ const Home = () => {
       icon: Target,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => navigate("/portal-vagas")
+      onClick: () => window.open("/portal-vagas", "_blank", "noopener,noreferrer")
     },
     {
       id: "portal-midia",
