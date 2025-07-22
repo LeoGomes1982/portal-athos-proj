@@ -67,6 +67,51 @@ export type Database = {
           },
         ]
       }
+      cargos: {
+        Row: {
+          beneficios: string[]
+          carencia: number
+          created_at: string
+          habilidades_especificas: string[]
+          habilidades_esperadas: string[]
+          id: string
+          nivel: string
+          nome: string
+          responsabilidades: string[]
+          salario_base: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          beneficios?: string[]
+          carencia?: number
+          created_at?: string
+          habilidades_especificas?: string[]
+          habilidades_esperadas?: string[]
+          id?: string
+          nivel: string
+          nome: string
+          responsabilidades?: string[]
+          salario_base: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          beneficios?: string[]
+          carencia?: number
+          created_at?: string
+          habilidades_especificas?: string[]
+          habilidades_esperadas?: string[]
+          id?: string
+          nivel?: string
+          nome?: string
+          responsabilidades?: string[]
+          salario_base?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       compromissos: {
         Row: {
           concluido: boolean
