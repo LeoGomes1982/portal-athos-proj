@@ -163,7 +163,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     const statusLabel = selectedStatus === 'experiencia' ? 'período de experiência' : 'aviso prévio';
     toast({
       title: "Status Atualizado",
-      description: `${statusConfig[status].label} definido até ${new Date(dataFim).toLocaleDateString('pt-BR')}`,
+      description: `${statusConfig[status].label} definido até ${new Date(dataFim + 'T12:00:00').toLocaleDateString('pt-BR')}`,
     });
     
     setShowDateInput(false);
@@ -630,18 +630,18 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     {funcionario.dataFimExperiencia && statusAtual === 'experiencia' && (
                       <div>
                         <label className="text-sm font-medium text-slate-600">Fim do Período de Experiência</label>
-                        <p className="text-md font-medium text-orange-700">
-                          {new Date(funcionario.dataFimExperiencia).toLocaleDateString('pt-BR')}
-                        </p>
+                         <p className="text-md font-medium text-orange-700">
+                           {funcionario.dataFimExperiencia ? new Date(funcionario.dataFimExperiencia + 'T12:00:00').toLocaleDateString('pt-BR') : ''}
+                         </p>
                       </div>
                     )}
                     
                     {funcionario.dataFimAvisoPrevio && statusAtual === 'aviso' && (
                       <div>
                         <label className="text-sm font-medium text-slate-600">Fim do Aviso Prévio</label>
-                        <p className="text-md font-medium text-red-700">
-                          {new Date(funcionario.dataFimAvisoPrevio).toLocaleDateString('pt-BR')}
-                         </p>
+                         <p className="text-md font-medium text-red-700">
+                           {funcionario.dataFimAvisoPrevio ? new Date(funcionario.dataFimAvisoPrevio + 'T12:00:00').toLocaleDateString('pt-BR') : ''}
+                          </p>
                        </div>
                      )}
                      

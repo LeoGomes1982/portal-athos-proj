@@ -239,6 +239,8 @@ export type Database = {
           nome_pai: string | null
           numero: string | null
           orgao_emissor_rg: string | null
+          possui_auxilio_moradia: string | null
+          possui_vale_alimentacao: string | null
           quantidade_vales: string | null
           raca_etnia: string | null
           rg: string | null
@@ -248,6 +250,8 @@ export type Database = {
           telefone: string | null
           updated_at: string | null
           vale_transporte: string | null
+          valor_auxilio_moradia: string | null
+          valor_vale_alimentacao: string | null
           valor_vale_transporte: string | null
         }
         Insert: {
@@ -280,6 +284,8 @@ export type Database = {
           nome_pai?: string | null
           numero?: string | null
           orgao_emissor_rg?: string | null
+          possui_auxilio_moradia?: string | null
+          possui_vale_alimentacao?: string | null
           quantidade_vales?: string | null
           raca_etnia?: string | null
           rg?: string | null
@@ -289,6 +295,8 @@ export type Database = {
           telefone?: string | null
           updated_at?: string | null
           vale_transporte?: string | null
+          valor_auxilio_moradia?: string | null
+          valor_vale_alimentacao?: string | null
           valor_vale_transporte?: string | null
         }
         Update: {
@@ -321,6 +329,8 @@ export type Database = {
           nome_pai?: string | null
           numero?: string | null
           orgao_emissor_rg?: string | null
+          possui_auxilio_moradia?: string | null
+          possui_vale_alimentacao?: string | null
           quantidade_vales?: string | null
           raca_etnia?: string | null
           rg?: string | null
@@ -330,6 +340,8 @@ export type Database = {
           telefone?: string | null
           updated_at?: string | null
           vale_transporte?: string | null
+          valor_auxilio_moradia?: string | null
+          valor_vale_alimentacao?: string | null
           valor_vale_transporte?: string | null
         }
         Relationships: []

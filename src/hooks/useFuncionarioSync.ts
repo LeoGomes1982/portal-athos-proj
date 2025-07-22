@@ -101,7 +101,11 @@ export function useFuncionarioSync() {
     ctpsEstado: dbRecord.ctps_estado,
     valeTransporte: dbRecord.vale_transporte,
     valorValeTransporte: dbRecord.valor_vale_transporte,
-    quantidadeVales: dbRecord.quantidade_vales
+    quantidadeVales: dbRecord.quantidade_vales,
+    possuiValeAlimentacao: dbRecord.possui_vale_alimentacao,
+    valorValeAlimentacao: dbRecord.valor_vale_alimentacao,
+    possuiAuxilioMoradia: dbRecord.possui_auxilio_moradia,
+    valorAuxilioMoradia: dbRecord.valor_auxilio_moradia
   });
 
   const formatToDatabase = (funcionario: Funcionario) => ({
@@ -140,7 +144,11 @@ export function useFuncionarioSync() {
     ctps_estado: funcionario.ctpsEstado,
     vale_transporte: funcionario.valeTransporte,
     valor_vale_transporte: funcionario.valorValeTransporte,
-    quantidade_vales: funcionario.quantidadeVales
+    quantidade_vales: funcionario.quantidadeVales,
+    possui_vale_alimentacao: funcionario.possuiValeAlimentacao,
+    valor_vale_alimentacao: funcionario.valorValeAlimentacao,
+    possui_auxilio_moradia: funcionario.possuiAuxilioMoradia,
+    valor_auxilio_moradia: funcionario.valorAuxilioMoradia
   });
 
   const updateFuncionario = async (funcionario: Funcionario) => {
