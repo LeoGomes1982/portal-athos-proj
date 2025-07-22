@@ -21,23 +21,23 @@ export function FuncionariosSummaryCards({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8 animate-slide-up">
-      <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+      <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
         <CardContent className="card-content text-center p-4">
           <div className="text-3xl mb-2">👥</div>
-          <div className="text-2xl font-bold text-slate-600">
+          <div className="text-2xl font-bold text-green-600">
             {funcionariosAtivos}
           </div>
-          <div className="text-sm text-slate-600/80">Total Ativos</div>
+          <div className="text-sm text-green-600/80">Total Ativos</div>
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+      <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
         <CardContent className="card-content text-center p-4">
           <div className="text-3xl mb-2">🏖️</div>
-          <div className="text-2xl font-bold text-green-600">
+          <div className="text-2xl font-bold text-purple-600">
             {funcionariosFerias}
           </div>
-          <div className="text-sm text-green-600/80">Em Férias</div>
+          <div className="text-sm text-purple-600/80">Em Férias</div>
         </CardContent>
       </Card>
 
