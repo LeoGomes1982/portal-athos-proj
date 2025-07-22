@@ -35,4 +35,8 @@ export interface Funcionario {
   valeTransporte?: string;
   valorValeTransporte?: string;
   quantidadeVales?: string;
+  possuiValeAlimentacao?: string;
+  valorValeAlimentacao?: string;
+  possuiAuxilioMoradia?: string;
+  valorAuxilioMoradia?: string;
 }

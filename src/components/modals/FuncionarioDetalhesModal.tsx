@@ -62,6 +62,10 @@ interface Funcionario {
   valeTransporte?: string;
   valorValeTransporte?: string;
   quantidadeVales?: string;
+  possuiValeAlimentacao?: string;
+  valorValeAlimentacao?: string;
+  possuiAuxilioMoradia?: string;
+  valorAuxilioMoradia?: string;
 }
 
 interface FuncionarioDetalhesModalProps {
@@ -512,6 +516,72 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           />
                         ) : (
                           <p className="text-lg font-bold text-blue-700">{currentFuncionario.salario}</p>
+                        )}
+                      </div>
+                    )}
+                    
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Possui registro de vale alimentação Ticket?</label>
+                      {isEditing ? (
+                        <Select value={editedFuncionario.possuiValeAlimentacao || ''} onValueChange={(value) => handleInputChange('possuiValeAlimentacao', value)}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sim">Sim</SelectItem>
+                            <SelectItem value="nao">Não</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.possuiValeAlimentacao || '-'}</p>
+                      )}
+                    </div>
+                    
+                    {(editedFuncionario.possuiValeAlimentacao === "sim" || currentFuncionario.possuiValeAlimentacao === "sim") && (
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">Valor por dia</label>
+                        {isEditing ? (
+                          <Input
+                            value={editedFuncionario.valorValeAlimentacao || ''}
+                            onChange={(e) => handleInputChange('valorValeAlimentacao', e.target.value)}
+                            placeholder="R$ 0,00"
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="text-md font-medium text-slate-700">{currentFuncionario.valorValeAlimentacao || '-'}</p>
+                        )}
+                      </div>
+                    )}
+                    
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Possui Auxílio moradia?</label>
+                      {isEditing ? (
+                        <Select value={editedFuncionario.possuiAuxilioMoradia || ''} onValueChange={(value) => handleInputChange('possuiAuxilioMoradia', value)}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sim">Sim</SelectItem>
+                            <SelectItem value="nao">Não</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.possuiAuxilioMoradia || '-'}</p>
+                      )}
+                    </div>
+                    
+                    {(editedFuncionario.possuiAuxilioMoradia === "sim" || currentFuncionario.possuiAuxilioMoradia === "sim") && (
+                      <div>
+                        <label className="text-sm font-medium text-slate-600">Valor mensal</label>
+                        {isEditing ? (
+                          <Input
+                            value={editedFuncionario.valorAuxilioMoradia || ''}
+                            onChange={(e) => handleInputChange('valorAuxilioMoradia', e.target.value)}
+                            placeholder="R$ 0,00"
+                            className="mt-1"
+                          />
+                        ) : (
+                          <p className="text-md font-medium text-slate-700">{currentFuncionario.valorAuxilioMoradia || '-'}</p>
                         )}
                       </div>
                     )}

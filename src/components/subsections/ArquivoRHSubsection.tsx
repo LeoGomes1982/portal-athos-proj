@@ -83,17 +83,7 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
               <div className="text-2xl font-bold text-slate-600">
                 {funcionariosInativos.length}
               </div>
-              <div className="text-sm text-slate-600/80">Total Inativos</div>
-            </CardContent>
-          </Card>
-
-          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="card-content text-center p-4">
-              <div className="text-3xl mb-2">👥</div>
-              <div className="text-2xl font-bold text-blue-600">
-                {funcionarios.filter(f => f.status === 'ativo').length}
-              </div>
-              <div className="text-sm text-blue-600/80">Funcionários Ativos</div>
+              <div className="text-sm text-slate-600/80">Total de Inativos</div>
             </CardContent>
           </Card>
 
@@ -103,7 +93,17 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
               <div className="text-2xl font-bold text-orange-600">
                 {funcionarios.filter(f => f.status === 'experiencia').length}
               </div>
-              <div className="text-sm text-orange-600/80">Em Experiência</div>
+              <div className="text-sm text-orange-600/80">Final de contrato 1º período</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👥</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {funcionarios.filter(f => f.status === 'ativo').length}
+              </div>
+              <div className="text-sm text-blue-600/80">Final de contrato 2º período</div>
             </CardContent>
           </Card>
 
@@ -113,7 +113,7 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
               <div className="text-2xl font-bold text-purple-600">
                 {funcionarios.filter(f => f.status === 'aviso').length}
               </div>
-              <div className="text-sm text-purple-600/80">Aviso Prévio</div>
+              <div className="text-sm text-purple-600/80">Demissão normal após aviso prévio</div>
             </CardContent>
           </Card>
         </div>
