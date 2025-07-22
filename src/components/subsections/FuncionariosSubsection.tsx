@@ -132,40 +132,49 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     setIsModalOpen(true);
   };
 
-  const handleStatusChange = (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
-    setFuncionarios(prev => {
-      const updated = prev.map(func => {
-        if (func.id === funcionarioId) {
-          const updatedFunc = { ...func, status: novoStatus };
-          
-          if (novoStatus !== 'experiencia') {
-            delete updatedFunc.dataFimExperiencia;
-          }
-          if (novoStatus !== 'aviso') {
-            delete updatedFunc.dataFimAvisoPrevio;
-          }
-          
-          if (dataFim) {
-            if (novoStatus === 'experiencia') {
-              updatedFunc.dataFimExperiencia = dataFim;
-            } else if (novoStatus === 'aviso') {
-              updatedFunc.dataFimAvisoPrevio = dataFim;
-            }
-          }
-          
-          return updatedFunc;
-        }
-        return func;
-      });
+  const handleStatusChange = async (funcionarioId: number, novoStatus: Funcionario['status'], dataFim?: string) => {
+    const funcionarioToUpdate = funcionarios.find(f => f.id === funcionarioId);
+    if (!funcionarioToUpdate) return;
 
-      return updated;
-    });
+    const updatedFunc = { ...funcionarioToUpdate, status: novoStatus };
+    
+    if (novoStatus !== 'experiencia') {
+      delete updatedFunc.dataFimExperiencia;
+    }
+    if (novoStatus !== 'aviso') {
+      delete updatedFunc.dataFimAvisoPrevio;
+    }
+    
+    if (dataFim) {
+      if (novoStatus === 'experiencia') {
+        updatedFunc.dataFimExperiencia = dataFim;
+      } else if (novoStatus === 'aviso') {
+        updatedFunc.dataFimAvisoPrevio = dataFim;
+      }
+    }
+
+    // Atualizar no Supabase
+    await updateFuncionario(updatedFunc);
+    
+    // Atualizar estado local
+    setFuncionarios(prev => 
+      prev.map(func => func.id === funcionarioId ? updatedFunc : func)
+    );
   };
 
-  const handleFuncionarioUpdate = (funcionarioAtualizado: Funcionario) => {
+  const handleFuncionarioUpdate = async (funcionarioAtualizado: Funcionario) => {
     console.log('handleFuncionarioUpdate chamado:', funcionarioAtualizado.nome, funcionarioAtualizado.id);
     console.log('updateFuncionario disponível?', !!updateFuncionario);
-    updateFuncionario(funcionarioAtualizado);
+    
+    // Atualizar no Supabase primeiro
+    await updateFuncionario(funcionarioAtualizado);
+    
+    // Atualizar estado local
+    setFuncionarios(prev => 
+      prev.map(f => f.id === funcionarioAtualizado.id ? funcionarioAtualizado : f)
+    );
+    
+    // Atualizar funcionário selecionado
     setSelectedFuncionario(funcionarioAtualizado);
   };
 

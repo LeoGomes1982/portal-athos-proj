@@ -5,100 +5,41 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Archive, Settings, User, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { GerenciarArquivoModal } from "@/components/modals/GerenciarArquivoModal";
+import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
+import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
+import { Funcionario } from "@/types/funcionario";
 
 interface ArquivoRHSubsectionProps {
   onBack: () => void;
 }
 
-// Funcionários inativos mockados
-const funcionariosInativos = [
-  {
-    id: 1,
-    nome: "Pedro Almeida",
-    cargo: "Analista de Marketing",
-    dataAdmissao: "2022-03-15",
-    dataDemissao: "2024-05-20",
-    motivo: "Pedido de Demissão"
-  },
-  {
-    id: 2,
-    nome: "Luciana Costa",
-    cargo: "Assistente Administrativo",
-    dataAdmissao: "2021-08-10",
-    dataDemissao: "2024-04-15",
-    motivo: "Fim de Contrato"
-  },
-  {
-    id: 3,
-    nome: "Rafael Santos",
-    cargo: "Desenvolvedor Junior",
-    dataAdmissao: "2023-01-20",
-    dataDemissao: "2024-03-30",
-    motivo: "Demissão sem Justa Causa"
-  },
-  {
-    id: 4,
-    nome: "Carolina Silva",
-    cargo: "Gerente de Vendas",
-    dataAdmissao: "2020-05-05",
-    dataDemissao: "2024-02-28",
-    motivo: "Aposentadoria"
-  },
-  {
-    id: 5,
-    nome: "Thiago Oliveira",
-    cargo: "Técnico em TI",
-    dataAdmissao: "2022-11-12",
-    dataDemissao: "2024-01-15",
-    motivo: "Pedido de Demissão"
-  }
-];
 
-const getMotivoColor = (motivo: string) => {
-  switch (motivo) {
-    case 'Pedido de Demissão':
-      return 'bg-blue-100 text-blue-700';
-    case 'Fim de Contrato':
-      return 'bg-green-100 text-green-700';
-    case 'Demissão sem Justa Causa':
-      return 'bg-orange-100 text-orange-700';
-    case 'Aposentadoria':
-      return 'bg-purple-100 text-purple-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
-
-const getMotivoIcon = (motivo: string) => {
-  switch (motivo) {
-    case 'Pedido de Demissão':
-      return '✋';
-    case 'Fim de Contrato':
-      return '📅';
-    case 'Demissão sem Justa Causa':
-      return '⚠️';
-    case 'Aposentadoria':
-      return '🎖️';
-    default:
-      return '📝';
-  }
-};
 
 export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [showGerenciarModal, setShowGerenciarModal] = useState(false);
+  const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Usar o hook de sincronização para pegar funcionários inativos
+  const { funcionarios } = useFuncionarioSync();
+  
+  // Filtrar apenas funcionários inativos
+  const funcionariosInativos = funcionarios.filter(f => f.status === 'inativo');
 
   const filteredFuncionarios = funcionariosInativos.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
     funcionario.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    funcionario.motivo.toLowerCase().includes(searchTerm.toLowerCase())
+    funcionario.setor.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const calcularTempoEmpresa = (dataAdmissao: string, dataDemissao: string) => {
+  const calcularTempoEmpresa = (dataAdmissao: string) => {
+    if (!dataAdmissao) return 'Não informado';
+    
     const admissao = new Date(dataAdmissao);
-    const demissao = new Date(dataDemissao);
-    const diffTime = Math.abs(demissao.getTime() - admissao.getTime());
+    const hoje = new Date();
+    const diffTime = Math.abs(hoje.getTime() - admissao.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const anos = Math.floor(diffDays / 365);
     const meses = Math.floor((diffDays % 365) / 30);
@@ -107,6 +48,11 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
       return `${anos} ano${anos > 1 ? 's' : ''} e ${meses} mês${meses > 1 ? 'es' : ''}`;
     }
     return `${meses} mês${meses > 1 ? 'es' : ''}`;
+  };
+
+  const handleFuncionarioClick = (funcionario: Funcionario) => {
+    setSelectedFuncionario(funcionario);
+    setIsModalOpen(true);
   };
 
   return (
@@ -143,31 +89,31 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
 
           <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="card-content text-center p-4">
-              <div className="text-3xl mb-2">✋</div>
+              <div className="text-3xl mb-2">👥</div>
               <div className="text-2xl font-bold text-blue-600">
-                {funcionariosInativos.filter(f => f.motivo === 'Pedido de Demissão').length}
+                {funcionarios.filter(f => f.status === 'ativo').length}
               </div>
-              <div className="text-sm text-blue-600/80">Pedido Demissão</div>
+              <div className="text-sm text-blue-600/80">Funcionários Ativos</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
             <CardContent className="card-content text-center p-4">
-              <div className="text-3xl mb-2">⚠️</div>
+              <div className="text-3xl mb-2">⏳</div>
               <div className="text-2xl font-bold text-orange-600">
-                {funcionariosInativos.filter(f => f.motivo === 'Demissão sem Justa Causa').length}
+                {funcionarios.filter(f => f.status === 'experiencia').length}
               </div>
-              <div className="text-sm text-orange-600/80">Sem Justa Causa</div>
+              <div className="text-sm text-orange-600/80">Em Experiência</div>
             </CardContent>
           </Card>
 
           <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <CardContent className="card-content text-center p-4">
-              <div className="text-3xl mb-2">🎖️</div>
+              <div className="text-3xl mb-2">⚠️</div>
               <div className="text-2xl font-bold text-purple-600">
-                {funcionariosInativos.filter(f => f.motivo === 'Aposentadoria').length}
+                {funcionarios.filter(f => f.status === 'aviso').length}
               </div>
-              <div className="text-sm text-purple-600/80">Aposentadorias</div>
+              <div className="text-sm text-purple-600/80">Aviso Prévio</div>
             </CardContent>
           </Card>
         </div>
@@ -196,19 +142,31 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
 
         {/* Employee List */}
         <div className="grid grid-cols-1 gap-4 animate-slide-up">
-          {filteredFuncionarios.map((funcionario, index) => (
-            <Card key={funcionario.id} className="modern-card">
+          {filteredFuncionarios.map((funcionario) => (
+            <Card 
+              key={funcionario.id} 
+              className="modern-card cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => handleFuncionarioClick(funcionario)}
+            >
               <CardContent className="card-content p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center text-slate-600">
-                      <User size={20} />
+                    <div className="w-12 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center text-slate-600 overflow-hidden">
+                      {funcionario.foto ? (
+                        <img 
+                          src={funcionario.foto} 
+                          alt={funcionario.nome}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User size={20} />
+                      )}
                     </div>
                     <div>
                       <div className="font-semibold text-slate-800">{funcionario.nome}</div>
                       <div className="text-sm text-slate-600">{funcionario.cargo}</div>
                       <div className="text-xs text-slate-500">
-                        Tempo na empresa: {calcularTempoEmpresa(funcionario.dataAdmissao, funcionario.dataDemissao)}
+                        Tempo na empresa: {calcularTempoEmpresa(funcionario.dataAdmissao)}
                       </div>
                     </div>
                   </div>
@@ -216,14 +174,14 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
                   <div className="text-right flex items-center gap-3">
                     <div>
                       <div className="text-sm font-medium text-slate-700">
-                        {new Date(funcionario.dataDemissao).toLocaleDateString('pt-BR')}
+                        {funcionario.dataAdmissao ? new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR') : 'N/A'}
                       </div>
-                      <div className="text-xs text-slate-500">Data de Saída</div>
+                      <div className="text-xs text-slate-500">Data de Admissão</div>
                     </div>
                     
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getMotivoColor(funcionario.motivo)}`}>
-                      <span>{getMotivoIcon(funcionario.motivo)}</span>
-                      <span className="hidden sm:inline">{funcionario.motivo}</span>
+                    <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 bg-red-100 text-red-700">
+                      <span>📋</span>
+                      <span className="hidden sm:inline">Inativo</span>
                     </div>
                   </div>
                 </div>
@@ -253,6 +211,17 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
         isOpen={showGerenciarModal}
         onClose={() => setShowGerenciarModal(false)}
       />
+      
+      {/* Modal de Detalhes do Funcionário - somente leitura para inativos */}
+      {selectedFuncionario && (
+        <FuncionarioDetalhesModal
+          funcionario={selectedFuncionario}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onStatusChange={() => {}} // Não permite mudança de status para inativos
+          onFuncionarioUpdate={() => {}} // Não permite edição para inativos
+        />
+      )}
     </div>
   );
 }
