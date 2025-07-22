@@ -31,13 +31,13 @@ export function FuncionariosSummaryCards({
         </CardContent>
       </Card>
 
-      <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+      <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
         <CardContent className="card-content text-center p-4">
           <div className="text-3xl mb-2">🏖️</div>
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-2xl font-bold text-green-600">
             {funcionariosFerias}
           </div>
-          <div className="text-sm text-blue-600/80">Em Férias</div>
+          <div className="text-sm text-green-600/80">Em Férias</div>
         </CardContent>
       </Card>
 
