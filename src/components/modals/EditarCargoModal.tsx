@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
 
 interface Cargo {
-  id: number;
+  id: string;
   nome: string;
   nivel: "I" | "II" | "III";
   salarioBase: string;
@@ -26,7 +26,7 @@ interface EditarCargoModalProps {
   isOpen: boolean;
   onClose: () => void;
   cargo: Cargo;
-  onSave: (cargo: Cargo) => void;
+  onSave: (cargo: Cargo) => Promise<boolean>;
 }
 
 export function EditarCargoModal({ isOpen, onClose, cargo, onSave }: EditarCargoModalProps) {
@@ -63,11 +63,11 @@ export function EditarCargoModal({ isOpen, onClose, cargo, onSave }: EditarCargo
     }
   }, [cargo]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nome || !formData.nivel || !formData.salarioBase) return;
 
-    onSave({
+    const sucesso = await onSave({
       ...cargo,
       nome: formData.nome,
       nivel: formData.nivel,
@@ -80,7 +80,9 @@ export function EditarCargoModal({ isOpen, onClose, cargo, onSave }: EditarCargo
       status: formData.status
     });
 
-    onClose();
+    if (sucesso) {
+      onClose();
+    }
   };
 
   const adicionarItem = (

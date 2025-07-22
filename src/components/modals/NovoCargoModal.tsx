@@ -22,7 +22,7 @@ interface NovoCargoModalProps {
     responsabilidades: string[];
     carencia: number;
     status: "ativo" | "inativo";
-  }) => void;
+  }) => Promise<boolean>;
 }
 
 export function NovoCargoModal({ isOpen, onClose, onSave }: NovoCargoModalProps) {
@@ -43,11 +43,11 @@ export function NovoCargoModal({ isOpen, onClose, onSave }: NovoCargoModalProps)
   const [responsabilidades, setResponsabilidades] = useState<string[]>([]);
   const [novaResponsabilidade, setNovaResponsabilidade] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nome || !formData.nivel || !formData.salarioBase) return;
 
-    onSave({
+    const sucesso = await onSave({
       nome: formData.nome,
       nivel: formData.nivel,
       salarioBase: formData.salarioBase,
@@ -59,19 +59,21 @@ export function NovoCargoModal({ isOpen, onClose, onSave }: NovoCargoModalProps)
       status: formData.status
     });
 
-    // Reset form
-    setFormData({
-      nome: "",
-      nivel: "" as "I" | "II" | "III" | "",
-      salarioBase: "",
-      carencia: 0,
-      status: "ativo"
-    });
-    setBeneficios([]);
-    setHabilidadesEspecificas([]);
-    setHabilidadesEsperadas([]);
-    setResponsabilidades([]);
-    onClose();
+    if (sucesso) {
+      // Reset form
+      setFormData({
+        nome: "",
+        nivel: "" as "I" | "II" | "III" | "",
+        salarioBase: "",
+        carencia: 0,
+        status: "ativo"
+      });
+      setBeneficios([]);
+      setHabilidadesEspecificas([]);
+      setHabilidadesEsperadas([]);
+      setResponsabilidades([]);
+      onClose();
+    }
   };
 
   const adicionarItem = (

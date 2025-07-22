@@ -60,18 +60,11 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
   };
 
   const handleSalvarCargo = async (cargo: Omit<Cargo, 'id' | 'criadoEm'>) => {
-    const sucesso = await adicionarCargo(cargo);
-    if (sucesso) {
-      setIsNovoCargoModalOpen(false);
-    }
+    return await adicionarCargo(cargo);
   };
 
   const handleAtualizarCargo = async (cargoAtualizado: Cargo) => {
-    const sucesso = await atualizarCargo(cargoAtualizado);
-    if (sucesso) {
-      setIsEditarCargoModalOpen(false);
-      setCargoSelecionado(null);
-    }
+    return await atualizarCargo(cargoAtualizado);
   };
 
   const getNivelColor = (nivel: string) => {
@@ -260,18 +253,18 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
                   </div>
                   </div>
                 ))}
-              </div>
 
-              {Object.keys(cargosAgrupados).length === 0 && (
-                <div className="text-center py-16 bg-gradient-to-br from-purple-100 to-white rounded-3xl shadow-lg border border-purple-300">
-                  <div className="w-24 h-24 bg-purple-200 border-2 border-purple-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <Briefcase className="text-purple-500 w-12 h-12" />
+                {Object.keys(cargosAgrupados).length === 0 && (
+                  <div className="text-center py-16 bg-gradient-to-br from-purple-100 to-white rounded-3xl shadow-lg border border-purple-300">
+                    <div className="w-24 h-24 bg-purple-200 border-2 border-purple-300 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <Briefcase className="text-purple-500 w-12 h-12" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum cargo encontrado</h3>
+                    <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca ou crie um novo cargo</p>
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-600 mb-3">Nenhum cargo encontrado</h3>
-                  <p className="text-slate-500 font-medium">Tente ajustar os filtros de busca ou crie um novo cargo</p>
-                </div>
+                )}
+               </div>
               )}
-            )}
           </CardContent>
         </Card>
       </div>

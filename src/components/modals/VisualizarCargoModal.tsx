@@ -8,7 +8,7 @@ import { Edit, Calendar, DollarSign, Clock, Award, Target, Brain, CheckCircle, F
 import { useState } from "react";
 
 interface Cargo {
-  id: number;
+  id: string;
   nome: string;
   nivel: "I" | "II" | "III";
   salarioBase: string;
