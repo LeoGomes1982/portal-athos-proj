@@ -100,14 +100,14 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">💼</div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-blue-600">
                 {Object.keys(cargosAgrupados).length}
               </div>
-              <div className="text-sm text-purple-600/80 mb-1">Funções Diferentes</div>
-              <div className="text-xs text-purple-500 font-medium">
+              <div className="text-sm text-blue-600/80 mb-1">Funções Diferentes</div>
+              <div className="text-xs text-blue-500 font-medium">
                 Tipos de cargos únicos
               </div>
             </CardContent>
