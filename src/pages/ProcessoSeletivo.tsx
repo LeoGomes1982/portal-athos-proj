@@ -132,33 +132,33 @@ export default function ProcessoSeletivo() {
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">💼</div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-slate-600">
                 {candidatosEntrevista.length}
               </div>
-              <div className="text-sm text-blue-600/80">Entrevista</div>
+              <div className="text-sm text-slate-600/80">Entrevista</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">🎓</div>
-              <div className="text-2xl font-bold text-yellow-600">
+              <div className="text-2xl font-bold text-slate-600">
                 {candidatosTreinamento.length}
               </div>
-              <div className="text-sm text-yellow-600/80">Treinamento</div>
+              <div className="text-sm text-slate-600/80">Treinamento</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">🏢</div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-slate-600">
                 {candidatosAdmissao.length}
               </div>
-              <div className="text-sm text-green-600/80">Admissão</div>
+              <div className="text-sm text-slate-600/80">Admissão</div>
             </CardContent>
           </Card>
         </div>
