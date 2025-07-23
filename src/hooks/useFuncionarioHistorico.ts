@@ -11,6 +11,10 @@ export interface HistoricoRegistro {
   usuario: string;
   created_at: string;
   updated_at: string;
+  arquivo_nome?: string;
+  arquivo_url?: string;
+  arquivo_tipo?: string;
+  arquivo_tamanho?: number;
 }
 
 export const useFuncionarioHistorico = (funcionarioId: number | string) => {
@@ -49,9 +53,37 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
     titulo: string, 
     descricao: string, 
     tipo: 'positivo' | 'neutro' | 'negativo' = 'neutro',
-    usuario: string = 'Sistema'
+    usuario: string = 'Sistema',
+    arquivo?: File
   ) => {
     try {
+      let arquivoData = {};
+      
+      // Se há arquivo, fazer upload primeiro
+      if (arquivo) {
+        const fileName = `${Date.now()}_${arquivo.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('historico-arquivos')
+          .upload(fileName, arquivo);
+
+        if (uploadError) {
+          console.error('Erro no upload:', uploadError);
+          throw uploadError;
+        }
+
+        // Obter URL pública do arquivo
+        const { data: { publicUrl } } = supabase.storage
+          .from('historico-arquivos')
+          .getPublicUrl(fileName);
+
+        arquivoData = {
+          arquivo_nome: arquivo.name,
+          arquivo_url: publicUrl,
+          arquivo_tipo: arquivo.type,
+          arquivo_tamanho: arquivo.size
+        };
+      }
+
       const { data, error } = await supabase
         .from('funcionario_historico')
         .insert({
@@ -59,7 +91,8 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
           titulo,
           descricao,
           tipo,
-          usuario
+          usuario,
+          ...arquivoData
         })
         .select()
         .single();

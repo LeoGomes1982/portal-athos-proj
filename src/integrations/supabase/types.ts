@@ -210,6 +210,10 @@ export type Database = {
       }
       funcionario_historico: {
         Row: {
+          arquivo_nome: string | null
+          arquivo_tamanho: number | null
+          arquivo_tipo: string | null
+          arquivo_url: string | null
           created_at: string
           descricao: string
           funcionario_id: number
@@ -220,6 +224,10 @@ export type Database = {
           usuario: string
         }
         Insert: {
+          arquivo_nome?: string | null
+          arquivo_tamanho?: number | null
+          arquivo_tipo?: string | null
+          arquivo_url?: string | null
           created_at?: string
           descricao: string
           funcionario_id: number
@@ -230,6 +238,10 @@ export type Database = {
           usuario?: string
         }
         Update: {
+          arquivo_nome?: string | null
+          arquivo_tamanho?: number | null
+          arquivo_tipo?: string | null
+          arquivo_url?: string | null
           created_at?: string
           descricao?: string
           funcionario_id?: number

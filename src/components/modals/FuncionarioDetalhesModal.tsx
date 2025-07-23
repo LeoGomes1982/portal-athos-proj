@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
+import { HistoricoDocumentViewModal } from "./HistoricoDocumentViewModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { format } from "date-fns";
@@ -152,6 +153,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   // Estados para modais de dependentes e documentos
   const [showDependenteModal, setShowDependenteModal] = useState(false);
   const [showDocumentoModal, setShowDocumentoModal] = useState(false);
+  const [showDocumentViewModal, setShowDocumentViewModal] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<any>(null);
   
   // Estados para uniformes e EPIs
   const [uniformes, setUniformes] = useState<any[]>([]);
@@ -1439,9 +1442,29 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                                   {new Date(registro.created_at).toLocaleString('pt-BR')}
                                 </span>
                               </div>
+                              <h4 className="font-medium text-gray-800 mb-1">{registro.titulo}</h4>
                               <p className="text-sm text-gray-700 mb-2">{registro.descricao}</p>
                               <div className="flex items-center justify-between">
                                 <p className="text-xs text-gray-500">Por: {registro.usuario}</p>
+                                {registro.arquivo_nome && (
+                                  <div className="flex items-center gap-2">
+                                    <div 
+                                      className="w-6 h-6 bg-blue-100 border border-blue-300 rounded flex items-center justify-center cursor-pointer hover:bg-blue-200 transition-colors"
+                                      onClick={() => {
+                                        setSelectedDocument({
+                                          nome: registro.arquivo_nome!,
+                                          url: registro.arquivo_url!,
+                                          tipo: registro.arquivo_tipo!,
+                                          tamanho: registro.arquivo_tamanho!
+                                        });
+                                        setShowDocumentViewModal(true);
+                                      }}
+                                      title={`${registro.arquivo_nome} (${((registro.arquivo_tamanho || 0) / 1024).toFixed(1)} KB)`}
+                                    >
+                                      <FileText size={12} className="text-blue-600" />
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1484,6 +1507,17 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         onSave={adicionarDocumento}
         funcionarioId={funcionario.id}
       />
+
+      {selectedDocument && (
+        <HistoricoDocumentViewModal
+          isOpen={showDocumentViewModal}
+          onClose={() => {
+            setShowDocumentViewModal(false);
+            setSelectedDocument(null);
+          }}
+          arquivo={selectedDocument}
+        />
+      )}
     </>
   );
 }
