@@ -418,33 +418,35 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 ? 'bg-red-50 border-red-300 animate-pulse' 
                 : 'bg-white border-blue-200'
           }`}>
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${temDocumentosVencendo ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
                   <User size={24} className={temDocumentosVencendo ? 'text-red-600' : 'text-blue-600'} />
                 </div>
                 <div>
-                  <h2 className={`text-3xl font-bold flex items-center gap-2 ${
-                    funcionario.status === 'destaque' 
-                      ? 'text-yellow-700' 
-                      : temDocumentosVencendo 
-                        ? 'text-red-700 animate-pulse' 
-                        : 'text-slate-800'
-                  }`}>
-                    {currentFuncionario.nome}
-                    {funcionario.status === 'destaque' && (
-                      <div className="relative">
-                        <Star className="w-8 h-8 text-yellow-500 fill-yellow-400 drop-shadow-lg animate-pulse" style={{
-                          filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
-                        }} />
-                      </div>
-                    )}
-                    {temDocumentosVencendo && (
-                      <div className="relative">
-                        <AlertTriangle className="w-8 h-8 text-red-500 fill-red-400 drop-shadow-lg animate-pulse" />
-                      </div>
-                    )}
-                  </h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className={`text-3xl font-bold flex items-center gap-2 ${
+                      funcionario.status === 'destaque' 
+                        ? 'text-yellow-700' 
+                        : temDocumentosVencendo 
+                          ? 'text-red-700 animate-pulse' 
+                          : 'text-slate-800'
+                    }`}>
+                      {currentFuncionario.nome}
+                      {funcionario.status === 'destaque' && (
+                        <div className="relative">
+                          <Star className="w-8 h-8 text-yellow-500 fill-yellow-400 drop-shadow-lg animate-pulse" style={{
+                            filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)) brightness(1.3) saturate(1.2)'
+                          }} />
+                        </div>
+                      )}
+                      {temDocumentosVencendo && (
+                        <div className="relative">
+                          <AlertTriangle className="w-8 h-8 text-red-500 fill-red-400 drop-shadow-lg animate-pulse" />
+                        </div>
+                      )}
+                    </h2>
+                  </div>
                   
                   {/* Status Atual movido para abaixo do nome */}
                   <div className="mt-2">
@@ -480,7 +482,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              
+              <div className="flex items-start gap-2 mt-1">
                 {isEditing ? (
                   <>
                     <Button
