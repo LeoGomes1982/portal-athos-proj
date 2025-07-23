@@ -22,12 +22,17 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
     const historicoKey = `historico_funcionario_${funcionario.id}`;
     const savedHistorico = localStorage.getItem(historicoKey);
     
+    console.log('Calculando pontos para funcionário:', funcionario.nome, 'ID:', funcionario.id);
+    console.log('Histórico encontrado:', savedHistorico);
+    
     let pontos = 0;
     let registrosNeutros = 0;
 
     if (savedHistorico) {
       try {
         const historico = JSON.parse(savedHistorico);
+        console.log('Histórico parseado:', historico);
+        
         historico.forEach((registro: any) => {
           switch (registro.classificacao) {
             case "positiva":
@@ -49,6 +54,7 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
     // A cada 2 registros neutros, adiciona 1 ponto
     pontos += Math.floor(registrosNeutros / 2);
 
+    console.log('Pontos calculados:', pontos, 'para', funcionario.nome);
     return pontos;
   };
   
