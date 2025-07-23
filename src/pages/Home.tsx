@@ -26,6 +26,7 @@ import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
+import { useOptimizedFuncionarioSync } from "@/hooks/useOptimizedFuncionarioSync";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Home = () => {
   const navigate = useNavigate();
   const { logout, userEmail } = useAuth();
+  const { funcionarios } = useOptimizedFuncionarioSync();
   const { toast } = useToast();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();

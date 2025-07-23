@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, LogIn, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
+import { useOptimizedFuncionarioSync } from "@/hooks/useOptimizedFuncionarioSync";
+import { useOptimizedClientes } from "@/hooks/useOptimizedClientes";
 
 const LoginHome = () => {
   const [email, setEmail] = useState("");
@@ -14,10 +15,10 @@ const LoginHome = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dailyQuote, setDailyQuote] = useState("");
-  const [totalClientes, setTotalClientes] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { funcionarios } = useFuncionarioSync();
+  const { funcionarios } = useOptimizedFuncionarioSync();
+  const { totalClientes } = useOptimizedClientes();
 
   // Frases motivacionais categorizadas
   const motivationalQuotes = [
@@ -64,14 +65,6 @@ const LoginHome = () => {
     const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
     const quoteIndex = dayOfYear % motivationalQuotes.length;
     setDailyQuote(motivationalQuotes[quoteIndex]);
-
-    // Carregar número de clientes
-    const savedClients = localStorage.getItem('clientesFornecedores');
-    if (savedClients) {
-      const clients = JSON.parse(savedClients);
-      const clientesCount = clients.filter((c: any) => c.tipo === 'cliente').length;
-      setTotalClientes(clientesCount);
-    }
 
     // Verificar se já está logado
     const isLoggedIn = localStorage.getItem('isAuthenticated');
@@ -125,11 +118,11 @@ const LoginHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4 animate-fade-in">
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-8">
         
         {/* Lado esquerdo - Frase motivacional */}
-        <div className="text-center lg:text-left space-y-6">
+        <div className="text-center lg:text-left space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <div className="space-y-4">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl shadow-lg">
               <Sparkles size={32} className="text-white" />
@@ -171,8 +164,8 @@ const LoginHome = () => {
         </div>
 
         {/* Lado direito - Formulário de login */}
-        <div className="w-full max-w-lg mx-auto">
-          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm p-6">
+        <div className="w-full max-w-lg mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm p-6 hover-scale">
             <CardHeader className="text-center space-y-2 pb-4">
               <div className="mx-auto w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                 <LogIn size={20} className="text-white" />
