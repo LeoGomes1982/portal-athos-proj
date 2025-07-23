@@ -196,8 +196,8 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   };
 
   return (
-    <div className="app-container bg-white min-h-screen">
-      <div className="content-wrapper">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Back Button */}
         <Button variant="ghost" className="mb-6" onClick={onBack}>
           <ArrowLeft size={16} />
@@ -206,7 +206,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
 
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mb-6 shadow-lg">
             <Shirt size={32} className="text-white" />
           </div>
           <h1 className="page-title text-center">Uniformes e EPIs</h1>
@@ -267,7 +267,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
         {/* Action Button */}
         <div className="flex justify-center mb-8 animate-slide-up">
           <Button 
-            className="primary-btn flex items-center gap-2"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-2xl shadow-lg text-lg font-medium transition-all duration-300 flex items-center gap-2"
             onClick={() => setShowGerenciarModal(true)}
           >
             <Settings size={20} />
@@ -292,7 +292,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
                             <p className="text-sm text-slate-600 capitalize">{item.categoria}</p>
                           </div>
                         </div>
-                        <div className="text-lg font-bold text-primary mb-2">
+                        <div className="text-lg font-bold text-purple-600 mb-2">
                           Total: {item.quantidade} peças
                         </div>
                         <div className="text-xs text-slate-600">
