@@ -208,6 +208,54 @@ export type Database = {
         }
         Relationships: []
       }
+      funcionario_documentos: {
+        Row: {
+          arquivo_nome: string
+          arquivo_tamanho: number | null
+          arquivo_tipo: string
+          arquivo_url: string
+          created_at: string
+          data_validade: string | null
+          funcionario_id: number
+          id: string
+          nome: string
+          origem: string | null
+          tem_validade: boolean | null
+          updated_at: string
+          visualizado: boolean | null
+        }
+        Insert: {
+          arquivo_nome: string
+          arquivo_tamanho?: number | null
+          arquivo_tipo: string
+          arquivo_url: string
+          created_at?: string
+          data_validade?: string | null
+          funcionario_id: number
+          id?: string
+          nome: string
+          origem?: string | null
+          tem_validade?: boolean | null
+          updated_at?: string
+          visualizado?: boolean | null
+        }
+        Update: {
+          arquivo_nome?: string
+          arquivo_tamanho?: number | null
+          arquivo_tipo?: string
+          arquivo_url?: string
+          created_at?: string
+          data_validade?: string | null
+          funcionario_id?: number
+          id?: string
+          nome?: string
+          origem?: string | null
+          tem_validade?: boolean | null
+          updated_at?: string
+          visualizado?: boolean | null
+        }
+        Relationships: []
+      }
       funcionario_historico: {
         Row: {
           arquivo_nome: string | null
