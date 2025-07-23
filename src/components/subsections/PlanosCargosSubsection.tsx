@@ -212,7 +212,7 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
 
                           {/* Salário */}
                           <div className="flex-shrink-0">
-                            <p className="text-lg font-bold text-green-600">{cargo.salarioBase}</p>
+                            <p className="text-lg text-black">{cargo.salarioBase}</p>
                           </div>
 
                           {/* Status */}
