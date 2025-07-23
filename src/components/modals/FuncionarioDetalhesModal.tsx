@@ -15,6 +15,7 @@ import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
 import { HistoricoDocumentViewModal } from "./HistoricoDocumentViewModal";
 import { DeleteInfoModal } from "./DeleteInfoModal";
+import { FuncionarioDocumentosModal } from "./FuncionarioDocumentosModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { format } from "date-fns";
@@ -163,6 +164,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [showDocumentViewModal, setShowDocumentViewModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isVerDocumentosModalOpen, setIsVerDocumentosModalOpen] = useState(false);
   
   // Estados para uniformes e EPIs
   const [uniformes, setUniformes] = useState<any[]>([]);
@@ -1491,7 +1493,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
               >
                 🗑️ Deletar Informações
               </Button>
-              <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
+              <Button 
+                onClick={() => setIsVerDocumentosModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+              >
                 📄 Ver Documentos
               </Button>
             </div>
@@ -1531,6 +1536,13 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         funcionarioId={funcionario.id}
         funcionarioNome={funcionario.nome}
         onDataUpdate={() => window.location.reload()}
+      />
+
+      <FuncionarioDocumentosModal
+        isOpen={isVerDocumentosModalOpen}
+        onClose={() => setIsVerDocumentosModalOpen(false)}
+        funcionarioId={funcionario.id}
+        funcionarioNome={funcionario.nome}
       />
     </>
   );
