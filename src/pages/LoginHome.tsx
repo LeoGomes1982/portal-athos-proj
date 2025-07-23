@@ -114,6 +114,9 @@ const LoginHome = () => {
     setIsLoading(false);
   };
 
+  // Adicionando console.log para debug
+  console.log('LoginHome component loaded successfully');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4 animate-fade-in">
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-8">
