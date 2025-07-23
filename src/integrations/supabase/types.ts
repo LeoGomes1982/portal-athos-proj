@@ -212,7 +212,7 @@ export type Database = {
         Row: {
           created_at: string
           descricao: string
-          funcionario_id: string
+          funcionario_id: number
           id: string
           tipo: string
           titulo: string
@@ -222,7 +222,7 @@ export type Database = {
         Insert: {
           created_at?: string
           descricao: string
-          funcionario_id: string
+          funcionario_id: number
           id?: string
           tipo: string
           titulo: string
@@ -232,7 +232,7 @@ export type Database = {
         Update: {
           created_at?: string
           descricao?: string
-          funcionario_id?: string
+          funcionario_id?: number
           id?: string
           tipo?: string
           titulo?: string

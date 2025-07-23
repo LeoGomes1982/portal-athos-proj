@@ -118,7 +118,7 @@ const getClassificacaoIcon = (classificacao: string) => {
 
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange, onFuncionarioUpdate }: FuncionarioDetalhesModalProps) {
   const { toast } = useToast();
-  const { historico, loading: loadingHistorico, adicionarRegistro } = useFuncionarioHistorico(funcionario.id.toString());
+  const { historico, loading: loadingHistorico, adicionarRegistro } = useFuncionarioHistorico(funcionario.id);
   const [statusAtual, setStatusAtual] = useState(funcionario.status);
   const [showDateInput, setShowDateInput] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");

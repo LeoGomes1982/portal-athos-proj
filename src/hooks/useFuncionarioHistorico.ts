@@ -4,7 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface HistoricoRegistro {
   id: string;
-  funcionario_id: string;
+  funcionario_id: number;
   titulo: string;
   descricao: string;
   tipo: 'positivo' | 'neutro' | 'negativo';
@@ -13,7 +13,7 @@ export interface HistoricoRegistro {
   updated_at: string;
 }
 
-export const useFuncionarioHistorico = (funcionarioId: string) => {
+export const useFuncionarioHistorico = (funcionarioId: number | string) => {
   const [historico, setHistorico] = useState<HistoricoRegistro[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -27,7 +27,7 @@ export const useFuncionarioHistorico = (funcionarioId: string) => {
       const { data, error } = await supabase
         .from('funcionario_historico')
         .select('*')
-        .eq('funcionario_id', funcionarioId)
+        .eq('funcionario_id', parseInt(funcionarioId.toString()))
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -55,7 +55,7 @@ export const useFuncionarioHistorico = (funcionarioId: string) => {
       const { data, error } = await supabase
         .from('funcionario_historico')
         .insert({
-          funcionario_id: funcionarioId,
+          funcionario_id: parseInt(funcionarioId.toString()),
           titulo,
           descricao,
           tipo,
@@ -96,7 +96,7 @@ export const useFuncionarioHistorico = (funcionarioId: string) => {
           event: '*',
           schema: 'public',
           table: 'funcionario_historico',
-          filter: `funcionario_id=eq.${funcionarioId}`
+          filter: `funcionario_id=eq.${parseInt(funcionarioId.toString())}`
         },
         () => {
           carregarHistorico();

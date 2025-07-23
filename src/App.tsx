@@ -63,7 +63,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename="/">
           <Routes>
             <Route path="/" element={<Home />} />
             
@@ -82,6 +82,7 @@ const App = () => {
             <Route path="/cicad" element={<CICAD />} />
             <Route path="/cicad-formulario" element={<CICADFormulario />} />
             <Route path="/processo-seletivo" element={<ProcessoSeletivo />} />
+            {/* Catch-all route para páginas não encontradas */}
             <Route path="*" element={<Home />} />
           </Routes>
         </BrowserRouter>
