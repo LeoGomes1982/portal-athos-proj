@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, LogIn, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
 
 const LoginHome = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ const LoginHome = () => {
   const [dailyQuote, setDailyQuote] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { funcionarios } = useFuncionarioSync();
 
   // Frases motivacionais categorizadas
   const motivationalQuotes = [
@@ -76,9 +78,8 @@ const LoginHome = () => {
     // Simular delay de autenticação
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Verificar se o email existe no sistema (simplificado para teste)
-    const validEmails = ['admin@athos.com', 'usuario@athos.com', 'teste@athos.com'];
-    const emailExists = validEmails.includes(email);
+    // Verificar se o email existe no sistema
+    const emailExists = funcionarios.some(func => func.email === email);
     
     if (!emailExists) {
       toast({
@@ -102,7 +103,6 @@ const LoginHome = () => {
     }
 
     // Login bem-sucedido
-    console.log('Login successful, setting localStorage and navigating');
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('userEmail', email);
     
@@ -111,20 +111,16 @@ const LoginHome = () => {
       description: "Bem-vindo ao sistema!",
     });
 
-    console.log('About to navigate to /home');
     navigate('/home');
     setIsLoading(false);
   };
 
-  // Adicionando console.log para debug
-  console.log('LoginHome component loaded successfully');
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4 animate-fade-in">
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         
         {/* Lado esquerdo - Frase motivacional */}
-        <div className="text-center lg:text-left space-y-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="text-center lg:text-left space-y-6">
           <div className="space-y-4">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl shadow-lg">
               <Sparkles size={32} className="text-white" />
@@ -155,93 +151,91 @@ const LoginHome = () => {
           {/* Estatísticas rápidas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center">
-              <div className="text-2xl font-bold text-primary">24</div>
+              <div className="text-2xl font-bold text-primary">{funcionarios.length}</div>
               <div className="text-sm text-slate-600">Funcionários</div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center">
-              <div className="text-2xl font-bold text-primary">15</div>
-              <div className="text-sm text-slate-600">Clientes</div>
+              <div className="text-2xl font-bold text-primary">24/7</div>
+              <div className="text-sm text-slate-600">Suporte</div>
             </div>
           </div>
         </div>
 
         {/* Lado direito - Formulário de login */}
-        <div className="w-full max-w-lg mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm p-6 hover-scale">
-            <CardHeader className="text-center space-y-2 pb-4">
-              <div className="mx-auto w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                <LogIn size={20} className="text-white" />
+        <div className="w-full max-w-md mx-auto">
+          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="text-center space-y-4 pb-6">
+              <div className="mx-auto w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                <LogIn size={24} className="text-white" />
               </div>
-              <CardTitle className="text-xl font-bold text-slate-800">
+              <CardTitle className="text-2xl font-bold text-slate-800">
                 Fazer Login
               </CardTitle>
-              <p className="text-sm text-slate-600">
+              <p className="text-slate-600">
                 Digite suas credenciais para acessar o sistema
               </p>
             </CardHeader>
             
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="email" className="text-xs font-medium text-slate-700">
-                      Email
-                    </Label>
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium text-slate-700">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu.email@empresa.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-12 border-slate-200 focus:border-primary focus:ring-primary"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium text-slate-700">
+                    Senha
+                  </Label>
+                  <div className="relative">
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="seu.email@empresa.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Digite sua senha"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="h-10 border-slate-200 focus:border-primary focus:ring-primary text-sm"
+                      className="h-12 pr-12 border-slate-200 focus:border-primary focus:ring-primary"
                     />
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Label htmlFor="password" className="text-xs font-medium text-slate-700">
-                      Senha
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Digite sua senha"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="h-10 pr-10 border-slate-200 focus:border-primary focus:ring-primary text-sm"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-10 w-10 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff size={16} className="text-slate-400" />
-                        ) : (
-                          <Eye size={16} className="text-slate-400" />
-                        )}
-                      </Button>
-                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-12 w-12 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff size={18} className="text-slate-400" />
+                      ) : (
+                        <Eye size={18} className="text-slate-400" />
+                      )}
+                    </Button>
                   </div>
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full h-10 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] text-sm"
+                  className="w-full h-12 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Entrando...
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <LogIn size={16} />
+                      <LogIn size={18} />
                       Entrar no Sistema
                     </div>
                   )}
@@ -249,7 +243,7 @@ const LoginHome = () => {
               </form>
 
               {/* Dica para desenvolvedores */}
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-xs text-blue-700 text-center">
                   <strong>Dica:</strong> Use qualquer email cadastrado no sistema com a senha <code className="bg-blue-100 px-1 rounded">123456</code>
                 </p>

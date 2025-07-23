@@ -1,15 +1,12 @@
-import { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/contexts/SupabaseAuthContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-// Direct imports for pages
-import Auth from "./pages/Auth";
+import LoginHome from "./pages/LoginHome";
 import Home from "./pages/Home";
 import DP from "./pages/DP";
 import Comercial from "./pages/Comercial";
@@ -27,15 +24,7 @@ import CICADFormulario from "./pages/CICADFormulario";
 import PortalMidiaExterna from "./pages/PortalMidiaExterna";
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
@@ -46,9 +35,8 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Rota de autenticação */}
-              <Route path="/" element={<Auth />} />
-              <Route path="/auth" element={<Auth />} />
+              {/* Rota de login - página inicial */}
+              <Route path="/" element={<LoginHome />} />
               
               {/* Rotas protegidas */}
               <Route path="/home" element={
@@ -113,7 +101,6 @@ function App() {
               
               <Route path="/portal-admissao" element={<PortalAdmissao />} />
               <Route path="/portal-vagas" element={<PortalVagas />} />
-              
               <Route path="/portal-midia-externa" element={
                 <ProtectedRoute>
                   <PortalMidiaExterna />
@@ -135,7 +122,7 @@ function App() {
               } />
               
               {/* Catch-all route para páginas não encontradas */}
-              <Route path="*" element={<Auth />} />
+              <Route path="*" element={<LoginHome />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
