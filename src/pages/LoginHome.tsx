@@ -126,7 +126,7 @@ const LoginHome = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4">
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-8">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8">
         
         {/* Lado esquerdo - Frase motivacional */}
         <div className="text-center lg:text-left space-y-6">
@@ -172,7 +172,7 @@ const LoginHome = () => {
 
         {/* Lado direito - Formulário de login */}
         <div className="w-full max-w-lg mx-auto">
-          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm h-[104px] flex items-center">
+          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm p-6">
             <CardHeader className="text-center space-y-2 pb-4">
               <div className="mx-auto w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                 <LogIn size={20} className="text-white" />
