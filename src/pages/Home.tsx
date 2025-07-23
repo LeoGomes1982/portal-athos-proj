@@ -26,13 +26,13 @@ import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
-import { useAuth } from "@/contexts/AuthContext";
+
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { logout, userEmail } = useAuth();
+  
   const { toast } = useToast();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();
@@ -45,7 +45,6 @@ const Home = () => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const handleLogout = () => {
-    logout();
     toast({
       title: "Logout realizado",
       description: "Você foi desconectado do sistema.",
@@ -255,7 +254,7 @@ const Home = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <User size={16} />
-                <span>{userEmail}</span>
+                <span>{currentUser || "Usuário"}</span>
               </div>
               <button 
                 onClick={() => setShowNotificationModal(true)}

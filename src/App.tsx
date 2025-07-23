@@ -3,10 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 
-import LoginHome from "./pages/LoginHome";
+
 import Home from "./pages/Home";
 import DP from "./pages/DP";
 import Comercial from "./pages/Comercial";
@@ -29,104 +27,50 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
+      <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Rota de login - página inicial */}
-              <Route path="/" element={<LoginHome />} />
+              {/* Página inicial */}
+              <Route path="/" element={<Home />} />
               
-              {/* Rotas protegidas */}
-              <Route path="/home" element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              } />
+              {/* Todas as rotas principais */}
+              <Route path="/home" element={<Home />} />
               
-              <Route path="/dp" element={
-                <ProtectedRoute>
-                  <DP />
-                </ProtectedRoute>
-              } />
+              <Route path="/dp" element={<DP />} />
               
-              <Route path="/agenda" element={
-                <ProtectedRoute>
-                  <Agenda />
-                </ProtectedRoute>
-              } />
+              <Route path="/agenda" element={<Agenda />} />
               
-              <Route path="/comercial" element={
-                <ProtectedRoute>
-                  <Comercial />
-                </ProtectedRoute>
-              } />
+              <Route path="/comercial" element={<Comercial />} />
               
-              <Route path="/comercial/clientes-fornecedores" element={
-                <ProtectedRoute>
-                  <ClientesFornecedores />
-                </ProtectedRoute>
-              } />
+              <Route path="/comercial/clientes-fornecedores" element={<ClientesFornecedores />} />
               
-              <Route path="/comercial/contratos-propostas" element={
-                <ProtectedRoute>
-                  <ContratosPropostas />
-                </ProtectedRoute>
-              } />
+              <Route path="/comercial/contratos-propostas" element={<ContratosPropostas />} />
               
-              <Route path="/gerencia" element={
-                <ProtectedRoute>
-                  <Gerencia />
-                </ProtectedRoute>
-              } />
+              <Route path="/gerencia" element={<Gerencia />} />
               
-              <Route path="/manuais" element={
-                <ProtectedRoute>
-                  <Manuais />
-                </ProtectedRoute>
-              } />
+              <Route path="/manuais" element={<Manuais />} />
               
-              <Route path="/configuracoes" element={
-                <ProtectedRoute>
-                  <Configuracoes />
-                </ProtectedRoute>
-              } />
+              <Route path="/configuracoes" element={<Configuracoes />} />
               
-              <Route path="/configuracoes/contratos-propostas" element={
-                <ProtectedRoute>
-                  <EdicaoContratosPropostas />
-                </ProtectedRoute>
-              } />
+              <Route path="/configuracoes/contratos-propostas" element={<EdicaoContratosPropostas />} />
               
               <Route path="/portal-admissao" element={<PortalAdmissao />} />
               <Route path="/portal-vagas" element={<PortalVagas />} />
-              <Route path="/portal-midia-externa" element={
-                <ProtectedRoute>
-                  <PortalMidiaExterna />
-                </ProtectedRoute>
-              } />
+              <Route path="/portal-midia-externa" element={<PortalMidiaExterna />} />
               
-              <Route path="/cicad" element={
-                <ProtectedRoute>
-                  <CICAD />
-                </ProtectedRoute>
-              } />
+              <Route path="/cicad" element={<CICAD />} />
               
               <Route path="/cicad-formulario" element={<CICADFormulario />} />
               
-              <Route path="/processo-seletivo" element={
-                <ProtectedRoute>
-                  <ProcessoSeletivo />
-                </ProtectedRoute>
-              } />
+              <Route path="/processo-seletivo" element={<ProcessoSeletivo />} />
               
               {/* Catch-all route para páginas não encontradas */}
-              <Route path="*" element={<LoginHome />} />
+              <Route path="*" element={<Home />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
-      </AuthProvider>
     </QueryClientProvider>
   );
 }
