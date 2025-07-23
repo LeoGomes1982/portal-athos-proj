@@ -610,9 +610,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           className="mt-1"
                         />
                       ) : (
-                        <Badge variant="secondary" className="font-medium bg-blue-100 text-blue-700 border-blue-200">
-                          {currentFuncionario.setor}
-                        </Badge>
+                        <div className="mt-1">
+                          <Badge variant="secondary" className="font-medium bg-blue-100 text-blue-700 border-blue-200">
+                            {currentFuncionario.setor}
+                          </Badge>
+                        </div>
                       )}
                     </div>
                     {currentFuncionario.salario && (
