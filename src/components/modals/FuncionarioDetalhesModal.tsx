@@ -14,21 +14,19 @@ import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
+import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { format } from "date-fns";
 
 
 interface HistoricoRegistro {
   id: string;
-  data: string;
-  classificacao: "positiva" | "neutra" | "negativa";
-  comentario: string;
-  registradoPor: string;
-  arquivo?: {
-    nome: string;
-    tamanho: number;
-    tipo: string;
-    url: string;
-  };
+  funcionario_id: string;
+  titulo: string;
+  descricao: string;
+  tipo: "positivo" | "neutro" | "negativo";
+  usuario: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Funcionario {
@@ -93,6 +91,7 @@ const statusConfig = {
 
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange, onFuncionarioUpdate }: FuncionarioDetalhesModalProps) {
   const { toast } = useToast();
+  const { historico, loading: loadingHistorico, adicionarRegistro } = useFuncionarioHistorico(funcionario.id.toString());
   const [statusAtual, setStatusAtual] = useState(funcionario.status);
   const [showDateInput, setShowDateInput] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
@@ -100,13 +99,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [activeTab, setActiveTab] = useState("informacoes");
   
   // Estados para o histórico
-  const [historico, setHistorico] = useState<HistoricoRegistro[]>([]);
   const [showNovoRegistro, setShowNovoRegistro] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState({
-    classificacao: "neutra" as "positiva" | "neutra" | "negativa",
-    comentario: "",
-    registradoPor: "leandrogomes@grupoathosbrasil.com",
-    arquivo: null as File | null
+    titulo: "",
+    descricao: "",
+    tipo: "neutro" as "positivo" | "neutro" | "negativo"
   });
   
   // Lista de usuários disponíveis
@@ -194,64 +191,36 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     setDataFim("");
   };
 
-  const handleSalvarRegistro = () => {
-    if (!novoRegistro.comentario.trim()) {
+  const handleSalvarRegistro = async () => {
+    if (!novoRegistro.titulo.trim() || !novoRegistro.descricao.trim()) {
       toast({
         title: "Erro",
-        description: "Por favor, adicione um comentário",
+        description: "Título e descrição são obrigatórios",
         variant: "destructive"
       });
       return;
     }
 
-    let arquivoInfo = undefined;
-    if (novoRegistro.arquivo) {
-      arquivoInfo = {
-        nome: novoRegistro.arquivo.name,
-        tamanho: novoRegistro.arquivo.size,
-        tipo: novoRegistro.arquivo.type,
-        url: URL.createObjectURL(novoRegistro.arquivo)
-      };
+    const sucesso = await adicionarRegistro(
+      novoRegistro.titulo,
+      novoRegistro.descricao,
+      novoRegistro.tipo,
+      'Usuário Atual'
+    );
+
+    if (sucesso) {
+      setShowNovoRegistro(false);
+      setNovoRegistro({
+        titulo: "",
+        descricao: "",
+        tipo: "neutro"
+      });
     }
-
-    const registro: HistoricoRegistro = {
-      id: Date.now().toString(),
-      data: new Date().toISOString(),
-      classificacao: novoRegistro.classificacao,
-      comentario: novoRegistro.comentario,
-      registradoPor: novoRegistro.registradoPor,
-      arquivo: arquivoInfo
-    };
-
-    const novoHistorico = [registro, ...historico];
-    setHistorico(novoHistorico);
-    
-    // Salvar no localStorage
-    localStorage.setItem(`historico_funcionario_${funcionario.id}`, JSON.stringify(novoHistorico));
-    
-    setShowNovoRegistro(false);
-    setNovoRegistro({
-      classificacao: "neutra",
-      comentario: "",
-      registradoPor: "leandrogomes@grupoathosbrasil.com",
-      arquivo: null
-    });
-
-    toast({
-      title: "Registro Adicionado",
-      description: "Histórico atualizado com sucesso",
-    });
   };
 
-  // Carregar histórico do localStorage quando o modal abrir
+  // useEffect removido - histórico agora vem do Supabase
   useEffect(() => {
     if (isOpen) {
-      const historicoSalvo = localStorage.getItem(`historico_funcionario_${funcionario.id}`);
-      if (historicoSalvo) {
-        setHistorico(JSON.parse(historicoSalvo));
-      } else {
-        setHistorico([]);
-      }
       
       // Carregar uniformes
       const uniformesSalvos = localStorage.getItem(`uniformes_funcionario_${funcionario.id}`);
@@ -263,11 +232,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     }
   }, [isOpen, funcionario.id]);
 
-  const getClassificacaoIcon = (classificacao: string) => {
-    switch (classificacao) {
-      case "positiva": return <Check className="w-4 h-4 text-green-600" />;
-      case "negativa": return <X className="w-4 h-4 text-red-600" />; 
-      case "neutra": return "➖";
+  const getTipoIcon = (tipo: string) => {
+    switch (tipo) {
+      case "positivo": return <Check className="w-4 h-4 text-green-600" />;
+      case "negativo": return <X className="w-4 h-4 text-red-600" />; 
+      case "neutro": return "➖";
       default: return "➖";
     }
   };
@@ -278,11 +247,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     let registrosNeutros = 0;
 
     historico.forEach((registro) => {
-      switch (registro.classificacao) {
-        case "positiva":
+      switch (registro.tipo) {
+        case "positivo":
           pontos += 10;
           break;
-        case "negativa":
+        case "negativo":
           pontos -= 3;
           break;
         case "neutra":
@@ -297,11 +266,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     return pontos;
   };
 
-  const getClassificacaoColor = (classificacao: string) => {
-    switch (classificacao) {
-      case "positiva": return "bg-green-100 text-green-700 border-green-200";
-      case "negativa": return "bg-red-100 text-red-700 border-red-200";
-      case "neutra": return "bg-gray-100 text-gray-700 border-gray-200";
+  const getTipoColor = (tipo: string) => {
+    switch (tipo) {
+      case "positivo": return "bg-green-100 text-green-700 border-green-200";
+      case "negativo": return "bg-red-100 text-red-700 border-red-200";
+      case "neutro": return "bg-gray-100 text-gray-700 border-gray-200";
       default: return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
@@ -418,8 +387,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 ? 'bg-red-50 border-red-300 animate-pulse' 
                 : 'bg-white border-blue-200'
           }`}>
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
                 <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${temDocumentosVencendo ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
                   <span className="text-3xl">{funcionario.foto}</span>
                 </div>
@@ -480,7 +449,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 </div>
               </div>
               
-              <div className="flex items-start gap-2">
+              <div className="flex items-center gap-2">
                 {isEditing ? (
                   <>
                     <Button
@@ -1310,45 +1279,50 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       <h4 className="font-medium text-slate-700 mb-3">Novo Registro</h4>
                       <div className="space-y-3">
                         <div>
-                          <Label htmlFor="classificacao" className="text-sm font-medium text-slate-600">
-                            Classificação
+                          <Label htmlFor="titulo" className="text-sm font-medium text-slate-600">
+                            Título
+                          </Label>
+                          <Input
+                            id="titulo"
+                            placeholder="Título do registro..."
+                            value={novoRegistro.titulo}
+                            onChange={(e) => setNovoRegistro({...novoRegistro, titulo: e.target.value})}
+                            className="mt-1"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="tipo" className="text-sm font-medium text-slate-600">
+                            Tipo
                           </Label>
                           <Select
-                            value={novoRegistro.classificacao}
-                            onValueChange={(value) => setNovoRegistro({...novoRegistro, classificacao: value as "positiva" | "neutra" | "negativa"})}
+                            value={novoRegistro.tipo}
+                            onValueChange={(value) => setNovoRegistro({...novoRegistro, tipo: value as "positivo" | "neutro" | "negativo"})}
                           >
                             <SelectTrigger className="w-full mt-1">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="positiva">👍 Positiva</SelectItem>
-                              <SelectItem value="neutra">➖ Neutra</SelectItem>
-                              <SelectItem value="negativa">👎 Negativa</SelectItem>
+                              <SelectItem value="positivo">👍 Positivo</SelectItem>
+                              <SelectItem value="neutro">➖ Neutro</SelectItem>
+                              <SelectItem value="negativo">👎 Negativo</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         
                         <div>
-                          <Label htmlFor="comentario" className="text-sm font-medium text-slate-600">
-                            Comentário
+                          <Label htmlFor="descricao" className="text-sm font-medium text-slate-600">
+                            Descrição
                           </Label>
                           <Textarea
-                            id="comentario"
+                            id="descricao"
                             placeholder="Descreva o registro..."
-                            value={novoRegistro.comentario}
-                            onChange={(e) => setNovoRegistro({...novoRegistro, comentario: e.target.value})}
+                            value={novoRegistro.descricao}
+                            onChange={(e) => setNovoRegistro({...novoRegistro, descricao: e.target.value})}
                             className="mt-1 resize-none"
                             rows={3}
                           />
                         </div>
-                        
-                        <div>
-                          <Label htmlFor="registradoPor" className="text-sm font-medium text-slate-600">
-                            Registrado por
-                          </Label>
-                          <Select
-                            value={novoRegistro.registradoPor}
-                            onValueChange={(value) => setNovoRegistro({...novoRegistro, registradoPor: value})}
                           >
                             <SelectTrigger className="w-full mt-1">
                               <SelectValue />

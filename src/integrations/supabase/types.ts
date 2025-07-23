@@ -208,6 +208,39 @@ export type Database = {
         }
         Relationships: []
       }
+      funcionario_historico: {
+        Row: {
+          created_at: string
+          descricao: string
+          funcionario_id: string
+          id: string
+          tipo: string
+          titulo: string
+          updated_at: string
+          usuario: string
+        }
+        Insert: {
+          created_at?: string
+          descricao: string
+          funcionario_id: string
+          id?: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+          usuario?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          funcionario_id?: string
+          id?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          usuario?: string
+        }
+        Relationships: []
+      }
       funcionarios: {
         Row: {
           cargo: string
