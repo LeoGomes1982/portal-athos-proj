@@ -156,10 +156,11 @@ export function useFuncionarioSync() {
   });
 
   const updateFuncionario = async (funcionario: Funcionario) => {
-    console.log('updateFuncionario chamado com:', funcionario.nome, funcionario.id);
+    console.log('updateFuncionario chamado com:', funcionario.nome, funcionario.id, 'Status:', funcionario.status);
     try {
       const dbData = formatToDatabase(funcionario);
       console.log('Dados formatados para DB:', dbData);
+      console.log('Status no dbData:', dbData.status);
       
       const { data, error } = await supabase
         .from('funcionarios_sync')

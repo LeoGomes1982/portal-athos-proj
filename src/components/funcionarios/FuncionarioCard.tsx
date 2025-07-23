@@ -189,6 +189,9 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
                     <span>{funcionario.cargo}</span>
                     <span>{funcionario.setor}</span>
                     <span>{new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}</span>
+                    <span className="text-blue-700 font-semibold">
+                      {calcularPontosAtividade()} pts
+                    </span>
                     {temDocumentosVencendo && (
                       <Badge variant="destructive" className="animate-pulse text-xs">
                         Documentos vencendo
@@ -207,16 +210,11 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
                   </div>
                 </div>
                 
-                {/* Status e Pontos */}
+                {/* Status */}
                 <div className="flex-shrink-0 text-right">
                   <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full`}>
                     {statusInfo.label}
                   </Badge>
-                  <div className="mt-2 flex items-center justify-end">
-                    <span className="text-base font-semibold text-blue-700">
-                      {calcularPontosAtividade()} pts
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
