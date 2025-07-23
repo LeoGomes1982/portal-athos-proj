@@ -126,7 +126,7 @@ const LoginHome = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4">
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-8">
         
         {/* Lado esquerdo - Frase motivacional */}
         <div className="text-center lg:text-left space-y-6">
