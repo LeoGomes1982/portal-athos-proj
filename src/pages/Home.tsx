@@ -242,58 +242,58 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {/* Grid de avatares dos cargos */}
-              <div className="grid grid-cols-3 gap-2">
+              {/* Avatares dos cargos em linha */}
+              <div className="flex items-center gap-3">
                 {/* Direção Operacional */}
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg" title="Direção Operacional">
-                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
-                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-blue-100" title="Direção Operacional">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-blue-600/30 rounded-full relative">
+                      <div className="w-4 h-3 bg-blue-700/40 rounded-t-full absolute top-1 left-1"></div>
                     </div>
                   </div>
                 </div>
                 
                 {/* Direção Financeira */}
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg" title="Direção Financeira">
-                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
-                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-green-100" title="Direção Financeira">
+                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-green-600/30 rounded-full relative">
+                      <div className="w-4 h-3 bg-green-700/40 rounded-t-full absolute top-1 left-1"></div>
                     </div>
                   </div>
                 </div>
                 
                 {/* Gerência */}
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg" title="Gerência">
-                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
-                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-purple-100" title="Gerência">
+                  <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-purple-600/30 rounded-full relative">
+                      <div className="w-4 h-3 bg-purple-700/40 rounded-t-full absolute top-1 left-1"></div>
                     </div>
                   </div>
                 </div>
                 
                 {/* Fiscais Operacionais */}
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg" title="Fiscais Operacionais">
-                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
-                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-orange-100" title="Fiscais Operacionais">
+                  <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-orange-600/30 rounded-full relative">
+                      <div className="w-4 h-3 bg-orange-700/40 rounded-t-full absolute top-1 left-1"></div>
                     </div>
                   </div>
                 </div>
                 
                 {/* Supervisores Regionais */}
-                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg" title="Supervisores Regionais">
-                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
-                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-red-100" title="Supervisores Regionais">
+                  <div className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-red-600/30 rounded-full relative">
+                      <div className="w-4 h-3 bg-red-700/40 rounded-t-full absolute top-1 left-1"></div>
                     </div>
                   </div>
                 </div>
                 
                 {/* DP e RH */}
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg" title="DP e RH">
-                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
-                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-indigo-100" title="DP e RH">
+                  <div className="w-8 h-8 bg-indigo-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-indigo-600/30 rounded-full relative">
+                      <div className="w-4 h-3 bg-indigo-700/40 rounded-t-full absolute top-1 left-1"></div>
                     </div>
                   </div>
                 </div>
