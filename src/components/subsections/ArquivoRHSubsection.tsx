@@ -56,8 +56,8 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
   };
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Back Button */}
         <Button variant="ghost" className="mb-6" onClick={onBack}>
           <ArrowLeft size={16} />
@@ -87,33 +87,33 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">⏳</div>
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-slate-600">
                 {funcionarios.filter(f => f.status === 'experiencia').length}
               </div>
-              <div className="text-sm text-orange-600/80">Final de contrato 1º período</div>
+              <div className="text-sm text-slate-600/80">Final de contrato 1º período</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">👥</div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-slate-600">
                 {funcionarios.filter(f => f.status === 'ativo').length}
               </div>
-              <div className="text-sm text-blue-600/80">Final de contrato 2º período</div>
+              <div className="text-sm text-slate-600/80">Final de contrato 2º período</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">⚠️</div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-slate-600">
                 {funcionarios.filter(f => f.status === 'aviso').length}
               </div>
-              <div className="text-sm text-purple-600/80">Demissão normal após aviso prévio</div>
+              <div className="text-sm text-slate-600/80">Demissão normal após aviso prévio</div>
             </CardContent>
           </Card>
         </div>
