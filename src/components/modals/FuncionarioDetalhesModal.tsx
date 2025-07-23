@@ -23,6 +23,12 @@ interface HistoricoRegistro {
   classificacao: "positiva" | "neutra" | "negativa";
   comentario: string;
   registradoPor: string;
+  arquivo?: {
+    nome: string;
+    tamanho: number;
+    tipo: string;
+    url: string;
+  };
 }
 
 interface Funcionario {
@@ -99,8 +105,19 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [novoRegistro, setNovoRegistro] = useState({
     classificacao: "neutra" as "positiva" | "neutra" | "negativa",
     comentario: "",
-    registradoPor: "Usuário Atual" // Em uma aplicação real, seria obtido do contexto de autenticação
+    registradoPor: "leandrogomes@grupoathosbrasil.com",
+    arquivo: null as File | null
   });
+  
+  // Lista de usuários disponíveis
+  const usuariosDisponiveis = [
+    'leandrogomes@grupoathosbrasil.com',
+    'dp@grupoathosbrasil.com', 
+    'financeiro@grupoathosbrasil.com',
+    'gerencia@grupoathosbrasil.com',
+    'thiago@grupoathosbrasil.com',
+    'diego@grupoathosbrasil.com'
+  ];
   
   // Estados para edição inline
   const [isEditing, setIsEditing] = useState(false);
@@ -187,12 +204,23 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
       return;
     }
 
+    let arquivoInfo = undefined;
+    if (novoRegistro.arquivo) {
+      arquivoInfo = {
+        nome: novoRegistro.arquivo.name,
+        tamanho: novoRegistro.arquivo.size,
+        tipo: novoRegistro.arquivo.type,
+        url: URL.createObjectURL(novoRegistro.arquivo)
+      };
+    }
+
     const registro: HistoricoRegistro = {
       id: Date.now().toString(),
       data: new Date().toISOString(),
       classificacao: novoRegistro.classificacao,
       comentario: novoRegistro.comentario,
-      registradoPor: novoRegistro.registradoPor
+      registradoPor: novoRegistro.registradoPor,
+      arquivo: arquivoInfo
     };
 
     const novoHistorico = [registro, ...historico];
@@ -205,7 +233,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     setNovoRegistro({
       classificacao: "neutra",
       comentario: "",
-      registradoPor: "Usuário Atual"
+      registradoPor: "leandrogomes@grupoathosbrasil.com",
+      arquivo: null
     });
 
     toast({
@@ -1281,12 +1310,42 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           <Label htmlFor="registradoPor" className="text-sm font-medium text-slate-600">
                             Registrado por
                           </Label>
-                          <Input
-                            id="registradoPor"
+                          <Select
                             value={novoRegistro.registradoPor}
-                            onChange={(e) => setNovoRegistro({...novoRegistro, registradoPor: e.target.value})}
+                            onValueChange={(value) => setNovoRegistro({...novoRegistro, registradoPor: value})}
+                          >
+                            <SelectTrigger className="w-full mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {usuariosDisponiveis.map((usuario) => (
+                                <SelectItem key={usuario} value={usuario}>
+                                  {usuario}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="arquivo" className="text-sm font-medium text-slate-600">
+                            Arquivo (opcional)
+                          </Label>
+                          <Input
+                            id="arquivo"
+                            type="file"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              setNovoRegistro({...novoRegistro, arquivo: file || null});
+                            }}
                             className="mt-1"
+                            accept="image/*,.pdf,.doc,.docx,.txt"
                           />
+                          {novoRegistro.arquivo && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Arquivo selecionado: {novoRegistro.arquivo.name}
+                            </p>
+                          )}
                         </div>
                         
                         <div className="flex gap-2 pt-2">
@@ -1332,7 +1391,30 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                                 </span>
                               </div>
                               <p className="text-sm text-gray-700 mb-2">{registro.comentario}</p>
-                              <p className="text-xs text-gray-500">Por: {registro.registradoPor}</p>
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs text-gray-500">Por: {registro.registradoPor}</p>
+                                {registro.arquivo && (
+                                  <div className="flex items-center gap-2">
+                                    {registro.arquivo.tipo.startsWith('image/') ? (
+                                      <img 
+                                        src={registro.arquivo.url}
+                                        alt={registro.arquivo.nome}
+                                        className="w-6 h-6 object-cover rounded border cursor-pointer"
+                                        onClick={() => window.open(registro.arquivo?.url)}
+                                        title={`${registro.arquivo.nome} (${(registro.arquivo.tamanho / 1024).toFixed(1)} KB)`}
+                                      />
+                                    ) : (
+                                      <div 
+                                        className="w-6 h-6 bg-blue-100 border border-blue-300 rounded flex items-center justify-center cursor-pointer"
+                                        onClick={() => window.open(registro.arquivo?.url)}
+                                        title={`${registro.arquivo.nome} (${(registro.arquivo.tamanho / 1024).toFixed(1)} KB)`}
+                                      >
+                                        <FileText size={12} className="text-blue-600" />
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </CardContent>
