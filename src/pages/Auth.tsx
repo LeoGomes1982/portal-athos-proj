@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, LogIn, UserPlus, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/SupabaseAuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
@@ -18,17 +17,8 @@ const Auth = () => {
   const [dailyQuote, setDailyQuote] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, isLoading } = useAuth();
 
-  console.log('Auth page - user state:', { userEmail: user?.email, isLoading });
-
-  // Redirecionar usuários já autenticados
-  useEffect(() => {
-    if (!isLoading && user) {
-      console.log('User already authenticated, redirecting to home');
-      navigate('/home');
-    }
-  }, [user, isLoading, navigate]);
+  console.log('Auth page loaded - no user check');
 
   // Frases motivacionais categorizadas
   const motivationalQuotes = [
