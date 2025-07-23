@@ -13,7 +13,8 @@ import {
   Briefcase,
   Target,
   Book,
-  Shield
+  Shield,
+  Bell
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NotificationBadge } from "@/components/NotificationBadge";
@@ -22,6 +23,7 @@ import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
+import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -31,6 +33,53 @@ const Home = () => {
   const { hasNewDenuncias, markAsChecked } = useCICADAlerts();
   const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
   const [showUserTooltip, setShowUserTooltip] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>("");
+  const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  // Mapeamento de usuários
+  const userMapping: { [key: string]: string } = {
+    "leandrogomes@grupoathosbrasil.com": "Leandro Gomes",
+    "dp@grupoathosbrasil.com": "Simone Macedo",
+    "gerencia@grupoathosbrasil.com": "Sabrina Guidotti",
+    "financeiro@grupoathosbrasil.com": "Aline G. F. Gomes e Silva",
+    "thiago@grupoathosbrasil.com": "Thiago Guterrez",
+    "diego@grupoathosbrasil.com": "Diego Fuga"
+  };
+
+  // Carregar usuário atual
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setCurrentUser(userMapping[userData.email] || userData.email);
+    }
+  }, []);
+
+  // Verificar se há compromissos para notificar
+  useEffect(() => {
+    const checkAgendaNotifications = async () => {
+      try {
+        const hoje = new Date();
+        const hojeStr = hoje.toISOString().split('T')[0];
+        
+        const { data: compromissos } = await supabase
+          .from('compromissos')
+          .select('*')
+          .eq('data', hojeStr)
+          .eq('concluido', false);
+
+        setHasAgendaNotification(compromissos && compromissos.length > 0);
+      } catch (error) {
+        console.error('Erro ao verificar compromissos:', error);
+      }
+    };
+
+    checkAgendaNotifications();
+    // Verificar a cada minuto
+    const interval = setInterval(checkAgendaNotifications, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -60,7 +109,8 @@ const Home = () => {
       className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
       iconColor: "text-indigo-600",
       onClick: () => navigate("/agenda"),
-      hasUrgentTasks: true
+      hasUrgentTasks: true,
+      hasAgendaNotification: true
     },
     {
       id: "gerencia",
@@ -162,6 +212,29 @@ const Home = () => {
   return (
     <div className="app-container">
       <div className="content-wrapper">
+        {/* User Header */}
+        {currentUser && (
+          <div className="flex justify-between items-center mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 shadow-sm animate-fade-in">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">{currentUser.split(' ').map(n => n[0]).join('').slice(0, 2)}</span>
+              </div>
+              <span className="text-slate-700 font-medium">{currentUser}</span>
+            </div>
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotificationModal(true)}
+                className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors"
+              >
+                <Bell size={20} />
+                {hasAgendaNotification && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+        
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
@@ -215,6 +288,13 @@ const Home = () => {
               {/* Notificação para DP e RH */}
               {section.hasNotification && (
                 <NotificationBadge show={hasNotifications} />
+              )}
+              
+              {/* Aviso de compromissos para Agenda */}
+              {section.hasAgendaNotification && hasAgendaNotification && section.id === "agenda" && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
+                  <Calendar size={12} className="text-white" />
+                </div>
               )}
               
               {/* Aviso de tarefas urgentes para Agenda */}
@@ -313,6 +393,40 @@ const Home = () => {
           onOpenChange={setShowUrgentTasksModal}
           compromissosUrgentes={urgentTasks}
         />
+
+        {/* Modal de Notificações da Agenda */}
+        {showNotificationModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowNotificationModal(false)}>
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center gap-3 mb-4">
+                <Bell size={20} className="text-blue-600" />
+                <h3 className="text-lg font-semibold">Notificações da Agenda</h3>
+              </div>
+              {hasAgendaNotification ? (
+                <div className="space-y-3">
+                  <p className="text-slate-600">Você tem compromissos pendentes para hoje!</p>
+                  <button 
+                    onClick={() => {
+                      setShowNotificationModal(false);
+                      navigate('/agenda');
+                    }}
+                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Ver Agenda
+                  </button>
+                </div>
+              ) : (
+                <p className="text-slate-600">Nenhuma notificação no momento.</p>
+              )}
+              <button 
+                onClick={() => setShowNotificationModal(false)}
+                className="w-full mt-3 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
