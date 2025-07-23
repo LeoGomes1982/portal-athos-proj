@@ -126,10 +126,10 @@ const LoginHome = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-start justify-center p-4">
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-end pt-8">
         
         {/* Lado esquerdo - Frase motivacional */}
-        <div className="text-center lg:text-left space-y-6 h-full flex flex-col">
+        <div className="text-center lg:text-left space-y-6">
           <div className="space-y-4">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl shadow-lg">
               <Sparkles size={32} className="text-white" />
@@ -143,7 +143,7 @@ const LoginHome = () => {
           </div>
           
           {/* Frase do dia */}
-          <div className="bg-white rounded-2xl p-6 shadow-xl border border-blue-100 flex-1">
+          <div className="bg-white rounded-2xl p-6 shadow-xl border border-blue-100">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
                 <span className="text-sm">💡</span>
@@ -171,8 +171,8 @@ const LoginHome = () => {
         </div>
 
         {/* Lado direito - Formulário de login */}
-        <div className="w-full max-w-lg mx-auto flex flex-col justify-between h-full">
-          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+        <div className="w-full max-w-lg mx-auto">
+          <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm h-[104px] flex items-center">
             <CardHeader className="text-center space-y-2 pb-4">
               <div className="mx-auto w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
                 <LogIn size={20} className="text-white" />
