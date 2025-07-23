@@ -23,7 +23,16 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
     const savedHistorico = localStorage.getItem(historicoKey);
     
     console.log('Calculando pontos para funcionário:', funcionario.nome, 'ID:', funcionario.id);
+    console.log('Chave do localStorage:', historicoKey);
     console.log('Histórico encontrado:', savedHistorico);
+    
+    // Vamos verificar todas as chaves do localStorage que começam com "historico"
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('historico_funcionario_')) {
+        console.log('Chave encontrada no localStorage:', key, '- Valor:', localStorage.getItem(key));
+      }
+    }
     
     let pontos = 0;
     let registrosNeutros = 0;
@@ -34,15 +43,19 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
         console.log('Histórico parseado:', historico);
         
         historico.forEach((registro: any) => {
+          console.log('Processando registro:', registro);
           switch (registro.classificacao) {
             case "positiva":
               pontos += 10;
+              console.log('Adicionado 10 pontos (positiva), total:', pontos);
               break;
             case "negativa":
               pontos -= 3;
+              console.log('Subtraído 3 pontos (negativa), total:', pontos);
               break;
             case "neutra":
               registrosNeutros += 1;
+              console.log('Registro neutro encontrado, total neutros:', registrosNeutros);
               break;
           }
         });
