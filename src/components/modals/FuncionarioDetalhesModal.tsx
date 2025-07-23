@@ -472,7 +472,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     {/* Pontos de Atividade */}
                     <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <Sun className="w-5 h-5 text-yellow-500 fill-yellow-400" />
                         <div>
                           <p className="text-xs font-medium text-slate-600">Pontos de Atividade</p>
                           <p className="text-2xl font-bold text-blue-700">{calcularPontosAtividade()}</p>
@@ -518,7 +517,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   onClick={onClose}
                   className="p-2 h-auto hover:bg-blue-100"
                 >
-                  <X size={20} />
+                  <X size={24} className="font-bold" />
                 </Button>
               </div>
             </div>
