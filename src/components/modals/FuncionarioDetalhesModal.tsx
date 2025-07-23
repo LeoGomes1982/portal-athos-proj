@@ -418,12 +418,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 ? 'bg-red-50 border-red-300 animate-pulse' 
                 : 'bg-white border-blue-200'
           }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-4">
                 <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${temDocumentosVencendo ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
                   <span className="text-3xl">{funcionario.foto}</span>
                 </div>
-                <div>
+                <div className="flex-1">
                   <h2 className={`text-3xl font-bold flex items-center gap-2 ${
                     funcionario.status === 'destaque' 
                       ? 'text-yellow-700' 
@@ -480,7 +480,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 </div>
               </div>
               
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-start gap-2">
                 {isEditing ? (
                   <>
                     <Button
