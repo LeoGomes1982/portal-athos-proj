@@ -418,8 +418,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 ? 'bg-red-50 border-red-300 animate-pulse' 
                 : 'bg-white border-blue-200'
           }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-4">
                 <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${temDocumentosVencendo ? 'bg-red-100 animate-pulse' : 'bg-blue-100'}`}>
                   <span className="text-3xl">{funcionario.foto}</span>
                 </div>
@@ -480,21 +480,21 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-start gap-2 mt-1">
                 {isEditing ? (
                   <>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleCancelarEdicao}
-                      className="h-auto"
+                      className="h-8 px-3"
                     >
                       Cancelar
                     </Button>
                     <Button
                       size="sm"
                       onClick={handleSalvarEdicao}
-                      className="bg-green-600 hover:bg-green-700 h-auto"
+                      className="bg-green-600 hover:bg-green-700 h-8 px-3"
                     >
                       Salvar
                     </Button>
@@ -504,7 +504,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     variant="outline"
                     size="sm"
                     onClick={handleEditarFuncionario}
-                    className="h-auto"
+                    className="h-8 px-3"
                   >
                     Editar
                   </Button>
@@ -513,9 +513,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                   variant="ghost"
                   size="sm"
                   onClick={onClose}
-                  className="p-2 h-auto hover:bg-blue-100"
+                  className="p-1 h-8 w-8 hover:bg-blue-100"
                 >
-                  <X size={24} className="font-bold" />
+                  <X size={18} className="font-bold" />
                 </Button>
               </div>
             </div>
