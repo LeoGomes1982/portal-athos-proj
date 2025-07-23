@@ -1485,12 +1485,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
               >
                 🗑️ Deletar Informações
               </Button>
-              <Button 
-                onClick={() => setIsVerDocumentosModalOpen(true)}
-                className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
-              >
-                📄 Ver Documentos
-              </Button>
             </div>
           </div>
         </div>
