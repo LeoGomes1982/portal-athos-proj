@@ -14,19 +14,26 @@ import {
   Target,
   Book,
   Shield,
-  Bell
+  Bell,
+  LogOut,
+  User
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { logout, userEmail } = useAuth();
+  const { toast } = useToast();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();
   const { hasUrgentTasks, urgentTasks } = useAgendaAlerts();
@@ -36,6 +43,15 @@ const Home = () => {
   const [currentUser, setCurrentUser] = useState<string>("");
   const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado do sistema.",
+    });
+    navigate('/');
+  };
 
   // Mapeamento de usuários
   const userMapping: { [key: string]: string } = {
@@ -221,18 +237,26 @@ const Home = () => {
   ];
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
-        {/* User Header */}
-        {currentUser && (
-          <div className="flex justify-between items-center mb-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 shadow-sm animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      {/* Header com informações do usuário */}
+      <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">{currentUser.split(' ').map(n => n[0]).join('').slice(0, 2)}</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-sm">GA</span>
               </div>
-              <span className="text-slate-700 font-medium">{currentUser}</span>
+              <div>
+                <h1 className="text-xl font-bold text-slate-800">Sistema Athos</h1>
+                <p className="text-sm text-slate-600">Gestão Empresarial Integrada</p>
+              </div>
             </div>
-            <div className="relative">
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <User size={16} />
+                <span>{userEmail}</span>
+              </div>
               <button 
                 onClick={() => setShowNotificationModal(true)}
                 className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors"
@@ -242,10 +266,21 @@ const Home = () => {
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                 )}
               </button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="flex items-center gap-2 text-slate-600 hover:text-slate-800"
+              >
+                <LogOut size={16} />
+                Sair
+              </Button>
             </div>
           </div>
-        )}
-        
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
@@ -385,9 +420,9 @@ const Home = () => {
                 <div>
                   <h3 className="subsection-title mb-2">{section.title}</h3>
                   <p className="text-description leading-relaxed">{section.fullTitle}</p>
-                </div>
-              </div>
-            </div>
+        </div>
+      </div>
+    </div>
           ))}
         </div>
 

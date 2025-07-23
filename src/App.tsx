@@ -1,13 +1,13 @@
-
-import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
+import LoginHome from "./pages/LoginHome";
+import Home from "./pages/Home";
 import DP from "./pages/DP";
 import Comercial from "./pages/Comercial";
 import ClientesFornecedores from "./pages/ClientesFornecedores";
@@ -26,69 +26,109 @@ import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Verificar se há uma sessão salva
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      setCurrentUser(savedUser);
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLogin = (email: string) => {
-    setCurrentUser(email);
-    setIsAuthenticated(true);
-    localStorage.setItem('currentUser', email);
-  };
-
-  // Se não estiver autenticado, mostrar apenas a tela de login
-  if (!isAuthenticated) {
-    return (
-      <QueryClientProvider client={queryClient}>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <Login onLogin={handleLogin} />
+          <BrowserRouter>
+            <Routes>
+              {/* Rota de login - página inicial */}
+              <Route path="/" element={<LoginHome />} />
+              
+              {/* Rotas protegidas */}
+              <Route path="/home" element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/dp" element={
+                <ProtectedRoute>
+                  <DP />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/agenda" element={
+                <ProtectedRoute>
+                  <Agenda />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/comercial" element={
+                <ProtectedRoute>
+                  <Comercial />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/comercial/clientes-fornecedores" element={
+                <ProtectedRoute>
+                  <ClientesFornecedores />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/comercial/contratos-propostas" element={
+                <ProtectedRoute>
+                  <ContratosPropostas />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/gerencia" element={
+                <ProtectedRoute>
+                  <Gerencia />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/manuais" element={
+                <ProtectedRoute>
+                  <Manuais />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/configuracoes" element={
+                <ProtectedRoute>
+                  <Configuracoes />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/configuracoes/contratos-propostas" element={
+                <ProtectedRoute>
+                  <EdicaoContratosPropostas />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/portal-admissao" element={<PortalAdmissao />} />
+              <Route path="/portal-vagas" element={<PortalVagas />} />
+              <Route path="/portal-midia-externa" element={
+                <ProtectedRoute>
+                  <PortalMidiaExterna />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cicad" element={
+                <ProtectedRoute>
+                  <CICAD />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cicad-formulario" element={<CICADFormulario />} />
+              
+              <Route path="/processo-seletivo" element={
+                <ProtectedRoute>
+                  <ProcessoSeletivo />
+                </ProtectedRoute>
+              } />
+              
+              {/* Catch-all route para páginas não encontradas */}
+              <Route path="*" element={<LoginHome />} />
+            </Routes>
+          </BrowserRouter>
         </TooltipProvider>
-      </QueryClientProvider>
-    );
-  }
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter basename="/">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            
-            <Route path="/dp" element={<DP />} />
-            <Route path="/agenda" element={<Agenda />} />
-            <Route path="/comercial" element={<Comercial />} />
-            <Route path="/comercial/clientes-fornecedores" element={<ClientesFornecedores />} />
-            <Route path="/comercial/contratos-propostas" element={<ContratosPropostas />} />
-            <Route path="/gerencia" element={<Gerencia />} />
-            <Route path="/manuais" element={<Manuais />} />
-            <Route path="/configuracoes" element={<Configuracoes />} />
-            <Route path="/configuracoes/contratos-propostas" element={<EdicaoContratosPropostas />} />
-            <Route path="/portal-admissao" element={<PortalAdmissao />} />
-            <Route path="/portal-vagas" element={<PortalVagas />} />
-            <Route path="/portal-midia-externa" element={<PortalMidiaExterna />} />
-            <Route path="/cicad" element={<CICAD />} />
-            <Route path="/cicad-formulario" element={<CICADFormulario />} />
-            <Route path="/processo-seletivo" element={<ProcessoSeletivo />} />
-            {/* Catch-all route para páginas não encontradas */}
-            <Route path="*" element={<Home />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
