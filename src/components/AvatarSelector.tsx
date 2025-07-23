@@ -107,7 +107,7 @@ export function AvatarSelector({ open, onOpenChange, currentAvatar, onSelectAvat
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md aspect-square rounded-2xl">
         <DialogHeader>
           <DialogTitle>Escolher Avatar</DialogTitle>
         </DialogHeader>

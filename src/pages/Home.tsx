@@ -26,6 +26,7 @@ import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
+import { AvatarSelector } from "@/components/AvatarSelector";
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +44,35 @@ const Home = () => {
   const [currentUser, setCurrentUser] = useState<string>("");
   const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState("👨");
+  const [selectedRole, setSelectedRole] = useState("");
+
+  // Estados para os avatares dos cargos
+  const [roleAvatars, setRoleAvatars] = useState({
+    direcaoOperacional: "👨",
+    direcaoFinanceira: "👩",
+    gerencia: "👱‍♀️",
+    fiscais: "🧔",
+    supervisores: "👨‍💼",
+    dpRh: "👩‍💼"
+  });
+
+  const handleAvatarClick = (role: string) => {
+    setSelectedRole(role);
+    const currentAvatar = roleAvatars[role as keyof typeof roleAvatars];
+    setSelectedAvatar(currentAvatar);
+    setShowAvatarSelector(true);
+  };
+
+  const handleSelectAvatar = (emoji: string) => {
+    if (selectedRole) {
+      setRoleAvatars(prev => ({
+        ...prev,
+        [selectedRole]: emoji
+      }));
+    }
+  };
 
   const handleLogout = () => {
     toast({
@@ -246,156 +276,78 @@ const Home = () => {
               <div className="flex items-center gap-2">
                 {/* Direção Operacional */}
                 <div className="relative group">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-stone-200 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-6 h-6 relative">
-                      {/* Cabeça */}
-                      <div className="w-4 h-4 bg-amber-100 rounded-full absolute top-0 left-1 border border-amber-200"></div>
-                      {/* Cabelo */}
-                      <div className="w-5 h-2 bg-stone-600 rounded-t-full absolute -top-0.5 left-0.5"></div>
-                      {/* Olhos */}
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-1.5"></div>
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-2.5"></div>
-                      {/* Nariz */}
-                      <div className="w-0.5 h-0.5 bg-amber-200 rounded-full absolute top-1.5 left-2"></div>
-                      {/* Boca */}
-                      <div className="w-1 h-0.5 bg-rose-400 rounded-full absolute top-2 left-1.5"></div>
-                      {/* Corpo/Camisa */}
-                      <div className="w-5 h-3 bg-slate-600 rounded-t-lg absolute top-3.5 left-0.5"></div>
-                      {/* Gravata */}
-                      <div className="w-0.5 h-2 bg-stone-700 absolute top-3.5 left-2.5"></div>
-                    </div>
-                  </div>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 w-32 h-8 flex items-center justify-center">
+                  <button
+                    onClick={() => handleAvatarClick("direcaoOperacional")}
+                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
+                  >
+                    {roleAvatars.direcaoOperacional}
+                  </button>
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Direção Operacional
                   </div>
                 </div>
                 
                 {/* Direção Financeira */}
                 <div className="relative group">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-emerald-200 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-6 h-6 relative">
-                      {/* Cabeça */}
-                      <div className="w-4 h-4 bg-amber-100 rounded-full absolute top-0 left-1 border border-amber-200"></div>
-                      {/* Cabelo */}
-                      <div className="w-5 h-2 bg-amber-700 rounded-t-full absolute -top-0.5 left-0.5"></div>
-                      {/* Olhos */}
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-1.5"></div>
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-2.5"></div>
-                      {/* Nariz */}
-                      <div className="w-0.5 h-0.5 bg-amber-200 rounded-full absolute top-1.5 left-2"></div>
-                      {/* Boca */}
-                      <div className="w-1 h-0.5 bg-rose-400 rounded-full absolute top-2 left-1.5"></div>
-                      {/* Corpo/Camisa */}
-                      <div className="w-5 h-3 bg-emerald-600 rounded-t-lg absolute top-3.5 left-0.5"></div>
-                      {/* Colarinho */}
-                      <div className="w-4 h-0.5 bg-stone-100 absolute top-3.5 left-1"></div>
-                    </div>
-                  </div>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 w-32 h-8 flex items-center justify-center">
+                  <button
+                    onClick={() => handleAvatarClick("direcaoFinanceira")}
+                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
+                  >
+                    {roleAvatars.direcaoFinanceira}
+                  </button>
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Direção Financeira
                   </div>
                 </div>
                 
                 {/* Gerência */}
                 <div className="relative group">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-rose-200 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-6 h-6 relative">
-                      {/* Cabeça */}
-                      <div className="w-4 h-4 bg-amber-100 rounded-full absolute top-0 left-1 border border-amber-200"></div>
-                      {/* Cabelo feminino */}
-                      <div className="w-5 h-3 bg-amber-800 rounded-t-full absolute -top-0.5 left-0.5"></div>
-                      <div className="w-0.5 h-1.5 bg-amber-800 rounded-b-lg absolute top-1 left-0.5"></div>
-                      <div className="w-0.5 h-1.5 bg-amber-800 rounded-b-lg absolute top-1 right-0.5"></div>
-                      {/* Olhos */}
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-1.5"></div>
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-2.5"></div>
-                      {/* Nariz */}
-                      <div className="w-0.5 h-0.5 bg-amber-200 rounded-full absolute top-1.5 left-2"></div>
-                      {/* Boca */}
-                      <div className="w-1 h-0.5 bg-rose-400 rounded-full absolute top-2 left-1.5"></div>
-                      {/* Corpo/Blusa */}
-                      <div className="w-5 h-3 bg-rose-400 rounded-t-lg absolute top-3.5 left-0.5"></div>
-                    </div>
-                  </div>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 w-20 h-8 flex items-center justify-center">
+                  <button
+                    onClick={() => handleAvatarClick("gerencia")}
+                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
+                  >
+                    {roleAvatars.gerencia}
+                  </button>
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Gerência
                   </div>
                 </div>
                 
                 {/* Fiscais Operacionais */}
                 <div className="relative group">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-amber-200 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-6 h-6 relative">
-                      {/* Cabeça */}
-                      <div className="w-4 h-4 bg-amber-100 rounded-full absolute top-0 left-1 border border-amber-200"></div>
-                      {/* Cabelo curto */}
-                      <div className="w-4 h-1.5 bg-stone-700 rounded-t-full absolute -top-0.5 left-1"></div>
-                      {/* Olhos */}
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-1.5"></div>
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-2.5"></div>
-                      {/* Nariz */}
-                      <div className="w-0.5 h-0.5 bg-amber-200 rounded-full absolute top-1.5 left-2"></div>
-                      {/* Boca */}
-                      <div className="w-1 h-0.5 bg-rose-400 rounded-full absolute top-2 left-1.5"></div>
-                      {/* Corpo/Uniforme */}
-                      <div className="w-5 h-3 bg-amber-600 rounded-t-lg absolute top-3.5 left-0.5"></div>
-                      {/* Emblema */}
-                      <div className="w-0.5 h-0.5 bg-stone-100 rounded-full absolute top-4 left-0.5"></div>
-                    </div>
-                  </div>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 w-36 h-8 flex items-center justify-center">
+                  <button
+                    onClick={() => handleAvatarClick("fiscais")}
+                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
+                  >
+                    {roleAvatars.fiscais}
+                  </button>
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Fiscais Operacionais
                   </div>
                 </div>
                 
                 {/* Supervisores Regionais */}
                 <div className="relative group">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-orange-200 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-6 h-6 relative">
-                      {/* Cabeça */}
-                      <div className="w-4 h-4 bg-amber-100 rounded-full absolute top-0 left-1 border border-amber-200"></div>
-                      {/* Cabelo */}
-                      <div className="w-5 h-2 bg-stone-600 rounded-t-full absolute -top-0.5 left-0.5"></div>
-                      {/* Olhos */}
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-1.5"></div>
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-2.5"></div>
-                      {/* Nariz */}
-                      <div className="w-0.5 h-0.5 bg-amber-200 rounded-full absolute top-1.5 left-2"></div>
-                      {/* Boca */}
-                      <div className="w-1 h-0.5 bg-rose-400 rounded-full absolute top-2 left-1.5"></div>
-                      {/* Corpo/Camisa */}
-                      <div className="w-5 h-3 bg-orange-500 rounded-t-lg absolute top-3.5 left-0.5"></div>
-                      {/* Colarinho */}
-                      <div className="w-3 h-0.5 bg-stone-100 absolute top-3.5 left-1.5"></div>
-                    </div>
-                  </div>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 w-40 h-8 flex items-center justify-center">
+                  <button
+                    onClick={() => handleAvatarClick("supervisores")}
+                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
+                  >
+                    {roleAvatars.supervisores}
+                  </button>
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Supervisores Regionais
                   </div>
                 </div>
                 
                 {/* DP e RH */}
                 <div className="relative group">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-violet-200 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-6 h-6 relative">
-                      {/* Cabeça */}
-                      <div className="w-4 h-4 bg-amber-100 rounded-full absolute top-0 left-1 border border-amber-200"></div>
-                      {/* Cabelo feminino longo */}
-                      <div className="w-5 h-3 bg-amber-700 rounded-t-full absolute -top-0.5 left-0.5"></div>
-                      <div className="w-1 h-2 bg-amber-700 rounded-b-lg absolute top-1.5 left-0"></div>
-                      <div className="w-1 h-2 bg-amber-700 rounded-b-lg absolute top-1.5 right-0"></div>
-                      {/* Olhos */}
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-1.5"></div>
-                      <div className="w-0.5 h-0.5 bg-slate-800 rounded-full absolute top-1 left-2.5"></div>
-                      {/* Nariz */}
-                      <div className="w-0.5 h-0.5 bg-amber-200 rounded-full absolute top-1.5 left-2"></div>
-                      {/* Boca */}
-                      <div className="w-1 h-0.5 bg-rose-400 rounded-full absolute top-2 left-1.5"></div>
-                      {/* Corpo/Blusa */}
-                      <div className="w-5 h-3 bg-violet-500 rounded-t-lg absolute top-3.5 left-0.5"></div>
-                    </div>
-                  </div>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 w-20 h-8 flex items-center justify-center">
+                  <button
+                    onClick={() => handleAvatarClick("dpRh")}
+                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
+                  >
+                    {roleAvatars.dpRh}
+                  </button>
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     DP e RH
                   </div>
                 </div>
@@ -628,6 +580,14 @@ const Home = () => {
             </div>
           </div>
         )}
+
+        {/* Modal do AvatarSelector */}
+        <AvatarSelector
+          open={showAvatarSelector}
+          onOpenChange={setShowAvatarSelector}
+          currentAvatar={selectedAvatar}
+          onSelectAvatar={handleSelectAvatar}
+        />
       </div>
     </div>
   );
