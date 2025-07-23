@@ -120,6 +120,11 @@ const getClassificacaoIcon = (classificacao: string) => {
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange, onFuncionarioUpdate }: FuncionarioDetalhesModalProps) {
   const { toast } = useToast();
   const { historico, loading: loadingHistorico, adicionarRegistro } = useFuncionarioHistorico(funcionario.id);
+  
+  // Função para obter o usuário atual logado
+  const getCurrentUser = () => {
+    return localStorage.getItem('currentUser') || 'usuario@sistema.com';
+  };
   const [statusAtual, setStatusAtual] = useState(funcionario.status);
   const [showDateInput, setShowDateInput] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
@@ -132,19 +137,20 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     titulo: "",
     descricao: "",
     tipo: "neutro" as "positivo" | "neutro" | "negativo",
-    registradoPor: "",
+    registradoPor: getCurrentUser(),
     arquivo: null as File | null
   });
   
   // Lista de usuários disponíveis
   const usuariosDisponiveis = [
+    getCurrentUser(),
     'leandrogomes@grupoathosbrasil.com',
     'dp@grupoathosbrasil.com', 
     'financeiro@grupoathosbrasil.com',
     'gerencia@grupoathosbrasil.com',
     'thiago@grupoathosbrasil.com',
     'diego@grupoathosbrasil.com'
-  ];
+  ].filter((usuario, index, array) => array.indexOf(usuario) === index); // Remove duplicados
   
   // Estados para edição inline
   const [isEditing, setIsEditing] = useState(false);
@@ -237,7 +243,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
       novoRegistro.titulo,
       novoRegistro.descricao,
       novoRegistro.tipo,
-      'Usuário Atual'
+      getCurrentUser(),
     );
 
     if (sucesso) {
@@ -246,7 +252,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         titulo: "",
         descricao: "",
         tipo: "neutro",
-        registradoPor: "",
+        registradoPor: getCurrentUser(),
         arquivo: null
       });
     }

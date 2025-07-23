@@ -104,7 +104,7 @@ const HistoricoModal = ({ isOpen, onClose, clienteNome, clienteId }: HistoricoMo
         tipo: newRecord.tipo,
         titulo: newRecord.titulo,
         descricao: newRecord.descricao,
-        usuario: "Usuário Atual"
+        usuario: localStorage.getItem('currentUser') || 'usuario@sistema.com'
       };
       
       const novosHistoricos = [registro, ...historicos];

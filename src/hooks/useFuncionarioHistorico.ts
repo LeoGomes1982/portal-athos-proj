@@ -53,7 +53,7 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
     titulo: string, 
     descricao: string, 
     tipo: 'positivo' | 'neutro' | 'negativo' = 'neutro',
-    usuario: string = 'Sistema',
+    usuario: string = localStorage.getItem('currentUser') || 'sistema@empresa.com',
     arquivo?: File
   ) => {
     try {
