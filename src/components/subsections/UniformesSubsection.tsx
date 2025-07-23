@@ -196,7 +196,7 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container bg-white min-h-screen">
       <div className="content-wrapper">
         {/* Back Button */}
         <Button variant="ghost" className="mb-6" onClick={onBack}>
@@ -217,49 +217,49 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">👔</div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {totalUniformes}
               </div>
-              <div className="text-sm text-blue-600/80 mb-1">Total Uniformes</div>
-              <div className="text-xs text-blue-500 font-medium">
+              <div className="text-sm text-gray-600 mb-1">Total Uniformes</div>
+              <div className="text-xs text-gray-500 font-medium">
                 Valor: R$ {estoque.filter(item => item.categoria === "uniforme").reduce((sum, item) => sum + (item.valorCompra || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">🛡️</div>
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {totalEPIs}
               </div>
-              <div className="text-sm text-orange-600/80 mb-1">Total EPIs</div>
-              <div className="text-xs text-orange-500 font-medium">
+              <div className="text-sm text-gray-600 mb-1">Total EPIs</div>
+              <div className="text-xs text-gray-500 font-medium">
                 Valor: R$ {estoque.filter(item => item.categoria === "epi").reduce((sum, item) => sum + (item.valorCompra || 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">📦</div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {totalEntregas}
               </div>
-              <div className="text-sm text-green-600/80">Entregas Realizadas</div>
+              <div className="text-sm text-gray-600">Entregas Realizadas</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">💰</div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-gray-700">
                 R$ {totalValorCompras.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
-              <div className="text-sm text-purple-600/80">Valor das Compras</div>
+              <div className="text-sm text-gray-600">Valor das Compras</div>
             </CardContent>
           </Card>
         </div>
