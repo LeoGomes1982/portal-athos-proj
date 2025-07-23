@@ -47,6 +47,7 @@ const Home = () => {
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState("👨");
   const [selectedRole, setSelectedRole] = useState("");
+  const [loginAvatar, setLoginAvatar] = useState("👨"); // Avatar selecionado como login
 
   // Estados para os avatares dos cargos
   const [roleAvatars, setRoleAvatars] = useState({
@@ -72,6 +73,10 @@ const Home = () => {
         [selectedRole]: emoji
       }));
     }
+  };
+
+  const handleLoginAvatarClick = (avatar: string) => {
+    setLoginAvatar(avatar);
   };
 
   const handleLogout = () => {
@@ -267,121 +272,119 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      {/* Header com informações do usuário */}
+      {/* Header com seleção de avatar para login */}
       <div className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Avatares dos cargos em linha */}
-              <div className="flex items-center gap-2">
-                {/* Direção Operacional */}
-                <div className="relative group">
-                  <button
-                    onClick={() => handleAvatarClick("direcaoOperacional")}
-                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
-                  >
-                    {roleAvatars.direcaoOperacional}
-                  </button>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                    Direção Operacional
-                  </div>
-                </div>
-                
-                {/* Direção Financeira */}
-                <div className="relative group">
-                  <button
-                    onClick={() => handleAvatarClick("direcaoFinanceira")}
-                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
-                  >
-                    {roleAvatars.direcaoFinanceira}
-                  </button>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                    Direção Financeira
-                  </div>
-                </div>
-                
-                {/* Gerência */}
-                <div className="relative group">
-                  <button
-                    onClick={() => handleAvatarClick("gerencia")}
-                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
-                  >
-                    {roleAvatars.gerencia}
-                  </button>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                    Gerência
-                  </div>
-                </div>
-                
-                {/* Fiscais Operacionais */}
-                <div className="relative group">
-                  <button
-                    onClick={() => handleAvatarClick("fiscais")}
-                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
-                  >
-                    {roleAvatars.fiscais}
-                  </button>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                    Fiscais Operacionais
-                  </div>
-                </div>
-                
-                {/* Supervisores Regionais */}
-                <div className="relative group">
-                  <button
-                    onClick={() => handleAvatarClick("supervisores")}
-                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
-                  >
-                    {roleAvatars.supervisores}
-                  </button>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                    Supervisores Regionais
-                  </div>
-                </div>
-                
-                {/* DP e RH */}
-                <div className="relative group">
-                  <button
-                    onClick={() => handleAvatarClick("dpRh")}
-                    className="w-8 h-8 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-xl"
-                  >
-                    {roleAvatars.dpRh}
-                  </button>
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                    DP e RH
-                  </div>
-                </div>
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-center">
+            {/* Avatares dos cargos em linha */}
+            <div className="flex items-center gap-6">
+              {/* Direção Operacional */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleLoginAvatarClick(roleAvatars.direcaoOperacional);
+                    handleAvatarClick("direcaoOperacional");
+                  }}
+                  className={`w-12 h-12 rounded-lg border-2 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-2xl ${
+                    loginAvatar === roleAvatars.direcaoOperacional 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {roleAvatars.direcaoOperacional}
+                </button>
+                <span className="text-xs text-slate-600 font-medium">Direção Operacional</span>
               </div>
               
-              <div>
-                <h1 className="text-xl font-bold text-slate-800">Sistema Athos</h1>
-                <p className="text-sm text-slate-600">Gestão Empresarial Integrada</p>
+              {/* Direção Financeira */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleLoginAvatarClick(roleAvatars.direcaoFinanceira);
+                    handleAvatarClick("direcaoFinanceira");
+                  }}
+                  className={`w-12 h-12 rounded-lg border-2 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-2xl ${
+                    loginAvatar === roleAvatars.direcaoFinanceira 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {roleAvatars.direcaoFinanceira}
+                </button>
+                <span className="text-xs text-slate-600 font-medium">Direção Financeira</span>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <User size={16} />
-                <span>{currentUser || "Usuário"}</span>
+              
+              {/* Gerência */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleLoginAvatarClick(roleAvatars.gerencia);
+                    handleAvatarClick("gerencia");
+                  }}
+                  className={`w-12 h-12 rounded-lg border-2 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-2xl ${
+                    loginAvatar === roleAvatars.gerencia 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {roleAvatars.gerencia}
+                </button>
+                <span className="text-xs text-slate-600 font-medium">Gerência</span>
               </div>
-              <button 
-                onClick={() => setShowNotificationModal(true)}
-                className="relative p-2 text-slate-600 hover:text-blue-600 transition-colors"
-              >
-                <Bell size={20} />
-                {hasAgendaNotification && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                )}
-              </button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="flex items-center gap-2 text-slate-600 hover:text-slate-800"
-              >
-                <LogOut size={16} />
-                Sair
-              </Button>
+              
+              {/* Fiscais Operacionais */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleLoginAvatarClick(roleAvatars.fiscais);
+                    handleAvatarClick("fiscais");
+                  }}
+                  className={`w-12 h-12 rounded-lg border-2 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-2xl ${
+                    loginAvatar === roleAvatars.fiscais 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {roleAvatars.fiscais}
+                </button>
+                <span className="text-xs text-slate-600 font-medium">Fiscais Operacionais</span>
+              </div>
+              
+              {/* Supervisores Regionais */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleLoginAvatarClick(roleAvatars.supervisores);
+                    handleAvatarClick("supervisores");
+                  }}
+                  className={`w-12 h-12 rounded-lg border-2 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-2xl ${
+                    loginAvatar === roleAvatars.supervisores 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {roleAvatars.supervisores}
+                </button>
+                <span className="text-xs text-slate-600 font-medium">Supervisores Regionais</span>
+              </div>
+              
+              {/* DP e RH */}
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleLoginAvatarClick(roleAvatars.dpRh);
+                    handleAvatarClick("dpRh");
+                  }}
+                  className={`w-12 h-12 rounded-lg border-2 shadow-sm hover:shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center text-2xl ${
+                    loginAvatar === roleAvatars.dpRh 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  {roleAvatars.dpRh}
+                </button>
+                <span className="text-xs text-slate-600 font-medium">DP e RH</span>
+              </div>
             </div>
           </div>
         </div>
