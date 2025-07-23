@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
 import { HistoricoDocumentViewModal } from "./HistoricoDocumentViewModal";
+import { DeleteInfoModal } from "./DeleteInfoModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { format } from "date-fns";
@@ -161,6 +162,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [showDocumentoModal, setShowDocumentoModal] = useState(false);
   const [showDocumentViewModal, setShowDocumentViewModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   // Estados para uniformes e EPIs
   const [uniformes, setUniformes] = useState<any[]>([]);
@@ -1279,14 +1281,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                             Tamanho: {uniforme.tamanho} • Entregue em: {new Date(uniforme.dataEntrega).toLocaleDateString('pt-BR')}
                           </p>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleRemoverUniforme(uniforme.id)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     ))}
                   </div>
@@ -1491,6 +1485,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
               >
                 Fechar
               </Button>
+              <Button 
+                onClick={() => setShowDeleteModal(true)}
+                className="bg-red-600 hover:bg-red-700 text-white shadow-lg"
+              >
+                🗑️ Deletar Informações
+              </Button>
               <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
                 📄 Ver Documentos
               </Button>
@@ -1524,6 +1524,13 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
           arquivo={selectedDocument}
         />
       )}
+
+      <DeleteInfoModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        funcionarioId={funcionario.id}
+        funcionarioNome={funcionario.nome}
+      />
     </>
   );
 }
