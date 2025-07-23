@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
@@ -265,11 +265,36 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const getClassificacaoIcon = (classificacao: string) => {
     switch (classificacao) {
-      case "positiva": return "👍";
-      case "negativa": return "👎"; 
+      case "positiva": return <Check className="w-4 h-4 text-green-600" />;
+      case "negativa": return <X className="w-4 h-4 text-red-600" />; 
       case "neutra": return "➖";
       default: return "➖";
     }
+  };
+
+  // Função para calcular pontos de atividade
+  const calcularPontosAtividade = () => {
+    let pontos = 0;
+    let registrosNeutros = 0;
+
+    historico.forEach((registro) => {
+      switch (registro.classificacao) {
+        case "positiva":
+          pontos += 10;
+          break;
+        case "negativa":
+          pontos -= 3;
+          break;
+        case "neutra":
+          registrosNeutros += 1;
+          break;
+      }
+    });
+
+    // A cada 2 registros neutros, adiciona 1 ponto
+    pontos += Math.floor(registrosNeutros / 2);
+
+    return pontos;
   };
 
   const getClassificacaoColor = (classificacao: string) => {
@@ -441,6 +466,17 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                         ))}
                       </SelectContent>
                     </Select>
+                    
+                    {/* Pontos de Atividade */}
+                    <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-yellow-500 fill-yellow-400" />
+                        <div>
+                          <p className="text-xs font-medium text-slate-600">Pontos de Atividade</p>
+                          <p className="text-2xl font-bold text-blue-700">{calcularPontosAtividade()}</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1384,7 +1420,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-lg">{getClassificacaoIcon(registro.classificacao)}</span>
+                                <div className="flex items-center justify-center w-5 h-5">{getClassificacaoIcon(registro.classificacao)}</div>
                                 <span className="font-medium text-sm capitalize">{registro.classificacao}</span>
                                 <span className="text-xs text-gray-500">
                                   {new Date(registro.data).toLocaleString('pt-BR')}
