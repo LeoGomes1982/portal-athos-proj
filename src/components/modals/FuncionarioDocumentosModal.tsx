@@ -60,24 +60,34 @@ export function FuncionarioDocumentosModal({
 
     // Adicionar documentos da seção Documentos
     documentos.forEach((doc) => {
+      // Verificar se doc.arquivo é um objeto File válido
+      if (!doc.arquivo || typeof doc.arquivo !== 'object' || (!('type' in doc.arquivo) && !('size' in doc.arquivo))) {
+        console.warn('Documento sem arquivo válido:', doc);
+        return;
+      }
+
       const dataValidade = doc.dataValidade ? new Date(doc.dataValidade) : null;
       const isExpired = dataValidade ? dataValidade < hoje : false;
       const isExpiring = dataValidade ? (dataValidade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24) <= 2 && !isExpired : false;
 
-      todosDocumentos.push({
-        id: `doc_${doc.id}`,
-        nome: doc.nome,
-        tipo: doc.arquivo.type || 'application/octet-stream',
-        tamanho: doc.arquivo.size,
-        dataUpload: doc.dataUpload,
-        arquivo: doc.arquivo,
-        url: URL.createObjectURL(doc.arquivo),
-        temValidade: doc.temValidade,
-        dataValidade: doc.dataValidade,
-        fonte: 'documentos',
-        isExpired,
-        isExpiring
-      });
+      try {
+        todosDocumentos.push({
+          id: `doc_${doc.id}`,
+          nome: doc.nome,
+          tipo: doc.arquivo.type || 'application/octet-stream',
+          tamanho: doc.arquivo.size,
+          dataUpload: doc.dataUpload,
+          arquivo: doc.arquivo,
+          url: URL.createObjectURL(doc.arquivo),
+          temValidade: doc.temValidade,
+          dataValidade: doc.dataValidade,
+          fonte: 'documentos',
+          isExpired,
+          isExpiring
+        });
+      } catch (error) {
+        console.error('Erro ao criar URL para documento:', doc, error);
+      }
     });
 
     // Adicionar documentos do histórico
@@ -117,7 +127,7 @@ export function FuncionarioDocumentosModal({
 
   const handleDownload = async (documento: DocumentoUnificado) => {
     try {
-      if (documento.arquivo) {
+      if (documento.arquivo && documento.arquivo instanceof File) {
         // Para documentos locais (File objects)
         const url = URL.createObjectURL(documento.arquivo);
         const a = document.createElement('a');
@@ -157,9 +167,18 @@ export function FuncionarioDocumentosModal({
   const handleView = (documento: DocumentoUnificado) => {
     if (documento.url) {
       window.open(documento.url, '_blank');
-    } else if (documento.arquivo) {
-      const url = URL.createObjectURL(documento.arquivo);
-      window.open(url, '_blank');
+    } else if (documento.arquivo && documento.arquivo instanceof File) {
+      try {
+        const url = URL.createObjectURL(documento.arquivo);
+        window.open(url, '_blank');
+      } catch (error) {
+        console.error('Erro ao visualizar documento:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao visualizar o arquivo.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
