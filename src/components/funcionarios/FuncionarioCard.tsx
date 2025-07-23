@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, AlertTriangle, FileX, Hourglass } from "lucide-react";
+import { Star, AlertTriangle, FileX, Hourglass, Sun } from "lucide-react";
 import { Funcionario } from "@/types/funcionario";
 import { statusConfig } from "@/config/funcionarioStatus";
 import { isProximoDoFim } from "@/utils/funcionarioUtils";
@@ -213,7 +213,7 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
                     {statusInfo.label}
                   </Badge>
                   <div className="mt-2 flex items-center justify-end gap-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-yellow-400" />
+                    <Sun className="w-3 h-3 text-yellow-500 fill-yellow-400" />
                     <span className="text-sm font-semibold text-blue-700">
                       {calcularPontosAtividade()} pts
                     </span>
