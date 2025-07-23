@@ -44,16 +44,16 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
         
         historico.forEach((registro: any) => {
           console.log('Processando registro:', registro);
-          switch (registro.classificacao) {
-            case "positiva":
+          switch (registro.tipo) {
+            case "positivo":
               pontos += 10;
-              console.log('Adicionado 10 pontos (positiva), total:', pontos);
+              console.log('Adicionado 10 pontos (positivo), total:', pontos);
               break;
-            case "negativa":
+            case "negativo":
               pontos -= 3;
-              console.log('Subtraído 3 pontos (negativa), total:', pontos);
+              console.log('Subtraído 3 pontos (negativo), total:', pontos);
               break;
-            case "neutra":
+            case "neutro":
               registrosNeutros += 1;
               console.log('Registro neutro encontrado, total neutros:', registrosNeutros);
               break;
