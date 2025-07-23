@@ -117,6 +117,34 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
     }
   };
 
+  // Remover registro
+  const removerRegistro = async (registroId: string) => {
+    try {
+      const { error } = await supabase
+        .from('funcionario_historico')
+        .delete()
+        .eq('id', registroId);
+
+      if (error) throw error;
+
+      setHistorico(prev => prev.filter(registro => registro.id !== registroId));
+      toast({
+        title: "Sucesso",
+        description: "Registro removido do histórico",
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Erro ao remover registro:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o registro",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
   // Escutar mudanças em tempo real
   useEffect(() => {
     if (!funcionarioId) return;
@@ -151,6 +179,7 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
     historico,
     loading,
     adicionarRegistro,
+    removerRegistro,
     carregarHistorico
   };
 };

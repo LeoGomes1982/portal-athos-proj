@@ -20,7 +20,7 @@ interface DeleteInfoModalProps {
 
 export function DeleteInfoModal({ isOpen, onClose, funcionarioId, funcionarioNome, onDataUpdate }: DeleteInfoModalProps) {
   const { toast } = useToast();
-  const { historico } = useFuncionarioHistorico(funcionarioId);
+  const { historico, removerRegistro } = useFuncionarioHistorico(funcionarioId);
   const { dependentes, documentos, removerDependente, removerDocumento } = useFuncionarioData(funcionarioId);
   
   const [step, setStep] = useState(1); // 1: senha, 2: formulário, 3: lista itens
@@ -63,7 +63,7 @@ export function DeleteInfoModal({ isOpen, onClose, funcionarioId, funcionarioNom
     setStep(3);
   };
 
-  const handleDeleteItem = (itemId: string, itemName: string, itemType: string) => {
+  const handleDeleteItem = async (itemId: string, itemName: string, itemType: string) => {
     let success = false;
     
     try {
@@ -83,8 +83,8 @@ export function DeleteInfoModal({ isOpen, onClose, funcionarioId, funcionarioNom
           success = true;
           break;
         case "historico":
-          // Para histórico, vamos apenas registrar a exclusão no log
-          success = true;
+          const historicoRemovido = await removerRegistro(itemId);
+          success = historicoRemovido;
           break;
       }
 
