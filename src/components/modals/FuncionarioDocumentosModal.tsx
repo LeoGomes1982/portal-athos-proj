@@ -17,6 +17,7 @@ import {
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FuncionarioDocumentosModalProps {
   isOpen: boolean;
@@ -55,58 +56,97 @@ export function FuncionarioDocumentosModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    const todosDocumentos: DocumentoUnificado[] = [];
-    const hoje = new Date();
+    const carregarDocumentosUnificados = async () => {
+      const todosDocumentos: DocumentoUnificado[] = [];
+      const hoje = new Date();
 
-    // Adicionar documentos da seção Documentos
-    documentos.forEach((doc) => {
-      // Verificar se doc.arquivo é um objeto File válido
-      if (!doc.arquivo || typeof doc.arquivo !== 'object' || (!('type' in doc.arquivo) && !('size' in doc.arquivo))) {
-        console.warn('Documento sem arquivo válido:', doc);
-        return;
-      }
-
-      const dataValidade = doc.dataValidade ? new Date(doc.dataValidade) : null;
-      const isExpired = dataValidade ? dataValidade < hoje : false;
-      const isExpiring = dataValidade ? (dataValidade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24) <= 2 && !isExpired : false;
-
+      // Buscar documentos do Supabase
       try {
-        todosDocumentos.push({
-          id: `doc_${doc.id}`,
-          nome: doc.nome,
-          tipo: doc.arquivo.type || 'application/octet-stream',
-          tamanho: doc.arquivo.size,
-          dataUpload: doc.dataUpload,
-          arquivo: doc.arquivo,
-          url: URL.createObjectURL(doc.arquivo),
-          temValidade: doc.temValidade,
-          dataValidade: doc.dataValidade,
-          fonte: 'documentos',
-          isExpired,
-          isExpiring
-        });
+        const { data: documentosSupabase, error } = await supabase
+          .from('funcionario_documentos')
+          .select('*')
+          .eq('funcionario_id', funcionarioId)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Erro ao buscar documentos do Supabase:', error);
+        } else if (documentosSupabase) {
+          documentosSupabase.forEach((doc) => {
+            const dataValidade = doc.data_validade ? new Date(doc.data_validade) : null;
+            const isExpired = dataValidade ? dataValidade < hoje : false;
+            const isExpiring = dataValidade ? (dataValidade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24) <= 2 && !isExpired : false;
+
+            todosDocumentos.push({
+              id: `supabase_${doc.id}`,
+              nome: doc.nome,
+              tipo: doc.arquivo_tipo,
+              tamanho: doc.arquivo_tamanho,
+              dataUpload: doc.created_at,
+              url: doc.arquivo_url,
+              temValidade: doc.tem_validade,
+              dataValidade: doc.data_validade,
+              fonte: 'documentos',
+              isExpired,
+              isExpiring
+            });
+          });
+        }
       } catch (error) {
-        console.error('Erro ao criar URL para documento:', doc, error);
+        console.error('Erro ao carregar documentos do Supabase:', error);
       }
-    });
 
-    // Adicionar documentos do histórico
-    historico.forEach((reg) => {
-      if (reg.arquivo_nome && reg.arquivo_url) {
-        todosDocumentos.push({
-          id: `hist_${reg.id}`,
-          nome: reg.arquivo_nome,
-          tipo: reg.arquivo_tipo || 'application/octet-stream',
-          tamanho: reg.arquivo_tamanho,
-          dataUpload: reg.created_at,
-          url: reg.arquivo_url,
-          fonte: 'historico'
-        });
-      }
-    });
+      // Adicionar documentos locais da seção Documentos
+      documentos.forEach((doc) => {
+        // Verificar se doc.arquivo é um objeto File válido
+        if (!doc.arquivo || typeof doc.arquivo !== 'object' || (!('type' in doc.arquivo) && !('size' in doc.arquivo))) {
+          console.warn('Documento sem arquivo válido:', doc);
+          return;
+        }
 
-    setDocumentosUnificados(todosDocumentos);
-  }, [documentos, historico, isOpen]);
+        const dataValidade = doc.dataValidade ? new Date(doc.dataValidade) : null;
+        const isExpired = dataValidade ? dataValidade < hoje : false;
+        const isExpiring = dataValidade ? (dataValidade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24) <= 2 && !isExpired : false;
+
+        try {
+          todosDocumentos.push({
+            id: `doc_${doc.id}`,
+            nome: doc.nome,
+            tipo: doc.arquivo.type || 'application/octet-stream',
+            tamanho: doc.arquivo.size,
+            dataUpload: doc.dataUpload,
+            arquivo: doc.arquivo,
+            url: URL.createObjectURL(doc.arquivo),
+            temValidade: doc.temValidade,
+            dataValidade: doc.dataValidade,
+            fonte: 'documentos',
+            isExpired,
+            isExpiring
+          });
+        } catch (error) {
+          console.error('Erro ao criar URL para documento:', doc, error);
+        }
+      });
+
+      // Adicionar documentos do histórico
+      historico.forEach((reg) => {
+        if (reg.arquivo_nome && reg.arquivo_url) {
+          todosDocumentos.push({
+            id: `hist_${reg.id}`,
+            nome: reg.arquivo_nome,
+            tipo: reg.arquivo_tipo || 'application/octet-stream',
+            tamanho: reg.arquivo_tamanho,
+            dataUpload: reg.created_at,
+            url: reg.arquivo_url,
+            fonte: 'historico'
+          });
+        }
+      });
+
+      setDocumentosUnificados(todosDocumentos);
+    };
+
+    carregarDocumentosUnificados();
+  }, [documentos, historico, isOpen, funcionarioId]);
 
   const documentosFiltrados = documentosUnificados.filter(doc =>
     doc.nome.toLowerCase().includes(searchTerm.toLowerCase())

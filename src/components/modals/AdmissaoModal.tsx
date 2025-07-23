@@ -153,6 +153,33 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
     try {
       // Gerar um ID único para o funcionário
       const funcionarioId = Math.floor(Math.random() * 10000) + 1000;
+      let fotoUrl = null;
+
+      // Upload da foto se existir
+      if (formData.foto) {
+        const fileExt = formData.foto.name.split('.').pop();
+        const fileName = `${funcionarioId}_foto_${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('funcionario-documentos')
+          .upload(fileName, formData.foto);
+
+        if (uploadError) {
+          console.error('Erro ao fazer upload da foto:', uploadError);
+          toast({
+            title: "Aviso ⚠️",
+            description: "Erro ao salvar foto, mas o cadastro prosseguirá.",
+            variant: "destructive"
+          });
+        } else {
+          // Obter URL público da foto
+          const { data: urlData } = supabase.storage
+            .from('funcionario-documentos')
+            .getPublicUrl(fileName);
+          
+          fotoUrl = urlData.publicUrl;
+        }
+      }
 
       // Inserir na tabela funcionarios_sync
       const { error } = await supabase
@@ -165,7 +192,7 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
           data_admissao: formData.dataAdmissao || null,
           telefone: formData.telefone || null,
           email: formData.email || null,
-          foto: null, // Por enquanto não salvamos arquivos
+          foto: fotoUrl, // URL da foto salva no Storage
           status: formData.status,
           cpf: formData.cpf || null,
           rg: formData.rg || null,
@@ -204,6 +231,26 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
           variant: "destructive"
         });
         return;
+      }
+
+      // Salvar foto como documento se foi carregada
+      if (formData.foto && fotoUrl) {
+        const { error: docError } = await supabase
+          .from('funcionario_documentos')
+          .insert({
+            funcionario_id: funcionarioId,
+            nome: 'Foto 3x4',
+            arquivo_nome: formData.foto.name,
+            arquivo_url: fotoUrl,
+            arquivo_tipo: formData.foto.type,
+            arquivo_tamanho: formData.foto.size,
+            origem: 'portal',
+            tem_validade: false
+          });
+
+        if (docError) {
+          console.error('Erro ao salvar documento de foto:', docError);
+        }
       }
 
       toast({

@@ -10,6 +10,7 @@ import { CalendarIcon, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DocumentoFuncionario {
   id: number;
@@ -59,7 +60,7 @@ export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!nome || !arquivo) {
       toast({
         title: "Erro",
@@ -78,32 +79,78 @@ export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId
       return;
     }
 
-    const documento: DocumentoFuncionario = {
-      id: Date.now(),
-      nome,
-      arquivo,
-      nomeArquivo: arquivo.name,
-      temValidade,
-      dataValidade: dataValidade ? format(dataValidade, "yyyy-MM-dd") : undefined,
-      funcionarioId,
-      dataUpload: new Date().toLocaleDateString('pt-BR'),
-      visualizado: false,
-    };
+    try {
+      // Upload do arquivo para o Supabase Storage
+      const fileExt = arquivo.name.split('.').pop();
+      const fileName = `${funcionarioId}_${nome.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('funcionario-documentos')
+        .upload(fileName, arquivo);
 
-    onSave(documento);
-    
-    // Resetar form
-    setNome("");
-    setArquivo(null);
-    setTemValidade(false);
-    setDataValidade(undefined);
-    
-    toast({
-      title: "Sucesso",
-      description: "Documento adicionado com sucesso!",
-    });
-    
-    onClose();
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Obter URL público do arquivo
+      const { data: urlData } = supabase.storage
+        .from('funcionario-documentos')
+        .getPublicUrl(fileName);
+
+      // Salvar informações do documento na tabela
+      const { error: dbError } = await supabase
+        .from('funcionario_documentos')
+        .insert({
+          funcionario_id: funcionarioId,
+          nome,
+          arquivo_nome: arquivo.name,
+          arquivo_url: urlData.publicUrl,
+          arquivo_tipo: arquivo.type,
+          arquivo_tamanho: arquivo.size,
+          tem_validade: temValidade,
+          data_validade: dataValidade ? format(dataValidade, "yyyy-MM-dd") : null,
+          origem: 'manual'
+        });
+
+      if (dbError) {
+        throw dbError;
+      }
+
+      // Criar documento para compatibilidade com o sistema local
+      const documento: DocumentoFuncionario = {
+        id: Date.now(),
+        nome,
+        arquivo,
+        nomeArquivo: arquivo.name,
+        temValidade,
+        dataValidade: dataValidade ? format(dataValidade, "yyyy-MM-dd") : undefined,
+        funcionarioId,
+        dataUpload: new Date().toLocaleDateString('pt-BR'),
+        visualizado: false,
+      };
+
+      onSave(documento);
+      
+      // Resetar form
+      setNome("");
+      setArquivo(null);
+      setTemValidade(false);
+      setDataValidade(undefined);
+      
+      toast({
+        title: "Sucesso",
+        description: "Documento adicionado com sucesso!",
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error('Erro ao salvar documento:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar documento. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

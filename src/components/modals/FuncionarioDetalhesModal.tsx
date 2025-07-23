@@ -18,6 +18,7 @@ import { DeleteInfoModal } from "./DeleteInfoModal";
 import { FuncionarioDocumentosModal } from "./FuncionarioDocumentosModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
+import { useSupabaseDocumentos } from "@/hooks/useSupabaseDocumentos";
 import { format } from "date-fns";
 
 
@@ -184,6 +185,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     removerDependente,
     removerDocumento
   } = useFuncionarioData(funcionario.id);
+
+  const { 
+    documentos: documentosSupabase, 
+    loading: loadingDocumentosSupabase,
+    carregarDocumentos: recarregarDocumentosSupabase
+  } = useSupabaseDocumentos(funcionario.id);
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
@@ -1034,17 +1041,66 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     Adicionar Documento
                   </Button>
                 </div>
-                {documentos.length === 0 ? (
+                {(documentos.length === 0 && documentosSupabase.length === 0) ? (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-2">📄</div>
                     <p className="text-slate-500">Nenhum documento anexado</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
+                    {/* Documentos do Supabase */}
+                    {documentosSupabase.map((documento) => (
+                      <div key={`supabase_${documento.id}`} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-slate-700">{documento.nome}</p>
+                            <Badge variant="secondary" className="text-xs">
+                              {documento.origem === 'portal' ? '🌐 Portal' : '📁 Manual'}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-slate-500">
+                            {documento.arquivo_nome}
+                            {documento.tem_validade && documento.data_validade && (
+                              <span className="ml-2 text-orange-600">
+                                • Vence em {format(new Date(documento.data_validade), "dd/MM/yyyy")}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => window.open(documento.arquivo_url, '_blank')}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              const a = document.createElement('a');
+                              a.href = documento.arquivo_url;
+                              a.download = documento.arquivo_nome;
+                              a.click();
+                            }}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Documentos locais */}
                     {documentos.map((documento) => (
                       <div key={documento.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
                         <div className="flex-1">
-                          <p className="font-medium text-slate-700">{documento.nome}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-slate-700">{documento.nome}</p>
+                            <Badge variant="outline" className="text-xs">💾 Local</Badge>
+                          </div>
                           <p className="text-sm text-slate-500">
                             {documento.nomeArquivo}
                             {documento.temValidade && documento.dataValidade && (
