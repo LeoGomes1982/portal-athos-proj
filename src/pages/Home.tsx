@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { 
   Users, 
@@ -20,31 +19,23 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { NotificationBadge } from "@/components/NotificationBadge";
-import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
-import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
-import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
-import { useCICADAlerts } from "@/hooks/useCICADAlerts";
-import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
-import { useOptimizedFuncionarioSync } from "@/hooks/useOptimizedFuncionarioSync";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
+  console.log('Home component starting to load...');
+  
   const navigate = useNavigate();
   const { logout, userEmail } = useAuth();
-  const { funcionarios } = useOptimizedFuncionarioSync();
   const { toast } = useToast();
-  const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
-  const { hasAvisos } = useAvisoVencimentos();
-  const { hasUrgentTasks, urgentTasks } = useAgendaAlerts();
-  const { hasNewDenuncias, markAsChecked } = useCICADAlerts();
-  const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
+  
   const [showUserTooltip, setShowUserTooltip] = useState(false);
   const [currentUser, setCurrentUser] = useState<string>("");
   const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  console.log('Home component variables initialized');
 
   const handleLogout = () => {
     logout();
@@ -70,16 +61,13 @@ const Home = () => {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
-        // Tentar fazer parse como JSON primeiro
         const userData = JSON.parse(savedUser);
         if (userData && userData.email) {
           setCurrentUser(userMapping[userData.email] || userData.email);
         } else {
-          // Se não tem email no objeto, usar o próprio objeto como string
           setCurrentUser(userMapping[savedUser] || savedUser);
         }
       } catch (error) {
-        // Se falhar o parse, é uma string simples (email)
         setCurrentUser(userMapping[savedUser] || savedUser);
       }
     }
@@ -105,18 +93,9 @@ const Home = () => {
     };
 
     checkAgendaNotifications();
-    // Verificar a cada minuto
     const interval = setInterval(checkAgendaNotifications, 60000);
     return () => clearInterval(interval);
   }, []);
-
-  // Verificar notificações quando o componente monta
-  useEffect(() => {
-    const savedDocs = localStorage.getItem('documentos');
-    if (savedDocs) {
-      checkDocumentosVencendo(JSON.parse(savedDocs));
-    }
-  }, [checkDocumentosVencendo]);
 
   const gestaoInternaSection = [
     {
@@ -126,9 +105,7 @@ const Home = () => {
       icon: FileText,
       className: "bg-secondary border-primary/20 hover:border-primary/30",
       iconColor: "text-primary",
-      onClick: () => navigate("/dp"),
-      hasNotification: true,
-      hasAvisos: true
+      onClick: () => navigate("/dp")
     },
     {
       id: "agenda",
@@ -137,9 +114,7 @@ const Home = () => {
       icon: Calendar,
       className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
       iconColor: "text-indigo-600",
-      onClick: () => navigate("/agenda"),
-      hasUrgentTasks: true,
-      hasAgendaNotification: true
+      onClick: () => navigate("/agenda")
     },
     {
       id: "gerencia",
@@ -157,11 +132,7 @@ const Home = () => {
       icon: Shield,
       className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
       iconColor: "text-green-600",
-      onClick: () => {
-        markAsChecked(); // Marcar como verificado quando clicar
-        navigate("/cicad");
-      },
-      hasNewDenuncias: true
+      onClick: () => navigate("/cicad")
     },
     {
       id: "manuais",
@@ -313,68 +284,16 @@ const Home = () => {
             <div 
               key={section.id}
               className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
-              onClick={(e) => {
-                // Se for o card da agenda e tiver tarefas urgentes, mostrar tooltip ao clicar na área superior
-                if (section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda") {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const clickY = e.clientY - rect.top;
-                  
-                  // Se clicou na metade superior, mostrar tooltip
-                  if (clickY < rect.height / 2) {
-                    e.preventDefault();
-                    setShowUserTooltip(!showUserTooltip);
-                    return;
-                  }
-                }
-                
-                // Comportamento normal de navegação
+              onClick={() => {
                 if (section.onClick) {
                   section.onClick();
                 }
               }}
             >
-              {/* Notificação para DP e RH */}
-              {section.hasNotification && (
-                <NotificationBadge show={hasNotifications} />
-              )}
-              
               {/* Aviso de compromissos para Agenda */}
-              {section.hasAgendaNotification && hasAgendaNotification && section.id === "agenda" && (
+              {hasAgendaNotification && section.id === "agenda" && (
                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
                   <Calendar size={12} className="text-white" />
-                </div>
-              )}
-              
-              {/* Aviso de tarefas urgentes para Agenda */}
-              {section.hasUrgentTasks && hasUrgentTasks && (
-                <>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                    <span className="text-white text-xs font-bold">!</span>
-                  </div>
-                  
-                  {/* Tooltip com nome do usuário */}
-                  {showUserTooltip && (
-                    <div className="absolute -top-12 -right-8 bg-white border-2 border-red-200 rounded-lg shadow-lg px-3 py-2 z-20 min-w-max">
-                      <div className="text-xs text-red-600 font-medium">
-                        {urgentTasks.length > 0 && urgentTasks[0].criadoPor}
-                      </div>
-                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-red-200"></div>
-                    </div>
-                  )}
-                </>
-              )}
-              
-              {/* Aviso de novas denúncias para CICAD */}
-              {section.hasNewDenuncias && hasNewDenuncias && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                  <span className="text-white text-xs font-bold">!</span>
-                </div>
-              )}
-              
-              {/* Aviso de documentos vencendo para DP e RH */}
-              {section.hasAvisos && hasAvisos && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                  <span className="text-white text-xs font-bold">!</span>
                 </div>
               )}
               
@@ -385,11 +304,6 @@ const Home = () => {
                 <div>
                   <h3 className="subsection-title mb-2">{section.title}</h3>
                   <p className="text-description leading-relaxed">{section.fullTitle}</p>
-                  {section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda" && (
-                    <p className="text-xs text-red-600 mt-2 font-medium">
-                      Clique na parte superior para ver detalhes
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
@@ -422,9 +336,9 @@ const Home = () => {
                 <div>
                   <h3 className="subsection-title mb-2">{section.title}</h3>
                   <p className="text-description leading-relaxed">{section.fullTitle}</p>
-        </div>
-      </div>
-    </div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
@@ -434,13 +348,6 @@ const Home = () => {
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
-
-        {/* Modal de Tarefas Urgentes */}
-        <UrgentTasksModal
-          open={showUrgentTasksModal}
-          onOpenChange={setShowUrgentTasksModal}
-          compromissosUrgentes={urgentTasks}
-        />
 
         {/* Modal de Notificações da Agenda */}
         {showNotificationModal && (
