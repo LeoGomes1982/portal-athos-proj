@@ -51,8 +51,19 @@ const Home = () => {
   useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      setCurrentUser(userMapping[userData.email] || userData.email);
+      try {
+        // Tentar fazer parse como JSON primeiro
+        const userData = JSON.parse(savedUser);
+        if (userData && userData.email) {
+          setCurrentUser(userMapping[userData.email] || userData.email);
+        } else {
+          // Se não tem email no objeto, usar o próprio objeto como string
+          setCurrentUser(userMapping[savedUser] || savedUser);
+        }
+      } catch (error) {
+        // Se falhar o parse, é uma string simples (email)
+        setCurrentUser(userMapping[savedUser] || savedUser);
+      }
     }
   }, []);
 
