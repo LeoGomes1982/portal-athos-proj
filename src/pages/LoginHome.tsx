@@ -155,14 +155,14 @@ const LoginHome = () => {
               <div className="text-sm text-slate-600">Funcionários</div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center">
-              <div className="text-2xl font-bold text-primary">24/7</div>
-              <div className="text-sm text-slate-600">Suporte</div>
+              <div className="text-2xl font-bold text-primary">50+</div>
+              <div className="text-sm text-slate-600">Clientes</div>
             </div>
           </div>
         </div>
 
         {/* Lado direito - Formulário de login */}
-        <div className="w-full max-w-md mx-auto">
+        <div className="w-full max-w-sm mx-auto">
           <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center space-y-4 pb-6">
               <div className="mx-auto w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
