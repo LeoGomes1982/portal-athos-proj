@@ -1530,6 +1530,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         onClose={() => setShowDeleteModal(false)}
         funcionarioId={funcionario.id}
         funcionarioNome={funcionario.nome}
+        onDataUpdate={() => window.location.reload()}
       />
     </>
   );

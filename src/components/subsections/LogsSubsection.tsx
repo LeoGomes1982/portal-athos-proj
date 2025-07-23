@@ -27,6 +27,8 @@ interface DeleteRecord {
   motivo: string;
   usuario: string;
   data: string;
+  itemDeletado?: string;
+  acao?: string;
 }
 
 export function LogsSubsection({ onBack }: LogsSubsectionProps) {
@@ -75,9 +77,9 @@ export function LogsSubsection({ onBack }: LogsSubsectionProps) {
 
   const getTypeColor = (tipo: string) => {
     switch (tipo) {
-      case "dependente": return "bg-blue-100 text-blue-700 border-blue-200";
-      case "documento": return "bg-green-100 text-green-700 border-green-200";
-      case "uniforme": return "bg-purple-100 text-purple-700 border-purple-200";
+      case "dependentes": return "bg-blue-100 text-blue-700 border-blue-200";
+      case "documentos": return "bg-green-100 text-green-700 border-green-200";
+      case "uniformes": return "bg-purple-100 text-purple-700 border-purple-200";
       case "historico": return "bg-orange-100 text-orange-700 border-orange-200";
       case "dados-pessoais": return "bg-red-100 text-red-700 border-red-200";
       case "dados-profissionais": return "bg-indigo-100 text-indigo-700 border-indigo-200";
@@ -87,9 +89,9 @@ export function LogsSubsection({ onBack }: LogsSubsectionProps) {
 
   const getTypeIcon = (tipo: string) => {
     switch (tipo) {
-      case "dependente": return "👶";
-      case "documento": return "📄";
-      case "uniforme": return "👕";
+      case "dependentes": return "👶";
+      case "documentos": return "📄";
+      case "uniformes": return "👕";
       case "historico": return "📋";
       case "dados-pessoais": return "👤";
       case "dados-profissionais": return "💼";
@@ -279,6 +281,16 @@ export function LogsSubsection({ onBack }: LogsSubsectionProps) {
                           <p className="text-sm text-gray-700 mb-2">
                             <strong>Motivo:</strong> {record.motivo}
                           </p>
+                          {record.itemDeletado && (
+                            <p className="text-sm text-gray-700 mb-2">
+                              <strong>Item deletado:</strong> {record.itemDeletado}
+                            </p>
+                          )}
+                          {record.acao && (
+                            <p className="text-sm text-gray-700">
+                              <strong>Ação:</strong> {record.acao}
+                            </p>
+                          )}
                         </div>
 
                         {/* Footer */}
