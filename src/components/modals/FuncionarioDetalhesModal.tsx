@@ -27,6 +27,16 @@ interface HistoricoRegistro {
   usuario: string;
   created_at: string;
   updated_at: string;
+  classificacao?: "positivo" | "neutro" | "negativo";
+  data?: string;
+  comentario?: string;
+  registradoPor?: string;
+  arquivo?: {
+    nome: string;
+    url: string;
+    tipo: string;
+    tamanho: number;
+  } | null;
 }
 
 interface Funcionario {
@@ -89,6 +99,23 @@ const statusConfig = {
   destaque: { label: "Destaque", color: "bg-yellow-500", textColor: "text-yellow-700", bgColor: "#FFFBEB" }
 };
 
+// Utility functions for historical records
+const getClassificacaoColor = (classificacao: string) => {
+  switch (classificacao) {
+    case "positivo": return "border-green-200 bg-green-50";
+    case "negativo": return "border-red-200 bg-red-50";
+    default: return "border-gray-200 bg-gray-50";
+  }
+};
+
+const getClassificacaoIcon = (classificacao: string) => {
+  switch (classificacao) {
+    case "positivo": return "👍";
+    case "negativo": return "👎";
+    default: return "➖";
+  }
+};
+
 export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatusChange, onFuncionarioUpdate }: FuncionarioDetalhesModalProps) {
   const { toast } = useToast();
   const { historico, loading: loadingHistorico, adicionarRegistro } = useFuncionarioHistorico(funcionario.id.toString());
@@ -103,7 +130,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [novoRegistro, setNovoRegistro] = useState({
     titulo: "",
     descricao: "",
-    tipo: "neutro" as "positivo" | "neutro" | "negativo"
+    tipo: "neutro" as "positivo" | "neutro" | "negativo",
+    registradoPor: "",
+    arquivo: null as File | null
   });
   
   // Lista de usuários disponíveis
@@ -213,7 +242,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
       setNovoRegistro({
         titulo: "",
         descricao: "",
-        tipo: "neutro"
+        tipo: "neutro",
+        registradoPor: "",
+        arquivo: null
       });
     }
   };
@@ -254,7 +285,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         case "negativo":
           pontos -= 3;
           break;
-        case "neutra":
+        case "neutro":
           registrosNeutros += 1;
           break;
       }
@@ -1323,6 +1354,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                             rows={3}
                           />
                         </div>
+                        
+                        <div>
+                          <Label htmlFor="registrado-por" className="text-sm font-medium text-slate-600">
+                            Registrado por
+                          </Label>
+                          <Select
+                            value={novoRegistro.registradoPor}
+                            onValueChange={(value) => setNovoRegistro({...novoRegistro, registradoPor: value})}
                           >
                             <SelectTrigger className="w-full mt-1">
                               <SelectValue />
@@ -1389,41 +1428,20 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </div>
                   ) : (
                     historico.map((registro) => (
-                      <Card key={registro.id} className={`border ${getClassificacaoColor(registro.classificacao)}`}>
+                      <Card key={registro.id} className={`border ${getClassificacaoColor(registro.tipo)}`}>
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <div className="flex items-center justify-center w-5 h-5">{getClassificacaoIcon(registro.classificacao)}</div>
-                                <span className="font-medium text-sm capitalize">{registro.classificacao}</span>
+                                <div className="flex items-center justify-center w-5 h-5">{getClassificacaoIcon(registro.tipo)}</div>
+                                <span className="font-medium text-sm capitalize">{registro.tipo}</span>
                                 <span className="text-xs text-gray-500">
-                                  {new Date(registro.data).toLocaleString('pt-BR')}
+                                  {new Date(registro.created_at).toLocaleString('pt-BR')}
                                 </span>
                               </div>
-                              <p className="text-sm text-gray-700 mb-2">{registro.comentario}</p>
+                              <p className="text-sm text-gray-700 mb-2">{registro.descricao}</p>
                               <div className="flex items-center justify-between">
-                                <p className="text-xs text-gray-500">Por: {registro.registradoPor}</p>
-                                {registro.arquivo && (
-                                  <div className="flex items-center gap-2">
-                                    {registro.arquivo.tipo.startsWith('image/') ? (
-                                      <img 
-                                        src={registro.arquivo.url}
-                                        alt={registro.arquivo.nome}
-                                        className="w-6 h-6 object-cover rounded border cursor-pointer"
-                                        onClick={() => window.open(registro.arquivo?.url)}
-                                        title={`${registro.arquivo.nome} (${(registro.arquivo.tamanho / 1024).toFixed(1)} KB)`}
-                                      />
-                                    ) : (
-                                      <div 
-                                        className="w-6 h-6 bg-blue-100 border border-blue-300 rounded flex items-center justify-center cursor-pointer"
-                                        onClick={() => window.open(registro.arquivo?.url)}
-                                        title={`${registro.arquivo.nome} (${(registro.arquivo.tamanho / 1024).toFixed(1)} KB)`}
-                                      >
-                                        <FileText size={12} className="text-blue-600" />
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                <p className="text-xs text-gray-500">Por: {registro.usuario}</p>
                               </div>
                             </div>
                           </div>
