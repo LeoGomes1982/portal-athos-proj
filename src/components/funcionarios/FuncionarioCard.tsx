@@ -16,6 +16,41 @@ interface FuncionarioCardProps {
 export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: FuncionarioCardProps) {
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const statusInfo = statusConfig[funcionario.status];
+
+  // Função para calcular pontos de atividade
+  const calcularPontosAtividade = () => {
+    const historicoKey = `historico_funcionario_${funcionario.id}`;
+    const savedHistorico = localStorage.getItem(historicoKey);
+    
+    let pontos = 0;
+    let registrosNeutros = 0;
+
+    if (savedHistorico) {
+      try {
+        const historico = JSON.parse(savedHistorico);
+        historico.forEach((registro: any) => {
+          switch (registro.classificacao) {
+            case "positiva":
+              pontos += 10;
+              break;
+            case "negativa":
+              pontos -= 3;
+              break;
+            case "neutra":
+              registrosNeutros += 1;
+              break;
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao carregar histórico:', error);
+      }
+    }
+
+    // A cada 2 registros neutros, adiciona 1 ponto
+    pontos += Math.floor(registrosNeutros / 2);
+
+    return pontos;
+  };
   
   // Verificar se deve mostrar alerta de status
   const mostrarAlertaStatus = (
@@ -172,11 +207,17 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
                   </div>
                 </div>
                 
-                {/* Status */}
-                <div className="flex-shrink-0">
+                {/* Status e Pontos */}
+                <div className="flex-shrink-0 text-right">
                   <Badge className={`${statusInfo.color} text-white text-xs font-medium px-3 py-1 rounded-full`}>
                     {statusInfo.label}
                   </Badge>
+                  <div className="mt-2 flex items-center justify-end gap-1">
+                    <Star className="w-3 h-3 text-yellow-500 fill-yellow-400" />
+                    <span className="text-sm font-semibold text-blue-700">
+                      {calcularPontosAtividade()} pts
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
