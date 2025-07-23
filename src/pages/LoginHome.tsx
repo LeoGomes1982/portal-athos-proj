@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, LogIn, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const LoginHome = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,22 @@ const LoginHome = () => {
   const [dailyQuote, setDailyQuote] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { funcionarios } = useFuncionarioSync();
+  // Buscar usuários únicos da agenda
+  const { data: agendaUsers = [] } = useQuery({
+    queryKey: ['agenda-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('compromissos')
+        .select('criado_por')
+        .not('criado_por', 'is', null);
+      
+      if (error) throw error;
+      
+      // Extrair emails únicos
+      const uniqueEmails = [...new Set(data.map(item => item.criado_por))];
+      return uniqueEmails;
+    }
+  });
 
   // Frases motivacionais categorizadas
   const motivationalQuotes = [
@@ -78,8 +94,8 @@ const LoginHome = () => {
     // Simular delay de autenticação
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Verificar se o email existe no sistema
-    const emailExists = funcionarios.some(func => func.email === email);
+    // Verificar se o email existe na agenda
+    const emailExists = agendaUsers.includes(email);
     
     if (!emailExists) {
       toast({
@@ -151,8 +167,8 @@ const LoginHome = () => {
           {/* Estatísticas rápidas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center">
-              <div className="text-2xl font-bold text-primary">{funcionarios.length}</div>
-              <div className="text-sm text-slate-600">Funcionários</div>
+              <div className="text-2xl font-bold text-primary">{agendaUsers.length}</div>
+              <div className="text-sm text-slate-600">Usuários</div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 text-center">
               <div className="text-2xl font-bold text-primary">24/7</div>
@@ -245,7 +261,7 @@ const LoginHome = () => {
               {/* Dica para desenvolvedores */}
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-xs text-blue-700 text-center">
-                  <strong>Dica:</strong> Use qualquer email cadastrado no sistema com a senha <code className="bg-blue-100 px-1 rounded">123456</code>
+                  <strong>Dica:</strong> Use o email <code className="bg-blue-100 px-1 rounded">leandrogomes@grupoathosbrasil.com</code> com a senha <code className="bg-blue-100 px-1 rounded">123456</code>
                 </p>
               </div>
             </CardContent>
