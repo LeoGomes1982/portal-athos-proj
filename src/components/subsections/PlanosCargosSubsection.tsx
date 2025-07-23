@@ -100,46 +100,46 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">💼</div>
-              <div className="text-2xl font-bold text-slate-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {Object.keys(cargosAgrupados).length}
               </div>
-              <div className="text-sm text-slate-600/80 mb-1">Funções Diferentes</div>
-              <div className="text-xs text-slate-500 font-medium">
+              <div className="text-sm text-gray-600 mb-1">Funções Diferentes</div>
+              <div className="text-xs text-gray-500 font-medium">
                 Tipos de cargos únicos
               </div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">✅</div>
-              <div className="text-2xl font-bold text-slate-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {cargos.filter(c => c.status === 'ativo').length}
               </div>
-              <div className="text-sm text-slate-600/80">Cargos Ativos</div>
+              <div className="text-sm text-gray-600">Cargos Ativos</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">📈</div>
-              <div className="text-2xl font-bold text-slate-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {cargos.length}
               </div>
-              <div className="text-sm text-slate-600/80">Total de Níveis</div>
+              <div className="text-sm text-gray-600">Total de Níveis</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">⏱️</div>
-              <div className="text-2xl font-bold text-slate-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {Math.round(cargos.reduce((sum, cargo) => sum + cargo.carencia, 0) / cargos.length) || 0}
               </div>
-              <div className="text-sm text-slate-600/80">Carência Média (meses)</div>
+              <div className="text-sm text-gray-600">Carência Média (meses)</div>
             </CardContent>
           </Card>
         </div>
