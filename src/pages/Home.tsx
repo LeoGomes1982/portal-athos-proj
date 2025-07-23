@@ -241,10 +241,64 @@ const Home = () => {
       <div className="bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-sm">GA</span>
+            <div className="flex items-center gap-4">
+              {/* Grid de avatares dos cargos */}
+              <div className="grid grid-cols-3 gap-2">
+                {/* Direção Operacional */}
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg" title="Direção Operacional">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
+                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Direção Financeira */}
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg" title="Direção Financeira">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
+                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Gerência */}
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg" title="Gerência">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
+                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Fiscais Operacionais */}
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg" title="Fiscais Operacionais">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
+                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Supervisores Regionais */}
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg" title="Supervisores Regionais">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
+                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* DP e RH */}
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg" title="DP e RH">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-white/40 rounded-full relative">
+                      <div className="w-4 h-3 bg-white/60 rounded-t-full absolute top-1 left-1"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
+              
               <div>
                 <h1 className="text-xl font-bold text-slate-800">Sistema Athos</h1>
                 <p className="text-sm text-slate-600">Gestão Empresarial Integrada</p>
