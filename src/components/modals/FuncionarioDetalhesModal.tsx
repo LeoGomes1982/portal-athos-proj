@@ -391,6 +391,28 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       </div>
                     )}
                   </h2>
+                  
+                  {/* Status Atual movido para abaixo do nome */}
+                  <div className="mt-2">
+                    <Select value={statusAtual} onValueChange={handleStatusChange} disabled={showDateInput}>
+                      <SelectTrigger className="w-48 bg-white border-blue-200">
+                        <SelectValue>
+                          <Badge className={`${statusInfo.color} text-white text-xs`}>
+                            {statusInfo.label}
+                          </Badge>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(statusConfig).map(([key, config]) => (
+                          <SelectItem key={key} value={key}>
+                            <Badge className={`${config.color} text-white text-xs`}>
+                              {config.label}
+                            </Badge>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -601,29 +623,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           {new Date(currentFuncionario.dataAdmissao).toLocaleDateString('pt-BR')}
                         </p>
                       )}
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-slate-600">Status Atual</label>
-                      <div className="mt-1">
-                        <Select value={statusAtual} onValueChange={handleStatusChange} disabled={showDateInput}>
-                          <SelectTrigger className="w-48 bg-white border-blue-200">
-                            <SelectValue>
-                              <Badge className={`${statusInfo.color} text-white text-xs`}>
-                                {statusInfo.label}
-                              </Badge>
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(statusConfig).map(([key, config]) => (
-                              <SelectItem key={key} value={key}>
-                                <Badge className={`${config.color} text-white text-xs`}>
-                                  {config.label}
-                                </Badge>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
                     </div>
                     
                     {/* Mostrar datas de fim se existirem */}
