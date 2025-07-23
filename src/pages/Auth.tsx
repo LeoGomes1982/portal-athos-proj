@@ -6,17 +6,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, LogIn, UserPlus, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [dailyQuote, setDailyQuote] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isLoading } = useAuth();
+
+  console.log('Auth page - user state:', { userEmail: user?.email, isLoading });
+
+  // Redirecionar usuários já autenticados
+  useEffect(() => {
+    if (!isLoading && user) {
+      console.log('User already authenticated, redirecting to home');
+      navigate('/home');
+    }
+  }, [user, isLoading, navigate]);
 
   // Frases motivacionais categorizadas
   const motivationalQuotes = [
@@ -40,18 +52,11 @@ const Auth = () => {
     const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
     const quoteIndex = dayOfYear % motivationalQuotes.length;
     setDailyQuote(motivationalQuotes[quoteIndex]);
-
-    // Verificar se já está logado
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/home');
-      }
-    });
-  }, [navigate]);
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsFormLoading(true);
 
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -82,13 +87,13 @@ const Auth = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsFormLoading(false);
     }
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsFormLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -115,7 +120,7 @@ const Auth = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsFormLoading(false);
     }
   };
 
@@ -235,9 +240,9 @@ const Auth = () => {
                 <Button
                   type="submit"
                   className="w-full h-10 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] text-sm"
-                  disabled={isLoading}
+                  disabled={isFormLoading}
                 >
-                  {isLoading ? (
+                  {isFormLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       {isSignUp ? "Criando conta..." : "Entrando..."}
