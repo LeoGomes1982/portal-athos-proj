@@ -213,8 +213,8 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
                     {statusInfo.label}
                   </Badge>
                   <div className="mt-2 flex items-center justify-end gap-1">
-                    <Sun className="w-3 h-3 text-yellow-500 fill-yellow-400" />
-                    <span className="text-sm font-semibold text-blue-700">
+                    <Sun className="w-4 h-4 text-yellow-500 fill-yellow-400" />
+                    <span className="text-base font-semibold text-blue-700">
                       {calcularPontosAtividade()} pts
                     </span>
                   </div>
