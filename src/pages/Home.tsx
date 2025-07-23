@@ -207,7 +207,7 @@ const Home = () => {
       icon: Target,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => window.open("/portal-vagas", "_blank", "noopener,noreferrer")
+      onClick: () => window.open(window.location.origin + "/portal-vagas", "_blank", "noopener,noreferrer")
     },
     {
       id: "portal-midia",
