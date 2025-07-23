@@ -32,10 +32,7 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Página inicial */}
-              <Route path="/" element={<Home />} />
-              
-              {/* Todas as rotas principais */}
+              {/* Página principal */}
               <Route path="/home" element={<Home />} />
               
               <Route path="/dp" element={<DP />} />
@@ -67,6 +64,7 @@ function App() {
               <Route path="/processo-seletivo" element={<ProcessoSeletivo />} />
               
               {/* Catch-all route para páginas não encontradas */}
+              <Route path="/" element={<Home />} />
               <Route path="*" element={<Home />} />
             </Routes>
           </BrowserRouter>
