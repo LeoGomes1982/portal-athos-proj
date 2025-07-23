@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
@@ -16,6 +16,7 @@ import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
 import { HistoricoDocumentViewModal } from "./HistoricoDocumentViewModal";
 import { DeleteInfoModal } from "./DeleteInfoModal";
 import { FuncionarioDocumentosModal } from "./FuncionarioDocumentosModal";
+import { SubstituirDocumentoModal } from "./SubstituirDocumentoModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { useSupabaseDocumentos } from "@/hooks/useSupabaseDocumentos";
@@ -166,6 +167,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isVerDocumentosModalOpen, setIsVerDocumentosModalOpen] = useState(false);
+  const [showSubstituicaoModal, setShowSubstituicaoModal] = useState(false);
+  const [documentoParaSubstituir, setDocumentoParaSubstituir] = useState<any>(null);
   
   // Estados para uniformes e EPIs
   const [uniformes, setUniformes] = useState<any[]>([]);
@@ -1068,6 +1071,20 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           </p>
                         </div>
                         <div className="flex gap-1">
+                          {documento.tem_validade && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setDocumentoParaSubstituir(documento);
+                                setShowSubstituicaoModal(true);
+                              }}
+                              className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700"
+                              title="Substituir documento"
+                            >
+                              <RefreshCw className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="ghost"
@@ -1591,6 +1608,23 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
         onClose={() => setIsVerDocumentosModalOpen(false)}
         funcionarioId={funcionario.id}
         funcionarioNome={funcionario.nome}
+      />
+
+      <SubstituirDocumentoModal
+        isOpen={showSubstituicaoModal}
+        onClose={() => {
+          setShowSubstituicaoModal(false);
+          setDocumentoParaSubstituir(null);
+        }}
+        documento={documentoParaSubstituir}
+        onSuccess={() => {
+          recarregarDocumentosSupabase();
+          // Força recarregamento do modal de documentos se estiver aberto
+          if (isVerDocumentosModalOpen) {
+            setIsVerDocumentosModalOpen(false);
+            setTimeout(() => setIsVerDocumentosModalOpen(true), 100);
+          }
+        }}
       />
     </>
   );

@@ -12,7 +12,8 @@ import {
   Search,
   Calendar,
   User,
-  X
+  X,
+  RefreshCw
 } from "lucide-react";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
@@ -266,7 +267,25 @@ export function FuncionarioDocumentosModal({
 
           {/* Overlay com botões */}
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="flex gap-2">
+            <div className="flex gap-1">
+              {documento.temValidade && documento.id.startsWith('supabase_') && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Trigger substituição modal
+                    toast({
+                      title: "Substituição",
+                      description: "Funcionalidade de substituição será implementada.",
+                    });
+                  }}
+                  className="h-7 w-7 p-0 bg-orange-100 hover:bg-orange-200"
+                  title="Substituir documento"
+                >
+                  <RefreshCw className="h-3 w-3 text-orange-600" />
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="secondary"
