@@ -1070,43 +1070,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                             )}
                           </p>
                         </div>
-                        <div className="flex gap-1">
-                          {documento.tem_validade && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => {
-                                setDocumentoParaSubstituir(documento);
-                                setShowSubstituicaoModal(true);
-                              }}
-                              className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700"
-                              title="Substituir documento"
-                            >
-                              <RefreshCw className="h-4 w-4" />
-                            </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => window.open(documento.arquivo_url, '_blank')}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              const a = document.createElement('a');
-                              a.href = documento.arquivo_url;
-                              a.download = documento.arquivo_nome;
-                              a.click();
-                            }}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
                       </div>
                     ))}
                     
@@ -1126,34 +1089,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                               </span>
                             )}
                           </p>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              const url = URL.createObjectURL(documento.arquivo);
-                              window.open(url, '_blank');
-                            }}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              const url = URL.createObjectURL(documento.arquivo);
-                              const a = document.createElement('a');
-                              a.href = url;
-                              a.download = documento.nomeArquivo;
-                              a.click();
-                              URL.revokeObjectURL(url);
-                            }}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
                         </div>
                       </div>
                     ))}

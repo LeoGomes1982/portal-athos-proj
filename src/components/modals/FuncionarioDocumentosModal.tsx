@@ -314,6 +314,10 @@ export function FuncionarioDocumentosModal({
 
         {/* Informações adicionais */}
         <div className="mt-2 space-y-1">
+          <div className="text-sm font-medium text-gray-700 truncate">
+            {documento.nome}
+          </div>
+          
           <div className="flex items-center text-xs text-gray-500">
             <Calendar className="h-3 w-3 mr-1" />
             {new Date(documento.dataUpload).toLocaleDateString('pt-BR')}
