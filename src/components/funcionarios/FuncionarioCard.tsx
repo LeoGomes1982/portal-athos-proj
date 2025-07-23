@@ -17,59 +17,6 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const statusInfo = statusConfig[funcionario.status];
 
-  // Função para calcular pontos de atividade
-  const calcularPontosAtividade = () => {
-    const historicoKey = `historico_funcionario_${funcionario.id}`;
-    const savedHistorico = localStorage.getItem(historicoKey);
-    
-    console.log('Calculando pontos para funcionário:', funcionario.nome, 'ID:', funcionario.id);
-    console.log('Chave do localStorage:', historicoKey);
-    console.log('Histórico encontrado:', savedHistorico);
-    
-    // Vamos verificar todas as chaves do localStorage que começam com "historico"
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('historico_funcionario_')) {
-        console.log('Chave encontrada no localStorage:', key, '- Valor:', localStorage.getItem(key));
-      }
-    }
-    
-    let pontos = 0;
-    let registrosNeutros = 0;
-
-    if (savedHistorico) {
-      try {
-        const historico = JSON.parse(savedHistorico);
-        console.log('Histórico parseado:', historico);
-        
-        historico.forEach((registro: any) => {
-          console.log('Processando registro:', registro);
-          switch (registro.tipo) {
-            case "positivo":
-              pontos += 10;
-              console.log('Adicionado 10 pontos (positivo), total:', pontos);
-              break;
-            case "negativo":
-              pontos -= 3;
-              console.log('Subtraído 3 pontos (negativo), total:', pontos);
-              break;
-            case "neutro":
-              registrosNeutros += 1;
-              console.log('Registro neutro encontrado, total neutros:', registrosNeutros);
-              break;
-          }
-        });
-      } catch (error) {
-        console.error('Erro ao carregar histórico:', error);
-      }
-    }
-
-    // A cada 2 registros neutros, adiciona 1 ponto
-    pontos += Math.floor(registrosNeutros / 2);
-
-    console.log('Pontos calculados:', pontos, 'para', funcionario.nome);
-    return pontos;
-  };
   
   // Verificar se deve mostrar alerta de status
   const mostrarAlertaStatus = (
@@ -208,9 +155,6 @@ export function FuncionarioCard({ funcionario, onClick, onUpdateAvatar }: Funcio
                     <span>{funcionario.cargo}</span>
                     <span>{funcionario.setor}</span>
                     <span>{new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR')}</span>
-                    <span className="text-blue-700 font-semibold">
-                      {calcularPontosAtividade()} pts
-                    </span>
                     {temDocumentosVencendo && (
                       <Badge variant="destructive" className="animate-pulse text-xs">
                         Documentos vencendo
