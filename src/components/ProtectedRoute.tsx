@@ -1,14 +1,14 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  console.log('ProtectedRoute:', { isAuthenticated, isLoading });
+  console.log('ProtectedRoute check:', { userEmail: user?.email, isLoading });
 
   if (isLoading) {
     return (
@@ -21,11 +21,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to login');
-    return <Navigate to="/" replace />;
+  if (!user) {
+    console.log('No user found, redirecting to auth');
+    return <Navigate to="/auth" replace />;
   }
 
-  console.log('Authenticated, rendering children');
+  console.log('User authenticated, rendering children');
   return <>{children}</>;
 }

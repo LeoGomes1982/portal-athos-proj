@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,7 +27,7 @@ const Home = () => {
   console.log('Home component starting to load...');
   
   const navigate = useNavigate();
-  const { logout, userEmail } = useAuth();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
   
   const [showUserTooltip, setShowUserTooltip] = useState(false);
@@ -37,13 +37,13 @@ const Home = () => {
 
   console.log('Home component variables initialized');
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     toast({
       title: "Logout realizado",
       description: "Você foi desconectado do sistema.",
     });
-    navigate('/');
+    navigate('/auth');
   };
 
   // Mapeamento de usuários
@@ -228,7 +228,7 @@ const Home = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <User size={16} />
-                <span>{userEmail}</span>
+                <span>{user?.email}</span>
               </div>
               <button 
                 onClick={() => setShowNotificationModal(true)}

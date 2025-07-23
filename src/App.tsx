@@ -4,12 +4,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/contexts/SupabaseAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-// Direct imports instead of lazy loading to avoid loading issues
-import LoginHome from "./pages/LoginHome";
+// Direct imports for pages
+import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import DP from "./pages/DP";
 import Comercial from "./pages/Comercial";
@@ -46,8 +46,9 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Rota de login - página inicial */}
-              <Route path="/" element={<LoginHome />} />
+              {/* Rota de autenticação */}
+              <Route path="/" element={<Auth />} />
+              <Route path="/auth" element={<Auth />} />
               
               {/* Rotas protegidas */}
               <Route path="/home" element={
@@ -134,7 +135,7 @@ function App() {
               } />
               
               {/* Catch-all route para páginas não encontradas */}
-              <Route path="*" element={<LoginHome />} />
+              <Route path="*" element={<Auth />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
