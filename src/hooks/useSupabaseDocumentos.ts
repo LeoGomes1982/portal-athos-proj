@@ -94,25 +94,33 @@ export function useSupabaseDocumentos(funcionarioId: number) {
 
   const removerDocumento = async (documentoId: string) => {
     try {
+      // Primeiro deletar registro da tabela
+      const { error: dbError } = await supabase
+        .from('funcionario_documentos')
+        .delete()
+        .eq('id', documentoId);
+
+      if (dbError) {
+        console.error('Erro ao deletar documento da base de dados:', dbError);
+        throw dbError;
+      }
+
       // Buscar informações do documento para deletar do storage
       const documento = documentos.find(d => d.id === documentoId);
       if (documento) {
         // Extrair o nome do arquivo da URL
         const fileName = documento.arquivo_url.split('/').pop();
         if (fileName) {
-          await supabase.storage
+          const { error: storageError } = await supabase.storage
             .from('funcionario-documentos')
             .remove([fileName]);
+          
+          // Log do erro do storage mas não falhe a operação
+          if (storageError) {
+            console.warn('Erro ao deletar arquivo do storage:', storageError);
+          }
         }
       }
-
-      // Deletar registro da tabela
-      const { error } = await supabase
-        .from('funcionario_documentos')
-        .delete()
-        .eq('id', documentoId);
-
-      if (error) throw error;
 
       // Recarregar documentos
       await carregarDocumentos();
