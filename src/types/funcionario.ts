@@ -39,4 +39,6 @@ export interface Funcionario {
   valorValeAlimentacao?: string;
   possuiAuxilioMoradia?: string;
   valorAuxilioMoradia?: string;
+  dataInativacao?: string;
+  motivoInativacao?: string;
 }

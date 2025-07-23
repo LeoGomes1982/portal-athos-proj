@@ -91,7 +91,7 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">⏳</div>
               <div className="text-2xl font-bold text-slate-600">
-                {funcionarios.filter(f => f.status === 'experiencia').length}
+                {funcionariosInativos.filter(f => f.motivoInativacao === 'Final de contrato 1º período').length}
               </div>
               <div className="text-sm text-slate-600/80">Final de contrato 1º período</div>
             </CardContent>
@@ -101,7 +101,7 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">👥</div>
               <div className="text-2xl font-bold text-slate-600">
-                {funcionarios.filter(f => f.status === 'ativo').length}
+                {funcionariosInativos.filter(f => f.motivoInativacao === 'Final de contrato 2º período').length}
               </div>
               <div className="text-sm text-slate-600/80">Final de contrato 2º período</div>
             </CardContent>
@@ -111,7 +111,7 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">⚠️</div>
               <div className="text-2xl font-bold text-slate-600">
-                {funcionarios.filter(f => f.status === 'aviso').length}
+                {funcionariosInativos.filter(f => f.motivoInativacao === 'Demissão normal após aviso prévio').length}
               </div>
               <div className="text-sm text-slate-600/80">Demissão normal após aviso prévio</div>
             </CardContent>
@@ -168,15 +168,20 @@ export function ArquivoRHSubsection({ onBack }: ArquivoRHSubsectionProps) {
                       <div className="text-xs text-slate-500">
                         Tempo na empresa: {calcularTempoEmpresa(funcionario.dataAdmissao)}
                       </div>
+                      {funcionario.motivoInativacao && (
+                        <div className="text-xs text-red-600 font-medium mt-1">
+                          Motivo: {funcionario.motivoInativacao}
+                        </div>
+                      )}
                     </div>
                   </div>
                   
                   <div className="text-right flex items-center gap-3">
                     <div>
                       <div className="text-sm font-medium text-slate-700">
-                        {funcionario.dataAdmissao ? new Date(funcionario.dataAdmissao).toLocaleDateString('pt-BR') : 'N/A'}
+                        {funcionario.dataInativacao ? new Date(funcionario.dataInativacao).toLocaleDateString('pt-BR') : 'N/A'}
                       </div>
-                      <div className="text-xs text-slate-500">Data de Admissão</div>
+                      <div className="text-xs text-slate-500">Data de Inativação</div>
                     </div>
                     
                     <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 bg-red-100 text-red-700">

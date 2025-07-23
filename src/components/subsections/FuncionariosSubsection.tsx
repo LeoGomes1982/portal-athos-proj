@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
+import { InativacaoFuncionarioModal } from "@/components/modals/InativacaoFuncionarioModal";
 import { FuncionarioCard } from "@/components/funcionarios/FuncionarioCard";
 import { FuncionariosSummaryCards } from "@/components/funcionarios/FuncionariosSummaryCards";
 import { Funcionario } from "@/types/funcionario";
@@ -18,6 +19,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInativacaoModalOpen, setIsInativacaoModalOpen] = useState(false);
+  const [funcionarioParaInativar, setFuncionarioParaInativar] = useState<Funcionario | null>(null);
   
   // Usar o hook de sincronização
   const { funcionarios, setFuncionarios, updateFuncionario, isLoading } = useFuncionarioSync();
@@ -136,6 +139,13 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     const funcionarioToUpdate = funcionarios.find(f => f.id === funcionarioId);
     if (!funcionarioToUpdate) return;
 
+    // Se o status for "inativo", abrir modal de inativação
+    if (novoStatus === 'inativo') {
+      setFuncionarioParaInativar(funcionarioToUpdate);
+      setIsInativacaoModalOpen(true);
+      return;
+    }
+
     const updatedFunc = { ...funcionarioToUpdate, status: novoStatus };
     
     if (novoStatus !== 'experiencia') {
@@ -160,6 +170,28 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     setFuncionarios(prev => 
       prev.map(func => func.id === funcionarioId ? updatedFunc : func)
     );
+  };
+
+  const handleConfirmarInativacao = async (dataInativacao: string, motivo: string) => {
+    if (!funcionarioParaInativar) return;
+
+    const funcionarioInativado = {
+      ...funcionarioParaInativar,
+      status: 'inativo' as Funcionario['status'],
+      dataInativacao,
+      motivoInativacao: motivo
+    };
+
+    // Atualizar no Supabase
+    await updateFuncionario(funcionarioInativado);
+    
+    // Atualizar estado local
+    setFuncionarios(prev => 
+      prev.map(func => func.id === funcionarioParaInativar.id ? funcionarioInativado : func)
+    );
+
+    // Fechar modal
+    setFuncionarioParaInativar(null);
   };
 
   const handleFuncionarioUpdate = async (funcionarioAtualizado: Funcionario) => {
@@ -271,6 +303,20 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           onFuncionarioUpdate={handleFuncionarioUpdate}
         />
       )}
+
+      <InativacaoFuncionarioModal
+        isOpen={isInativacaoModalOpen}
+        onClose={() => {
+          setIsInativacaoModalOpen(false);
+          setFuncionarioParaInativar(null);
+        }}
+        funcionario={funcionarioParaInativar ? {
+          id: funcionarioParaInativar.id,
+          nome: funcionarioParaInativar.nome,
+          cargo: funcionarioParaInativar.cargo
+        } : null}
+        onConfirm={handleConfirmarInativacao}
+      />
     </div>
   );
 }

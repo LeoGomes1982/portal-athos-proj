@@ -268,6 +268,7 @@ export type Database = {
           data_admissao: string | null
           data_fim_aviso_previo: string | null
           data_fim_experiencia: string | null
+          data_inativacao: string | null
           data_nascimento: string | null
           email: string | null
           endereco: string | null
@@ -276,6 +277,7 @@ export type Database = {
           foto: string | null
           funcionario_id: number
           id: number
+          motivo_inativacao: string | null
           nacionalidade: string | null
           naturalidade: string | null
           nome: string
@@ -313,6 +315,7 @@ export type Database = {
           data_admissao?: string | null
           data_fim_aviso_previo?: string | null
           data_fim_experiencia?: string | null
+          data_inativacao?: string | null
           data_nascimento?: string | null
           email?: string | null
           endereco?: string | null
@@ -321,6 +324,7 @@ export type Database = {
           foto?: string | null
           funcionario_id: number
           id?: number
+          motivo_inativacao?: string | null
           nacionalidade?: string | null
           naturalidade?: string | null
           nome: string
@@ -358,6 +362,7 @@ export type Database = {
           data_admissao?: string | null
           data_fim_aviso_previo?: string | null
           data_fim_experiencia?: string | null
+          data_inativacao?: string | null
           data_nascimento?: string | null
           email?: string | null
           endereco?: string | null
@@ -366,6 +371,7 @@ export type Database = {
           foto?: string | null
           funcionario_id?: number
           id?: number
+          motivo_inativacao?: string | null
           nacionalidade?: string | null
           naturalidade?: string | null
           nome?: string
