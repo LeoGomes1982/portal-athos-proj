@@ -243,117 +243,117 @@ const Home = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Avatares dos cargos em linha */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {/* Direção Operacional */}
                 <div className="relative group">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-blue-100 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-12 h-12 relative">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-stone-200 cursor-pointer transition-transform hover:scale-105">
+                    <div className="w-8 h-8 relative">
                       {/* Cabeça */}
-                      <div className="w-7 h-7 bg-orange-200 rounded-full absolute top-0 left-2.5"></div>
+                      <div className="w-5 h-5 bg-amber-100 rounded-full absolute top-0 left-1.5"></div>
                       {/* Cabelo */}
-                      <div className="w-8 h-4 bg-gray-800 rounded-t-full absolute -top-1 left-2"></div>
+                      <div className="w-6 h-3 bg-stone-600 rounded-t-full absolute -top-0.5 left-1"></div>
                       {/* Corpo/Camisa */}
-                      <div className="w-10 h-6 bg-blue-600 rounded-t-lg absolute top-6 left-1"></div>
+                      <div className="w-7 h-4 bg-slate-600 rounded-t-lg absolute top-4 left-0.5"></div>
                       {/* Gravata */}
-                      <div className="w-1 h-4 bg-red-600 absolute top-7 left-5.5"></div>
+                      <div className="w-0.5 h-3 bg-stone-700 absolute top-4.5 left-3.5"></div>
                     </div>
                   </div>
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Direção Operacional
                   </div>
                 </div>
                 
                 {/* Direção Financeira */}
                 <div className="relative group">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-green-100 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-12 h-12 relative">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-emerald-200 cursor-pointer transition-transform hover:scale-105">
+                    <div className="w-8 h-8 relative">
                       {/* Cabeça */}
-                      <div className="w-7 h-7 bg-orange-200 rounded-full absolute top-0 left-2.5"></div>
+                      <div className="w-5 h-5 bg-amber-100 rounded-full absolute top-0 left-1.5"></div>
                       {/* Cabelo */}
-                      <div className="w-8 h-4 bg-amber-700 rounded-t-full absolute -top-1 left-2"></div>
+                      <div className="w-6 h-3 bg-amber-700 rounded-t-full absolute -top-0.5 left-1"></div>
                       {/* Corpo/Camisa */}
-                      <div className="w-10 h-6 bg-green-600 rounded-t-lg absolute top-6 left-1"></div>
+                      <div className="w-7 h-4 bg-emerald-600 rounded-t-lg absolute top-4 left-0.5"></div>
                       {/* Colarinho */}
-                      <div className="w-8 h-2 bg-white absolute top-6 left-2"></div>
+                      <div className="w-5 h-1 bg-stone-100 absolute top-4 left-1.5"></div>
                     </div>
                   </div>
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Direção Financeira
                   </div>
                 </div>
                 
                 {/* Gerência */}
                 <div className="relative group">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-purple-100 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-12 h-12 relative">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-rose-200 cursor-pointer transition-transform hover:scale-105">
+                    <div className="w-8 h-8 relative">
                       {/* Cabeça */}
-                      <div className="w-7 h-7 bg-orange-200 rounded-full absolute top-0 left-2.5"></div>
+                      <div className="w-5 h-5 bg-amber-100 rounded-full absolute top-0 left-1.5"></div>
                       {/* Cabelo feminino */}
-                      <div className="w-9 h-5 bg-amber-800 rounded-t-full absolute -top-1 left-1.5"></div>
-                      <div className="w-2 h-3 bg-amber-800 rounded-b-lg absolute top-2 left-1"></div>
-                      <div className="w-2 h-3 bg-amber-800 rounded-b-lg absolute top-2 right-1"></div>
+                      <div className="w-7 h-4 bg-amber-800 rounded-t-full absolute -top-0.5 left-0.5"></div>
+                      <div className="w-1 h-2 bg-amber-800 rounded-b-lg absolute top-1.5 left-0.5"></div>
+                      <div className="w-1 h-2 bg-amber-800 rounded-b-lg absolute top-1.5 right-0.5"></div>
                       {/* Corpo/Blusa */}
-                      <div className="w-10 h-6 bg-purple-600 rounded-t-lg absolute top-6 left-1"></div>
+                      <div className="w-7 h-4 bg-rose-400 rounded-t-lg absolute top-4 left-0.5"></div>
                     </div>
                   </div>
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Gerência
                   </div>
                 </div>
                 
                 {/* Fiscais Operacionais */}
                 <div className="relative group">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-orange-100 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-12 h-12 relative">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-amber-200 cursor-pointer transition-transform hover:scale-105">
+                    <div className="w-8 h-8 relative">
                       {/* Cabeça */}
-                      <div className="w-7 h-7 bg-orange-200 rounded-full absolute top-0 left-2.5"></div>
+                      <div className="w-5 h-5 bg-amber-100 rounded-full absolute top-0 left-1.5"></div>
                       {/* Cabelo curto */}
-                      <div className="w-7 h-3 bg-gray-700 rounded-t-full absolute -top-0.5 left-2.5"></div>
+                      <div className="w-5 h-2 bg-stone-700 rounded-t-full absolute -top-0.5 left-1.5"></div>
                       {/* Corpo/Uniforme */}
-                      <div className="w-10 h-6 bg-orange-500 rounded-t-lg absolute top-6 left-1"></div>
+                      <div className="w-7 h-4 bg-amber-600 rounded-t-lg absolute top-4 left-0.5"></div>
                       {/* Emblema */}
-                      <div className="w-2 h-2 bg-white rounded-full absolute top-7 left-2"></div>
+                      <div className="w-1 h-1 bg-stone-100 rounded-full absolute top-5 left-1"></div>
                     </div>
                   </div>
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Fiscais Operacionais
                   </div>
                 </div>
                 
                 {/* Supervisores Regionais */}
                 <div className="relative group">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-red-100 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-12 h-12 relative">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-orange-200 cursor-pointer transition-transform hover:scale-105">
+                    <div className="w-8 h-8 relative">
                       {/* Cabeça */}
-                      <div className="w-7 h-7 bg-orange-200 rounded-full absolute top-0 left-2.5"></div>
+                      <div className="w-5 h-5 bg-amber-100 rounded-full absolute top-0 left-1.5"></div>
                       {/* Cabelo */}
-                      <div className="w-8 h-4 bg-gray-600 rounded-t-full absolute -top-1 left-2"></div>
+                      <div className="w-6 h-3 bg-stone-600 rounded-t-full absolute -top-0.5 left-1"></div>
                       {/* Corpo/Camisa */}
-                      <div className="w-10 h-6 bg-red-600 rounded-t-lg absolute top-6 left-1"></div>
+                      <div className="w-7 h-4 bg-orange-500 rounded-t-lg absolute top-4 left-0.5"></div>
                       {/* Colarinho */}
-                      <div className="w-6 h-1 bg-white absolute top-6 left-3"></div>
+                      <div className="w-4 h-0.5 bg-stone-100 absolute top-4 left-2"></div>
                     </div>
                   </div>
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     Supervisores Regionais
                   </div>
                 </div>
                 
                 {/* DP e RH */}
                 <div className="relative group">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-indigo-100 cursor-pointer transition-transform hover:scale-105">
-                    <div className="w-12 h-12 relative">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-violet-200 cursor-pointer transition-transform hover:scale-105">
+                    <div className="w-8 h-8 relative">
                       {/* Cabeça */}
-                      <div className="w-7 h-7 bg-orange-200 rounded-full absolute top-0 left-2.5"></div>
+                      <div className="w-5 h-5 bg-amber-100 rounded-full absolute top-0 left-1.5"></div>
                       {/* Cabelo feminino longo */}
-                      <div className="w-9 h-6 bg-amber-600 rounded-t-full absolute -top-1 left-1.5"></div>
-                      <div className="w-3 h-4 bg-amber-600 rounded-b-lg absolute top-3 left-0.5"></div>
-                      <div className="w-3 h-4 bg-amber-600 rounded-b-lg absolute top-3 right-0.5"></div>
+                      <div className="w-7 h-4 bg-amber-700 rounded-t-full absolute -top-0.5 left-0.5"></div>
+                      <div className="w-1.5 h-3 bg-amber-700 rounded-b-lg absolute top-2 left-0"></div>
+                      <div className="w-1.5 h-3 bg-amber-700 rounded-b-lg absolute top-2 right-0"></div>
                       {/* Corpo/Blusa */}
-                      <div className="w-10 h-6 bg-indigo-600 rounded-t-lg absolute top-6 left-1"></div>
+                      <div className="w-7 h-4 bg-violet-500 rounded-t-lg absolute top-4 left-0.5"></div>
                     </div>
                   </div>
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     DP e RH
                   </div>
                 </div>
