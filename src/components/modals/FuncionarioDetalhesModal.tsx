@@ -482,7 +482,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                 </div>
               </div>
               
-              <div className="flex items-start gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1">
                 {isEditing ? (
                   <>
                     <Button
