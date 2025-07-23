@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -16,69 +16,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-    
-    const checkAuthState = () => {
+    // Simplificado para evitar loops
+    const checkAuth = () => {
       try {
         const auth = localStorage.getItem('isAuthenticated');
         const email = localStorage.getItem('userEmail');
         
-        if (isMounted) {
-          if (auth === 'true' && email) {
-            setIsAuthenticated(true);
-            setUserEmail(email);
-          }
-          setIsLoading(false);
+        console.log('Auth check:', { auth, email });
+        
+        if (auth === 'true' && email) {
+          setIsAuthenticated(true);
+          setUserEmail(email);
+        } else {
+          setIsAuthenticated(false);
+          setUserEmail(null);
         }
       } catch (error) {
-        console.error('Error checking auth state:', error);
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        console.error('Auth error:', error);
+        setIsAuthenticated(false);
+        setUserEmail(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    // Use timeout to prevent blocking
-    const timeoutId = setTimeout(checkAuthState, 0);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-    };
+    checkAuth();
   }, []);
 
-  const login = useCallback((email: string) => {
-    try {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userEmail', email);
-      setIsAuthenticated(true);
-      setUserEmail(email);
-    } catch (error) {
-      console.error('Error during login:', error);
-    }
-  }, []);
+  const login = (email: string) => {
+    console.log('Login called with:', email);
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userEmail', email);
+    setIsAuthenticated(true);
+    setUserEmail(email);
+    setIsLoading(false);
+  };
 
-  const logout = useCallback(() => {
-    try {
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('userEmail');
-      setIsAuthenticated(false);
-      setUserEmail(null);
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  }, []);
+  const logout = () => {
+    console.log('Logout called');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userEmail');
+    setIsAuthenticated(false);
+    setUserEmail(null);
+    setIsLoading(false);
+  };
 
-  const value = useMemo(() => ({
-    isAuthenticated,
-    userEmail,
-    login,
-    logout,
-    isLoading
-  }), [isAuthenticated, userEmail, login, logout, isLoading]);
+  console.log('AuthContext state:', { isAuthenticated, userEmail, isLoading });
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      userEmail,
+      login,
+      logout,
+      isLoading
+    }}>
       {children}
     </AuthContext.Provider>
   );

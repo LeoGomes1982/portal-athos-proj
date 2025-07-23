@@ -102,6 +102,7 @@ const LoginHome = () => {
     }
 
     // Login bem-sucedido
+    console.log('Login successful, setting localStorage and navigating');
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('userEmail', email);
     
@@ -110,6 +111,7 @@ const LoginHome = () => {
       description: "Bem-vindo ao sistema!",
     });
 
+    console.log('About to navigate to /home');
     navigate('/home');
     setIsLoading(false);
   };
