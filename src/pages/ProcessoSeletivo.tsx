@@ -95,8 +95,8 @@ export default function ProcessoSeletivo() {
   const totalCandidatos = candidatosEntrevista.length + candidatosTreinamento.length + candidatosAdmissao.length;
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 
