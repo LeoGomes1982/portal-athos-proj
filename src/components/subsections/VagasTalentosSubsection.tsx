@@ -258,6 +258,29 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
           </p>
         </div>
 
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">💼</div>
+              <div className="text-2xl font-bold text-slate-600">
+                {vagasAtivas}
+              </div>
+              <div className="text-sm text-slate-600/80">Vagas Ativas</div>
+            </CardContent>
+          </Card>
+
+          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👥</div>
+              <div className="text-2xl font-bold text-slate-600">
+                {totalCandidatos}
+              </div>
+              <div className="text-sm text-slate-600/80">Candidatos Inscritos</div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Action Buttons */}
         <div className="flex justify-center items-center gap-4 mb-8 animate-slide-up">
           <Dialog>
