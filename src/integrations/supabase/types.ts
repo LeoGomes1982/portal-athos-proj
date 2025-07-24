@@ -75,6 +75,7 @@ export type Database = {
           habilidades_especificas: string[]
           habilidades_esperadas: string[]
           id: string
+          informacoes_adicionais: string | null
           nivel: string
           nome: string
           responsabilidades: string[]
@@ -89,6 +90,7 @@ export type Database = {
           habilidades_especificas?: string[]
           habilidades_esperadas?: string[]
           id?: string
+          informacoes_adicionais?: string | null
           nivel: string
           nome: string
           responsabilidades?: string[]
@@ -103,6 +105,7 @@ export type Database = {
           habilidades_especificas?: string[]
           habilidades_esperadas?: string[]
           id?: string
+          informacoes_adicionais?: string | null
           nivel?: string
           nome?: string
           responsabilidades?: string[]
