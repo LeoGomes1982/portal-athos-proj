@@ -8,7 +8,6 @@ import { PlanosCargosSubsection } from "@/components/subsections/PlanosCargosSub
 import { ResultadosPessoaisSubsection } from "@/components/subsections/ResultadosPessoaisSubsection";
 import { TomadaDecisaoSubsection } from "@/components/subsections/TomadaDecisaoSubsection";
 import { UniformesSubsection } from "@/components/subsections/UniformesSubsection";
-import { LogsSubsection } from "@/components/subsections/LogsSubsection";
 
 export default function Gerencia() {
   const navigate = useNavigate();
@@ -54,16 +53,6 @@ export default function Gerencia() {
       bgColor: "bg-white",
       iconColor: "text-green-600",
       cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
-    },
-    {
-      id: "logs-sistema",
-      title: "Logs do Sistema",
-      icon: FileText,
-      description: "Registros de exclusões e auditoria do sistema",
-      component: LogsSubsection,
-      bgColor: "bg-white",
-      iconColor: "text-red-600",
-      cardClass: "bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-150"
     }
   ];
 

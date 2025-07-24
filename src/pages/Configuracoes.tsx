@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import GerenciarEmpresasModal from "@/components/modals/GerenciarEmpresasModal";
+import { LogsSubsection } from "@/components/subsections/LogsSubsection";
 
 const Configuracoes = () => {
   const navigate = useNavigate();
   const [isEmpresasModalOpen, setIsEmpresasModalOpen] = useState(false);
+  const [showLogsSection, setShowLogsSection] = useState(false);
   
   // Estados para configurações gerais
   const [configuracoes, setConfiguracoes] = useState({
@@ -38,6 +40,11 @@ const Configuracoes = () => {
   const handleConfigChange = (field: string, value: any) => {
     setConfiguracoes(prev => ({ ...prev, [field]: value }));
   };
+
+  // Se está mostrando a seção de logs, renderizar apenas ela
+  if (showLogsSection) {
+    return <LogsSubsection onBack={() => setShowLogsSection(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -191,6 +198,31 @@ const Configuracoes = () => {
               </Button>
             </div>
           </div>
+
+          {/* Logs do Sistema */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                <FileText size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Logs do Sistema</h2>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-slate-600">
+                Visualize registros de exclusões e auditoria do sistema para monitoramento e controle de atividades.
+              </p>
+              
+              <Button 
+                onClick={() => setShowLogsSection(true)}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                <FileText size={16} className="mr-2" />
+                Visualizar Logs
+              </Button>
+            </div>
+          </div>
+
         </div>
 
         <GerenciarEmpresasModal
