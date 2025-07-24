@@ -27,9 +27,10 @@ interface VisualizarCargoModalProps {
   onClose: () => void;
   cargo: Cargo;
   onEdit: () => void;
+  onSave: (cargo: Cargo) => Promise<boolean>;
 }
 
-export function VisualizarCargoModal({ isOpen, onClose, cargo, onEdit }: VisualizarCargoModalProps) {
+export function VisualizarCargoModal({ isOpen, onClose, cargo, onEdit, onSave }: VisualizarCargoModalProps) {
   const [informacoesAdicionais, setInformacoesAdicionais] = useState(cargo.informacoesAdicionais || "");
 
   const getNivelColor = (nivel: string) => {
@@ -238,9 +239,13 @@ export function VisualizarCargoModal({ isOpen, onClose, cargo, onEdit }: Visuali
                     <Button 
                       size="sm" 
                       className="bg-green-600 hover:bg-green-700"
-                      onClick={() => {
-                        // Aqui você salvaria as informações
-                        console.log("Informações salvas:", informacoesAdicionais);
+                      onClick={async () => {
+                        const cargoAtualizado = { ...cargo, informacoesAdicionais };
+                        const sucesso = await onSave(cargoAtualizado);
+                        if (sucesso) {
+                          // Atualiza o estado local com as informações salvas
+                          cargo.informacoesAdicionais = informacoesAdicionais;
+                        }
                       }}
                     >
                       Salvar

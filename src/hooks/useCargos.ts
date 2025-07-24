@@ -14,6 +14,7 @@ export interface Cargo {
   carencia: number;
   status: "ativo" | "inativo";
   criadoEm: string;
+  informacoesAdicionais?: string;
 }
 
 interface CargoDatabase {
@@ -29,6 +30,7 @@ interface CargoDatabase {
   status: string;
   created_at: string;
   updated_at: string;
+  informacoes_adicionais?: string;
 }
 
 export function useCargos() {
@@ -48,7 +50,8 @@ export function useCargos() {
     responsabilidades: dbRecord.responsabilidades || [],
     carencia: dbRecord.carencia,
     status: dbRecord.status as "ativo" | "inativo",
-    criadoEm: dbRecord.created_at.split('T')[0]
+    criadoEm: dbRecord.created_at.split('T')[0],
+    informacoesAdicionais: dbRecord.informacoes_adicionais
   });
 
   // Converter do formato da aplicação para o formato do banco
@@ -61,7 +64,8 @@ export function useCargos() {
     habilidades_esperadas: cargo.habilidadesEsperadas,
     responsabilidades: cargo.responsabilidades,
     carencia: cargo.carencia,
-    status: cargo.status
+    status: cargo.status,
+    informacoes_adicionais: cargo.informacoesAdicionais
   });
 
   // Carregar cargos do banco

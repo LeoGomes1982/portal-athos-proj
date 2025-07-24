@@ -299,6 +299,7 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
               setIsVisualizarCargoModalOpen(false);
               setIsEditarCargoModalOpen(true);
             }}
+            onSave={handleAtualizarCargo}
           />
         </>
       )}
