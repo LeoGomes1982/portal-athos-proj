@@ -38,17 +38,16 @@ export const useAvaliacoes = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  // Carregar avaliações do Supabase
+  // Carregar avaliações do localStorage (temporário até tipos serem atualizados)
   const carregarAvaliacoes = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('avaliacoes_desempenho')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setAvaliacoes((data as Avaliacao[]) || []);
+      // Usar localStorage temporariamente
+      const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
+      if (savedAvaliacoes) {
+        const parsedAvaliacoes = JSON.parse(savedAvaliacoes);
+        setAvaliacoes(parsedAvaliacoes);
+      }
     } catch (error) {
       console.error('Erro ao carregar avaliações:', error);
       toast({
@@ -85,18 +84,21 @@ export const useAvaliacoes = () => {
   const adicionarAvaliacao = async (dadosAvaliacao: AvaliacaoFormData) => {
     try {
       const { resultado, pontuacao } = calcularResultado(dadosAvaliacao.perguntas_marcadas);
+      
+      const novaAvaliacao: Avaliacao = {
+        id: Date.now().toString(),
+        ...dadosAvaliacao,
+        pontuacao_total: pontuacao,
+        resultado,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
 
-      const { data, error } = await supabase
-        .from('avaliacoes_desempenho')
-        .insert({
-          ...dadosAvaliacao,
-          pontuacao_total: pontuacao,
-          resultado
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+      // Salvar no localStorage temporariamente
+      const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
+      const avaliacoes = savedAvaliacoes ? JSON.parse(savedAvaliacoes) : [];
+      const novasAvaliacoes = [novaAvaliacao, ...avaliacoes];
+      localStorage.setItem('avaliacoes_desempenho', JSON.stringify(novasAvaliacoes));
 
       // Adicionar registro ao histórico do funcionário
       await adicionarRegistroHistorico(
@@ -104,10 +106,10 @@ export const useAvaliacoes = () => {
         dadosAvaliacao.funcionario_nome,
         dadosAvaliacao.tipo_avaliacao,
         resultado,
-        data.id
+        novaAvaliacao.id
       );
 
-      setAvaliacoes(prev => [data as Avaliacao, ...prev]);
+      setAvaliacoes(prev => [novaAvaliacao, ...prev]);
       toast({
         title: "Sucesso",
         description: "Avaliação cadastrada com sucesso",

@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      avaliacoes_desempenho: {
+        Row: {
+          avaliador_nome: string
+          created_at: string
+          data_avaliacao: string
+          feedback: string | null
+          funcionario_id: string
+          funcionario_nome: string
+          id: string
+          perguntas_descritivas: Json
+          perguntas_marcadas: Json
+          pontuacao_total: number
+          recomendacoes: Json | null
+          resultado: string
+          sugestoes: Json | null
+          tipo_avaliacao: string
+          updated_at: string
+        }
+        Insert: {
+          avaliador_nome: string
+          created_at?: string
+          data_avaliacao: string
+          feedback?: string | null
+          funcionario_id: string
+          funcionario_nome: string
+          id?: string
+          perguntas_descritivas?: Json
+          perguntas_marcadas?: Json
+          pontuacao_total?: number
+          recomendacoes?: Json | null
+          resultado: string
+          sugestoes?: Json | null
+          tipo_avaliacao: string
+          updated_at?: string
+        }
+        Update: {
+          avaliador_nome?: string
+          created_at?: string
+          data_avaliacao?: string
+          feedback?: string | null
+          funcionario_id?: string
+          funcionario_nome?: string
+          id?: string
+          perguntas_descritivas?: Json
+          perguntas_marcadas?: Json
+          pontuacao_total?: number
+          recomendacoes?: Json | null
+          resultado?: string
+          sugestoes?: Json | null
+          tipo_avaliacao?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       candidaturas: {
         Row: {
           created_at: string
