@@ -180,7 +180,10 @@ const Home = () => {
       icon: UserPlus,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => window.open(window.location.origin + "/portal-admissao", "_blank", "noopener,noreferrer")
+      onClick: () => {
+        const url = `${window.location.origin}/portal-admissao`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
     },
     {
       id: "portal-vagas",
@@ -189,7 +192,10 @@ const Home = () => {
       icon: Target,
       className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
       iconColor: "text-emerald-600",
-      onClick: () => window.open(window.location.origin + "/portal-vagas", "_blank", "noopener,noreferrer")
+      onClick: () => {
+        const url = `${window.location.origin}/portal-vagas`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
     },
     {
       id: "portal-midia",

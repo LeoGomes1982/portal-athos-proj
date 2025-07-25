@@ -43,40 +43,38 @@ export const useAuth = () => {
 
         if (session?.user) {
           // Fetch user profile after successful authentication
-          setTimeout(async () => {
-            try {
-              const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .single();
+          try {
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .single();
 
-              if (error && error.code !== 'PGRST116') {
-                console.error('Error fetching profile:', error);
-              }
-
-              if (mounted) {
-                setAuthState({
-                  user: session.user,
-                  session,
-                  profile: profile || null,
-                  loading: false,
-                  initialized: true
-                });
-              }
-            } catch (error) {
-              console.error('Profile fetch error:', error);
-              if (mounted) {
-                setAuthState({
-                  user: session.user,
-                  session,
-                  profile: null,
-                  loading: false,
-                  initialized: true
-                });
-              }
+            if (error && error.code !== 'PGRST116') {
+              console.error('Error fetching profile:', error);
             }
-          }, 0);
+
+            if (mounted) {
+              setAuthState({
+                user: session.user,
+                session,
+                profile: profile || null,
+                loading: false,
+                initialized: true
+              });
+            }
+          } catch (error) {
+            console.error('Profile fetch error:', error);
+            if (mounted) {
+              setAuthState({
+                user: session.user,
+                session,
+                profile: null,
+                loading: false,
+                initialized: true
+              });
+            }
+          }
         } else {
           if (mounted) {
             setAuthState({

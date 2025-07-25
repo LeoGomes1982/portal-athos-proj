@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { User } from '@supabase/supabase-js';
+
 import { useAuth } from '@/hooks/useAuth';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useNavigationFix } from '@/hooks/useNavigationFix';
 
 import Home from "./pages/Home";
 import DP from "./pages/DP";
@@ -31,10 +33,11 @@ const queryClient = new QueryClient();
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, initialized } = useAuth();
+  useNavigationFix(); // Aplicar correções de navegação
 
   if (!initialized || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -48,18 +51,18 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 function App() {
-  const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
             <Routes>
               {/* Public route for authentication */}
               <Route 
                 path="/auth" 
-                element={<Auth onAuthenticated={setAuthenticatedUser} />} 
+                element={<Auth />} 
               />
               
               {/* Public routes that don't require authentication */}
@@ -149,7 +152,8 @@ function App() {
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

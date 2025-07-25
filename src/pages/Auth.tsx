@@ -11,11 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface AuthProps {
-  onAuthenticated: (user: User) => void;
-}
-
-const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
+const Auth: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nome, setNome] = useState('');
@@ -32,7 +28,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        onAuthenticated(session.user);
         navigate('/');
       }
     };
@@ -43,14 +38,13 @@ const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.user) {
-          onAuthenticated(session.user);
           navigate('/');
         }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [navigate, onAuthenticated]);
+  }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +119,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
           title: "Login realizado com sucesso!",
           description: "Bem-vindo ao sistema.",
         });
-        onAuthenticated(data.user);
         navigate('/');
       }
     } catch (error: any) {
