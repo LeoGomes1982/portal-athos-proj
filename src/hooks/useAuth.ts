@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -23,37 +23,17 @@ interface AuthState {
 }
 
 export const useAuth = () => {
-  const [authState, setAuthState] = useState<AuthState>({
+  const authState: AuthState = {
     user: null,
     session: null,
     profile: null,
     loading: false,
-    initialized: true // Inicializar como true para evitar carregamento infinito
-  });
-
-  useEffect(() => {
-    // Inicialização mínima sem Supabase para resolver carregamento infinito
-    const timer = setTimeout(() => {
-      setAuthState(prev => ({
-        ...prev,
-        loading: false,
-        initialized: true
-      }));
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
+    initialized: true
+  };
 
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      setAuthState({
-        user: null,
-        session: null,
-        profile: null,
-        loading: false,
-        initialized: true
-      });
     } catch (error) {
       console.error('Sign out error:', error);
     }
