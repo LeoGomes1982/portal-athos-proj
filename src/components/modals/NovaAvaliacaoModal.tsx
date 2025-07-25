@@ -108,8 +108,8 @@ export function NovaAvaliacaoModal({ open, onOpenChange }: NovaAvaliacaoModalPro
   useEffect(() => {
     const buscarFuncionarios = async () => {
       const { data, error } = await supabase
-        .from('funcionarios')
-        .select('id, nome, status')
+        .from('funcionarios_sync')
+        .select('funcionario_id, nome, status')
         .in('status', ['ativo', 'experiencia', 'aviso_previo', 'ferias'])
         .order('nome');
       
@@ -118,7 +118,11 @@ export function NovaAvaliacaoModal({ open, onOpenChange }: NovaAvaliacaoModalPro
         return;
       }
       
-      setFuncionarios(data || []);
+      setFuncionarios(data?.map(f => ({
+        id: f.funcionario_id.toString(),
+        nome: f.nome,
+        status: f.status
+      })) || []);
     };
 
     if (open) {
