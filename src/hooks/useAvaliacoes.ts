@@ -38,15 +38,27 @@ export const useAvaliacoes = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  // Carregar avaliações do localStorage (temporário até tipos serem atualizados)
+  // Carregar avaliações do Supabase
   const carregarAvaliacoes = async () => {
     setLoading(true);
     try {
-      // Usar localStorage temporariamente
-      const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
-      if (savedAvaliacoes) {
-        const parsedAvaliacoes = JSON.parse(savedAvaliacoes);
-        setAvaliacoes(parsedAvaliacoes);
+      // Buscar do Supabase primeiro
+      const { data, error } = await supabase
+        .from('avaliacoes_desempenho')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setAvaliacoes(data as Avaliacao[]);
+      } else {
+        // Se não há dados no Supabase, tentar localStorage como fallback
+        const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
+        if (savedAvaliacoes) {
+          const parsedAvaliacoes = JSON.parse(savedAvaliacoes);
+          setAvaliacoes(parsedAvaliacoes);
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar avaliações:', error);
@@ -80,16 +92,23 @@ export const useAvaliacoes = () => {
   // Calcular resultado final baseado em 3 avaliações (colega, chefia, responsável)
   const calcularResultadoFinal = async (funcionarioId: string): Promise<{ resultado: 'POSITIVO' | 'NEGATIVO' | 'NEUTRO', pontuacao: number }> => {
     try {
-      // Buscar as 3 últimas avaliações do funcionário (uma de cada tipo)
-      const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
-      const todasAvaliacoes = savedAvaliacoes ? JSON.parse(savedAvaliacoes) : [];
-      
-      const avaliacoesFuncionario = todasAvaliacoes.filter((av: Avaliacao) => av.funcionario_id === funcionarioId);
+      // Buscar as avaliações do funcionário do Supabase
+      const { data: avaliacoesFuncionario, error } = await supabase
+        .from('avaliacoes_desempenho')
+        .select('*')
+        .eq('funcionario_id', funcionarioId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!avaliacoesFuncionario || avaliacoesFuncionario.length === 0) {
+        return { resultado: 'NEUTRO', pontuacao: 0 };
+      }
       
       // Pegar a última avaliação de cada tipo
-      const avaliacaoColega = avaliacoesFuncionario.filter((av: Avaliacao) => av.tipo_avaliacao === 'colega').pop();
-      const avaliacaoChefia = avaliacoesFuncionario.filter((av: Avaliacao) => av.tipo_avaliacao === 'chefia').pop();
-      const avaliacaoResponsavel = avaliacoesFuncionario.filter((av: Avaliacao) => av.tipo_avaliacao === 'responsavel').pop();
+      const avaliacaoColega = avaliacoesFuncionario.filter((av) => av.tipo_avaliacao === 'colega')[0];
+      const avaliacaoChefia = avaliacoesFuncionario.filter((av) => av.tipo_avaliacao === 'chefia')[0];
+      const avaliacaoResponsavel = avaliacoesFuncionario.filter((av) => av.tipo_avaliacao === 'responsavel')[0];
       
       // Se não temos as 3 avaliações, retorna resultado neutro
       if (!avaliacaoColega || !avaliacaoChefia || !avaliacaoResponsavel) {
@@ -151,20 +170,29 @@ export const useAvaliacoes = () => {
     try {
       const { resultado, pontuacao } = calcularResultado(dadosAvaliacao.perguntas_marcadas);
       
-      const novaAvaliacao: Avaliacao = {
-        id: Date.now().toString(),
-        ...dadosAvaliacao,
+      const novaAvaliacao = {
+        funcionario_id: dadosAvaliacao.funcionario_id,
+        funcionario_nome: dadosAvaliacao.funcionario_nome,
+        tipo_avaliacao: dadosAvaliacao.tipo_avaliacao,
+        avaliador_nome: dadosAvaliacao.avaliador_nome,
+        data_avaliacao: dadosAvaliacao.data_avaliacao,
+        perguntas_marcadas: dadosAvaliacao.perguntas_marcadas,
+        perguntas_descritivas: dadosAvaliacao.perguntas_descritivas,
+        recomendacoes: dadosAvaliacao.recomendacoes || {},
+        sugestoes: dadosAvaliacao.sugestoes || {},
+        feedback: dadosAvaliacao.feedback || '',
         pontuacao_total: pontuacao,
-        resultado,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        resultado
       };
 
-      // Salvar no localStorage temporariamente
-      const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
-      const avaliacoes = savedAvaliacoes ? JSON.parse(savedAvaliacoes) : [];
-      const novasAvaliacoes = [novaAvaliacao, ...avaliacoes];
-      localStorage.setItem('avaliacoes_desempenho', JSON.stringify(novasAvaliacoes));
+      // Salvar no Supabase
+      const { data, error } = await supabase
+        .from('avaliacoes_desempenho')
+        .insert(novaAvaliacao)
+        .select()
+        .single();
+
+      if (error) throw error;
 
       // Adicionar registro ao histórico do funcionário
       await adicionarRegistroHistorico(
@@ -172,10 +200,12 @@ export const useAvaliacoes = () => {
         dadosAvaliacao.funcionario_nome,
         dadosAvaliacao.tipo_avaliacao,
         resultado,
-        novaAvaliacao.id
+        data.id
       );
 
-      setAvaliacoes(prev => [novaAvaliacao, ...prev]);
+      // Recarregar avaliações
+      await carregarAvaliacoes();
+
       toast({
         title: "Sucesso",
         description: "Avaliação cadastrada com sucesso",
