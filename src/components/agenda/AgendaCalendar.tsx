@@ -25,19 +25,28 @@ interface AgendaCalendarProps {
 }
 
 const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCalendarProps) => {
-  const hasCompromisso = (date: Date) => {
+  const getCompromissosStatus = (date: Date) => {
     const dateString = format(date, 'yyyy-MM-dd');
-    return compromissos.some(compromisso => compromisso.data === dateString);
-  };
+    const compromissosData = compromissos.filter(compromisso => compromisso.data === dateString);
+    
+    if (compromissosData.length === 0) {
+      return { hasCompromisso: false, allCompleted: false, hasAvaliacaoDesempenho: false };
+    }
 
-  const hasAvaliacaoDesempenho = (date: Date) => {
-    const dateString = format(date, 'yyyy-MM-dd');
-    return compromissos.some(compromisso => 
-      compromisso.data === dateString && 
-      (compromisso.titulo.toLowerCase().includes('avaliação') || 
-       compromisso.titulo.toLowerCase().includes('avaliacao') ||
-       compromisso.tipo === 'avaliacao')
+    const allCompleted = compromissosData.every(c => c.concluido);
+    const hasAvaliacaoDesempenho = compromissosData.some(c => 
+      !c.concluido && (
+        c.titulo.toLowerCase().includes('avaliação') || 
+        c.titulo.toLowerCase().includes('avaliacao') ||
+        c.tipo === 'avaliacao'
+      )
     );
+
+    return {
+      hasCompromisso: true,
+      allCompleted,
+      hasAvaliacaoDesempenho: hasAvaliacaoDesempenho && !allCompleted
+    };
   };
 
   return (
@@ -77,12 +86,14 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
               day_disabled: "text-gray-300 opacity-30",
             }}
             modifiers={{
-              hasCompromisso: (date) => hasCompromisso(date),
-              hasAvaliacaoDesempenho: (date) => hasAvaliacaoDesempenho(date)
+              hasCompromisso: (date) => getCompromissosStatus(date).hasCompromisso,
+              hasAvaliacaoDesempenho: (date) => getCompromissosStatus(date).hasAvaliacaoDesempenho,
+              allCompleted: (date) => getCompromissosStatus(date).allCompleted
             }}
             modifiersClassNames={{
               hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:z-10",
-              hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-blue-500 after:rounded-full after:z-10 after:border after:border-white"
+              hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-blue-500 after:rounded-full after:z-10 after:border after:border-white",
+              allCompleted: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-gray-400 after:rounded-full after:z-10 after:border after:border-white"
             }}
           />
         </div>
