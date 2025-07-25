@@ -100,6 +100,12 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
       if (error) throw error;
 
       setHistorico(prev => [data as HistoricoRegistro, ...prev]);
+      
+      // Disparar evento para recalcular pontos
+      window.dispatchEvent(new CustomEvent('registroHistoricoAdicionado', { 
+        detail: { funcionarioId: funcionarioId.toString() } 
+      }));
+      
       toast({
         title: "Sucesso",
         description: "Registro adicionado ao histórico",

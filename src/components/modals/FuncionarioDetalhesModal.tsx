@@ -20,7 +20,7 @@ import { SubstituirDocumentoModal } from "./SubstituirDocumentoModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { useSupabaseDocumentos } from "@/hooks/useSupabaseDocumentos";
-import { usePontuacaoAvaliacoes } from "@/hooks/usePontuacaoAvaliacoes";
+import { usePontosAtividade } from "@/hooks/usePontosAtividade";
 import { format } from "date-fns";
 
 
@@ -197,10 +197,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   } = useSupabaseDocumentos(funcionario.id);
 
   const { 
-    pontuacaoAvaliacoes, 
-    loading: loadingPontuacao,
-    recalcularPontuacao 
-  } = usePontuacaoAvaliacoes(funcionario.id);
+    pontosAtividade, 
+    loading: loadingPontos,
+    recalcularPontos 
+  } = usePontosAtividade(funcionario.id);
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
@@ -302,30 +302,6 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     }
   };
 
-  // Função para calcular pontos de atividade
-  const calcularPontosAtividade = () => {
-    let pontos = 0;
-    let registrosNeutros = 0;
-
-    historico.forEach((registro) => {
-      switch (registro.tipo) {
-        case "positivo":
-          pontos += 10;
-          break;
-        case "negativo":
-          pontos -= 3;
-          break;
-        case "neutro":
-          registrosNeutros += 1;
-          break;
-      }
-    });
-
-    // A cada 2 registros neutros, adiciona 1 ponto
-    pontos += Math.floor(registrosNeutros / 2);
-
-    return pontos;
-  };
 
   const getTipoColor = (tipo: string) => {
     switch (tipo) {
@@ -498,29 +474,18 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </Select>
                     
                     
-                    {/* Pontos de Atividade e Avaliações */}
-                    <div className="flex gap-3">
-                      {/* Pontos de Atividade */}
-                      <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg flex-1">
+                    {/* Pontos de Atividade Unificados */}
+                    <div className="mt-3">
+                      <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
                         <div className="flex items-center gap-2">
                           <div>
                             <p className="text-xs font-medium text-slate-600">Pontos de Atividade</p>
-                            <p className="text-2xl font-bold text-blue-700">{calcularPontosAtividade()}</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Pontos de Avaliações */}
-                      <div className="p-3 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg flex-1">
-                        <div className="flex items-center gap-2">
-                          <div>
-                            <p className="text-xs font-medium text-slate-600">Pontos de Avaliações</p>
                             <p className={`text-2xl font-bold ${
-                              pontuacaoAvaliacoes > 0 ? 'text-green-700' : 
-                              pontuacaoAvaliacoes < 0 ? 'text-red-700' : 
-                              'text-gray-700'
+                              pontosAtividade > 0 ? 'text-green-700' : 
+                              pontosAtividade < 0 ? 'text-red-700' : 
+                              'text-blue-700'
                             }`}>
-                              {loadingPontuacao ? '...' : pontuacaoAvaliacoes > 0 ? `+${pontuacaoAvaliacoes}` : pontuacaoAvaliacoes}
+                              {loadingPontos ? '...' : pontosAtividade > 0 ? `+${pontosAtividade}` : pontosAtividade}
                             </p>
                           </div>
                         </div>
