@@ -1,4 +1,4 @@
-const CACHE_NAME = 'portal-athos-v1';
+const CACHE_NAME = 'portal-athos-v2';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
