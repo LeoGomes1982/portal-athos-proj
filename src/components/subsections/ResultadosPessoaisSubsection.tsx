@@ -54,61 +54,48 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
           </div>
         </div>
 
-        {/* Resumos */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
-          <Card className="bg-white shadow-lg border-slate-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <ClipboardCheck size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-800">{totalAvaliacoes}</p>
-                  <p className="text-sm text-slate-600">Total de Avaliações</p>
-                </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📊</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {totalAvaliacoes}
+              </div>
+              <div className="text-sm text-gray-600 mb-1">Total de Avaliações</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Registros totais
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-lg border-slate-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                  <TrendingUp size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-800">{avaliacoesPositivas}</p>
-                  <p className="text-sm text-slate-600">Avaliações Positivas</p>
-                </div>
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">✅</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {avaliacoesPositivas}
               </div>
+              <div className="text-sm text-gray-600">Avaliações Positivas</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-lg border-slate-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-                  <ClipboardCheck size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-800">{avaliacoesNegativas}</p>
-                  <p className="text-sm text-slate-600">Avaliações Negativas</p>
-                </div>
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">❌</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {avaliacoesNegativas}
               </div>
+              <div className="text-sm text-gray-600">Avaliações Negativas</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-lg border-slate-200">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Users size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-800">{funcionariosAvaliados}</p>
-                  <p className="text-sm text-slate-600">Funcionários Avaliados</p>
-                </div>
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👥</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {funcionariosAvaliados}
               </div>
+              <div className="text-sm text-gray-600">Funcionários Avaliados</div>
             </CardContent>
           </Card>
         </div>
