@@ -1,0 +1,28 @@
+{
+  "name": "Portal Athos",
+  "short_name": "Portal Athos",
+  "description": "Sistema de gestão empresarial do Grupo Athos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/lovable-uploads/ebfbe17b-9f35-4fed-894c-5be38c00c60b.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/ebfbe17b-9f35-4fed-894c-5be38c00c60b.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "pt-BR",
+  "dir": "ltr"
+}
