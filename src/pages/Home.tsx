@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { 
   Users, 
@@ -19,21 +18,21 @@ import {
   User
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
-import { AvatarSelector } from "@/components/AvatarSelector";
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user, profile, signOut } = useAuth();
   
   const { toast } = useToast();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
@@ -42,83 +41,13 @@ const Home = () => {
   const { hasNewDenuncias, markAsChecked } = useCICADAlerts();
   const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
   const [showUserTooltip, setShowUserTooltip] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string>("");
   const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState("👨");
-  const [selectedRole, setSelectedRole] = useState("");
-  const [loginAvatar, setLoginAvatar] = useState("👨"); // Avatar selecionado como login
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
-  // Estados para os avatares dos cargos
-  const [roleAvatars, setRoleAvatars] = useState({
-    direcaoOperacional: "👨",
-    direcaoFinanceira: "👩",
-    gerencia: "👱‍♀️",
-    fiscais: "🧔",
-    supervisores: "👨‍💼",
-    dpRh: "👩‍💼"
-  });
-
-  const handleAvatarClick = (role: string) => {
-    setSelectedRole(role);
-    const currentAvatar = roleAvatars[role as keyof typeof roleAvatars];
-    setSelectedAvatar(currentAvatar);
-    setShowAvatarSelector(true);
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
   };
-
-  const handleSelectAvatar = (emoji: string) => {
-    if (selectedRole) {
-      setRoleAvatars(prev => ({
-        ...prev,
-        [selectedRole]: emoji
-      }));
-    }
-  };
-
-  const handleLoginAvatarClick = (avatar: string) => {
-    setLoginAvatar(avatar);
-  };
-
-  const handleLogout = () => {
-    toast({
-      title: "Logout realizado",
-      description: "Você foi desconectado do sistema.",
-    });
-    navigate('/');
-  };
-
-  // Mapeamento de usuários
-  const userMapping: { [key: string]: string } = {
-    "leandrogomes@grupoathosbrasil.com": "Leandro Gomes",
-    "dp@grupoathosbrasil.com": "Simone Macedo",
-    "gerencia@grupoathosbrasil.com": "Sabrina Guidotti",
-    "financeiro@grupoathosbrasil.com": "Aline G. F. Gomes e Silva",
-    "thiago@grupoathosbrasil.com": "Thiago Guterrez",
-    "diego@grupoathosbrasil.com": "Diego Fuga"
-  };
-
-  // Carregar usuário atual
-  useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      try {
-        // Tentar fazer parse como JSON primeiro
-        const userData = JSON.parse(savedUser);
-        if (userData && userData.email) {
-          setCurrentUser(userMapping[userData.email] || userData.email);
-        } else {
-          // Se não tem email no objeto, usar o próprio objeto como string
-          setCurrentUser(userMapping[savedUser] || savedUser);
-        }
-      } catch (error) {
-        // Se falhar o parse, é uma string simples (email)
-        setCurrentUser(userMapping[savedUser] || savedUser);
-      }
-    }
-  }, []);
 
   // Verificar se há compromissos para notificar
   useEffect(() => {
@@ -193,7 +122,7 @@ const Home = () => {
       className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
       iconColor: "text-green-600",
       onClick: () => {
-        markAsChecked(); // Marcar como verificado quando clicar
+        markAsChecked();
         navigate("/cicad");
       },
       hasNewDenuncias: true
@@ -275,75 +204,52 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      {/* Header com login, notificação e logout */}
+      {/* Header com informações do usuário e logout */}
       <div className="bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-end gap-4">
-            {/* Login Area */}
-            <div className="flex items-center gap-3 bg-slate-50 rounded-lg px-4 py-2 border border-slate-200">
-              <div className="flex items-center gap-2">
-                <User size={16} className="text-slate-600" />
-                <Input
-                  type="text"
-                  placeholder="Usuário"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-24 h-8 text-xs border-0 bg-transparent placeholder:text-slate-400 focus:ring-0"
-                />
-              </div>
-              <div className="w-px h-6 bg-slate-300"></div>
-              <Input
-                type="password"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-24 h-8 text-xs border-0 bg-transparent placeholder:text-slate-400 focus:ring-0"
-              />
-              <Button 
-                size="sm" 
-                className="h-6 px-2 text-xs"
-                onClick={() => {
-                  if (username && password) {
-                    toast({
-                      title: "Login realizado",
-                      description: `Bem-vindo, ${username}!`,
-                    });
-                    setUsername("");
-                    setPassword("");
-                  }
-                }}
-              >
-                Entrar
-              </Button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <User className="h-5 w-5 text-slate-600" />
+              <span className="text-slate-800 font-medium">
+                Bem-vindo, {profile?.nome || user?.email}
+              </span>
+              {profile?.role && (
+                <span className="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">
+                  {profile.role === 'admin' ? 'Administrador' : 
+                   profile.role === 'manager' ? 'Gerente' : 'Funcionário'}
+                </span>
+              )}
             </div>
+            
+            <div className="flex items-center gap-4">
+              {/* Notification Bell */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative p-2 h-10 w-10 hover:bg-slate-100"
+                  onClick={() => setShowNotificationModal(true)}
+                >
+                  <Bell size={18} className="text-slate-600" />
+                  {(hasNotifications || hasAvisos || hasUrgentTasks || hasNewDenuncias || hasAgendaNotification) && (
+                    <div className="absolute -top-1 -right-1">
+                      <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    </div>
+                  )}
+                </Button>
+              </div>
 
-            {/* Notification Bell */}
-            <div className="relative">
+              {/* Logout Button */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative p-2 h-10 w-10 hover:bg-slate-100"
-                onClick={() => setShowNotificationModal(true)}
+                onClick={handleSignOut}
+                className="p-2 h-10 w-10 hover:bg-red-50 hover:text-red-600 transition-colors"
+                title="Sair do sistema"
               >
-                <Bell size={18} className="text-slate-600" />
-                {(hasNotifications || hasAvisos || hasUrgentTasks || hasNewDenuncias || hasAgendaNotification) && (
-                  <div className="absolute -top-1 -right-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  </div>
-                )}
+                <LogOut size={18} />
               </Button>
             </div>
-
-            {/* Logout Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="p-2 h-10 w-10 hover:bg-red-50 hover:text-red-600 transition-colors"
-              title="Sair do sistema"
-            >
-              <LogOut size={18} />
-            </Button>
           </div>
         </div>
       </div>
@@ -380,12 +286,10 @@ const Home = () => {
               key={section.id}
               className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
               onClick={(e) => {
-                // Se for o card da agenda e tiver tarefas urgentes, mostrar tooltip ao clicar na área superior
                 if (section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda") {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const clickY = e.clientY - rect.top;
                   
-                  // Se clicou na metade superior, mostrar tooltip
                   if (clickY < rect.height / 2) {
                     e.preventDefault();
                     setShowUserTooltip(!showUserTooltip);
@@ -393,7 +297,6 @@ const Home = () => {
                   }
                 }
                 
-                // Comportamento normal de navegação
                 if (section.onClick) {
                   section.onClick();
                 }
@@ -449,13 +352,12 @@ const Home = () => {
                   <section.icon size={32} className={section.iconColor} />
                 </div>
                 <div>
-                  <h3 className="subsection-title mb-2">{section.title}</h3>
-                  <p className="text-description leading-relaxed">{section.fullTitle}</p>
-                  {section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda" && (
-                    <p className="text-xs text-red-600 mt-2 font-medium">
-                      Clique na parte superior para ver detalhes
-                    </p>
-                  )}
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                    {section.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {section.fullTitle}
+                  </p>
                 </div>
               </div>
             </div>
@@ -469,12 +371,12 @@ const Home = () => {
           </div>
           <div>
             <h2 className="section-title mb-0">Portais Externos</h2>
-            <p className="text-description">Acesso para colaboradores e parceiros</p>
+            <p className="text-description">Acesso público e interfaces externas</p>
           </div>
         </div>
 
         {/* Cards Grid - Portais Externos */}
-        <div className="content-grid animate-slide-up mb-8">
+        <div className="content-grid animate-slide-up">
           {portaisExternosSection.map((section) => (
             <div 
               key={section.id}
@@ -486,69 +388,29 @@ const Home = () => {
                   <section.icon size={32} className={section.iconColor} />
                 </div>
                 <div>
-                  <h3 className="subsection-title mb-2">{section.title}</h3>
-                  <p className="text-description leading-relaxed">{section.fullTitle}</p>
-        </div>
-      </div>
-    </div>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                    {section.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {section.fullTitle}
+                  </p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
+      </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8 pt-8 border-t border-gray-200 animate-fade-in">
-          <p className="text-description">
-            © 2024 Grupo Athos. Todos os direitos reservados.
-          </p>
-        </div>
+      {/* Modal de Tarefas Urgentes */}
+      <UrgentTasksModal 
+        open={showUrgentTasksModal}
+        onOpenChange={setShowUrgentTasksModal}
+        compromissosUrgentes={urgentTasks}
+      />
 
-        {/* Modal de Tarefas Urgentes */}
-        <UrgentTasksModal
-          open={showUrgentTasksModal}
-          onOpenChange={setShowUrgentTasksModal}
-          compromissosUrgentes={urgentTasks}
-        />
-
-        {/* Modal de Notificações da Agenda */}
-        {showNotificationModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowNotificationModal(false)}>
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
-              <div className="flex items-center gap-3 mb-4">
-                <Bell size={20} className="text-blue-600" />
-                <h3 className="text-lg font-semibold">Notificações da Agenda</h3>
-              </div>
-              {hasAgendaNotification ? (
-                <div className="space-y-3">
-                  <p className="text-slate-600">Você tem compromissos pendentes para hoje!</p>
-                  <button 
-                    onClick={() => {
-                      setShowNotificationModal(false);
-                      navigate('/agenda');
-                    }}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Ver Agenda
-                  </button>
-                </div>
-              ) : (
-                <p className="text-slate-600">Nenhuma notificação no momento.</p>
-              )}
-              <button 
-                onClick={() => setShowNotificationModal(false)}
-                className="w-full mt-3 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Modal do AvatarSelector */}
-        <AvatarSelector
-          open={showAvatarSelector}
-          onOpenChange={setShowAvatarSelector}
-          currentAvatar={selectedAvatar}
-          onSelectAvatar={handleSelectAvatar}
-        />
+      {/* Componente de Notificação */}
+      <div className="fixed bottom-4 right-4">
+        <NotificationBadge show={hasNotifications || hasAvisos || hasUrgentTasks || hasNewDenuncias || hasAgendaNotification} />
       </div>
     </div>
   );
