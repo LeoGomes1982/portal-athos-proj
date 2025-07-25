@@ -116,6 +116,28 @@ export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId
         throw dbError;
       }
 
+      // Se o documento tem validade, criar compromisso na agenda
+      if (temValidade && dataValidade) {
+        const { error: compromissoError } = await supabase
+          .from('compromissos')
+          .insert({
+            titulo: `Vencimento: ${nome}`,
+            descricao: `Documento "${nome}" do funcionário com ID ${funcionarioId} vence hoje. Verificar renovação necessária.`,
+            data: format(dataValidade, "yyyy-MM-dd"),
+            horario: "09:00:00",
+            participantes: ["DP@GRUPOATHOSBRASIL.COM"],
+            tipo: "vencimento_documento",
+            prioridade: "alta",
+            criado_por: "Sistema - Vencimento de Documentos",
+            concluido: false
+          });
+
+        if (compromissoError) {
+          console.error('Erro ao criar compromisso de vencimento:', compromissoError);
+          // Não interrompe o fluxo, apenas loga o erro
+        }
+      }
+
       // Criar documento para compatibilidade com o sistema local
       const documento: DocumentoFuncionario = {
         id: Date.now(),
