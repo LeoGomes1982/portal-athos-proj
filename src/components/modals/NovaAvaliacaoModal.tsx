@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAvaliacoes, AvaliacaoFormData } from "@/hooks/useAvaliacoes";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NovaAvaliacaoModalProps {
   open: boolean;
@@ -68,6 +69,7 @@ export function NovaAvaliacaoModal({ open, onOpenChange }: NovaAvaliacaoModalPro
   const { adicionarAvaliacao } = useAvaliacoes();
   const { toast } = useToast();
   const [etapa, setEtapa] = useState(1);
+  const [funcionarios, setFuncionarios] = useState<{id: string, nome: string, status: string}[]>([]);
   const [formData, setFormData] = useState<Partial<AvaliacaoFormData>>({
     tipo_avaliacao: 'colega',
     data_avaliacao: new Date().toISOString().split('T')[0],
@@ -102,25 +104,54 @@ export function NovaAvaliacaoModal({ open, onOpenChange }: NovaAvaliacaoModalPro
     }
   };
 
+  // Buscar funcionários elegíveis para avaliação
+  useEffect(() => {
+    const buscarFuncionarios = async () => {
+      const { data, error } = await supabase
+        .from('funcionarios')
+        .select('id, nome, status')
+        .in('status', ['ativo', 'experiencia', 'aviso_previo', 'ferias'])
+        .order('nome');
+      
+      if (error) {
+        console.error('Erro ao buscar funcionários:', error);
+        return;
+      }
+      
+      setFuncionarios(data || []);
+    };
+
+    if (open) {
+      buscarFuncionarios();
+    }
+  }, [open]);
+
   const renderEtapa1 = () => (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Funcionário ID</Label>
-          <Input
-            value={formData.funcionario_id || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, funcionario_id: e.target.value }))}
-            placeholder="ID do funcionário"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Nome do Funcionário</Label>
-          <Input
-            value={formData.funcionario_nome || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, funcionario_nome: e.target.value }))}
-            placeholder="Nome completo"
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Nome do Funcionário</Label>
+        <Select
+          value={formData.funcionario_id || ''}
+          onValueChange={(value) => {
+            const funcionario = funcionarios.find(f => f.id === value);
+            setFormData(prev => ({ 
+              ...prev, 
+              funcionario_id: value,
+              funcionario_nome: funcionario?.nome || ''
+            }));
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione o funcionário" />
+          </SelectTrigger>
+          <SelectContent>
+            {funcionarios.map((funcionario) => (
+              <SelectItem key={funcionario.id} value={funcionario.id}>
+                {funcionario.nome} ({funcionario.status})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="space-y-2">
