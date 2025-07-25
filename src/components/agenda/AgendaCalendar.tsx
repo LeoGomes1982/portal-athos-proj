@@ -86,14 +86,14 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
               day_disabled: "text-gray-300 opacity-30",
             }}
             modifiers={{
-              hasCompromisso: (date) => getCompromissosStatus(date).hasCompromisso,
+              allCompleted: (date) => getCompromissosStatus(date).allCompleted,
               hasAvaliacaoDesempenho: (date) => getCompromissosStatus(date).hasAvaliacaoDesempenho,
-              allCompleted: (date) => getCompromissosStatus(date).allCompleted
+              hasCompromisso: (date) => getCompromissosStatus(date).hasCompromisso && !getCompromissosStatus(date).allCompleted && !getCompromissosStatus(date).hasAvaliacaoDesempenho
             }}
             modifiersClassNames={{
-              hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:z-10",
+              allCompleted: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-gray-400 after:rounded-full after:z-10 after:border after:border-white",
               hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-blue-500 after:rounded-full after:z-10 after:border after:border-white",
-              allCompleted: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-gray-400 after:rounded-full after:z-10 after:border after:border-white"
+              hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:z-10"
             }}
           />
         </div>
