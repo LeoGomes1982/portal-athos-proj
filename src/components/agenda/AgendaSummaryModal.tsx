@@ -10,7 +10,7 @@ interface Compromisso {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
   concluido: boolean;
   criadoPor: string;
 }

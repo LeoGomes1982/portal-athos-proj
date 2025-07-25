@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +12,7 @@ interface Compromisso {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
   concluido: boolean;
   criadoPor: string;
   prioridade: 'normal' | 'importante' | 'muito-importante';
@@ -30,6 +29,17 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
     const dateString = format(date, 'yyyy-MM-dd');
     return compromissos.some(compromisso => compromisso.data === dateString);
   };
+
+  const hasAvaliacaoDesempenho = (date: Date) => {
+    const dateString = format(date, 'yyyy-MM-dd');
+    return compromissos.some(compromisso => 
+      compromisso.data === dateString && 
+      (compromisso.titulo.toLowerCase().includes('avaliação') || 
+       compromisso.titulo.toLowerCase().includes('avaliacao') ||
+       compromisso.tipo === 'avaliacao')
+    );
+  };
+
   return (
     <Card className="modern-card animate-slide-up bg-white/95 backdrop-blur-sm border-purple-200/60 shadow-md h-[500px] flex flex-col">
       <CardHeader className="card-header flex-shrink-0">
@@ -67,10 +77,12 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
               day_disabled: "text-gray-300 opacity-30",
             }}
             modifiers={{
-              hasCompromisso: (date) => hasCompromisso(date)
+              hasCompromisso: (date) => hasCompromisso(date),
+              hasAvaliacaoDesempenho: (date) => hasAvaliacaoDesempenho(date)
             }}
             modifiersClassNames={{
-              hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:z-10"
+              hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-red-500 after:rounded-full after:z-10",
+              hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-2 after:h-2 after:bg-blue-500 after:rounded-full after:z-10 after:border after:border-white"
             }}
           />
         </div>

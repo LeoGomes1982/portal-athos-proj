@@ -247,6 +247,24 @@ export const useAvaliacoes = () => {
           arquivo_url: `/resultados-pessoais?avaliacao=${avaliacaoId}` // Link para a avaliação
         });
 
+      // Criar compromisso na agenda para próxima avaliação (3 meses depois)
+      const proximaAvaliacao = new Date();
+      proximaAvaliacao.setMonth(proximaAvaliacao.getMonth() + 3);
+      
+      await supabase
+        .from('compromissos')
+        .insert({
+          titulo: `Avaliação de Desempenho - ${funcionarioNome} (${tipoAvaliacao.charAt(0).toUpperCase() + tipoAvaliacao.slice(1)})`,
+          descricao: `Próxima rodada de avaliação semestral de ${funcionarioNome} - ${tipoAvaliacao}.`,
+          data: proximaAvaliacao.toISOString().split('T')[0],
+          horario: '10:00:00',
+          participantes: [funcionarioNome, localStorage.getItem('currentUser') || 'Sistema RH'],
+          tipo: 'avaliacao',
+          concluido: false,
+          criado_por: localStorage.getItem('currentUser') || 'Sistema RH',
+          prioridade: 'muito-importante' // ⭐⭐⭐ Muito importante (3 estrelas)
+        });
+
     } catch (error) {
       console.error('Erro ao adicionar registro no histórico:', error);
     }

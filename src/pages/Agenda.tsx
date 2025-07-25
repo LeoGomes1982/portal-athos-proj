@@ -22,7 +22,7 @@ interface Compromisso {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
   concluido: boolean;
   criadoPor: string;
   prioridade: 'normal' | 'importante' | 'muito-importante';
@@ -44,7 +44,7 @@ const Agenda = () => {
     data: '',
     horario: '',
     participantes: [] as string[],
-    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento',
+    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
     prioridade: 'normal' as 'normal' | 'importante' | 'muito-importante'
   });
 
@@ -80,7 +80,7 @@ const Agenda = () => {
           data: c.data,
           horario: c.horario,
           participantes: c.participantes || [],
-          tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento',
+          tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
           concluido: c.concluido,
           criadoPor: c.criado_por,
           prioridade: c.prioridade as 'normal' | 'importante' | 'muito-importante'
@@ -158,7 +158,7 @@ const Agenda = () => {
           data: data.data,
           horario: data.horario,
           participantes: data.participantes || [],
-          tipo: data.tipo as 'reuniao' | 'tarefa' | 'evento',
+          tipo: data.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
           concluido: data.concluido,
           criadoPor: data.criado_por,
           prioridade: data.prioridade as 'normal' | 'importante' | 'muito-importante'
