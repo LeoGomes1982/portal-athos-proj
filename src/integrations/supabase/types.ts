@@ -84,6 +84,7 @@ export type Database = {
           sugestoes: Json | null
           tipo_avaliacao: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           avaliador_nome: string
@@ -101,6 +102,7 @@ export type Database = {
           sugestoes?: Json | null
           tipo_avaliacao: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           avaliador_nome?: string
@@ -118,6 +120,7 @@ export type Database = {
           sugestoes?: Json | null
           tipo_avaliacao?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -236,6 +239,7 @@ export type Database = {
           tipo: string
           titulo: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           concluido?: boolean
@@ -250,6 +254,7 @@ export type Database = {
           tipo: string
           titulo: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           concluido?: boolean
@@ -264,6 +269,7 @@ export type Database = {
           tipo?: string
           titulo?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -600,6 +606,42 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          cargo: string | null
+          created_at: string | null
+          departamento: string | null
+          email: string | null
+          id: string
+          nome: string | null
+          role: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cargo?: string | null
+          created_at?: string | null
+          departamento?: string | null
+          email?: string | null
+          id?: string
+          nome?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cargo?: string | null
+          created_at?: string | null
+          departamento?: string | null
+          email?: string | null
+          id?: string
+          nome?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       vagas: {
         Row: {
           beneficios: string | null
@@ -653,7 +695,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
