@@ -66,12 +66,35 @@ export function VisualizarAvaliacaoModal({ open, onOpenChange, avaliacaoId }: Vi
         .from('avaliacoes_desempenho')
         .select('*')
         .eq('id', avaliacaoId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao carregar avaliação:', error);
+        toast({
+          title: "Erro ao carregar avaliação",
+          description: "Não foi possível carregar os dados da avaliação",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (!data) {
+        toast({
+          title: "Avaliação não encontrada",
+          description: "A avaliação solicitada não foi encontrada",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       setAvaliacao(data as Avaliacao);
     } catch (error) {
       console.error('Erro ao carregar avaliação:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao carregar a avaliação",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
