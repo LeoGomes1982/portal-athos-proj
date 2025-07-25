@@ -24,11 +24,17 @@ const Auth: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let isMounted = true;
+    
     // Check if user is already authenticated
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        navigate('/');
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user && isMounted) {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
       }
     };
     
@@ -37,13 +43,16 @@ const Auth: React.FC = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (session?.user) {
+        if (session?.user && isMounted) {
           navigate('/');
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
