@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      avaliacao_externa_links: {
+        Row: {
+          avaliacao_id: string | null
+          created_at: string
+          criado_por: string
+          data_criacao: string
+          data_expiracao: string
+          funcionario_id: string
+          funcionario_nome: string
+          id: string
+          tipo_avaliacao: string
+          token: string
+          updated_at: string
+          usado: boolean
+        }
+        Insert: {
+          avaliacao_id?: string | null
+          created_at?: string
+          criado_por: string
+          data_criacao?: string
+          data_expiracao: string
+          funcionario_id: string
+          funcionario_nome: string
+          id?: string
+          tipo_avaliacao: string
+          token: string
+          updated_at?: string
+          usado?: boolean
+        }
+        Update: {
+          avaliacao_id?: string | null
+          created_at?: string
+          criado_por?: string
+          data_criacao?: string
+          data_expiracao?: string
+          funcionario_id?: string
+          funcionario_nome?: string
+          id?: string
+          tipo_avaliacao?: string
+          token?: string
+          updated_at?: string
+          usado?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avaliacao_externa_links_avaliacao_id_fkey"
+            columns: ["avaliacao_id"]
+            isOneToOne: false
+            referencedRelation: "avaliacoes_desempenho"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avaliacoes_desempenho: {
         Row: {
           avaliador_nome: string

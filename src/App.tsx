@@ -21,6 +21,7 @@ import CICAD from "./pages/CICAD";
 import CICADFormulario from "./pages/CICADFormulario";
 import PortalMidiaExterna from "./pages/PortalMidiaExterna";
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
+import { AvaliacaoExterna } from "./pages/AvaliacaoExterna";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,8 @@ function App() {
               <Route path="/cicad-formulario" element={<CICADFormulario />} />
               
               <Route path="/processo-seletivo" element={<ProcessoSeletivo />} />
+              
+              <Route path="/avaliacao-externa/:token" element={<AvaliacaoExterna />} />
               
               {/* Catch-all route para páginas não encontradas */}
               <Route path="/" element={<Home />} />

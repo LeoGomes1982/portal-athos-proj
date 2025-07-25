@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { NovaAvaliacaoModal } from "@/components/modals/NovaAvaliacaoModal";
+import { EscolhaTipoAvaliacaoModal } from "@/components/modals/EscolhaTipoAvaliacaoModal";
 import { VisualizarAvaliacaoModal } from "@/components/modals/VisualizarAvaliacaoModal";
 import { useAvaliacoes } from "@/hooks/useAvaliacoes";
 
@@ -13,9 +14,17 @@ interface ResultadosPessoaisSubsectionProps {
 }
 
 export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubsectionProps) {
+  const [escolhaTipoModalOpen, setEscolhaTipoModalOpen] = useState(false);
   const [novaAvaliacaoModalOpen, setNovaAvaliacaoModalOpen] = useState(false);
   const [visualizarAvaliacaoModal, setVisualizarAvaliacaoModal] = useState<{open: boolean, avaliacaoId?: string}>({open: false});
   const { avaliacoes, loading } = useAvaliacoes();
+
+  const handleSelecionarTipo = (tipo: 'responder_aqui' | 'enviar_para_responder') => {
+    setEscolhaTipoModalOpen(false);
+    if (tipo === 'responder_aqui') {
+      setNovaAvaliacaoModalOpen(true);
+    }
+  };
 
   // Agrupar avaliações por funcionário
   const avaliacoesPorFuncionario = avaliacoes.reduce((acc, avaliacao) => {
@@ -103,7 +112,7 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
         {/* Botões de Ação */}
         <div className="flex gap-4 mt-8">
           <Button 
-            onClick={() => setNovaAvaliacaoModalOpen(true)}
+            onClick={() => setEscolhaTipoModalOpen(true)}
             className="bg-purple-600 hover:bg-purple-700"
           >
             <Plus size={16} className="mr-2" />
@@ -180,6 +189,12 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
         </Card>
 
         {/* Modals */}
+        <EscolhaTipoAvaliacaoModal
+          open={escolhaTipoModalOpen}
+          onOpenChange={setEscolhaTipoModalOpen}
+          onSelecionarTipo={handleSelecionarTipo}
+        />
+        
         <NovaAvaliacaoModal 
           open={novaAvaliacaoModalOpen}
           onOpenChange={setNovaAvaliacaoModalOpen}
