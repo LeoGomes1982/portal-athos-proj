@@ -89,77 +89,28 @@ export const useAuth = () => {
       }
     );
 
-    // Check for existing session
+    // Simplified initialization with faster timeout
     const initializeAuth = async () => {
       try {
-        // Add timeout to prevent infinite loading
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session check timeout')), 10000)
-        );
-        
-        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any;
-        
-        if (error) {
-          console.error('Session error:', error);
-          if (mounted) {
-            setAuthState({
-              user: null,
-              session: null,
-              profile: null,
-              loading: false,
-              initialized: true
-            });
-          }
-          return;
-        }
+        // Quick session check with shorter timeout
+        const { data: { session } } = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 3000)
+          )
+        ]) as any;
 
-        if (session?.user) {
-          try {
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .single();
-
-            if (profileError && profileError.code !== 'PGRST116') {
-              console.error('Error fetching profile:', profileError);
-            }
-
-            if (mounted) {
-              setAuthState({
-                user: session.user,
-                session,
-                profile: profile || null,
-                loading: false,
-                initialized: true
-              });
-            }
-          } catch (error) {
-            console.error('Profile fetch error:', error);
-            if (mounted) {
-              setAuthState({
-                user: session.user,
-                session,
-                profile: null,
-                loading: false,
-                initialized: true
-              });
-            }
-          }
-        } else {
-          if (mounted) {
-            setAuthState({
-              user: null,
-              session: null,
-              profile: null,
-              loading: false,
-              initialized: true
-            });
-          }
+        if (mounted) {
+          setAuthState({
+            user: session?.user || null,
+            session: session || null,
+            profile: null,
+            loading: false,
+            initialized: true
+          });
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.log('Auth timeout or error, proceeding without auth:', error);
         if (mounted) {
           setAuthState({
             user: null,
