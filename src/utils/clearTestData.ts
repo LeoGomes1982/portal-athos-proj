@@ -22,7 +22,7 @@ export const clearTestData = () => {
   console.log('Dados de teste limpos com sucesso!');
 };
 
-// Executar automaticamente quando importado
-if (typeof window !== 'undefined') {
-  clearTestData();
-}
+// Removido execução automática para evitar problemas no build
+// if (typeof window !== 'undefined') {
+//   clearTestData();
+// }
