@@ -17,9 +17,24 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
   const [visualizarAvaliacaoModal, setVisualizarAvaliacaoModal] = useState<{open: boolean, avaliacaoId?: string}>({open: false});
   const { avaliacoes, loading } = useAvaliacoes();
 
+  // Agrupar avaliações por funcionário
+  const avaliacoesPorFuncionario = avaliacoes.reduce((acc, avaliacao) => {
+    if (!acc[avaliacao.funcionario_nome]) {
+      acc[avaliacao.funcionario_nome] = [];
+    }
+    acc[avaliacao.funcionario_nome].push(avaliacao);
+    return acc;
+  }, {} as Record<string, typeof avaliacoes>);
+
+  // Calcular estatísticas
+  const totalAvaliacoes = avaliacoes.length;
+  const avaliacoesPositivas = avaliacoes.filter(a => a.resultado === 'POSITIVO').length;
+  const avaliacoesNegativas = avaliacoes.filter(a => a.resultado === 'NEGATIVO').length;
+  const funcionariosAvaliados = Object.keys(avaliacoesPorFuncionario).length;
+
   return (
     <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
+      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={onBack} className="back-button">
@@ -30,7 +45,7 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <span className="text-white text-3xl">📈</span>
           </div>
           <div>
@@ -39,96 +54,143 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          {/* Avaliações de Desempenho */}
+        {/* Resumos */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
           <Card className="bg-white shadow-lg border-slate-200">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                    <ClipboardCheck size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl text-slate-800">Avaliações de Desempenho</CardTitle>
-                    <p className="text-sm text-slate-600">Gestão de avaliações dos funcionários</p>
-                  </div>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <ClipboardCheck size={20} className="text-white" />
                 </div>
-                <Button 
-                  onClick={() => setNovaAvaliacaoModalOpen(true)}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Plus size={16} className="mr-2" />
-                  Nova Avaliação
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {loading ? (
-                  <p className="text-slate-600 text-center py-8">Carregando avaliações...</p>
-                ) : avaliacoes.length === 0 ? (
-                  <p className="text-slate-600 text-center py-8">Nenhuma avaliação cadastrada</p>
-                ) : (
-                  avaliacoes.slice(0, 5).map((avaliacao) => (
-                    <div key={avaliacao.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
-                      <div className="flex items-center gap-3">
-                        <Users size={16} className="text-slate-600" />
-                        <div>
-                          <p className="font-medium text-slate-800">{avaliacao.funcionario_nome}</p>
-                          <p className="text-sm text-slate-600">
-                            {avaliacao.tipo_avaliacao} • {new Date(avaliacao.data_avaliacao).toLocaleDateString('pt-BR')}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          variant={avaliacao.resultado === 'POSITIVO' ? 'default' : 
-                                 avaliacao.resultado === 'NEGATIVO' ? 'destructive' : 'secondary'}
-                        >
-                          {avaliacao.resultado}
-                        </Badge>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setVisualizarAvaliacaoModal({open: true, avaliacaoId: avaliacao.id})}
-                        >
-                          <Eye size={14} />
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-                {avaliacoes.length > 5 && (
-                  <Button variant="outline" className="w-full">
-                    Ver todas as avaliações ({avaliacoes.length})
-                  </Button>
-                )}
+                <div>
+                  <p className="text-2xl font-bold text-slate-800">{totalAvaliacoes}</p>
+                  <p className="text-sm text-slate-600">Total de Avaliações</p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Gráfico de Evolução */}
           <Card className="bg-white shadow-lg border-slate-200">
-            <CardHeader className="pb-4">
+            <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <TrendingUp size={24} className="text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                  <TrendingUp size={20} className="text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-slate-800">Gráfico de Evolução</CardTitle>
-                  <p className="text-sm text-slate-600">Acompanhamento da evolução dos funcionários</p>
+                  <p className="text-2xl font-bold text-slate-800">{avaliacoesPositivas}</p>
+                  <p className="text-sm text-slate-600">Avaliações Positivas</p>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-16">
-                <TrendingUp size={48} className="text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-600">Gráfico de evolução em desenvolvimento</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-lg border-slate-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                  <ClipboardCheck size={20} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-slate-800">{avaliacoesNegativas}</p>
+                  <p className="text-sm text-slate-600">Avaliações Negativas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-lg border-slate-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Users size={20} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-slate-800">{funcionariosAvaliados}</p>
+                  <p className="text-sm text-slate-600">Funcionários Avaliados</p>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Botões de Ação */}
+        <div className="flex gap-4 mt-8">
+          <Button 
+            onClick={() => setNovaAvaliacaoModalOpen(true)}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <Plus size={16} className="mr-2" />
+            Nova Avaliação
+          </Button>
+          <Button 
+            variant="outline"
+            className="border-purple-200 text-purple-700 hover:bg-purple-50"
+          >
+            <TrendingUp size={16} className="mr-2" />
+            Gráfico de Evolução
+          </Button>
+        </div>
+
+        {/* Lista de Avaliações por Funcionário */}
+        <Card className="bg-white shadow-lg border-slate-200 mt-8">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl text-slate-800">Avaliações de Desempenho</CardTitle>
+            <p className="text-sm text-slate-600">Lista de avaliações organizadas por funcionário</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {loading ? (
+                <p className="text-slate-600 text-center py-8">Carregando avaliações...</p>
+              ) : Object.keys(avaliacoesPorFuncionario).length === 0 ? (
+                <p className="text-slate-600 text-center py-8">Nenhuma avaliação cadastrada</p>
+              ) : (
+                Object.entries(avaliacoesPorFuncionario).map(([funcionario, avaliacoesFuncionario]) => (
+                  <div key={funcionario} className="border border-slate-200 rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Users size={20} className="text-purple-600" />
+                      <h3 className="text-lg font-semibold text-slate-800">{funcionario}</h3>
+                      <Badge variant="secondary" className="ml-auto">
+                        {avaliacoesFuncionario.length} avaliação{avaliacoesFuncionario.length !== 1 ? 'ões' : ''}
+                      </Badge>
+                    </div>
+                    <div className="grid gap-3">
+                      {avaliacoesFuncionario
+                        .sort((a, b) => new Date(b.data_avaliacao).getTime() - new Date(a.data_avaliacao).getTime())
+                        .map((avaliacao) => (
+                        <div key={avaliacao.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <ClipboardCheck size={16} className="text-slate-600" />
+                            <div>
+                              <p className="font-medium text-slate-800 capitalize">{avaliacao.tipo_avaliacao}</p>
+                              <p className="text-sm text-slate-600">
+                                {new Date(avaliacao.data_avaliacao).toLocaleDateString('pt-BR')} • por {avaliacao.avaliador_nome}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant={avaliacao.resultado === 'POSITIVO' ? 'default' : 
+                                     avaliacao.resultado === 'NEGATIVO' ? 'destructive' : 'secondary'}
+                            >
+                              {avaliacao.resultado}
+                            </Badge>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setVisualizarAvaliacaoModal({open: true, avaliacaoId: avaliacao.id})}
+                            >
+                              <Eye size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Modals */}
         <NovaAvaliacaoModal 
