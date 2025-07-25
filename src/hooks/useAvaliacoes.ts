@@ -195,6 +195,11 @@ export const useAvaliacoes = () => {
         data.id
       );
 
+      // Atualizar pontuação do funcionário em tempo real (trigger para outros componentes)
+      window.dispatchEvent(new CustomEvent('avaliacaoAdicionada', { 
+        detail: { funcionarioId: dadosAvaliacao.funcionario_id } 
+      }));
+
       // Recarregar avaliações
       await carregarAvaliacoes();
 

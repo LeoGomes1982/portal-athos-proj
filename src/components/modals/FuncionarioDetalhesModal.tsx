@@ -20,6 +20,7 @@ import { SubstituirDocumentoModal } from "./SubstituirDocumentoModal";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { useSupabaseDocumentos } from "@/hooks/useSupabaseDocumentos";
+import { usePontuacaoAvaliacoes } from "@/hooks/usePontuacaoAvaliacoes";
 import { format } from "date-fns";
 
 
@@ -194,6 +195,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     loading: loadingDocumentosSupabase,
     carregarDocumentos: recarregarDocumentosSupabase
   } = useSupabaseDocumentos(funcionario.id);
+
+  const { 
+    pontuacaoAvaliacoes, 
+    loading: loadingPontuacao,
+    recalcularPontuacao 
+  } = usePontuacaoAvaliacoes(funcionario.id);
 
   const handleStatusChange = (novoStatus: string) => {
     const status = novoStatus as Funcionario['status'];
@@ -490,12 +497,32 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       </SelectContent>
                     </Select>
                     
-                    {/* Pontos de Atividade */}
-                    <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="text-xs font-medium text-slate-600">Pontos de Atividade</p>
-                          <p className="text-2xl font-bold text-blue-700">{calcularPontosAtividade()}</p>
+                    
+                    {/* Pontos de Atividade e Avaliações */}
+                    <div className="flex gap-3">
+                      {/* Pontos de Atividade */}
+                      <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg flex-1">
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <p className="text-xs font-medium text-slate-600">Pontos de Atividade</p>
+                            <p className="text-2xl font-bold text-blue-700">{calcularPontosAtividade()}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Pontos de Avaliações */}
+                      <div className="p-3 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg flex-1">
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <p className="text-xs font-medium text-slate-600">Pontos de Avaliações</p>
+                            <p className={`text-2xl font-bold ${
+                              pontuacaoAvaliacoes > 0 ? 'text-green-700' : 
+                              pontuacaoAvaliacoes < 0 ? 'text-red-700' : 
+                              'text-gray-700'
+                            }`}>
+                              {loadingPontuacao ? '...' : pontuacaoAvaliacoes > 0 ? `+${pontuacaoAvaliacoes}` : pontuacaoAvaliacoes}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
