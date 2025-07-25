@@ -257,22 +257,41 @@ export function NovaAvaliacaoModal({ open, onOpenChange }: NovaAvaliacaoModalPro
       <div className="space-y-4 max-h-96 overflow-y-auto">
         <h3 className="text-lg font-semibold">Perguntas Descritivas</h3>
         {Array.from({ length: numPerguntasDescritivas }, (_, index) => (
-          <div key={index} className="space-y-2">
-            <Label>Pergunta Descritiva {index + 1}</Label>
-            <Textarea
-              value={formData.perguntas_descritivas?.[`descritiva_${index}`] || ''}
-              onChange={(e) => 
-                setFormData(prev => ({
-                  ...prev,
-                  perguntas_descritivas: {
-                    ...prev.perguntas_descritivas,
-                    [`descritiva_${index}`]: e.target.value
-                  }
-                }))
-              }
-              placeholder="Digite sua resposta..."
-              rows={3}
-            />
+          <div key={index} className="space-y-4 p-4 border rounded-lg">
+            <div className="space-y-2">
+              <Label>Pergunta {index + 1}</Label>
+              <Textarea
+                value={formData.perguntas_descritivas?.[`pergunta_${index}`] || ''}
+                onChange={(e) => 
+                  setFormData(prev => ({
+                    ...prev,
+                    perguntas_descritivas: {
+                      ...prev.perguntas_descritivas,
+                      [`pergunta_${index}`]: e.target.value
+                    }
+                  }))
+                }
+                placeholder="Digite a pergunta..."
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Resposta</Label>
+              <Textarea
+                value={formData.perguntas_descritivas?.[`resposta_${index}`] || ''}
+                onChange={(e) => 
+                  setFormData(prev => ({
+                    ...prev,
+                    perguntas_descritivas: {
+                      ...prev.perguntas_descritivas,
+                      [`resposta_${index}`]: e.target.value
+                    }
+                  }))
+                }
+                placeholder="Digite sua resposta..."
+                rows={3}
+              />
+            </div>
           </div>
         ))}
       </div>

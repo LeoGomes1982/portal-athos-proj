@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { Avaliacao } from "@/hooks/useAvaliacoes";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy, Share2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface VisualizarAvaliacaoModalProps {
   open: boolean;
@@ -17,6 +18,38 @@ interface VisualizarAvaliacaoModalProps {
 export function VisualizarAvaliacaoModal({ open, onOpenChange, avaliacaoId }: VisualizarAvaliacaoModalProps) {
   const [avaliacao, setAvaliacao] = useState<Avaliacao | null>(null);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const linkCompartilhavel = avaliacaoId ? `${window.location.origin}/avaliacao/${avaliacaoId}` : '';
+
+  const copiarLink = () => {
+    navigator.clipboard.writeText(linkCompartilhavel);
+    toast({
+      title: "Link copiado!",
+      description: "O link da avaliação foi copiado para a área de transferência",
+    });
+  };
+
+  const compartilharLink = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Avaliação de ${avaliacao?.funcionario_nome}`,
+        text: `Avaliação de Desempenho - ${avaliacao?.tipo_avaliacao}`,
+        url: linkCompartilhavel,
+      });
+    } else {
+      copiarLink();
+    }
+  };
+
+  const getTipoAvaliacaoLabel = (tipo: string) => {
+    switch (tipo) {
+      case 'colega': return 'Avaliação de Colega';
+      case 'chefia': return 'Avaliação de Chefia';
+      case 'responsavel': return 'Avaliação do Responsável';
+      default: return tipo;
+    }
+  };
 
   useEffect(() => {
     if (open && avaliacaoId) {
@@ -51,8 +84,44 @@ export function VisualizarAvaliacaoModal({ open, onOpenChange, avaliacaoId }: Vi
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Detalhes da Avaliação de Desempenho</DialogTitle>
+        <DialogHeader className="space-y-4">
+          <DialogTitle className="text-2xl">
+            {avaliacao?.funcionario_nome}
+          </DialogTitle>
+          {avaliacao && (
+            <>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>{getTipoAvaliacaoLabel(avaliacao.tipo_avaliacao)}</span>
+                <span>•</span>
+                <span>{new Date(avaliacao.data_avaliacao).toLocaleDateString('pt-BR')}</span>
+                <span>•</span>
+                <span>Avaliador: {avaliacao.avaliador_nome}</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Badge 
+                  variant={avaliacao.resultado === 'POSITIVO' ? 'default' : 
+                         avaliacao.resultado === 'NEGATIVO' ? 'destructive' : 'secondary'}
+                >
+                  {avaliacao.resultado}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  Pontuação: {avaliacao.pontuacao_total > 0 ? '+' : ''}{avaliacao.pontuacao_total}
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={copiarLink}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copiar Link
+                </Button>
+                <Button variant="outline" size="sm" onClick={compartilharLink}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Compartilhar
+                </Button>
+              </div>
+            </>
+          )}
         </DialogHeader>
 
         {loading ? (

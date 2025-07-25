@@ -60,23 +60,89 @@ export const useAvaliacoes = () => {
     }
   };
 
-  // Calcular resultado baseado nas respostas
+  // Calcular resultado baseado nas respostas para uma avaliação individual
   const calcularResultado = (perguntas_marcadas: Record<string, string>): { resultado: 'POSITIVO' | 'NEGATIVO' | 'NEUTRO', pontuacao: number } => {
     const respostas = Object.values(perguntas_marcadas);
     const positivas = respostas.filter(resp => resp === 'Excelente' || resp === 'Muito Bom').length;
     const negativas = respostas.filter(resp => resp === 'Ruim' || resp === 'Muito Ruim').length;
     const neutras = respostas.filter(resp => resp === 'Regular' || resp === 'Bom').length;
 
-    let pontuacao = 0;
+    // Resultado individual da avaliação (será usado para calcular o resultado final)
     if (positivas > negativas && positivas > neutras) {
-      pontuacao = 20;
-      return { resultado: 'POSITIVO', pontuacao };
+      return { resultado: 'POSITIVO', pontuacao: 0 }; // Pontuação será calculada no resultado final
     } else if (negativas > positivas) {
-      pontuacao = -3;
-      return { resultado: 'NEGATIVO', pontuacao };
+      return { resultado: 'NEGATIVO', pontuacao: 0 };
     } else {
-      pontuacao = 0;
-      return { resultado: 'NEUTRO', pontuacao };
+      return { resultado: 'NEUTRO', pontuacao: 0 };
+    }
+  };
+
+  // Calcular resultado final baseado em 3 avaliações (colega, chefia, responsável)
+  const calcularResultadoFinal = async (funcionarioId: string): Promise<{ resultado: 'POSITIVO' | 'NEGATIVO' | 'NEUTRO', pontuacao: number }> => {
+    try {
+      // Buscar as 3 últimas avaliações do funcionário (uma de cada tipo)
+      const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
+      const todasAvaliacoes = savedAvaliacoes ? JSON.parse(savedAvaliacoes) : [];
+      
+      const avaliacoesFuncionario = todasAvaliacoes.filter((av: Avaliacao) => av.funcionario_id === funcionarioId);
+      
+      // Pegar a última avaliação de cada tipo
+      const avaliacaoColega = avaliacoesFuncionario.filter((av: Avaliacao) => av.tipo_avaliacao === 'colega').pop();
+      const avaliacaoChefia = avaliacoesFuncionario.filter((av: Avaliacao) => av.tipo_avaliacao === 'chefia').pop();
+      const avaliacaoResponsavel = avaliacoesFuncionario.filter((av: Avaliacao) => av.tipo_avaliacao === 'responsavel').pop();
+      
+      // Se não temos as 3 avaliações, retorna resultado neutro
+      if (!avaliacaoColega || !avaliacaoChefia || !avaliacaoResponsavel) {
+        return { resultado: 'NEUTRO', pontuacao: 0 };
+      }
+      
+      const resultadoColega = avaliacaoColega.resultado;
+      const resultadoChefia = avaliacaoChefia.resultado;
+      const resultadoResponsavel = avaliacaoResponsavel.resultado;
+      
+      // Aplicar a lógica de cálculo baseada nas regras fornecidas
+      if (resultadoColega === 'POSITIVO' && resultadoChefia === 'POSITIVO' && resultadoResponsavel === 'POSITIVO') {
+        return { resultado: 'POSITIVO', pontuacao: 50 };
+      }
+      
+      if (resultadoColega === 'POSITIVO' && resultadoChefia === 'NEGATIVO' && resultadoResponsavel === 'NEGATIVO') {
+        return { resultado: 'NEGATIVO', pontuacao: -10 };
+      }
+      
+      if (resultadoColega === 'POSITIVO' && resultadoChefia === 'POSITIVO' && resultadoResponsavel === 'NEGATIVO') {
+        return { resultado: 'NEUTRO', pontuacao: 0 };
+      }
+      
+      if (resultadoColega === 'NEGATIVO' && resultadoChefia === 'NEGATIVO' && resultadoResponsavel === 'NEGATIVO') {
+        return { resultado: 'NEGATIVO', pontuacao: -10 };
+      }
+      
+      if (resultadoColega === 'NEGATIVO' && resultadoChefia === 'POSITIVO' && resultadoResponsavel === 'POSITIVO') {
+        return { resultado: 'POSITIVO', pontuacao: 50 };
+      }
+      
+      if (resultadoColega === 'NEGATIVO' && resultadoChefia === 'POSITIVO' && resultadoResponsavel === 'NEGATIVO') {
+        return { resultado: 'NEGATIVO', pontuacao: -10 };
+      }
+      
+      // Casos adicionais (neutro + outros)
+      if (resultadoColega === 'NEUTRO' || resultadoChefia === 'NEUTRO' || resultadoResponsavel === 'NEUTRO') {
+        const positivos = [resultadoColega, resultadoChefia, resultadoResponsavel].filter(r => r === 'POSITIVO').length;
+        const negativos = [resultadoColega, resultadoChefia, resultadoResponsavel].filter(r => r === 'NEGATIVO').length;
+        
+        if (positivos > negativos) {
+          return { resultado: 'POSITIVO', pontuacao: 50 };
+        } else if (negativos > positivos) {
+          return { resultado: 'NEGATIVO', pontuacao: -10 };
+        } else {
+          return { resultado: 'NEUTRO', pontuacao: 0 };
+        }
+      }
+      
+      return { resultado: 'NEUTRO', pontuacao: 0 };
+    } catch (error) {
+      console.error('Erro ao calcular resultado final:', error);
+      return { resultado: 'NEUTRO', pontuacao: 0 };
     }
   };
 
@@ -165,6 +231,7 @@ export const useAvaliacoes = () => {
     avaliacoes,
     loading,
     adicionarAvaliacao,
-    carregarAvaliacoes
+    carregarAvaliacoes,
+    calcularResultadoFinal
   };
 };
