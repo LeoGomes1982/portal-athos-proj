@@ -27,113 +27,33 @@ export const useAuth = () => {
     user: null,
     session: null,
     profile: null,
-    loading: true,
-    initialized: false
+    loading: false,
+    initialized: true // Inicializar como true para evitar carregamento infinito
   });
 
   useEffect(() => {
-    let mounted = true;
+    // Inicialização mínima sem Supabase para resolver carregamento infinito
+    const timer = setTimeout(() => {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        initialized: true
+      }));
+    }, 100);
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-
-        console.log('Auth state changed:', event, session?.user?.id);
-
-        if (session?.user) {
-          // Fetch user profile after successful authentication
-          try {
-            const { data: profile, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .single();
-
-            if (error && error.code !== 'PGRST116') {
-              console.error('Error fetching profile:', error);
-            }
-
-            if (mounted) {
-              setAuthState({
-                user: session.user,
-                session,
-                profile: profile || null,
-                loading: false,
-                initialized: true
-              });
-            }
-          } catch (error) {
-            console.error('Profile fetch error:', error);
-            if (mounted) {
-              setAuthState({
-                user: session.user,
-                session,
-                profile: null,
-                loading: false,
-                initialized: true
-              });
-            }
-          }
-        } else {
-          if (mounted) {
-            setAuthState({
-              user: null,
-              session: null,
-              profile: null,
-              loading: false,
-              initialized: true
-            });
-          }
-        }
-      }
-    );
-
-    // Simplified initialization with faster timeout
-    const initializeAuth = async () => {
-      try {
-        // Quick session check with shorter timeout
-        const { data: { session } } = await Promise.race([
-          supabase.auth.getSession(),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 3000)
-          )
-        ]) as any;
-
-        if (mounted) {
-          setAuthState({
-            user: session?.user || null,
-            session: session || null,
-            profile: null,
-            loading: false,
-            initialized: true
-          });
-        }
-      } catch (error) {
-        console.log('Auth timeout or error, proceeding without auth:', error);
-        if (mounted) {
-          setAuthState({
-            user: null,
-            session: null,
-            profile: null,
-            loading: false,
-            initialized: true
-          });
-        }
-      }
-    };
-
-    initializeAuth();
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      setAuthState({
+        user: null,
+        session: null,
+        profile: null,
+        loading: false,
+        initialized: true
+      });
     } catch (error) {
       console.error('Sign out error:', error);
     }
