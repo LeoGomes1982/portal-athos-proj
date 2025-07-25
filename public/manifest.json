@@ -10,13 +10,13 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/lovable-uploads/ebfbe17b-9f35-4fed-894c-5be38c00c60b.png",
+      "src": "/lovable-uploads/ga-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/ebfbe17b-9f35-4fed-894c-5be38c00c60b.png",
+      "src": "/lovable-uploads/ga-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
