@@ -1,0 +1,5 @@
+-- Temporariamente desabilitar RLS para debug
+ALTER TABLE funcionarios_sync DISABLE ROW LEVEL SECURITY;
+ALTER TABLE avaliacoes_desempenho DISABLE ROW LEVEL SECURITY;
+ALTER TABLE cargos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE compromissos DISABLE ROW LEVEL SECURITY;
