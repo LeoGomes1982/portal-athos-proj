@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthenticationFormProps {
   onAuthenticate: (isInternal: boolean) => void;
@@ -71,29 +72,13 @@ export const AuthenticationForm = ({ onAuthenticate }: AuthenticationFormProps) 
     setIsLoading(true);
 
     try {
-      // Simulate authentication - In production, this would be a proper API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, using specific test credentials
-      // In production, this should be replaced with proper Supabase authentication
-      const isValidUser = sanitizedEmail === "admin@grupoathos.com.br" && sanitizedPassword === "GrupoAthos2024!";
-      const isInternalUser = sanitizedEmail.includes("@grupoathos.com.br");
+      // Use Supabase authentication instead of hardcoded credentials
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: sanitizedEmail,
+        password: sanitizedPassword,
+      });
 
-      if (isValidUser) {
-        // Clear attempt count on successful login
-        setAttemptCount(0);
-        localStorage.removeItem('auth_attempts');
-        localStorage.removeItem('lockout_time');
-        
-        onAuthenticate(isInternalUser);
-        
-        toast({
-          title: "Login realizado com sucesso!",
-          description: isInternalUser 
-            ? "Acesso interno - Todos os módulos liberados." 
-            : "Bem-vindo ao Portal de Admissão.",
-        });
-      } else {
+      if (error) {
         const newAttemptCount = attemptCount + 1;
         setAttemptCount(newAttemptCount);
         localStorage.setItem('auth_attempts', newAttemptCount.toString());
@@ -109,8 +94,27 @@ export const AuthenticationForm = ({ onAuthenticate }: AuthenticationFormProps) 
         });
         
         setPassword("");
+        return;
+      }
+
+      if (authData.user) {
+        // Clear attempt count on successful login
+        setAttemptCount(0);
+        localStorage.removeItem('auth_attempts');
+        localStorage.removeItem('lockout_time');
+        
+        const isInternalUser = sanitizedEmail.includes("@grupoathos.com.br");
+        onAuthenticate(isInternalUser);
+        
+        toast({
+          title: "Login realizado com sucesso!",
+          description: isInternalUser 
+            ? "Acesso interno - Todos os módulos liberados." 
+            : "Bem-vindo ao Portal de Admissão.",
+        });
       }
     } catch (error) {
+      console.error('Erro de autenticação:', error);
       toast({
         title: "Erro de conexão",
         description: "Tente novamente em alguns instantes.",
@@ -219,8 +223,8 @@ export const AuthenticationForm = ({ onAuthenticate }: AuthenticationFormProps) 
             )}
             
             <div className="text-center text-xs text-slate-500 p-3 bg-gray-50 rounded-lg">
-              <p className="mb-1"><strong>Email de teste:</strong> admin@grupoathos.com.br</p>
-              <p><strong>Senha de teste:</strong> GrupoAthos2024!</p>
+              <p>Use suas credenciais de acesso para entrar no sistema.</p>
+              <p className="mt-1">Para criar uma conta, entre em contato com a administração.</p>
             </div>
           </CardContent>
         </Card>

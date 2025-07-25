@@ -9,9 +9,19 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink, Clock, CheckCircle, XCircle } from "lucide-react";
+import { 
+  checkRateLimit, 
+  validateEvaluationToken, 
+  validateEvaluationData, 
+  generateCSRFToken, 
+  validateCSRFToken,
+  detectSuspiciousActivity,
+  logSecurityEvent 
+} from '@/utils/securityValidations';
 
 interface LinkInfo {
   id: string;
+  token: string;
   funcionario_id: string;
   funcionario_nome: string;
   tipo_avaliacao: 'colega' | 'chefia' | 'responsavel';
@@ -79,6 +89,7 @@ export function AvaliacaoExterna() {
   const [error, setError] = useState<string | null>(null);
   const [etapa, setEtapa] = useState(1);
   const [enviando, setEnviando] = useState(false);
+  const [csrfToken] = useState(generateCSRFToken());
   
   const [formData, setFormData] = useState({
     avaliador_nome: '',
@@ -91,7 +102,25 @@ export function AvaliacaoExterna() {
   useEffect(() => {
     const carregarLinkInfo = async () => {
       if (!token) {
+        logSecurityEvent('INVALID_TOKEN_ACCESS', { token: 'missing' });
         setError('Token inválido');
+        setLoading(false);
+        return;
+      }
+
+      // Validação do formato do token
+      if (!validateEvaluationToken(token)) {
+        logSecurityEvent('INVALID_TOKEN_FORMAT', { token });
+        setError('Token com formato inválido');
+        setLoading(false);
+        return;
+      }
+
+      // Rate limiting por IP/sessão
+      const clientId = `${window.location.hostname}-${token}`;
+      if (!checkRateLimit(clientId)) {
+        logSecurityEvent('RATE_LIMIT_EXCEEDED', { token, clientId });
+        setError('Muitas tentativas. Tente novamente em 1 hora.');
         setLoading(false);
         return;
       }
@@ -106,6 +135,7 @@ export function AvaliacaoExterna() {
         if (error) throw error;
 
         if (!data) {
+          logSecurityEvent('TOKEN_NOT_FOUND', { token });
           setError('Link não encontrado');
           setLoading(false);
           return;
@@ -113,6 +143,7 @@ export function AvaliacaoExterna() {
 
         // Verificar se o link expirou
         if (new Date(data.data_expiracao) < new Date()) {
+          logSecurityEvent('EXPIRED_TOKEN_ACCESS', { token, expiration: data.data_expiracao });
           setError('Este link expirou');
           setLoading(false);
           return;
@@ -120,6 +151,7 @@ export function AvaliacaoExterna() {
 
         // Verificar se já foi usado
         if (data.usado) {
+          logSecurityEvent('USED_TOKEN_ACCESS', { token });
           setError('Este link já foi utilizado');
           setLoading(false);
           return;
@@ -130,6 +162,7 @@ export function AvaliacaoExterna() {
 
       } catch (error) {
         console.error('Erro ao carregar link:', error);
+        logSecurityEvent('LINK_LOAD_ERROR', { token, error: error.message });
         setError('Erro ao carregar informações');
         setLoading(false);
       }
@@ -157,6 +190,17 @@ export function AvaliacaoExterna() {
   const handleSubmit = async () => {
     if (!linkInfo) return;
 
+    // Validação CSRF
+    if (!validateCSRFToken(csrfToken)) {
+      logSecurityEvent('CSRF_TOKEN_INVALID', { token: linkInfo.token });
+      toast({
+        title: "Erro de segurança",
+        description: "Sessão expirada. Recarregue a página.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!formData.avaliador_nome) {
       toast({
         title: "Erro",
@@ -174,6 +218,44 @@ export function AvaliacaoExterna() {
       toast({
         title: "Erro",
         description: "Por favor, responda todas as perguntas",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validação de dados
+    const evaluationData = {
+      funcionario_id: linkInfo.funcionario_id,
+      funcionario_nome: linkInfo.funcionario_nome,
+      tipo_avaliacao: linkInfo.tipo_avaliacao,
+      perguntas_marcadas: formData.perguntas_marcadas,
+      perguntas_descritivas: formData.perguntas_descritivas,
+      feedback: formData.feedback
+    };
+
+    const validation = validateEvaluationData(evaluationData);
+    if (!validation.isValid) {
+      logSecurityEvent('INVALID_EVALUATION_DATA', { 
+        token: linkInfo.token, 
+        errors: validation.errors 
+      });
+      toast({
+        title: "Dados inválidos",
+        description: validation.errors.join(', '),
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Detecção de atividade suspeita
+    if (detectSuspiciousActivity(formData)) {
+      logSecurityEvent('SUSPICIOUS_ACTIVITY_DETECTED', { 
+        token: linkInfo.token,
+        formData: formData 
+      });
+      toast({
+        title: "Atividade suspeita detectada",
+        description: "Sua submissão será revisada manualmente.",
         variant: "destructive"
       });
       return;
@@ -227,6 +309,12 @@ export function AvaliacaoExterna() {
           arquivo_url: `/resultados-pessoais?avaliacao=${avaliacao.id}`
         });
 
+      logSecurityEvent('EVALUATION_SUBMITTED_SUCCESS', { 
+        token: linkInfo.token,
+        avaliacao_id: avaliacao.id,
+        resultado 
+      });
+
       toast({
         title: "Sucesso",
         description: "Avaliação enviada com sucesso!",
@@ -237,6 +325,10 @@ export function AvaliacaoExterna() {
 
     } catch (error) {
       console.error('Erro ao enviar avaliação:', error);
+      logSecurityEvent('EVALUATION_SUBMISSION_ERROR', { 
+        token: linkInfo.token,
+        error: error.message 
+      });
       toast({
         title: "Erro",
         description: "Não foi possível enviar a avaliação",

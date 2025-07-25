@@ -6,7 +6,10 @@ export const sanitizeInput = (input: string): string => {
     .trim()
     .replace(/[<>]/g, '') // Remove potential XSS characters
     .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+=/gi, ''); // Remove event handlers
+    .replace(/on\w+=/gi, '') // Remove event handlers
+    .replace(/data:/gi, '') // Remove data URLs
+    .replace(/vbscript:/gi, '') // Remove vbscript
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ''); // Remove script tags
 };
 
 export const sanitizeHtml = (html: string): string => {

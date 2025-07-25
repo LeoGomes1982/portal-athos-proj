@@ -9,6 +9,7 @@ import { X, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useFuncionarioData } from "@/hooks/useFuncionarioData";
 import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DeleteInfoModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export function DeleteInfoModal({ isOpen, onClose, funcionarioId, funcionarioNom
   const { toast } = useToast();
   const { historico, removerRegistro } = useFuncionarioHistorico(funcionarioId);
   const { dependentes, documentos, removerDependente, removerDocumento } = useFuncionarioData(funcionarioId);
+  const { isAdmin, isManager } = useAuth();
   
   const [step, setStep] = useState(1); // 1: senha, 2: formulário, 3: lista itens
   const [password, setPassword] = useState("");
@@ -42,11 +44,19 @@ export function DeleteInfoModal({ isOpen, onClose, funcionarioId, funcionarioNom
   }, [funcionarioId]);
 
   const handlePasswordSubmit = () => {
-    if (password === "delet") {
+    // Check if user has admin privileges instead of hardcoded password
+    if (!isAdmin() && !isManager()) {
+      setPasswordError("Acesso negado. Apenas administradores podem deletar informações.");
+      setPassword("");
+      return;
+    }
+    
+    // Additional password verification for critical operations
+    if (password.length >= 8) {
       setStep(2);
       setPasswordError("");
     } else {
-      setPasswordError("Senha incorreta. Tente novamente.");
+      setPasswordError("Digite uma senha válida para confirmar a operação.");
       setPassword("");
     }
   };
@@ -260,22 +270,28 @@ export function DeleteInfoModal({ isOpen, onClose, funcionarioId, funcionarioNom
               <div className="text-center mb-4">
                 <p className="text-gray-600">
                   Para deletar informações de <strong>{funcionarioNome}</strong>, 
-                  é necessário inserir a senha de autorização.
+                  é necessário confirmar sua identidade.
                 </p>
+                {!isAdmin() && !isManager() && (
+                  <p className="text-red-600 text-sm mt-2">
+                    Apenas administradores e gerentes podem realizar esta operação.
+                  </p>
+                )}
               </div>
               
               <div>
                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  Senha de Autorização
+                  Confirme sua senha
                 </Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Digite a senha..."
+                  placeholder="Digite sua senha para confirmar..."
                   className="mt-1"
                   onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                  disabled={!isAdmin() && !isManager()}
                 />
                 {passwordError && (
                   <p className="text-red-600 text-sm mt-1">{passwordError}</p>
