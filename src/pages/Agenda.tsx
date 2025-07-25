@@ -62,6 +62,7 @@ const Agenda = () => {
   useEffect(() => {
     const carregarCompromissos = async () => {
       try {
+        console.log('Carregando compromissos...');
         const { data, error } = await supabase
           .from('compromissos')
           .select('*')
@@ -69,27 +70,33 @@ const Agenda = () => {
 
         if (error) {
           console.error('Erro ao carregar compromissos:', error);
-          toast.error('Erro ao carregar compromissos');
+          setCompromissos([]);
           return;
         }
 
-        const compromissosFormatados = data.map(c => ({
-          id: c.id,
-          titulo: c.titulo,
-          descricao: c.descricao || '',
-          data: c.data,
-          horario: c.horario,
-          participantes: c.participantes || [],
-          tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
-          concluido: c.concluido,
-          criadoPor: c.criado_por,
-          prioridade: c.prioridade as 'normal' | 'importante' | 'muito-importante'
-        }));
+        if (data && data.length > 0) {
+          console.log('Compromissos carregados:', data.length);
+          const compromissosFormatados = data.map(c => ({
+            id: c.id,
+            titulo: c.titulo,
+            descricao: c.descricao || '',
+            data: c.data,
+            horario: c.horario,
+            participantes: c.participantes || [],
+            tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
+            concluido: c.concluido,
+            criadoPor: c.criado_por,
+            prioridade: c.prioridade as 'normal' | 'importante' | 'muito-importante'
+          }));
 
-        setCompromissos(compromissosFormatados);
+          setCompromissos(compromissosFormatados);
+        } else {
+          console.log('Nenhum compromisso encontrado');
+          setCompromissos([]);
+        }
       } catch (error) {
         console.error('Erro ao carregar compromissos:', error);
-        toast.error('Erro ao carregar compromissos');
+        setCompromissos([]);
       }
     };
 

@@ -14,6 +14,7 @@ export function useFuncionarioSync() {
 
   const loadFuncionarios = async () => {
     try {
+      console.log('Carregando funcionários...');
       const { data, error } = await supabase
         .from('funcionarios_sync')
         .select('*')
@@ -21,24 +22,19 @@ export function useFuncionarioSync() {
 
       if (error) {
         console.error('Erro ao carregar funcionários:', error);
-        // Fallback para localStorage
-        const savedFuncionarios = localStorage.getItem('funcionarios_list');
-        if (savedFuncionarios) {
-          setFuncionarios(JSON.parse(savedFuncionarios));
-        }
-      } else if (data) {
+        setFuncionarios([]);
+      } else if (data && data.length > 0) {
+        console.log('Funcionários carregados:', data.length);
         const funcionariosFormatted = data.map(formatFromDatabase);
         setFuncionarios(funcionariosFormatted);
-        // Atualizar localStorage como backup
         localStorage.setItem('funcionarios_list', JSON.stringify(funcionariosFormatted));
+      } else {
+        console.log('Nenhum funcionário encontrado');
+        setFuncionarios([]);
       }
     } catch (error) {
       console.error('Erro ao conectar com Supabase:', error);
-      // Fallback para localStorage
-      const savedFuncionarios = localStorage.getItem('funcionarios_list');
-      if (savedFuncionarios) {
-        setFuncionarios(JSON.parse(savedFuncionarios));
-      }
+      setFuncionarios([]);
     } finally {
       setIsLoading(false);
     }

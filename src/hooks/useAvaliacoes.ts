@@ -42,31 +42,25 @@ export const useAvaliacoes = () => {
   const carregarAvaliacoes = async () => {
     setLoading(true);
     try {
-      // Buscar do Supabase primeiro
+      console.log('Carregando avaliações...');
       const { data, error } = await supabase
         .from('avaliacoes_desempenho')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-
-      if (data && data.length > 0) {
+      if (error) {
+        console.error('Erro ao carregar avaliações:', error);
+        setAvaliacoes([]);
+      } else if (data && data.length > 0) {
+        console.log('Avaliações carregadas:', data.length);
         setAvaliacoes(data as Avaliacao[]);
       } else {
-        // Se não há dados no Supabase, tentar localStorage como fallback
-        const savedAvaliacoes = localStorage.getItem('avaliacoes_desempenho');
-        if (savedAvaliacoes) {
-          const parsedAvaliacoes = JSON.parse(savedAvaliacoes);
-          setAvaliacoes(parsedAvaliacoes);
-        }
+        console.log('Nenhuma avaliação encontrada');
+        setAvaliacoes([]);
       }
     } catch (error) {
       console.error('Erro ao carregar avaliações:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar as avaliações",
-        variant: "destructive"
-      });
+      setAvaliacoes([]);
     } finally {
       setLoading(false);
     }

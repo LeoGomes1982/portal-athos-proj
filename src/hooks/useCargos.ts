@@ -72,6 +72,7 @@ export function useCargos() {
   const loadCargos = async () => {
     try {
       setIsLoading(true);
+      console.log('Carregando cargos...');
       const { data, error } = await supabase
         .from('cargos')
         .select('*')
@@ -79,18 +80,21 @@ export function useCargos() {
 
       if (error) {
         console.error('Erro ao carregar cargos:', error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar os cargos",
-          variant: "destructive"
-        });
+        setCargos([]);
         return;
       }
 
-      const cargosFormatados = data.map(formatFromDatabase);
-      setCargos(cargosFormatados);
+      if (data && data.length > 0) {
+        console.log('Cargos carregados:', data.length);
+        const cargosFormatados = data.map(formatFromDatabase);
+        setCargos(cargosFormatados);
+      } else {
+        console.log('Nenhum cargo encontrado');
+        setCargos([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar cargos:', error);
+      setCargos([]);
     } finally {
       setIsLoading(false);
     }
