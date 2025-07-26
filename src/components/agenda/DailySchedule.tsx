@@ -12,7 +12,7 @@ interface Compromisso {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento';
   concluido: boolean;
   criadoPor: string;
   prioridade: 'normal' | 'importante' | 'muito-importante';
@@ -71,6 +71,9 @@ const DailySchedule = ({ selectedDate, compromissos, onToggleConcluido, onSelect
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
+                  {compromisso.tipo === 'avaliacao_desempenho' && (
+                    <div className="w-3 h-3 bg-blue-500 rounded-full border-2 border-blue-300 shadow-sm"></div>
+                  )}
                   <div className="flex">
                     {getPriorityStars(compromisso.prioridade)}
                   </div>

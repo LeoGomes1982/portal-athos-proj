@@ -22,7 +22,7 @@ interface Compromisso {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento';
   concluido: boolean;
   criadoPor: string;
   prioridade: 'normal' | 'importante' | 'muito-importante';
@@ -44,7 +44,7 @@ const Agenda = () => {
     data: '',
     horario: '',
     participantes: [] as string[],
-    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
+    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento',
     prioridade: 'normal' as 'normal' | 'importante' | 'muito-importante'
   });
 
@@ -83,7 +83,7 @@ const Agenda = () => {
             data: c.data,
             horario: c.horario,
             participantes: c.participantes || [],
-            tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
+            tipo: c.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento',
             concluido: c.concluido,
             criadoPor: c.criado_por,
             prioridade: c.prioridade as 'normal' | 'importante' | 'muito-importante'
@@ -101,6 +101,17 @@ const Agenda = () => {
     };
 
     carregarCompromissos();
+    
+    // Verificar avaliações em atraso
+    (async () => {
+      try {
+        const { useAvaliacaoAgendamento } = await import('@/hooks/useAvaliacaoAgendamento');
+        const { verificarAvaliacoesEmAtraso } = useAvaliacaoAgendamento();
+        await verificarAvaliacoesEmAtraso();
+      } catch (error) {
+        console.error('Erro ao verificar avaliações em atraso:', error);
+      }
+    })();
   }, []);
 
   // Função para criar compromissos iniciais
@@ -165,7 +176,7 @@ const Agenda = () => {
           data: data.data,
           horario: data.horario,
           participantes: data.participantes || [],
-          tipo: data.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
+          tipo: data.tipo as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento',
           concluido: data.concluido,
           criadoPor: data.criado_por,
           prioridade: data.prioridade as 'normal' | 'importante' | 'muito-importante'

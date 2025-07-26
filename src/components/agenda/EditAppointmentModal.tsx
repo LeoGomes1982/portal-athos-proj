@@ -15,7 +15,7 @@ interface Compromisso {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento';
   concluido: boolean;
   criadoPor: string;
   prioridade: 'normal' | 'importante' | 'muito-importante';
@@ -42,7 +42,7 @@ export default function EditAppointmentModal({
     data: '',
     horario: '',
     participantes: [] as string[],
-    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao',
+    tipo: 'reuniao' as 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento',
     prioridade: 'normal' as 'normal' | 'importante' | 'muito-importante'
   });
 
@@ -147,7 +147,7 @@ export default function EditAppointmentModal({
 
           <div>
             <Label htmlFor="tipo">Tipo</Label>
-            <Select value={formData.tipo} onValueChange={(value: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao') => 
+            <Select value={formData.tipo} onValueChange={(value: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento') => 
               setFormData(prev => ({ ...prev, tipo: value }))
             }>
               <SelectTrigger>

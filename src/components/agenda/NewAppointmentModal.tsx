@@ -15,7 +15,7 @@ interface NewAppointmentData {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento';
   prioridade: 'normal' | 'importante' | 'muito-importante';
 }
 
@@ -117,7 +117,7 @@ const NewAppointmentModal = ({
               <Label>Tipo</Label>
               <Select
                 value={novoCompromisso.tipo}
-                onValueChange={(value: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao') => 
+                onValueChange={(value: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento') => 
                   setNovoCompromisso(prev => ({ ...prev, tipo: value }))
                 }
               >

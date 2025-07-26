@@ -253,9 +253,20 @@ export function AdmissaoModal({ isOpen, onClose }: AdmissaoModalProps) {
         }
       }
 
+      // Agendar avaliações de desempenho automaticamente
+      if (formData.dataAdmissao) {
+        try {
+          const { useAvaliacaoAgendamento } = await import('@/hooks/useAvaliacaoAgendamento');
+          const { agendarAvaliacoesAdmissao } = useAvaliacaoAgendamento();
+          await agendarAvaliacoesAdmissao(funcionarioId, formData.nome, formData.dataAdmissao);
+        } catch (error) {
+          console.error('Erro ao agendar avaliações:', error);
+        }
+      }
+
       toast({
         title: "Admissão Enviada com Sucesso! 🎉",
-        description: `Olá ${formData.nome}! Recebemos sua solicitação de admissão. O registro foi automaticamente adicionado ao sistema. Nossa equipe de RH entrará em contato em breve!`,
+        description: `Olá ${formData.nome}! Recebemos sua solicitação de admissão. O registro foi automaticamente adicionado ao sistema e as avaliações de desempenho foram agendadas. Nossa equipe de RH entrará em contato em breve!`,
       });
       
       onClose();
