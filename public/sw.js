@@ -1,9 +1,8 @@
-const CACHE_NAME = 'portal-athos-v2';
+const CACHE_NAME = 'portal-athos-v3';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
+  '/manifest.json',
+  '/lovable-uploads/e995f00e-eb37-4f16-bfb4-67e260b861c6.png'
 ];
 
 self.addEventListener('install', (event) => {
