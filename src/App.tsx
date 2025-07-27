@@ -26,6 +26,8 @@ import CICADFormulario from "./pages/CICADFormulario";
 import PortalMidiaExterna from "./pages/PortalMidiaExterna";
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 import { AvaliacaoExterna } from "./pages/AvaliacaoExterna";
+import { GestaoServicosExtras } from "./pages/GestaoServicosExtras";
+import { Fiscalizacoes } from "./pages/Fiscalizacoes";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
@@ -130,6 +132,16 @@ function App() {
               <Route path="/processo-seletivo" element={
                 <ProtectedRoute>
                   <ProcessoSeletivo />
+                </ProtectedRoute>
+              } />
+              <Route path="/operacoes/gestao-servicos-extras" element={
+                <ProtectedRoute>
+                  <GestaoServicosExtras />
+                </ProtectedRoute>
+              } />
+              <Route path="/operacoes/fiscalizacoes" element={
+                <ProtectedRoute>
+                  <Fiscalizacoes />
                 </ProtectedRoute>
               } />
               

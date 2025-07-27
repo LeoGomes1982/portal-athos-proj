@@ -15,7 +15,8 @@ import {
   Shield,
   Bell,
   LogOut,
-  User
+  User,
+  Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
@@ -142,7 +143,21 @@ const Home = () => {
       fullTitle: "Gestão Operacional",
       icon: Settings,
       className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
-      iconColor: "text-gray-600"
+      iconColor: "text-gray-600",
+      subSections: [
+        {
+          id: "gestao-servicos-extras",
+          title: "Gestão de Serviços Extras",
+          icon: Clock,
+          onClick: () => navigate("/operacoes/gestao-servicos-extras")
+        },
+        {
+          id: "fiscalizacoes",
+          title: "Fiscalizações",
+          icon: Shield,
+          onClick: () => navigate("/operacoes/fiscalizacoes")
+        }
+      ]
     },
     {
       id: "comercial",

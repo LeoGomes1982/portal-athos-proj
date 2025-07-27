@@ -324,6 +324,57 @@ export type Database = {
         }
         Relationships: []
       }
+      fiscalizacoes: {
+        Row: {
+          colaborador_nome: string | null
+          created_at: string
+          data_fiscalizacao: string
+          fiscalizador_nome: string
+          id: string
+          local: string | null
+          observacoes: string | null
+          perguntas_descritivas: Json
+          perguntas_marcadas: Json
+          pontuacao_total: number
+          resultado: string
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          colaborador_nome?: string | null
+          created_at?: string
+          data_fiscalizacao: string
+          fiscalizador_nome: string
+          id?: string
+          local?: string | null
+          observacoes?: string | null
+          perguntas_descritivas?: Json
+          perguntas_marcadas?: Json
+          pontuacao_total?: number
+          resultado: string
+          tipo: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          colaborador_nome?: string | null
+          created_at?: string
+          data_fiscalizacao?: string
+          fiscalizador_nome?: string
+          id?: string
+          local?: string | null
+          observacoes?: string | null
+          perguntas_descritivas?: Json
+          perguntas_marcadas?: Json
+          pontuacao_total?: number
+          resultado?: string
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       funcionario_documentos: {
         Row: {
           arquivo_nome: string
@@ -639,6 +690,48 @@ export type Database = {
           role?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      servicos_extras: {
+        Row: {
+          chave_pix: string
+          created_at: string
+          data_servico: string
+          fiscal_responsavel: string
+          id: string
+          local_servico: string
+          motivo_servico: string
+          nome_pessoa: string
+          quantidade_horas: number
+          updated_at: string
+          valor: number | null
+        }
+        Insert: {
+          chave_pix: string
+          created_at?: string
+          data_servico: string
+          fiscal_responsavel: string
+          id?: string
+          local_servico: string
+          motivo_servico: string
+          nome_pessoa: string
+          quantidade_horas: number
+          updated_at?: string
+          valor?: number | null
+        }
+        Update: {
+          chave_pix?: string
+          created_at?: string
+          data_servico?: string
+          fiscal_responsavel?: string
+          id?: string
+          local_servico?: string
+          motivo_servico?: string
+          nome_pessoa?: string
+          quantidade_horas?: number
+          updated_at?: string
+          valor?: number | null
         }
         Relationships: []
       }
