@@ -16,8 +16,7 @@ import {
   Bell,
   LogOut,
   User,
-  Clock,
-  Tractor
+  Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
@@ -29,6 +28,7 @@ import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
 
+import { OperacoesModal } from "@/components/modals/OperacoesModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -45,6 +45,7 @@ const Home = () => {
   const [showUserTooltip, setShowUserTooltip] = useState(false);
   const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [operacoesModalOpen, setOperacoesModalOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -142,23 +143,10 @@ const Home = () => {
       id: "operacoes",
       title: "OPERAÇÕES",
       fullTitle: "Gestão Operacional",
-      icon: Tractor,
-      className: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
-      iconColor: "text-orange-600",
-      subSections: [
-        {
-          id: "gestao-servicos-extras",
-          title: "Gestão de Serviços Extras",
-          icon: Clock,
-          onClick: () => navigate("/operacoes/gestao-servicos-extras")
-        },
-        {
-          id: "fiscalizacoes",
-          title: "Fiscalizações",
-          icon: Shield,
-          onClick: () => navigate("/operacoes/fiscalizacoes")
-        }
-      ]
+      icon: Settings,
+      className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
+      iconColor: "text-gray-600",
+      onClick: () => setOperacoesModalOpen(true)
     },
     {
       id: "comercial",
@@ -428,6 +416,12 @@ const Home = () => {
         open={showUrgentTasksModal}
         onOpenChange={setShowUrgentTasksModal}
         compromissosUrgentes={urgentTasks}
+      />
+      
+      {/* Modal de Operações */}
+      <OperacoesModal 
+        isOpen={operacoesModalOpen}
+        onOpenChange={setOperacoesModalOpen}
       />
 
       {/* Componente de Notificação */}
