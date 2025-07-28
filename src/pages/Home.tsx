@@ -144,6 +144,8 @@ const Home = () => {
       icon: Settings,
       className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
       iconColor: "text-gray-600",
+      // Temporariamente removidas para debug
+      /*
       subSections: [
         {
           id: "gestao-servicos-extras",
@@ -158,6 +160,7 @@ const Home = () => {
           onClick: () => navigate("/operacoes/fiscalizacoes")
         }
       ]
+      */
     },
     {
       id: "comercial",
