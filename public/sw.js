@@ -1,8 +1,7 @@
-const CACHE_NAME = 'portal-athos-v3';
+const CACHE_NAME = 'portal-athos-v4';
 const urlsToCache = [
   '/',
-  '/manifest.json',
-  '/lovable-uploads/e995f00e-eb37-4f16-bfb4-67e260b861c6.png'
+  '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -13,6 +12,15 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip caching for development resources and API calls
+  if (event.request.url.includes('/@vite/') || 
+      event.request.url.includes('/@react-refresh') ||
+      event.request.url.includes('.hot-update.') ||
+      event.request.url.includes('supabase.co')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
