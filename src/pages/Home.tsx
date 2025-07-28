@@ -16,7 +16,8 @@ import {
   Bell,
   LogOut,
   User,
-  Clock
+  Clock,
+  Tractor
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
@@ -141,11 +142,9 @@ const Home = () => {
       id: "operacoes",
       title: "OPERAÇÕES",
       fullTitle: "Gestão Operacional",
-      icon: Settings,
-      className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
-      iconColor: "text-gray-600",
-      // Temporariamente removidas para debug
-      /*
+      icon: Tractor,
+      className: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
+      iconColor: "text-orange-600",
       subSections: [
         {
           id: "gestao-servicos-extras",
@@ -160,15 +159,14 @@ const Home = () => {
           onClick: () => navigate("/operacoes/fiscalizacoes")
         }
       ]
-      */
     },
     {
       id: "comercial",
       title: "COMERCIAL",
       fullTitle: "Área Comercial",
       icon: TrendingUp,
-      className: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150",
-      iconColor: "text-orange-600",
+      className: "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:from-yellow-100 hover:to-yellow-150",
+      iconColor: "text-yellow-600",
       onClick: () => navigate("/comercial")
     },
     {
