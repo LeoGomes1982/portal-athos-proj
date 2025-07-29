@@ -9,6 +9,45 @@ import { Avaliacao } from "@/hooks/useAvaliacoes";
 import { Loader2, Copy, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const PERGUNTAS_AVALIACAO = {
+  colega: [
+    "Como você avalia a comunicação do colega?",
+    "O colega colabora bem em equipe?",
+    "Demonstra pontualidade e assiduidade?",
+    "Respeita prazos estabelecidos?",
+    "Mantém bom relacionamento interpessoal?",
+    "Demonstra iniciativa no trabalho?",
+    "É receptivo a feedback?",
+    "Compartilha conhecimentos com a equipe?",
+    "Demonstra organização nas tarefas?",
+    "Contribui para um ambiente de trabalho positivo?"
+  ],
+  chefia: [
+    "Como você avalia a qualidade do trabalho entregue?",
+    "Demonstra proatividade nas atividades?",
+    "Segue procedimentos e normas da empresa?",
+    "Gerencia bem o tempo e prioridades?",
+    "Demonstra capacidade de resolver problemas?",
+    "Aceita bem críticas construtivas?",
+    "Busca crescimento profissional?",
+    "Demonstra comprometimento com resultados?",
+    "Trabalha bem sob pressão?",
+    "Contribui para o alcance de metas da equipe?"
+  ],
+  responsavel: [
+    "Demonstra conhecimento técnico adequado para a função?",
+    "Apresenta soluções inovadoras?",
+    "Mantém qualidade consistente no trabalho?",
+    "Demonstra liderança quando necessário?",
+    "Adapta-se bem a mudanças?",
+    "Demonstra visão estratégica?",
+    "Contribui para melhoria de processos?",
+    "Demonstra autonomia na tomada de decisões?",
+    "Mantém foco nos resultados da empresa?",
+    "É um exemplo positivo para a equipe?"
+  ]
+};
+
 interface VisualizarAvaliacaoModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -197,13 +236,19 @@ export function VisualizarAvaliacaoModal({ open, onOpenChange, avaliacaoId }: Vi
               <CardHeader>
                 <CardTitle className="text-lg">Perguntas de Múltipla Escolha</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {Object.entries(avaliacao.perguntas_marcadas).map(([key, value], index) => (
-                  <div key={key} className="flex justify-between items-start p-3 bg-slate-50 rounded-lg">
-                    <span className="text-sm">Pergunta {index + 1}</span>
-                    <Badge variant="outline">{value}</Badge>
-                  </div>
-                ))}
+              <CardContent className="space-y-4">
+                {PERGUNTAS_AVALIACAO[avaliacao.tipo_avaliacao as keyof typeof PERGUNTAS_AVALIACAO]?.map((pergunta, index) => {
+                  const resposta = avaliacao.perguntas_marcadas[`pergunta_${index + 1}`];
+                  return (
+                    <div key={index} className="space-y-2 p-4 bg-slate-50 rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm font-medium text-slate-700">Pergunta {index + 1}</span>
+                        <Badge variant="outline" className="ml-2">{resposta || 'Não respondida'}</Badge>
+                      </div>
+                      <p className="text-sm text-slate-600">{pergunta}</p>
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
 

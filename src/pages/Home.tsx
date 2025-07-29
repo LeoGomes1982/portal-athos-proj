@@ -153,8 +153,8 @@ const Home = () => {
       title: "COMERCIAL",
       fullTitle: "Área Comercial",
       icon: TrendingUp,
-      className: "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:from-yellow-100 hover:to-yellow-150",
-      iconColor: "text-yellow-600",
+      className: "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-150",
+      iconColor: "text-emerald-600",
       onClick: () => navigate("/comercial")
     },
     {
