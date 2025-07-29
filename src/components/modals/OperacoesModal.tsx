@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Clock, Shield } from "lucide-react";
+import { Clock, Shield, MapPin, User, X } from "lucide-react";
 import { GestaoServicosExtras } from "@/pages/GestaoServicosExtras";
-import { Fiscalizacoes } from "@/pages/Fiscalizacoes";
 
 interface OperacoesModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type SelectedPage = 'gestao-servicos-extras' | 'fiscalizacoes' | null;
+type SelectedPage = 'gestao-servicos-extras' | 'fiscalizacoes' | 'escolha-fiscalizacao' | null;
 
 export function OperacoesModal({ isOpen, onOpenChange }: OperacoesModalProps) {
   const [selectedPage, setSelectedPage] = useState<SelectedPage>(null);
@@ -22,7 +21,7 @@ export function OperacoesModal({ isOpen, onOpenChange }: OperacoesModalProps) {
       icon: Clock,
     },
     {
-      id: "fiscalizacoes" as const, 
+      id: "escolha-fiscalizacao" as const, 
       title: "Fiscalizações",
       description: "Fiscalização de postos e colaboradores",
       icon: Shield,
@@ -38,25 +37,89 @@ export function OperacoesModal({ isOpen, onOpenChange }: OperacoesModalProps) {
     onOpenChange(false);
   };
 
-  // Se uma página específica foi selecionada, renderizar a página
-  if (selectedPage === 'gestao-servicos-extras') {
+  const handleBackToMenu = () => {
+    setSelectedPage(null);
+  };
+
+  // Modal de escolha de tipo de fiscalização
+  if (selectedPage === 'escolha-fiscalizacao') {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-0">
-          <div className="h-full overflow-auto">
-            <GestaoServicosExtras />
+        <DialogContent className="max-w-2xl w-[90vw] p-0">
+          <div className="bg-white rounded-lg p-8 relative">
+            {/* Botão fechar */}
+            <button
+              onClick={handleBackToMenu}
+              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full"
+            >
+              <X className="h-5 w-5 text-gray-500" />
+            </button>
+
+            {/* Título */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Nova Fiscalização</h2>
+              <p className="text-gray-600">Como você gostaria de realizar esta fiscalização?</p>
+            </div>
+
+            {/* Opções */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Fiscalização de Posto de Serviço */}
+              <div
+                className="bg-gray-50 rounded-lg p-8 cursor-pointer hover:bg-gray-100 transition-colors border-2 border-transparent hover:border-blue-200"
+                onClick={() => {
+                  // Aqui você pode implementar a navegação para fiscalização de posto
+                  console.log('Fiscalização de Posto de Serviço');
+                  handleClose();
+                }}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                    <MapPin className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Fiscalização de Posto de Serviço
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Preencher a fiscalização diretamente nesta tela
+                  </p>
+                </div>
+              </div>
+
+              {/* Fiscalização de Colaborador */}
+              <div
+                className="bg-gray-50 rounded-lg p-8 cursor-pointer hover:bg-gray-100 transition-colors border-2 border-transparent hover:border-blue-200"
+                onClick={() => {
+                  // Aqui você pode implementar a navegação para fiscalização de colaborador
+                  console.log('Fiscalização de Colaborador');
+                  handleClose();
+                }}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <User className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Fiscalização de Colaborador
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Gerar link para compartilhar via WhatsApp
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
     );
   }
 
-  if (selectedPage === 'fiscalizacoes') {
+  // Se Gestão de Serviços Extras foi selecionada
+  if (selectedPage === 'gestao-servicos-extras') {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-0">
           <div className="h-full overflow-auto">
-            <Fiscalizacoes />
+            <GestaoServicosExtras />
           </div>
         </DialogContent>
       </Dialog>
