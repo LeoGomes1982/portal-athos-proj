@@ -158,7 +158,7 @@ ${linkGerado}
 
 Este link expira em 7 dias.`;
 
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
     window.open(whatsappUrl, '_blank');
   };
 

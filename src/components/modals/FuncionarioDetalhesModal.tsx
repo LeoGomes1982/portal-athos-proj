@@ -22,6 +22,7 @@ import { useFuncionarioHistorico } from "@/hooks/useFuncionarioHistorico";
 import { useSupabaseDocumentos } from "@/hooks/useSupabaseDocumentos";
 import { usePontosAtividade } from "@/hooks/usePontosAtividade";
 import { format } from "date-fns";
+import { EmpresaSelect } from "./EmpresaSelect";
 
 
 interface HistoricoRegistro {
@@ -86,6 +87,7 @@ interface Funcionario {
   valorValeAlimentacao?: string;
   possuiAuxilioMoradia?: string;
   valorAuxilioMoradia?: string;
+  empresaContratante?: string;
 }
 
 interface FuncionarioDetalhesModalProps {
@@ -623,6 +625,18 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                         )}
                       </div>
                     )}
+                    
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Empresa contratante</label>
+                      {isEditing ? (
+                        <EmpresaSelect 
+                          value={editedFuncionario.empresaContratante || ''} 
+                          onChange={(value) => handleInputChange('empresaContratante', value)}
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.empresaContratante || '-'}</p>
+                      )}
+                    </div>
                     
                     <div>
                       <label className="text-sm font-medium text-slate-600">Possui registro de vale alimentação Ticket?</label>

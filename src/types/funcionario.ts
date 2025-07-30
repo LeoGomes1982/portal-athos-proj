@@ -41,4 +41,5 @@ export interface Funcionario {
   valorAuxilioMoradia?: string;
   dataInativacao?: string;
   motivoInativacao?: string;
+  empresaContratante?: string;
 }

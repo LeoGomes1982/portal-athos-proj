@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Settings, Building2, User, FileText, Bell } from "lucide-react";
+import { ArrowLeft, Settings, Building2, User, FileText, Bell, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,13 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import GerenciarEmpresasModal from "@/components/modals/GerenciarEmpresasModal";
 import { LogsSubsection } from "@/components/subsections/LogsSubsection";
+import { ImportarFuncionariosModal } from "@/components/modals/ImportarFuncionariosModal";
 
 const Configuracoes = () => {
   const navigate = useNavigate();
   const [isEmpresasModalOpen, setIsEmpresasModalOpen] = useState(false);
   const [showLogsSection, setShowLogsSection] = useState(false);
+  const [isImportarModalOpen, setIsImportarModalOpen] = useState(false);
   
   // Estados para configurações gerais
   const [configuracoes, setConfiguracoes] = useState({
@@ -199,6 +201,30 @@ const Configuracoes = () => {
             </div>
           </div>
 
+          {/* Importar Funcionários */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <Users size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Importar Funcionários</h2>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-slate-600">
+                Importe funcionários em massa através de um arquivo Excel com as informações necessárias.
+              </p>
+              
+              <Button 
+                onClick={() => setIsImportarModalOpen(true)}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                <Users size={16} className="mr-2" />
+                Adicionar Funcionários em Massa
+              </Button>
+            </div>
+          </div>
+
           {/* Logs do Sistema */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <div className="flex items-center gap-3 mb-6">
@@ -228,6 +254,11 @@ const Configuracoes = () => {
         <GerenciarEmpresasModal
           isOpen={isEmpresasModalOpen}
           onClose={() => setIsEmpresasModalOpen(false)}
+        />
+        
+        <ImportarFuncionariosModal
+          isOpen={isImportarModalOpen}
+          onClose={() => setIsImportarModalOpen(false)}
         />
       </div>
     </div>

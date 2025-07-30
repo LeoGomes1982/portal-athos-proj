@@ -210,13 +210,13 @@ export function NovaAvaliacaoModal({ open, onOpenChange }: NovaAvaliacaoModalPro
             </CardHeader>
             <CardContent>
               <RadioGroup
-                value={formData.perguntas_marcadas?.[`pergunta_${index}`] || ''}
+                value={formData.perguntas_marcadas?.[`pergunta_${index + 1}`] || ''}
                 onValueChange={(value) => 
                   setFormData(prev => ({
                     ...prev,
                     perguntas_marcadas: {
                       ...prev.perguntas_marcadas,
-                      [`pergunta_${index}`]: value
+                      [`pergunta_${index + 1}`]: value
                     }
                   }))
                 }
