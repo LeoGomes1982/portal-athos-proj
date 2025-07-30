@@ -54,23 +54,30 @@ export function EscolhaTipoAvaliacaoModal({ open, onOpenChange, onSelecionarTipo
 
   // Verificar se funcionário pode ser avaliado (regra de 3 meses)
   const verificarElegibilidade = async (funcionarioId: string, tipoAvaliacao: string) => {
-    const treseMesesAtras = new Date();
-    treseMesesAtras.setMonth(treseMesesAtras.getMonth() - 3);
+    try {
+      const treseMesesAtras = new Date();
+      treseMesesAtras.setMonth(treseMesesAtras.getMonth() - 3);
 
-    const { data, error } = await supabase
-      .from('avaliacoes_desempenho')
-      .select('id')
-      .eq('funcionario_id', funcionarioId)
-      .eq('tipo_avaliacao', tipoAvaliacao)
-      .gte('data_avaliacao', treseMesesAtras.toISOString().split('T')[0])
-      .limit(1);
+      const { data, error } = await supabase
+        .from('avaliacoes_desempenho')
+        .select('id')
+        .eq('funcionario_id', funcionarioId)
+        .eq('tipo_avaliacao', tipoAvaliacao)
+        .gte('data_avaliacao', treseMesesAtras.toISOString().split('T')[0])
+        .limit(1);
 
-    if (error) {
-      console.error('Erro ao verificar elegibilidade:', error);
-      return false;
+      if (error) {
+        console.error('Erro ao verificar elegibilidade:', error);
+        // Em caso de erro, permitir a criação da avaliação
+        return true;
+      }
+
+      return data.length === 0; // true se não há avaliações nos últimos 3 meses
+    } catch (error) {
+      console.error('Erro na verificação de elegibilidade:', error);
+      // Em caso de erro, permitir a criação da avaliação
+      return true;
     }
-
-    return data.length === 0; // true se não há avaliações nos últimos 3 meses
   };
 
   const gerarLink = async () => {
