@@ -20,17 +20,19 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
   const { toast } = useToast();
 
   const baixarModelo = () => {
-    // Criar dados de exemplo apenas com 3 colunas
+    // Criar dados de exemplo apenas com 4 colunas
     const dadosExemplo = [
       {
         nome: "João Silva",
         cargo: "Desenvolvedor",
-        setor: "TI"
+        setor: "TI",
+        empresaContratante: "Empresa ABC Ltda"
       },
       {
         nome: "Maria Santos",
         cargo: "Analista",
-        setor: "Financeiro"
+        setor: "Financeiro",
+        empresaContratante: "Empresa XYZ Ltda"
       }
     ];
 
@@ -109,14 +111,15 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
         try {
           const linha = dados[i];
           
-          // Extrair dados das 3 colunas obrigatórias (com variações de nomes)
+          // Extrair dados das 4 colunas obrigatórias (com variações de nomes)
           const nome = linha.nome || linha.Nome || linha.NOME || '';
           const cargo = linha.cargo || linha.Cargo || linha.CARGO || '';
           const setor = linha.setor || linha.Setor || linha.SETOR || '';
+          const empresaContratante = linha.empresaContratante || linha['empresa contratante'] || linha.EmpresaContratante || linha['Empresa Contratante'] || linha.EMPRESACONTRATANTE || '';
 
           // Validações básicas
-          if (!nome || !cargo || !setor) {
-            throw new Error(`Linha ${i + 2}: Nome, cargo e setor são obrigatórios`);
+          if (!nome || !cargo || !setor || !empresaContratante) {
+            throw new Error(`Linha ${i + 2}: Nome, cargo, setor e empresa contratante são obrigatórios`);
           }
 
           const funcionario = {
@@ -124,6 +127,7 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
             nome: nome.trim(),
             cargo: cargo.trim(),
             setor: setor.trim(),
+            empresaContratante: empresaContratante.trim(),
             dataAdmissao: new Date().toISOString().split('T')[0], // Data atual
             telefone: "",
             email: "",
@@ -231,6 +235,7 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
                     <li>• Nome</li>
                     <li>• Cargo</li>
                     <li>• Setor</li>
+                    <li>• Empresa Contratante</li>
                   </ul>
                 </div>
               </div>
