@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Download, AlertCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import * as XLSX from 'xlsx';
 
 interface ImportarFuncionariosModalProps {
   isOpen: boolean;
@@ -19,49 +20,33 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
   const { toast } = useToast();
 
   const baixarModelo = () => {
-    // Criar dados de exemplo
+    // Criar dados de exemplo apenas com 3 colunas
     const dadosExemplo = [
       {
         nome: "João Silva",
         cargo: "Desenvolvedor",
-        setor: "TI",
-        dataAdmissao: "2024-01-15",
-        telefone: "(11) 99999-9999",
-        email: "joao.silva@empresa.com",
-        cpf: "123.456.789-00",
-        rg: "12.345.678-9",
-        salario: "5000.00",
-        empresaContratante: "Minha Empresa Ltda"
+        setor: "TI"
       },
       {
         nome: "Maria Santos",
         cargo: "Analista",
-        setor: "Financeiro",
-        dataAdmissao: "2024-02-01",
-        telefone: "(11) 88888-8888",
-        email: "maria.santos@empresa.com",
-        cpf: "987.654.321-00",
-        rg: "98.765.432-1",
-        salario: "4500.00",
-        empresaContratante: "Minha Empresa Ltda"
+        setor: "Financeiro"
       }
     ];
 
-    // Converter para CSV
-    const cabecalho = Object.keys(dadosExemplo[0]).join(',');
-    const linhas = dadosExemplo.map(item => Object.values(item).join(','));
-    const csv = [cabecalho, ...linhas].join('\n');
-
-    // Fazer download
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'modelo_funcionarios.csv';
-    link.click();
+    // Criar workbook Excel
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(dadosExemplo);
+    
+    // Adicionar worksheet ao workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Funcionários");
+    
+    // Fazer download do arquivo Excel
+    XLSX.writeFile(workbook, 'modelo_funcionarios.xlsx');
     
     toast({
       title: "Modelo baixado",
-      description: "Arquivo modelo baixado com sucesso!",
+      description: "Arquivo modelo Excel baixado com sucesso!",
     });
   };
 
@@ -78,47 +63,73 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
     setProcessando(true);
     
     try {
-      const texto = await arquivo.text();
-      const linhas = texto.split('\n').filter(linha => linha.trim() !== '');
+      let dados: any[] = [];
       
-      if (linhas.length < 2) {
-        throw new Error('Arquivo deve ter pelo menos uma linha de dados além do cabeçalho');
+      // Verificar se é arquivo Excel ou CSV
+      if (arquivo.name.endsWith('.xlsx') || arquivo.name.endsWith('.xls')) {
+        // Processar arquivo Excel
+        const arrayBuffer = await arquivo.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        dados = XLSX.utils.sheet_to_json(firstSheet);
+      } else if (arquivo.name.endsWith('.csv')) {
+        // Processar arquivo CSV
+        const texto = await arquivo.text();
+        const linhas = texto.split('\n').filter(linha => linha.trim() !== '');
+        
+        if (linhas.length < 2) {
+          throw new Error('Arquivo deve ter pelo menos uma linha de dados além do cabeçalho');
+        }
+
+        const cabecalho = linhas[0].split(',').map(col => col.trim());
+        dados = [];
+        
+        for (let i = 1; i < linhas.length; i++) {
+          const valores = linhas[i].split(',').map(val => val.trim());
+          const obj: any = {};
+          cabecalho.forEach((col, index) => {
+            obj[col] = valores[index] || '';
+          });
+          dados.push(obj);
+        }
+      } else {
+        throw new Error('Formato de arquivo não suportado. Use .xlsx, .xls ou .csv');
       }
 
-      const cabecalho = linhas[0].split(',');
+      if (dados.length === 0) {
+        throw new Error('Arquivo não contém dados válidos');
+      }
+
       const funcionarios = [];
       const detalhes = [];
       let sucesso = 0;
       let erro = 0;
 
-      for (let i = 1; i < linhas.length; i++) {
+      for (let i = 0; i < dados.length; i++) {
         try {
-          const valores = linhas[i].split(',');
+          const linha = dados[i];
           
-          if (valores.length !== cabecalho.length) {
-            throw new Error(`Linha ${i + 1}: Número de colunas incorreto`);
+          // Extrair dados das 3 colunas obrigatórias (com variações de nomes)
+          const nome = linha.nome || linha.Nome || linha.NOME || '';
+          const cargo = linha.cargo || linha.Cargo || linha.CARGO || '';
+          const setor = linha.setor || linha.Setor || linha.SETOR || '';
+
+          // Validações básicas
+          if (!nome || !cargo || !setor) {
+            throw new Error(`Linha ${i + 2}: Nome, cargo e setor são obrigatórios`);
           }
 
           const funcionario = {
             id: Date.now() + i, // ID único baseado em timestamp
-            nome: valores[0]?.trim(),
-            cargo: valores[1]?.trim(),
-            setor: valores[2]?.trim(),
-            dataAdmissao: valores[3]?.trim(),
-            telefone: valores[4]?.trim(),
-            email: valores[5]?.trim(),
+            nome: nome.trim(),
+            cargo: cargo.trim(),
+            setor: setor.trim(),
+            dataAdmissao: new Date().toISOString().split('T')[0], // Data atual
+            telefone: "",
+            email: "",
             foto: "👤", // Emoji padrão
             status: "ativo" as const,
-            cpf: valores[6]?.trim(),
-            rg: valores[7]?.trim(),
-            salario: valores[8]?.trim(),
-            empresaContratante: valores[9]?.trim(),
           };
-
-          // Validações básicas
-          if (!funcionario.nome || !funcionario.cargo || !funcionario.setor) {
-            throw new Error(`Linha ${i + 1}: Nome, cargo e setor são obrigatórios`);
-          }
 
           funcionarios.push(funcionario);
           sucesso++;
@@ -126,7 +137,7 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
           
         } catch (error) {
           erro++;
-          detalhes.push(`✗ Linha ${i + 1}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+          detalhes.push(`✗ Linha ${i + 2}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
         }
       }
 
@@ -195,7 +206,7 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
                     className="w-full mt-2"
                   >
                     <Download size={16} className="mr-2" />
-                    Baixar Modelo CSV
+                    Baixar Modelo Excel
                   </Button>
                 </div>
 
