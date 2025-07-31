@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Clock, Shield, MapPin, User, X } from "lucide-react";
 import { GestaoServicosExtras } from "@/pages/GestaoServicosExtras";
+import { useNavigate } from "react-router-dom";
 
 interface OperacoesModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface OperacoesModalProps {
 type SelectedPage = 'gestao-servicos-extras' | 'fiscalizacoes' | 'escolha-fiscalizacao' | null;
 
 export function OperacoesModal({ isOpen, onOpenChange }: OperacoesModalProps) {
+  const navigate = useNavigate();
   const [selectedPage, setSelectedPage] = useState<SelectedPage>(null);
 
   const operacoes = [
@@ -67,9 +69,8 @@ export function OperacoesModal({ isOpen, onOpenChange }: OperacoesModalProps) {
               <div
                 className="bg-gray-50 rounded-lg p-8 cursor-pointer hover:bg-gray-100 transition-colors border-2 border-transparent hover:border-blue-200"
                 onClick={() => {
-                  // Aqui você pode implementar a navegação para fiscalização de posto
-                  console.log('Fiscalização de Posto de Serviço');
                   handleClose();
+                  navigate('/operacoes/fiscalizacoes', { state: { tipo: 'posto_servico' } });
                 }}
               >
                 <div className="flex flex-col items-center text-center">
@@ -89,9 +90,8 @@ export function OperacoesModal({ isOpen, onOpenChange }: OperacoesModalProps) {
               <div
                 className="bg-gray-50 rounded-lg p-8 cursor-pointer hover:bg-gray-100 transition-colors border-2 border-transparent hover:border-blue-200"
                 onClick={() => {
-                  // Aqui você pode implementar a navegação para fiscalização de colaborador
-                  console.log('Fiscalização de Colaborador');
                   handleClose();
+                  navigate('/operacoes/fiscalizacoes', { state: { tipo: 'colaborador' } });
                 }}
               >
                 <div className="flex flex-col items-center text-center">

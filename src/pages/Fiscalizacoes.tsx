@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, Eye, Calendar, MapPin, User, FileCheck, Shield } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { EscolhaTipoFiscalizacaoModal } from "@/components/modals/EscolhaTipoFiscalizacaoModal";
@@ -27,6 +27,7 @@ interface Fiscalizacao {
 
 export function Fiscalizacoes() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   
   const [fiscalizacoes, setFiscalizacoes] = useState<Fiscalizacao[]>([]);
@@ -39,7 +40,16 @@ export function Fiscalizacoes() {
 
   useEffect(() => {
     fetchFiscalizacoes();
-  }, []);
+    
+    // Verificar se veio com um tipo específico via state
+    const state = location.state as { tipo?: 'posto_servico' | 'colaborador' } | null;
+    if (state?.tipo) {
+      setTipoSelecionado(state.tipo);
+      setNovaFiscalizacaoModalOpen(true);
+      // Limpar o state para evitar repetir a ação
+      window.history.replaceState({}, '', location.pathname);
+    }
+  }, [location]);
 
   const fetchFiscalizacoes = async () => {
     try {
