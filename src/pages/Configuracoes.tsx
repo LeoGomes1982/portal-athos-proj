@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import GerenciarEmpresasModal from "@/components/modals/GerenciarEmpresasModal";
 import { LogsSubsection } from "@/components/subsections/LogsSubsection";
 import { ImportarFuncionariosModal } from "@/components/modals/ImportarFuncionariosModal";
@@ -241,12 +242,10 @@ const Configuracoes = () => {
                 <p className="text-sm text-slate-600 mb-2">
                   Defina o modelo padrão para geração de contratos. Use variáveis como {"{nomeCliente}"}, {"{servicosEscolhidos}"}, {"{valorTotal}"}, etc.
                 </p>
-                <Textarea
-                  id="modeloContrato"
+                <RichTextEditor
                   value={configuracoes.modeloContrato}
-                  onChange={(e) => handleConfigChange("modeloContrato", e.target.value)}
+                  onChange={(value) => handleConfigChange("modeloContrato", value)}
                   placeholder="Digite aqui o modelo do contrato..."
-                  className="min-h-[200px] resize-y"
                 />
               </div>
             </div>
