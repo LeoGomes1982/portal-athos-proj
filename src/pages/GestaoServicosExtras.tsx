@@ -98,18 +98,10 @@ export function GestaoServicosExtras() {
 
   return (
     <div className="min-h-screen">
-      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
-        {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={() => navigate('/operacoes')} className="back-button">
-            <ChevronLeft size={16} />
-            Voltar
-          </button>
-        </div>
-
+      <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <Briefcase className="text-white text-3xl" size={40} />
           </div>
           <div>
@@ -177,7 +169,7 @@ export function GestaoServicosExtras() {
           </div>
           <Button 
             onClick={handleNovoServico}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Plus className="mr-2" size={16} />
             Novo Serviço Extra
@@ -212,7 +204,7 @@ export function GestaoServicosExtras() {
               <Card key={pessoa} className="modern-card">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <User className="text-blue-600" size={24} />
+                    <User className="text-green-600" size={24} />
                     <div>
                       <CardTitle className="text-lg">{pessoa}</CardTitle>
                       <p className="text-sm text-description">
@@ -228,7 +220,7 @@ export function GestaoServicosExtras() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h4 className="font-medium">{servico.motivo_servico}</h4>
-                            <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                            <Badge className="bg-green-100 text-green-800 border-green-200">
                               {servico.quantidade_horas}h
                             </Badge>
                           </div>
