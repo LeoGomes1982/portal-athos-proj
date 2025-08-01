@@ -9,6 +9,7 @@ import {
   AlignLeft, 
   AlignCenter, 
   AlignRight, 
+  AlignJustify,
   Image, 
   Table, 
   Grid,
@@ -227,6 +228,15 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
           className="p-2"
         >
           <AlignRight size={16} />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => executeCommand('justifyFull')}
+          className="p-2"
+        >
+          <AlignJustify size={16} />
         </Button>
 
         <div className="h-6 w-px bg-slate-300" />
