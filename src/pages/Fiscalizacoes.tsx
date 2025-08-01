@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import { NovaFiscalizacaoModal } from "@/components/modals/NovaFiscalizacaoModal";
 import { VisualizarFiscalizacaoModal } from "@/components/modals/VisualizarFiscalizacaoModal";
+import { EscolhaTipoFiscalizacaoModal } from "@/components/modals/EscolhaTipoFiscalizacaoModal";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -29,6 +30,7 @@ export default function Fiscalizacoes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [fiscalizacoes, setFiscalizacoes] = useState<Fiscalizacao[]>([]);
   const [loading, setLoading] = useState(true);
+  const [escolhaTipoModalOpen, setEscolhaTipoModalOpen] = useState(false);
   const [novaFiscalizacaoModalOpen, setNovaFiscalizacaoModalOpen] = useState(false);
   const [visualizarModalOpen, setVisualizarModalOpen] = useState(false);
   const [tipoSelecionado, setTipoSelecionado] = useState<'posto_servico' | 'colaborador'>('posto_servico');
@@ -58,7 +60,12 @@ export default function Fiscalizacoes() {
   };
 
   const handleNovaFiscalizacao = () => {
-    setTipoSelecionado('posto_servico');
+    setEscolhaTipoModalOpen(true);
+  };
+
+  const handleSelecionarTipo = (tipo: 'posto_servico' | 'colaborador') => {
+    setTipoSelecionado(tipo);
+    setEscolhaTipoModalOpen(false);
     setNovaFiscalizacaoModalOpen(true);
   };
 
@@ -279,6 +286,12 @@ export default function Fiscalizacoes() {
         open={visualizarModalOpen}
         onOpenChange={setVisualizarModalOpen}
         fiscalizacaoId={fiscalizacaoSelecionada}
+      />
+
+      <EscolhaTipoFiscalizacaoModal
+        open={escolhaTipoModalOpen}
+        onOpenChange={setEscolhaTipoModalOpen}
+        onSelecionarTipo={handleSelecionarTipo}
       />
     </div>
   );
