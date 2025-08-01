@@ -18,236 +18,174 @@ export default function ContratoGeradoModal({
   nomeCliente 
 }: ContratoGeradoModalProps) {
   const handleDownload = () => {
-    const doc = new jsPDF();
+    const pdf = new jsPDF();
     
-    // Configurações da página seguindo especificações (margens 2.5cm = ~70.87 pontos)
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 70.87; // 2.5cm em pontos
+    // Configurações seguindo o layout da imagem
+    pdf.setFont("times", "normal");
+    pdf.setFontSize(11);
+    
+    const margin = 20;
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     const maxWidth = pageWidth - 2 * margin;
-    let currentY = margin;
-    let pageNumber = 1;
-
-    // Função para adicionar cabeçalho oficial
-    const addHeader = () => {
-      // Cabeçalho oficial (título principal - 14pt, negrito, centralizado)
-      doc.setFontSize(14);
-      doc.setFont("times", "bold");
-      
-      const headerText = "REPÚBLICA FEDERATIVA DO BRASIL";
-      const headerWidth = doc.getTextWidth(headerText);
-      const headerX = (pageWidth - headerWidth) / 2;
-      doc.text(headerText, headerX, currentY);
-      currentY += 21; // 1.5x o tamanho da fonte para espaçamento
-      
-      // Título principal do contrato (14pt, negrito, centralizado)
-      const title = "CONTRATO DE PRESTAÇÃO DE SERVIÇOS";
-      const titleWidth = doc.getTextWidth(title);
-      const titleX = (pageWidth - titleWidth) / 2;
-      doc.text(title, titleX, currentY);
-      currentY += 28; // Espaço maior após título principal
+    
+    let currentY = margin + 10;
+    
+    // Função para adicionar rodapé
+    const addFooter = (pageNum: number) => {
+      pdf.setFont("times", "normal");
+      pdf.setFontSize(9);
+      const footerY = pageHeight - 15;
+      pdf.text(`${pageNum}`, pageWidth - margin, footerY, { align: 'right' });
     };
-
-    // Função para adicionar rodapé com numeração à direita
-    const addFooter = () => {
-      const footerY = pageHeight - margin + 20;
-      doc.setFontSize(10);
-      doc.setFont("times", "normal");
+    
+    // Função para texto justificado
+    const addJustifiedText = (text: string, fontSize: number = 11) => {
+      pdf.setFont("times", "normal");
+      pdf.setFontSize(fontSize);
       
-      // Número da página alinhado à direita
-      const pageText = `${pageNumber}`;
-      const pageTextWidth = doc.getTextWidth(pageText);
-      const pageTextX = pageWidth - margin - pageTextWidth;
-      doc.text(pageText, pageTextX, footerY);
-    };
-
-    // Função para verificar se precisa de nova página
-    const checkNewPage = (neededSpace: number = 25) => {
-      if (currentY + neededSpace > pageHeight - margin - 30) {
-        addFooter();
-        doc.addPage();
-        pageNumber++;
-        currentY = margin;
-        if (pageNumber === 2) {
-          // Não adicionar cabeçalho na segunda página, só continuar
-        }
-      }
-    };
-
-    // Função para adicionar texto com formatação específica
-    const addFormattedText = (
-      text: string, 
-      fontSize: number, 
-      isBold: boolean = false, 
-      alignment: 'left' | 'center' | 'justify' = 'justify',
-      isMainTitle: boolean = false,
-      isSectionTitle: boolean = false
-    ) => {
-      doc.setFontSize(fontSize);
-      doc.setFont("times", isBold ? "bold" : "normal");
+      const paragraphs = text.split('\n\n');
       
-      const lines = doc.splitTextToSize(text, maxWidth);
-      const lineSpacing = fontSize * 1.5; // Espaçamento de linha 1.5
-      
-      for (let i = 0; i < lines.length; i++) {
-        checkNewPage();
-        
-        const line = lines[i];
-        let x = margin;
-        
-        if (alignment === 'center' || isMainTitle) {
-          // Centralizar
-          const lineWidth = doc.getTextWidth(line);
-          x = (pageWidth - lineWidth) / 2;
-          doc.text(line, x, currentY);
-        } else if (alignment === 'justify' && i < lines.length - 1 && line.trim() !== '' && !isSectionTitle) {
-          // Justificar (exceto última linha e títulos de seção)
-          const words = line.split(' ');
-          if (words.length > 1) {
-            const totalWordsWidth = words.reduce((sum, word) => sum + doc.getTextWidth(word), 0);
-            const totalSpaces = words.length - 1;
-            const extraSpace = (maxWidth - totalWordsWidth) / totalSpaces;
-            
-            let currentX = margin;
-            for (let j = 0; j < words.length; j++) {
-              doc.text(words[j], currentX, currentY);
-              if (j < words.length - 1) {
-                currentX += doc.getTextWidth(words[j]) + doc.getTextWidth(' ') + extraSpace;
-              }
+      paragraphs.forEach((paragraph) => {
+        if (paragraph.trim()) {
+          const lines = pdf.splitTextToSize(paragraph.trim(), maxWidth);
+          
+          for (let i = 0; i < lines.length; i++) {
+            if (currentY > pageHeight - 40) {
+              addFooter(pdf.getNumberOfPages());
+              pdf.addPage();
+              currentY = margin + 10;
             }
-          } else {
-            doc.text(line, margin, currentY);
+            
+            if (i < lines.length - 1 && lines[i].trim().length > 0) {
+              const words = lines[i].trim().split(' ');
+              if (words.length > 1) {
+                const totalTextWidth = words.reduce((width, word) => width + pdf.getTextWidth(word), 0);
+                const totalSpaces = words.length - 1;
+                const availableSpace = maxWidth - totalTextWidth;
+                const spaceWidth = availableSpace / totalSpaces;
+                
+                let x = margin;
+                for (let j = 0; j < words.length; j++) {
+                  pdf.text(words[j], x, currentY);
+                  x += pdf.getTextWidth(words[j]) + spaceWidth;
+                }
+              } else {
+                pdf.text(lines[i], margin, currentY);
+              }
+            } else {
+              pdf.text(lines[i], margin, currentY);
+            }
+            
+            currentY += fontSize * 0.4 + 2;
           }
-        } else {
-          // Alinhamento à esquerda
-          doc.text(line, margin, currentY);
+          currentY += 8;
         }
-        
-        currentY += lineSpacing;
+      });
+    };
+    
+    // Função para títulos de seção
+    const addSectionTitle = (title: string) => {
+      if (currentY > pageHeight - 60) {
+        addFooter(pdf.getNumberOfPages());
+        pdf.addPage();
+        currentY = margin + 10;
       }
       
-      // Espaçamento após parágrafos (12pt)
-      if (isMainTitle) {
-        currentY += 18; // Mais espaço após títulos principais
-      } else if (isSectionTitle) {
-        currentY += 12; // Espaço médio após títulos de seção
-      } else {
-        currentY += 12; // 12pt após parágrafos normais
-      }
+      currentY += 10;
+      pdf.setFont("times", "bold");
+      pdf.setFontSize(12);
+      pdf.text(title, margin, currentY);
+      currentY += 8;
     };
-
-    // Adicionar primeira página com cabeçalho
-    addHeader();
-
-    // Dividir o texto em seções e processar seguindo as especificações
-    const sections = contratoTexto.split('\n\n');
     
-    sections.forEach((section) => {
-      if (section.trim()) {
-        const lines = section.split('\n');
-        const firstLine = lines[0].trim();
-        
-        // Verificar se é um título de seção
-        const isTitleSection = ['Contratante', 'Contratada', 'Objeto', 'Obrigações da Contratada', 'Obrigações da Contratante', 'Financeiro', 'LGPD', 'Prazos e validades'].includes(firstLine);
-        
-        if (isTitleSection) {
-          // Título de seção: 12pt, negrito, alinhado à esquerda
-          addFormattedText(firstLine, 12, true, 'left', false, true);
-          if (lines.length > 1) {
-            const content = lines.slice(1).join('\n');
-            // Corpo do texto: 10pt, justificado
-            addFormattedText(content, 10, false, 'justify');
-          }
-        } else {
-          // Corpo do texto: 10pt, justificado
-          addFormattedText(section, 10, false, 'justify');
-        }
+    // Processar o texto do contrato seguindo o layout da imagem
+    const fullText = contratoTexto;
+    
+    // Separar seções específicas
+    const obrigacoesMatch = fullText.match(/OBRIGAÇÕES[\s\S]*?(?=FINANCEIRO|ASSINATURA|$)/i);
+    const financeiroMatch = fullText.match(/FINANCEIRO[\s\S]*?(?=ASSINATURA|$)/i);
+    const assinaturaMatch = fullText.match(/ASSINATURA[\s\S]*$/i);
+    
+    // Texto principal (antes das seções)
+    let mainText = fullText;
+    if (obrigacoesMatch) {
+      mainText = fullText.substring(0, fullText.toLowerCase().indexOf('obrigações'));
+    }
+    
+    if (mainText.trim()) {
+      addJustifiedText(mainText.trim());
+    }
+    
+    // Seção Obrigações da Contratante
+    if (obrigacoesMatch) {
+      addSectionTitle("Obrigações da Contratante");
+      let obrigacoesText = obrigacoesMatch[0].replace(/^OBRIGAÇÕES[^\n]*\n?/i, '').trim();
+      
+      // Remove seção financeiro se estiver incluída
+      if (obrigacoesText.toLowerCase().includes('financeiro')) {
+        obrigacoesText = obrigacoesText.substring(0, obrigacoesText.toLowerCase().indexOf('financeiro'));
       }
-    });
-
-    // Garantir que a seção de assinaturas fique na segunda página
-    checkNewPage(100); // Espaço para seção de assinaturas
+      
+      if (obrigacoesText.trim()) {
+        addJustifiedText(obrigacoesText.trim());
+      }
+    }
     
-    // Título da seção de assinaturas (título de seção: 12pt, negrito, alinhado à esquerda)
-    addFormattedText("ASSINATURAS E QUALIFICAÇÕES", 12, true, 'left', false, true);
+    // Seção Financeiro
+    if (financeiroMatch) {
+      addSectionTitle("Financeiro");
+      let financeiroText = financeiroMatch[0].replace(/^FINANCEIRO[^\n]*\n?/i, '').trim();
+      
+      // Remove seção assinatura se estiver incluída
+      if (financeiroText.toLowerCase().includes('assinatura')) {
+        financeiroText = financeiroText.substring(0, financeiroText.toLowerCase().indexOf('assinatura'));
+      }
+      
+      if (financeiroText.trim()) {
+        addJustifiedText(financeiroText.trim());
+      }
+    }
     
-    // Linha separadora
-    doc.line(margin, currentY, pageWidth - margin, currentY);
-    currentY += 18;
-
-    // Data e local (corpo do texto: 10pt, justificado)
+    // Seção de Assinaturas
+    currentY += 30;
+    
     const hoje = new Date().toLocaleDateString('pt-BR');
-    const dataText = `Por este instrumento particular, as partes abaixo identificadas e qualificadas:`;
-    addFormattedText(dataText, 10, false, 'justify');
-
-    // Contratante (título em negrito)
-    addFormattedText("CONTRATANTE:", 10, true, 'left', false, true);
     
-    // Nome do contratante
-    addFormattedText(nomeCliente, 10, false, 'left');
+    pdf.setFont("times", "normal");
+    pdf.setFontSize(11);
+    pdf.text(`Local e Data: _________________, ${hoje}`, margin, currentY);
+    currentY += 25;
     
-    // Extrair CPF do contratante
-    const cpfContratanteMatch = contratoTexto.match(/CPF[:\s]+([0-9.-]+)/);
-    const cpfContratante = cpfContratanteMatch ? cpfContratanteMatch[1] : "";
-    if (cpfContratante) {
-      addFormattedText(`CPF nº ${cpfContratante}`, 10, false, 'left');
-    }
+    // Assinatura do contratante
+    pdf.text("_".repeat(50), margin, currentY);
+    currentY += 6;
+    pdf.setFont("times", "bold");
+    pdf.text("CONTRATANTE", margin, currentY);
+    currentY += 5;
+    pdf.setFont("times", "normal");
+    pdf.text(nomeCliente, margin, currentY);
+    currentY += 20;
     
-    currentY += 6; // Pequeno espaço antes da linha de assinatura
+    // Assinatura da contratada
+    pdf.text("_".repeat(50), margin, currentY);
+    currentY += 6;
+    pdf.setFont("times", "bold");
+    pdf.text("CONTRATADA", margin, currentY);
+    currentY += 5;
+    pdf.setFont("times", "normal");
     
-    // Linha para assinatura do contratante
-    doc.setFontSize(10);
-    doc.setFont("times", "normal");
-    doc.text("_".repeat(50), margin, currentY);
-    currentY += 15;
-    doc.text("(assinatura do contratante)", margin, currentY);
-    currentY += 24;
-
-    // Contratada (título em negrito)
-    addFormattedText("CONTRATADA:", 10, true, 'left', false, true);
-    
-    // Extrair dados da contratada
-    const contratadaMatch = contratoTexto.match(/Contratada\s*\n([^\n]+)/);
+    // Extrair nome da contratada
+    const contratadaMatch = fullText.match(/Contratada[:\s]*([^\n]+)/i);
     const nomeContratada = contratadaMatch ? contratadaMatch[1].trim() : "CONTRATADA";
+    pdf.text(nomeContratada, margin, currentY);
     
-    // Extrair representante legal e CPF
-    const representanteMatch = contratoTexto.match(/Representante[:\s]+([^\n,]+)/);
-    const representante = representanteMatch ? representanteMatch[1].trim() : "";
+    // Adicionar rodapé final
+    addFooter(pdf.getNumberOfPages());
     
-    const cpfRepresentanteMatch = contratoTexto.match(/(?:Representante[^C]*CPF[:\s]+([0-9.-]+))|(?:CPF[:\s]+([0-9.-]+)[^C]*Representante)/);
-    const cpfRepresentante = cpfRepresentanteMatch ? (cpfRepresentanteMatch[1] || cpfRepresentanteMatch[2]) : "";
-    
-    // Nome da contratada
-    addFormattedText(nomeContratada, 10, false, 'left');
-    
-    if (representante && cpfRepresentante) {
-      addFormattedText(`Por seu representante legal: ${representante}`, 10, false, 'left');
-      addFormattedText(`CPF nº ${cpfRepresentante}`, 10, false, 'left');
-    }
-    
-    currentY += 6; // Pequeno espaço antes da linha de assinatura
-    
-    // Linha para assinatura da contratada
-    doc.setFontSize(10);
-    doc.setFont("times", "normal");
-    doc.text("_".repeat(50), margin, currentY);
-    currentY += 15;
-    doc.text("(assinatura da contratada)", margin, currentY);
-    currentY += 24;
-
-    // Parágrafo final (corpo do texto: 10pt, justificado)
-    const finalText = `Firmam o presente contrato em duas vias de igual teor e forma, na presença de duas testemunhas que também o subscrevem, para que produza seus jurídicos e legais efeitos.`;
-    addFormattedText(finalText, 10, false, 'justify');
-    
-    // Local e data final
-    const localDataText = `________________, ${hoje}`;
-    addFormattedText(localDataText, 10, false, 'left');
-
-    // Adicionar rodapé na última página
-    addFooter();
-
-    // Salvar o PDF
-    doc.save(`Contrato_${nomeCliente.replace(/\s+/g, '_')}_${hoje.replace(/\//g, '-')}.pdf`);
+    // Download
+    const fileName = nomeCliente ? `Contrato_${nomeCliente.replace(/\s+/g, '_')}.pdf` : 'Contrato.pdf';
+    pdf.save(fileName);
   };
 
   return (
