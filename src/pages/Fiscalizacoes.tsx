@@ -136,40 +136,47 @@ export default function Fiscalizacoes() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-description">Total de Fiscalizações</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-primary">{totalFiscalizacoes}</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🛡️</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {totalFiscalizacoes}
+              </div>
+              <div className="text-sm text-gray-600 mb-1">Total de Fiscalizações</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Registros totais
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-description">Postos de Serviço</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-blue-600">{fiscalizacoesPostoServico}</div>
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🏢</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {fiscalizacoesPostoServico}
+              </div>
+              <div className="text-sm text-gray-600">Postos de Serviço</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-description">Colaboradores</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-purple-600">{fiscalizacoesColaborador}</div>
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👤</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {fiscalizacoesColaborador}
+              </div>
+              <div className="text-sm text-gray-600">Colaboradores</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-description">Aprovadas (≥70%)</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-green-600">{fiscalizacoesAprovadas}</div>
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">✅</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {fiscalizacoesAprovadas}
+              </div>
+              <div className="text-sm text-gray-600">Aprovadas (≥70%)</div>
             </CardContent>
           </Card>
         </div>
