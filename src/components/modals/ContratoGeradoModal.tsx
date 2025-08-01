@@ -20,25 +20,28 @@ export default function ContratoGeradoModal({
   const handleDownload = () => {
     const doc = new jsPDF();
     
-    // Configurações da página
+    // Configurações da página para formato cartorial
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 25;
+    const margin = 20;
     const maxWidth = pageWidth - 2 * margin;
     let currentY = margin;
     let pageNumber = 1;
 
-    // Função para adicionar cabeçalho oficial
+    // Função para adicionar cabeçalho cartorial
     const addHeader = () => {
-      doc.setFontSize(12);
+      doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       
-      // Linha superior
-      doc.line(margin, margin, pageWidth - margin, margin);
-      currentY += 10;
+      // Cabeçalho oficial estilo cartório
+      const headerText = "REPÚBLICA FEDERATIVA DO BRASIL";
+      const headerWidth = doc.getTextWidth(headerText);
+      const headerX = (pageWidth - headerWidth) / 2;
+      doc.text(headerText, headerX, currentY);
+      currentY += 8;
       
-      // Título principal centralizado
-      doc.setFontSize(18);
+      // Título principal
+      doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
       const title = "CONTRATO DE PRESTAÇÃO DE SERVIÇOS";
       const titleWidth = doc.getTextWidth(title);
@@ -46,30 +49,30 @@ export default function ContratoGeradoModal({
       doc.text(title, titleX, currentY);
       currentY += 15;
       
-      // Linha inferior do cabeçalho
+      // Linha separadora
       doc.line(margin, currentY, pageWidth - margin, currentY);
-      currentY += 20;
+      currentY += 10;
     };
 
-    // Função para adicionar rodapé
+    // Função para adicionar rodapé cartorial
     const addFooter = () => {
-      const footerY = pageHeight - 15;
-      doc.setFontSize(10);
+      const footerY = pageHeight - 10;
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
       
       // Linha do rodapé
-      doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+      doc.line(margin, footerY - 8, pageWidth - margin, footerY - 8);
       
-      // Número da página centralizado
-      const pageText = `Página ${pageNumber}`;
+      // Número da página
+      const pageText = `- ${pageNumber} -`;
       const pageTextWidth = doc.getTextWidth(pageText);
       const pageTextX = (pageWidth - pageTextWidth) / 2;
       doc.text(pageText, pageTextX, footerY);
     };
 
-    // Função para verificar se precisa de nova página
-    const checkNewPage = (neededSpace: number = 30) => {
-      if (currentY + neededSpace > pageHeight - 40) {
+    // Função para verificar se precisa de nova página (apenas para página 2)
+    const checkNewPage = (neededSpace: number = 20) => {
+      if (pageNumber === 1 && currentY + neededSpace > pageHeight - 80) {
         addFooter();
         doc.addPage();
         pageNumber++;
@@ -77,7 +80,7 @@ export default function ContratoGeradoModal({
       }
     };
 
-    // Função para adicionar texto justificado
+    // Função para adicionar texto justificado com espaçamento de ofício
     const addJustifiedText = (text: string, fontSize: number, isBold: boolean = false, isTitle: boolean = false) => {
       doc.setFontSize(fontSize);
       doc.setFont("helvetica", isBold ? "bold" : "normal");
@@ -123,15 +126,17 @@ export default function ContratoGeradoModal({
             }
           }
         }
-        currentY += fontSize * 1.2;
+        // Espaçamento de ofício (mais compacto)
+        currentY += fontSize * 1.05;
       }
-      currentY += isTitle ? 10 : 5; // Espaço extra após parágrafo
+      // Espaçamento entre parágrafos mínimo
+      currentY += isTitle ? 3 : 1;
     };
 
     // Adicionar primeira página com cabeçalho
     addHeader();
 
-    // Dividir o texto em seções
+    // Dividir o texto em seções e processar com tamanhos menores
     const sections = contratoTexto.split('\n\n');
     
     sections.forEach((section) => {
@@ -139,110 +144,133 @@ export default function ContratoGeradoModal({
         const lines = section.split('\n');
         const firstLine = lines[0].trim();
         
-        // Verificar se é um título (linhas curtas que são títulos)
+        // Verificar se é um título
         const isTitleSection = ['Contratante', 'Contratada', 'Objeto', 'Obrigações da Contratada', 'Obrigações da Contratante', 'Financeiro', 'LGPD', 'Prazos e validades'].includes(firstLine);
         
         if (isTitleSection) {
-          addJustifiedText(firstLine, 16, true);
+          addJustifiedText(firstLine, 12, true, true); // Títulos menores
           if (lines.length > 1) {
             const content = lines.slice(1).join('\n');
-            addJustifiedText(content, 14);
+            addJustifiedText(content, 10); // Texto menor
           }
         } else {
-          addJustifiedText(section, 14);
+          addJustifiedText(section, 10); // Texto menor
         }
       }
     });
 
-    // Adicionar seção de assinaturas oficial
-    checkNewPage(120);
-    currentY += 30;
+    // Garantir que a seção de assinaturas fique na página 2
+    if (pageNumber === 1) {
+      addFooter();
+      doc.addPage();
+      pageNumber++;
+      addHeader();
+    }
     
-    // Título da seção de assinaturas
-    doc.setFontSize(16);
+    currentY += 15;
+    
+    // Título da seção de assinaturas estilo cartorial
+    doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    const signTitle = "ASSINATURAS";
+    const signTitle = "ASSINATURAS E QUALIFICAÇÕES";
     const signTitleWidth = doc.getTextWidth(signTitle);
     const signTitleX = (pageWidth - signTitleWidth) / 2;
     doc.text(signTitle, signTitleX, currentY);
-    currentY += 25;
+    currentY += 15;
 
-    // Linha decorativa
+    // Linha separadora
     doc.line(margin, currentY, pageWidth - margin, currentY);
-    currentY += 25;
+    currentY += 15;
 
-    // Data do documento
+    // Data e local estilo cartorial
     const hoje = new Date().toLocaleDateString('pt-BR');
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    const dataText = `Local e Data: ________________, ${hoje}`;
+    const dataText = `Por este instrumento particular, as partes abaixo identificadas e qualificadas:`;
     doc.text(dataText, margin, currentY);
-    currentY += 35;
+    currentY += 15;
 
-    // Campo de assinatura do contratante
-    doc.setFontSize(14);
+    // Contratante
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("CONTRATANTE:", margin, currentY);
-    currentY += 25;
-    
-    // Linha para assinatura do contratante
-    doc.line(margin, currentY, pageWidth - margin, currentY);
     currentY += 10;
     
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(nomeCliente, margin, currentY);
     currentY += 8;
     
-    // Extrair CPF do contratante do texto do contrato
+    // Extrair CPF do contratante
     const cpfContratanteMatch = contratoTexto.match(/CPF[:\s]+([0-9.-]+)/);
     const cpfContratante = cpfContratanteMatch ? cpfContratanteMatch[1] : "";
     if (cpfContratante) {
-      doc.text(`CPF: ${cpfContratante}`, margin, currentY);
+      doc.text(`CPF nº ${cpfContratante}`, margin, currentY);
     }
-    currentY += 40;
+    currentY += 20;
+    
+    // Linha para assinatura do contratante
+    doc.text("_".repeat(50), margin, currentY);
+    currentY += 5;
+    doc.text("(assinatura)", margin, currentY);
+    currentY += 25;
 
-    // Campo de assinatura da contratada
-    doc.setFontSize(14);
+    // Contratada
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("CONTRATADA:", margin, currentY);
-    currentY += 25;
-    
-    // Linha para assinatura da contratada
-    doc.line(margin, currentY, pageWidth - margin, currentY);
     currentY += 10;
     
-    // Extrair dados da contratada do texto do contrato
+    // Extrair dados da contratada
     const contratadaMatch = contratoTexto.match(/Contratada\s*\n([^\n]+)/);
     const nomeContratada = contratadaMatch ? contratadaMatch[1].trim() : "CONTRATADA";
     
-    // Extrair representante legal
+    // Extrair representante legal e CPF
     const representanteMatch = contratoTexto.match(/Representante[:\s]+([^\n,]+)/);
     const representante = representanteMatch ? representanteMatch[1].trim() : "";
     
-    // Extrair CPF do representante
     const cpfRepresentanteMatch = contratoTexto.match(/(?:Representante[^C]*CPF[:\s]+([0-9.-]+))|(?:CPF[:\s]+([0-9.-]+)[^C]*Representante)/);
     const cpfRepresentante = cpfRepresentanteMatch ? (cpfRepresentanteMatch[1] || cpfRepresentanteMatch[2]) : "";
     
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(nomeContratada, margin, currentY);
     currentY += 8;
     
-    if (representante) {
-      doc.text(`Representante Legal: ${representante}`, margin, currentY);
+    if (representante && cpfRepresentante) {
+      doc.text(`Por seu representante legal: ${representante}`, margin, currentY);
       currentY += 8;
+      doc.text(`CPF nº ${cpfRepresentante}`, margin, currentY);
     }
+    currentY += 20;
     
-    if (cpfRepresentante) {
-      doc.text(`CPF: ${cpfRepresentante}`, margin, currentY);
-    }
+    // Linha para assinatura da contratada
+    doc.text("_".repeat(50), margin, currentY);
+    currentY += 5;
+    doc.text("(assinatura)", margin, currentY);
+    currentY += 25;
+
+    // Parágrafo final estilo cartorial
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    const finalText = `Firmam o presente contrato em duas vias de igual teor e forma, na presença de duas testemunhas que também o subscrevem, para que produza seus jurídicos e legais efeitos.`;
+    const finalLines = doc.splitTextToSize(finalText, maxWidth);
+    
+    finalLines.forEach((line: string) => {
+      doc.text(line, margin, currentY);
+      currentY += 10;
+    });
+    
+    currentY += 15;
+    
+    // Local e data final
+    doc.text(`________________, ${hoje}`, margin, currentY);
 
     // Adicionar rodapé na última página
     addFooter();
 
     // Salvar o PDF
-    doc.save(`Contrato_${nomeCliente.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
+    doc.save(`Contrato_${nomeCliente.replace(/\s+/g, '_')}_${hoje.replace(/\//g, '-')}.pdf`);
   };
 
   return (
