@@ -19,8 +19,8 @@ export default function Operacoes() {
       description: "Fiscalização de postos de serviço e colaboradores",
       component: FiscalizacoesSubsection,
       bgColor: "bg-white",
-      iconColor: "text-blue-600",
-      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
+      iconColor: "text-green-600",
+      cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     },
     {
       id: "gestao-servicos-extras",
@@ -30,7 +30,7 @@ export default function Operacoes() {
       component: GestaoServicosExtrasSubsection,
       bgColor: "bg-white",
       iconColor: "text-green-600",
-      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
+      cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     },
     {
       id: "cuidados-treinamentos",
@@ -39,8 +39,8 @@ export default function Operacoes() {
       description: "Gestão de treinamentos e cuidados operacionais",
       component: CuidadosTreinamentosSubsection,
       bgColor: "bg-white",
-      iconColor: "text-purple-600",
-      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
+      iconColor: "text-green-600",
+      cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     }
   ];
 
@@ -70,7 +70,7 @@ export default function Operacoes() {
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <Shield className="text-white text-3xl" size={40} />
           </div>
           <div>
