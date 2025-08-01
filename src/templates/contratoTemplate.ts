@@ -4,12 +4,14 @@ export interface ContratoData {
   contratanteCnpj: string;
   contratanteEndereco: string;
   contratanteRepresentante: string;
+  contratanteRepresentanteCpf: string;
   
   // Contratada
   contratadaNome: string;
   contratadaCnpj: string;
   contratadaEndereco: string;
   contratadaRepresentante: string;
+  contratadaRepresentanteCpf: string;
   
   // Serviços
   servicoDescricao: string;
@@ -39,17 +41,17 @@ export const generateContrato = (data: ContratoData): string => {
 
 
 Contratante
-${data.contratanteNome}
-${data.contratanteCnpj}
-Endereço: ${data.contratanteEndereco}
-Representado neste instrumento por: ${data.contratanteRepresentante}.
+${data.contratanteNome} 
+${data.contratanteCnpj} 
+Endereço: ${data.contratanteEndereco} 
+Representado neste instrumento por: ${data.contratanteRepresentante}, CPF: ${data.contratanteRepresentanteCpf}. 
  
  
 Contratada
 ${data.contratadaNome}
-${data.contratadaCnpj}
+${data.contratadaCnpj} 
 Endereço: ${data.contratadaEndereco}
-Representado neste instrumento por: ${data.contratadaRepresentante}.
+Representado neste instrumento por: ${data.contratadaRepresentante}, CPF: ${data.contratadaRepresentanteCpf}.
  
  
 Objeto

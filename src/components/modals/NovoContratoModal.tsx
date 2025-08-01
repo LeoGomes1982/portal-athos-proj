@@ -61,10 +61,12 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const [contratanteCnpj, setContratanteCnpj] = useState('');
   const [contratanteEndereco, setContratanteEndereco] = useState('');
   const [contratanteRepresentante, setContratanteRepresentante] = useState('');
+  const [contratanteRepresentanteCpf, setContratanteRepresentanteCpf] = useState('');
   const [contratadaNome, setContratadaNome] = useState('GA Serviços Terceirizados Ltda');
   const [contratadaCnpj, setContratadaCnpj] = useState('46.784.651/0001-10');
   const [contratadaEndereco, setContratadaEndereco] = useState('Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS');
   const [contratadaRepresentante, setContratadaRepresentante] = useState('Aline Guidotti Furtado Gomes e Silva');
+  const [contratadaRepresentanteCpf, setContratadaRepresentanteCpf] = useState('995.647.340.53');
   const [servicoRegime, setServicoRegime] = useState('12x36 noturno de segunda a segunda');
   const [quantidade, setQuantidade] = useState(2);
 
@@ -73,13 +75,15 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
       nome: 'GA Serviços Terceirizados Ltda', 
       cnpj: '46.784.651/0001-10',
       endereco: 'Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS',
-      representante: 'Aline Guidotti Furtado Gomes e Silva'
+      representante: 'Aline Guidotti Furtado Gomes e Silva',
+      representanteCpf: '995.647.340.53'
     },
     { 
       nome: 'Gomes e Guidotti ME Ltda', 
       cnpj: '21.066.530/0001-02',
       endereco: 'Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS',
-      representante: 'Aline Guidotti Furtado Gomes e Silva'
+      representante: 'Leandro da Silva Gomes e Silva',
+      representanteCpf: '006.587.620.28'
     }
   ];
 
@@ -90,6 +94,7 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
       setContratadaCnpj(empresa.cnpj);
       setContratadaEndereco(empresa.endereco);
       setContratadaRepresentante(empresa.representante);
+      setContratadaRepresentanteCpf(empresa.representanteCpf);
     }
   };
 
@@ -180,13 +185,14 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setContratanteCnpj('');
     setContratanteEndereco('');
     setContratanteRepresentante('');
+    setContratanteRepresentanteCpf('');
     setServicoRegime('12x36 noturno de segunda a segunda');
     setQuantidade(2);
     onClose();
   };
 
   const handleGerarComTemplate = () => {
-    if (!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !dataInicio) {
+    if (!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !contratanteRepresentanteCpf || !dataInicio) {
       alert('Por favor, preencha todos os campos obrigatórios antes de gerar o contrato.');
       return;
     }
@@ -196,10 +202,12 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
       contratanteCnpj,
       contratanteEndereco,
       contratanteRepresentante,
+      contratanteRepresentanteCpf,
       contratadaNome,
       contratadaCnpj,
       contratadaEndereco,
       contratadaRepresentante,
+      contratadaRepresentanteCpf,
       servicoDescricao: servicos[0]?.descricao || '',
       servicoJornada: servicos[0]?.jornada || '',
       servicoHorario: servicos[0]?.horario || '',
@@ -269,14 +277,25 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                   placeholder="Endereço completo"
                 />
               </div>
-              <div>
-                <Label htmlFor="contratanteRepresentante">Representante Legal*</Label>
-                <Input 
-                  id="contratanteRepresentante"
-                  value={contratanteRepresentante} 
-                  onChange={(e) => setContratanteRepresentante(e.target.value)}
-                  placeholder="Nome do representante legal"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="contratanteRepresentante">Representante Legal*</Label>
+                  <Input 
+                    id="contratanteRepresentante"
+                    value={contratanteRepresentante} 
+                    onChange={(e) => setContratanteRepresentante(e.target.value)}
+                    placeholder="Nome do representante legal"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contratanteRepresentanteCpf">CPF do Representante*</Label>
+                  <Input 
+                    id="contratanteRepresentanteCpf"
+                    value={contratanteRepresentanteCpf} 
+                    onChange={(e) => setContratanteRepresentanteCpf(e.target.value)}
+                    placeholder="000.000.000-00"
+                  />
+                </div>
               </div>
             </div>
 
@@ -317,13 +336,25 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                   onChange={(e) => setContratadaEndereco(e.target.value)}
                 />
               </div>
-              <div>
-                <Label htmlFor="contratadaRepresentante">Representante Legal</Label>
-                <Input 
-                  id="contratadaRepresentante"
-                  value={contratadaRepresentante} 
-                  onChange={(e) => setContratadaRepresentante(e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="contratadaRepresentante">Representante Legal</Label>
+                  <Input 
+                    id="contratadaRepresentante"
+                    value={contratadaRepresentante} 
+                    readOnly
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contratadaRepresentanteCpf">CPF do Representante</Label>
+                  <Input 
+                    id="contratadaRepresentanteCpf"
+                    value={contratadaRepresentanteCpf} 
+                    readOnly
+                    className="bg-gray-50"
+                  />
+                </div>
               </div>
             </div>
 
@@ -496,7 +527,7 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                 type="button"
                 onClick={handleGerarComTemplate}
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                disabled={!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !dataInicio}
+                disabled={!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !contratanteRepresentanteCpf || !dataInicio}
               >
                 <FileText size={16} />
                 Gerar Contrato com Template
