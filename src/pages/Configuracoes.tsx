@@ -23,7 +23,8 @@ const Configuracoes = () => {
     notificacoesPush: true,
     notificacoesEmail: false,
     temaEscuro: false,
-    autoSalvar: true
+    autoSalvar: true,
+    modeloContrato: ""
   });
 
   // Carregar configurações do localStorage na inicialização
@@ -222,6 +223,32 @@ const Configuracoes = () => {
                 <Users size={16} className="mr-2" />
                 Adicionar Funcionários em Massa
               </Button>
+            </div>
+          </div>
+
+          {/* Modelo de Contrato */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 lg:col-span-2">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                <FileText size={20} className="text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Modelo de Contrato</h2>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="modeloContrato">Template do Contrato</Label>
+                <p className="text-sm text-slate-600 mb-2">
+                  Defina o modelo padrão para geração de contratos. Use variáveis como {"{nomeCliente}"}, {"{servicosEscolhidos}"}, {"{valorTotal}"}, etc.
+                </p>
+                <Textarea
+                  id="modeloContrato"
+                  value={configuracoes.modeloContrato}
+                  onChange={(e) => handleConfigChange("modeloContrato", e.target.value)}
+                  placeholder="Digite aqui o modelo do contrato..."
+                  className="min-h-[200px] resize-y"
+                />
+              </div>
             </div>
           </div>
 
