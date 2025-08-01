@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { GestaoServicosExtras } from "@/pages/GestaoServicosExtras";
 
 interface GestaoServicosExtrasSubsectionProps {
@@ -9,18 +9,20 @@ interface GestaoServicosExtrasSubsectionProps {
 
 export function GestaoServicosExtrasSubsection({ onBack }: GestaoServicosExtrasSubsectionProps) {
   return (
-    <div className="h-full">
-      {/* Navigation Button */}
-      <div className="p-4 border-b">
-        <button onClick={onBack} className="back-button">
-          <ArrowLeft size={16} />
-          Voltar
-        </button>
-      </div>
+    <div className="app-container">
+      <div className="content-wrapper animate-fade-in">
+        {/* Navigation Button */}
+        <div className="navigation-button">
+          <button onClick={onBack} className="back-button">
+            <ChevronLeft size={16} />
+            Voltar
+          </button>
+        </div>
 
-      {/* Gestão de Serviços Extras Content */}
-      <div className="h-full overflow-auto">
-        <GestaoServicosExtras />
+        {/* Gestão de Serviços Extras Content */}
+        <div className="h-full overflow-auto">
+          <GestaoServicosExtras />
+        </div>
       </div>
     </div>
   );
