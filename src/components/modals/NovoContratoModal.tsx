@@ -15,6 +15,9 @@ interface NovoContratoModalProps {
     empresa: string;
     servicos: Array<{ descricao: string; jornada: string; horario: string; valor: number }>;
     valorTotal: number;
+    dataInicio: string;
+    duracao: string;
+    avisoPrevo: number;
     status: 'ativo';
   }) => void;
 }
@@ -41,6 +44,9 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const [cliente, setCliente] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [servicos, setServicos] = useState<Servico[]>([{ descricao: "", jornada: "", horario: "", valor: 0 }]);
+  const [dataInicio, setDataInicio] = useState("");
+  const [duracao, setDuracao] = useState("");
+  const [avisoPrevo, setAvisoPrevo] = useState<number>(30);
   const [showGerarTemplate, setShowGerarTemplate] = useState(false);
   const [clientesFornecedores, setClientesFornecedores] = useState<ClienteFornecedor[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -91,7 +97,7 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!cliente || !empresa || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)) {
+    if (!cliente || !empresa || !dataInicio || !duracao || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
@@ -101,6 +107,9 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
       empresa,
       servicos: servicos.filter(s => s.descricao && s.valor > 0),
       valorTotal,
+      dataInicio,
+      duracao,
+      avisoPrevo,
       status: 'ativo'
     });
 
@@ -108,6 +117,9 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setCliente("");
     setEmpresa("");
     setServicos([{ descricao: "", jornada: "", horario: "", valor: 0 }]);
+    setDataInicio("");
+    setDuracao("");
+    setAvisoPrevo(30);
     onClose();
   };
 
@@ -115,6 +127,9 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setCliente("");
     setEmpresa("");
     setServicos([{ descricao: "", jornada: "", horario: "", valor: 0 }]);
+    setDataInicio("");
+    setDuracao("");
+    setAvisoPrevo(30);
     onClose();
   };
 
@@ -177,6 +192,41 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Data de Início e Duração */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="dataInicio">Data de Início *</Label>
+                <Input
+                  id="dataInicio"
+                  type="date"
+                  value={dataInicio}
+                  onChange={(e) => setDataInicio(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="duracao">Duração do Contrato *</Label>
+                <Input
+                  id="duracao"
+                  value={duracao}
+                  onChange={(e) => setDuracao(e.target.value)}
+                  placeholder="Ex: 12 meses, 2 anos"
+                />
+              </div>
+            </div>
+
+            {/* Aviso Prévio */}
+            <div className="space-y-2">
+              <Label htmlFor="avisoPrevo">Período de Aviso Prévio (dias) *</Label>
+              <Input
+                id="avisoPrevo"
+                type="number"
+                value={avisoPrevo}
+                onChange={(e) => setAvisoPrevo(Number(e.target.value))}
+                placeholder="30"
+                min="1"
+              />
             </div>
 
             {/* Serviços */}
