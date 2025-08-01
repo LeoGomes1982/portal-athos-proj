@@ -68,7 +68,7 @@ export default function Operacoes() {
         <div className="navigation-button">
           <button onClick={() => navigate("/")} className="back-button">
             <ChevronLeft size={16} />
-            Voltar ao Portal
+            Voltar
           </button>
         </div>
 
