@@ -144,14 +144,26 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!cliente || !empresa || !dataInicio || !duracao || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)) {
+    // Validação corrigida para usar os novos campos
+    if (!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !contratanteRepresentanteCpf || !contratadaNome || !dataInicio || !duracao || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)) {
       alert("Por favor, preencha todos os campos obrigatórios.");
+      console.log('Campos faltando:', {
+        contratanteNome,
+        contratanteCnpj,
+        contratanteEndereco,
+        contratanteRepresentante,
+        contratanteRepresentanteCpf,
+        contratadaNome,
+        dataInicio,
+        duracao,
+        servicosValidos: servicos.filter(s => s.descricao && s.jornada && s.horario && s.valor > 0).length
+      });
       return;
     }
 
     onSubmit({
-      cliente,
-      empresa,
+      cliente: contratanteNome, // Usar o nome do contratante como cliente
+      empresa: contratadaNome, // Usar o nome da contratada como empresa
       servicos: servicos.filter(s => s.descricao && s.valor > 0),
       valorTotal,
       dataInicio,
@@ -167,6 +179,14 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setDataInicio("");
     setDuracao("");
     setAvisoPrevo(30);
+    // Reset novos campos
+    setContratanteNome('');
+    setContratanteCnpj('');
+    setContratanteEndereco('');
+    setContratanteRepresentante('');
+    setContratanteRepresentanteCpf('');
+    setServicoRegime('12x36 noturno de segunda a segunda');
+    setQuantidade(2);
     onClose();
   };
 
