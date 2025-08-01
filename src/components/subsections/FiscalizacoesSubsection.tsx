@@ -18,7 +18,7 @@ export function FiscalizacoesSubsection({ onBack }: FiscalizacoesSubsectionProps
       icon: MapPin,
       iconColor: "text-purple-600",
       cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150",
-      onClick: () => navigate('/operacoes/fiscalizacoes', { state: { tipo: 'posto_servico' } })
+      onClick: () => navigate('/fiscalizacoes')
     },
     {
       id: "colaborador",
@@ -27,7 +27,7 @@ export function FiscalizacoesSubsection({ onBack }: FiscalizacoesSubsectionProps
       icon: User,
       iconColor: "text-blue-600",
       cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
-      onClick: () => navigate('/operacoes/fiscalizacoes', { state: { tipo: 'colaborador' } })
+      onClick: () => navigate('/fiscalizacoes')
     }
   ];
 

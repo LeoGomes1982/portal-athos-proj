@@ -27,7 +27,7 @@ import PortalMidiaExterna from "./pages/PortalMidiaExterna";
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 import { AvaliacaoExterna } from "./pages/AvaliacaoExterna";
 import { GestaoServicosExtras } from "./pages/GestaoServicosExtras";
-import { Fiscalizacoes } from "./pages/Fiscalizacoes";
+import Fiscalizacoes from "./pages/Fiscalizacoes";
 import Operacoes from "./pages/Operacoes";
 import Auth from "./pages/Auth";
 
@@ -145,7 +145,7 @@ function App() {
                   <GestaoServicosExtras />
                 </ProtectedRoute>
               } />
-              <Route path="/operacoes/fiscalizacoes" element={
+              <Route path="/fiscalizacoes" element={
                 <ProtectedRoute>
                   <Fiscalizacoes />
                 </ProtectedRoute>
