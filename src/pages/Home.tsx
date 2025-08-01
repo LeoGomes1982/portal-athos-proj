@@ -28,7 +28,7 @@ import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
 
-import { OperacoesModal } from "@/components/modals/OperacoesModal";
+
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -45,7 +45,7 @@ const Home = () => {
   const [showUserTooltip, setShowUserTooltip] = useState(false);
   const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [operacoesModalOpen, setOperacoesModalOpen] = useState(false);
+  
 
   const handleSignOut = async () => {
     await signOut();
@@ -146,7 +146,7 @@ const Home = () => {
       icon: Settings,
       className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
       iconColor: "text-gray-600",
-      onClick: () => setOperacoesModalOpen(true)
+      onClick: () => navigate("/operacoes")
     },
     {
       id: "comercial",
@@ -416,12 +416,6 @@ const Home = () => {
         open={showUrgentTasksModal}
         onOpenChange={setShowUrgentTasksModal}
         compromissosUrgentes={urgentTasks}
-      />
-      
-      {/* Modal de Operações */}
-      <OperacoesModal 
-        isOpen={operacoesModalOpen}
-        onOpenChange={setOperacoesModalOpen}
       />
 
       {/* Componente de Notificação */}
