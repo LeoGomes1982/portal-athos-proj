@@ -145,6 +145,38 @@ export function NovaFiscalizacaoModal({ open, onOpenChange, tipo, onFiscalizacao
       return;
     }
 
+    // Validação de fiscalização a cada 30 dias para colaborador
+    if (tipo === 'colaborador') {
+      const funcionarioSelecionado = funcionarios.find(f => f.nome === formData.colaborador_nome);
+      if (funcionarioSelecionado) {
+        // Verificar última fiscalização do colaborador
+        const { data: ultimaFiscalizacao, error: errorFiscalizacao } = await supabase
+          .from('fiscalizacoes')
+          .select('data_fiscalizacao')
+          .eq('tipo', 'colaborador')
+          .eq('colaborador_nome', formData.colaborador_nome)
+          .order('data_fiscalizacao', { ascending: false })
+          .limit(1);
+
+        if (errorFiscalizacao) {
+          console.error('Erro ao verificar última fiscalização:', errorFiscalizacao);
+        } else if (ultimaFiscalizacao && ultimaFiscalizacao.length > 0) {
+          const ultimaData = new Date(ultimaFiscalizacao[0].data_fiscalizacao);
+          const dataAtual = new Date(formData.data_fiscalizacao);
+          const diferencaDias = Math.floor((dataAtual.getTime() - ultimaData.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diferencaDias < 30) {
+            toast({
+              title: "Erro",
+              description: `Este colaborador já foi fiscalizado há ${diferencaDias} dias. É necessário aguardar pelo menos 30 dias entre fiscalizações.`,
+              variant: "destructive"
+            });
+            return;
+          }
+        }
+      }
+    }
+
     setLoading(true);
     try {
       const { resultado, pontuacao } = calcularResultado(formData.perguntas_marcadas);
@@ -166,6 +198,43 @@ export function NovaFiscalizacaoModal({ open, onOpenChange, tipo, onFiscalizacao
         });
 
       if (error) throw error;
+
+      // Se for fiscalização de colaborador, registrar no histórico
+      if (tipo === 'colaborador') {
+        const funcionarioSelecionado = funcionarios.find(f => f.nome === formData.colaborador_nome);
+        if (funcionarioSelecionado) {
+          // Determinar o tipo do registro baseado no resultado (mesmo critério das avaliações)
+          let tipoHistorico: 'positivo' | 'neutro' | 'negativo' = 'neutro';
+          
+          if (resultado === 'Excelente' || resultado === 'Muito Bom') {
+            tipoHistorico = 'positivo';
+          } else if (resultado === 'Regular' || resultado === 'Ruim') {
+            tipoHistorico = 'negativo';
+          }
+
+          // Adicionar ao histórico do funcionário
+          const { error: errorHistorico } = await supabase
+            .from('funcionario_historico')
+            .insert({
+              funcionario_id: parseInt(funcionarioSelecionado.id),
+              titulo: `Fiscalização - ${formData.titulo}`,
+              descricao: `Resultado: ${resultado}. ${formData.observacoes || 'Sem observações adicionais.'}`,
+              tipo: tipoHistorico,
+              usuario: formData.fiscalizador_nome,
+              origem: 'fiscalizacao'
+            });
+
+          if (errorHistorico) {
+            console.error('Erro ao registrar no histórico:', errorHistorico);
+            // Não bloquear o processo principal, apenas avisar
+            toast({
+              title: "Aviso",
+              description: "Fiscalização registrada, mas houve erro ao atualizar o histórico do funcionário",
+              variant: "default"
+            });
+          }
+        }
+      }
 
       toast({
         title: "Sucesso",
