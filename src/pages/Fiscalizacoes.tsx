@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, ChevronLeft, Shield, Eye, Calendar, User, MapPin, FileCheck, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { EscolhaTipoFiscalizacaoModal } from "@/components/modals/EscolhaTipoFiscalizacaoModal";
+
 import { NovaFiscalizacaoModal } from "@/components/modals/NovaFiscalizacaoModal";
 import { VisualizarFiscalizacaoModal } from "@/components/modals/VisualizarFiscalizacaoModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +29,6 @@ export default function Fiscalizacoes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [fiscalizacoes, setFiscalizacoes] = useState<Fiscalizacao[]>([]);
   const [loading, setLoading] = useState(true);
-  const [escolhaTipoModalOpen, setEscolhaTipoModalOpen] = useState(false);
   const [novaFiscalizacaoModalOpen, setNovaFiscalizacaoModalOpen] = useState(false);
   const [visualizarModalOpen, setVisualizarModalOpen] = useState(false);
   const [tipoSelecionado, setTipoSelecionado] = useState<'posto_servico' | 'colaborador'>('posto_servico');
@@ -59,12 +58,7 @@ export default function Fiscalizacoes() {
   };
 
   const handleNovaFiscalizacao = () => {
-    setEscolhaTipoModalOpen(true);
-  };
-
-  const handleSelecionarTipo = (tipo: 'posto_servico' | 'colaborador') => {
-    setTipoSelecionado(tipo);
-    setEscolhaTipoModalOpen(false);
+    setTipoSelecionado('posto_servico');
     setNovaFiscalizacaoModalOpen(true);
   };
 
@@ -273,12 +267,6 @@ export default function Fiscalizacoes() {
           )}
         </div>
       </div>
-
-      <EscolhaTipoFiscalizacaoModal
-        open={escolhaTipoModalOpen}
-        onOpenChange={setEscolhaTipoModalOpen}
-        onSelecionarTipo={handleSelecionarTipo}
-      />
 
       <NovaFiscalizacaoModal
         open={novaFiscalizacaoModalOpen}
