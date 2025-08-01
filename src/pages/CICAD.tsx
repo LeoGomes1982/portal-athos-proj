@@ -205,23 +205,25 @@ export default function CICAD() {
   });
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Back Button */}
-        <Button variant="ghost" className="mb-6" onClick={() => navigate(-1)}>
-          <ArrowLeft size={16} />
-          Voltar
-        </Button>
+        <div className="navigation-button">
+          <button onClick={() => navigate(-1)} className="back-button">
+            <ArrowLeft size={16} />
+            Voltar
+          </button>
+        </div>
 
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+        <div className="page-header-centered">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <Shield size={32} className="text-white" />
           </div>
-          <h1 className="page-title text-center">CICAD</h1>
-          <p className="text-description text-center max-w-2xl mx-auto">
-            Canal Interno de Comunicação Anônima Direta - Um espaço seguro para denúncias e comunicações internas
-          </p>
+          <div>
+            <h1 className="page-title mb-0">CICAD</h1>
+            <p className="text-description">Canal Interno de Comunicação Anônima Direta - Um espaço seguro para denúncias e comunicações internas</p>
+          </div>
         </div>
 
         {/* Summary Cards */}
