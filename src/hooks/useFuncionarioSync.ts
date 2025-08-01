@@ -10,31 +10,55 @@ export function useFuncionarioSync() {
   useEffect(() => {
     loadFuncionarios();
     setupRealtimeSubscription();
+
+    // Escutar evento de funcionários importados
+    const handleFuncionariosUpdated = () => {
+      loadFuncionarios();
+    };
+
+    window.addEventListener('funcionariosUpdated', handleFuncionariosUpdated);
+
+    return () => {
+      window.removeEventListener('funcionariosUpdated', handleFuncionariosUpdated);
+    };
   }, []);
 
   const loadFuncionarios = async () => {
     try {
       console.log('Carregando funcionários...');
+      
+      // Carregar funcionários do Supabase
       const { data, error } = await supabase
         .from('funcionarios_sync')
         .select('*')
         .order('nome');
 
+      let funcionariosSupabase: Funcionario[] = [];
+
       if (error) {
         console.error('Erro ao carregar funcionários:', error);
-        setFuncionarios([]);
       } else if (data && data.length > 0) {
-        console.log('Funcionários carregados:', data.length);
-        const funcionariosFormatted = data.map(formatFromDatabase);
-        setFuncionarios(funcionariosFormatted);
-        localStorage.setItem('funcionarios_list', JSON.stringify(funcionariosFormatted));
-      } else {
-        console.log('Nenhum funcionário encontrado');
-        setFuncionarios([]);
+        console.log('Funcionários carregados do Supabase:', data.length);
+        funcionariosSupabase = data.map(formatFromDatabase);
       }
+
+      // Carregar funcionários importados do localStorage
+      const funcionariosImportados = JSON.parse(localStorage.getItem('funcionarios') || '[]');
+      console.log('Funcionários importados encontrados:', funcionariosImportados.length);
+
+      // Combinar funcionários do Supabase com os importados
+      const todosFuncionarios = [...funcionariosSupabase, ...funcionariosImportados];
+      
+      setFuncionarios(todosFuncionarios);
+      localStorage.setItem('funcionarios_list', JSON.stringify(todosFuncionarios));
+      
+      console.log('Total de funcionários:', todosFuncionarios.length);
+      
     } catch (error) {
       console.error('Erro ao conectar com Supabase:', error);
-      setFuncionarios([]);
+      // Em caso de erro, carregar apenas os funcionários importados
+      const funcionariosImportados = JSON.parse(localStorage.getItem('funcionarios') || '[]');
+      setFuncionarios(funcionariosImportados);
     } finally {
       setIsLoading(false);
     }

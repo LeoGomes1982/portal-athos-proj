@@ -7,7 +7,6 @@ import { InativacaoFuncionarioModal } from "@/components/modals/InativacaoFuncio
 import { FuncionarioCard } from "@/components/funcionarios/FuncionarioCard";
 import { FuncionariosSummaryCards } from "@/components/funcionarios/FuncionariosSummaryCards";
 import { Funcionario } from "@/types/funcionario";
-import { funcionariosIniciais } from "@/data/funcionarios";
 import { isProximoDoFim, dataJaPassou } from "@/utils/funcionarioUtils";
 import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
 
