@@ -111,46 +111,46 @@ export function GestaoServicosExtras() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-        <Card className="modern-card bg-white border-gray-200">
+        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">💼</div>
-            <div className="text-2xl font-bold text-gray-700">
+            <div className="text-2xl font-bold text-green-700">
               {totalServicos}
             </div>
-            <div className="text-sm text-gray-600 mb-1">Total de Serviços</div>
-            <div className="text-xs text-gray-500 font-medium">
+            <div className="text-sm text-green-600 mb-1">Total de Serviços</div>
+            <div className="text-xs text-green-500 font-medium">
               Registros totais
             </div>
           </CardContent>
         </Card>
 
-        <Card className="modern-card bg-white border-gray-200">
+        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">⏰</div>
-            <div className="text-2xl font-bold text-gray-700">
+            <div className="text-2xl font-bold text-green-700">
               {totalHoras}h
             </div>
-            <div className="text-sm text-gray-600">Total de Horas</div>
+            <div className="text-sm text-green-600">Total de Horas</div>
           </CardContent>
         </Card>
 
-        <Card className="modern-card bg-white border-gray-200">
+        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">💰</div>
-            <div className="text-2xl font-bold text-gray-700">
+            <div className="text-2xl font-bold text-green-700">
               R$ {totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
-            <div className="text-sm text-gray-600">Valor Total</div>
+            <div className="text-sm text-green-600">Valor Total</div>
           </CardContent>
         </Card>
 
-        <Card className="modern-card bg-white border-gray-200">
+        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">📅</div>
-            <div className="text-2xl font-bold text-gray-700">
+            <div className="text-2xl font-bold text-green-700">
               {servicosEsteAno}
             </div>
-            <div className="text-sm text-gray-600">Este Ano</div>
+            <div className="text-sm text-green-600">Este Ano</div>
           </CardContent>
         </Card>
       </div>
