@@ -45,7 +45,11 @@ export default function Operacoes() {
   ];
 
   const handleSubsectionClick = (subsectionId: string) => {
-    setActiveSubsection(subsectionId);
+    if (subsectionId === "fiscalizacoes") {
+      navigate('/fiscalizacoes');
+    } else {
+      setActiveSubsection(subsectionId);
+    }
   };
 
   const handleBackToMain = () => {
