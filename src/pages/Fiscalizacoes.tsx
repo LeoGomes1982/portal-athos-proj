@@ -107,8 +107,8 @@ export default function Fiscalizacoes() {
   const fiscalizacoesAprovadas = fiscalizacoes.filter(f => f.pontuacao_total >= 70).length;
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper animate-fade-in">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={() => navigate('/operacoes')} className="back-button">
