@@ -12,7 +12,7 @@ interface NovaPropostaModalProps {
   onSubmit: (proposta: {
     cliente: string;
     empresa: string;
-    servicos: Array<{ descricao: string; valor: number }>;
+    servicos: Array<{ descricao: string; jornada: string; horario: string; valor: number }>;
     valorTotal: number;
     status: 'ativa';
   }) => void;
@@ -20,6 +20,8 @@ interface NovaPropostaModalProps {
 
 interface Servico {
   descricao: string;
+  jornada: string;
+  horario: string;
   valor: number;
 }
 
@@ -37,7 +39,7 @@ interface Empresa {
 export default function NovaPropostaModal({ isOpen, onClose, onSubmit }: NovaPropostaModalProps) {
   const [cliente, setCliente] = useState("");
   const [empresa, setEmpresa] = useState("");
-  const [servicos, setServicos] = useState<Servico[]>([{ descricao: "", valor: 0 }]);
+  const [servicos, setServicos] = useState<Servico[]>([{ descricao: "", jornada: "", horario: "", valor: 0 }]);
   const [clientesFornecedores, setClientesFornecedores] = useState<ClienteFornecedor[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
@@ -63,7 +65,7 @@ export default function NovaPropostaModal({ isOpen, onClose, onSubmit }: NovaPro
   }, [isOpen]);
 
   const adicionarServico = () => {
-    setServicos([...servicos, { descricao: "", valor: 0 }]);
+    setServicos([...servicos, { descricao: "", jornada: "", horario: "", valor: 0 }]);
   };
 
   const removerServico = (index: number) => {
@@ -87,7 +89,7 @@ export default function NovaPropostaModal({ isOpen, onClose, onSubmit }: NovaPro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!cliente || !empresa || servicos.some(s => !s.descricao || s.valor <= 0)) {
+    if (!cliente || !empresa || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
@@ -103,14 +105,14 @@ export default function NovaPropostaModal({ isOpen, onClose, onSubmit }: NovaPro
     // Reset form
     setCliente("");
     setEmpresa("");
-    setServicos([{ descricao: "", valor: 0 }]);
+    setServicos([{ descricao: "", jornada: "", horario: "", valor: 0 }]);
     onClose();
   };
 
   const handleClose = () => {
     setCliente("");
     setEmpresa("");
-    setServicos([{ descricao: "", valor: 0 }]);
+    setServicos([{ descricao: "", jornada: "", horario: "", valor: 0 }]);
     onClose();
   };
 
@@ -174,39 +176,62 @@ export default function NovaPropostaModal({ isOpen, onClose, onSubmit }: NovaPro
             </div>
 
             {servicos.map((servico, index) => (
-              <div key={index} className="flex gap-4 items-end">
-                <div className="flex-1">
-                  <Label htmlFor={`descricao-${index}`}>Descrição do Serviço</Label>
-                  <Input
-                    id={`descricao-${index}`}
-                    value={servico.descricao}
-                    onChange={(e) => atualizarServico(index, 'descricao', e.target.value)}
-                    placeholder="Ex: Consultoria em RH"
-                  />
+              <div key={index} className="border rounded-lg p-4 space-y-4">
+                <div className="flex gap-4 items-start">
+                  <div className="flex-1">
+                    <Label htmlFor={`descricao-${index}`}>Descrição do Serviço *</Label>
+                    <Input
+                      id={`descricao-${index}`}
+                      value={servico.descricao}
+                      onChange={(e) => atualizarServico(index, 'descricao', e.target.value)}
+                      placeholder="Ex: Consultoria em RH"
+                    />
+                  </div>
+                  {servicos.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removerServico(index)}
+                      className="text-red-600 hover:text-red-700 mt-6"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  )}
                 </div>
-                <div className="w-32">
-                  <Label htmlFor={`valor-${index}`}>Valor (R$)</Label>
-                  <Input
-                    id={`valor-${index}`}
-                    type="number"
-                    value={servico.valor || ''}
-                    onChange={(e) => atualizarServico(index, 'valor', e.target.value)}
-                    placeholder="0,00"
-                    min="0"
-                    step="0.01"
-                  />
+                
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor={`jornada-${index}`}>Jornada *</Label>
+                    <Input
+                      id={`jornada-${index}`}
+                      value={servico.jornada}
+                      onChange={(e) => atualizarServico(index, 'jornada', e.target.value)}
+                      placeholder="Ex: 8 horas diárias"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Label htmlFor={`horario-${index}`}>Horário *</Label>
+                    <Input
+                      id={`horario-${index}`}
+                      value={servico.horario}
+                      onChange={(e) => atualizarServico(index, 'horario', e.target.value)}
+                      placeholder="Ex: 08:00 às 17:00"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <Label htmlFor={`valor-${index}`}>Valor (R$) *</Label>
+                    <Input
+                      id={`valor-${index}`}
+                      type="number"
+                      value={servico.valor || ''}
+                      onChange={(e) => atualizarServico(index, 'valor', e.target.value)}
+                      placeholder="0,00"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
                 </div>
-                {servicos.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removerServico(index)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                )}
               </div>
             ))}
           </div>

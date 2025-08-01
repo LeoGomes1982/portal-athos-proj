@@ -1,8 +1,12 @@
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, FileText, DollarSign } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, FileText, DollarSign, Edit, Trash2, Plus, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import NovaPropostaModal from "@/components/modals/NovaPropostaModal";
 import NovoContratoModal from "@/components/modals/NovoContratoModal";
 import VisualizacaoContratoPropostaModal from "@/components/modals/VisualizacaoContratoPropostaModal";
@@ -13,6 +17,8 @@ interface Proposta {
   empresa: string;
   servicos: Array<{
     descricao: string;
+    jornada: string;
+    horario: string;
     valor: number;
   }>;
   valorTotal: number;
@@ -27,65 +33,127 @@ interface Contrato {
   empresa: string;
   servicos: Array<{
     descricao: string;
+    jornada: string;
+    horario: string;
     valor: number;
   }>;
   valorTotal: number;
+  dataInicio: string;
+  duracao: string;
+  avisoPrevo: number;
   status: 'ativo' | 'inativo';
   data: string;
   tipo: 'contrato';
 }
 
-export default function ContratosPropostas() {
+const ContratosPropostas = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("todos");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNovaPropostaOpen, setIsNovaPropostaOpen] = useState(false);
   const [isNovoContratoOpen, setIsNovoContratoOpen] = useState(false);
-  const [isVisualizacaoOpen, setIsVisualizacaoOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Proposta | Contrato | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const [propostas, setPropostas] = useState<Proposta[]>([]);
+  const [contratos, setContratos] = useState<Contrato[]>([]);
 
-  // Mock data - em produção viria de uma API
-  const [propostas, setPropostas] = useState<Proposta[]>([
-    {
-      id: "1",
-      cliente: "Empresa ABC Ltda",
-      empresa: "GA SERVIÇOS",
-      servicos: [
-        { descricao: "Consultoria em RH", valor: 5000 },
-        { descricao: "Treinamento", valor: 2000 }
-      ],
-      valorTotal: 7000,
-      status: 'ativa',
-      data: "2024-01-15",
-      tipo: 'proposta'
+  // Carregar dados do localStorage na inicialização
+  useEffect(() => {
+    const savedPropostas = localStorage.getItem('propostas');
+    const savedContratos = localStorage.getItem('contratos');
+    
+    if (savedPropostas) {
+      setPropostas(JSON.parse(savedPropostas));
+    } else {
+      // Dados iniciais se não houver dados salvos
+      const initialPropostas: Proposta[] = [
+        {
+          id: "1",
+          cliente: "Empresa ABC Ltda",
+          empresa: "GA SERVIÇOS",
+          servicos: [
+            { descricao: "Consultoria em RH", jornada: "8 horas", horario: "08:00-17:00", valor: 5000 },
+            { descricao: "Treinamento", jornada: "4 horas", horario: "14:00-18:00", valor: 2000 }
+          ],
+          valorTotal: 7000,
+          status: 'ativa',
+          data: "2024-01-15",
+          tipo: 'proposta'
+        }
+      ];
+      setPropostas(initialPropostas);
+      localStorage.setItem('propostas', JSON.stringify(initialPropostas));
     }
-  ]);
 
-  const [contratos, setContratos] = useState<Contrato[]>([
-    {
-      id: "1",
-      cliente: "Tech Solutions Ltd",
-      empresa: "GOMES E GUIDOTTI",
-      servicos: [
-        { descricao: "Assessoria Jurídica", valor: 8000 },
-        { descricao: "Consultoria Tributária", valor: 3000 }
-      ],
-      valorTotal: 11000,
-      status: 'ativo',
-      data: "2024-01-10",
-      tipo: 'contrato'
+    if (savedContratos) {
+      setContratos(JSON.parse(savedContratos));
+    } else {
+      const initialContratos: Contrato[] = [
+        {
+          id: "1",
+          cliente: "Tech Solutions Ltd",
+          empresa: "GOMES E GUIDOTTI",
+          servicos: [
+            { descricao: "Assessoria Jurídica", jornada: "8 horas", horario: "08:00-17:00", valor: 8000 },
+            { descricao: "Consultoria Tributária", jornada: "4 horas", horario: "09:00-13:00", valor: 3000 }
+          ],
+          valorTotal: 11000,
+          dataInicio: "2024-01-10",
+          duracao: "12 meses",
+          avisoPrevo: 30,
+          status: 'ativo',
+          data: "2024-01-10",
+          tipo: 'contrato'
+        }
+      ];
+      setContratos(initialContratos);
+      localStorage.setItem('contratos', JSON.stringify(initialContratos));
     }
-  ]);
+  }, []);
 
-  const totalContratos = contratos
-    .filter(c => c.status === 'ativo')
-    .reduce((sum, contrato) => sum + contrato.valorTotal, 0);
+  // Salvar no localStorage sempre que mudar
+  useEffect(() => {
+    if (propostas.length > 0) {
+      localStorage.setItem('propostas', JSON.stringify(propostas));
+    }
+  }, [propostas]);
 
-  const totalPropostas = propostas
-    .filter(p => p.status === 'ativa')
-    .reduce((sum, proposta) => sum + proposta.valorTotal, 0);
+  useEffect(() => {
+    if (contratos.length > 0) {
+      localStorage.setItem('contratos', JSON.stringify(contratos));
+    }
+  }, [contratos]);
 
-  const handleVisualizarItem = (item: Proposta | Contrato) => {
+  const totalContratos = contratos.filter(c => c.status === 'ativo').length;
+  const totalPropostas = propostas.filter(p => p.status === 'ativa').length;
+
+  const todosItens = [...propostas, ...contratos].sort((a, b) => {
+    if (a.status === 'ativa' || a.status === 'ativo') return -1;
+    if (b.status === 'ativa' || b.status === 'ativo') return 1;
+    return 0;
+  });
+
+  const filteredItems = todosItens.filter(item => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      item.cliente.toLowerCase().includes(searchTermLower) ||
+      item.empresa.toLowerCase().includes(searchTermLower) ||
+      item.servicos.some(s => s.descricao.toLowerCase().includes(searchTermLower));
+
+    if (filterType === "todos") {
+      return matchesSearch;
+    } else {
+      return item.tipo === filterType && matchesSearch;
+    }
+  });
+
+  const handleView = (item: Proposta | Contrato) => {
     setSelectedItem(item);
-    setIsVisualizacaoOpen(true);
+    setIsModalOpen(true);
+    setIsEditing(false);
   };
 
   const handleNovaProposta = (novaProposta: Omit<Proposta, 'id' | 'data' | 'tipo'>) => {
@@ -96,6 +164,11 @@ export default function ContratosPropostas() {
       tipo: 'proposta'
     };
     setPropostas([...propostas, proposta]);
+    
+    toast({
+      title: "Sucesso",
+      description: "Proposta criada com sucesso!",
+    });
   };
 
   const handleNovoContrato = (novoContrato: Omit<Contrato, 'id' | 'data' | 'tipo'>) => {
@@ -106,66 +179,68 @@ export default function ContratosPropostas() {
       tipo: 'contrato'
     };
     setContratos([...contratos, contrato]);
+    
+    toast({
+      title: "Sucesso",
+      description: "Contrato criado com sucesso!",
+    });
   };
 
-  const todosItens = [...propostas, ...contratos].sort((a, b) => {
-    if (a.status === 'ativa' || a.status === 'ativo') return -1;
-    if (b.status === 'ativa' || b.status === 'ativo') return 1;
-    return 0;
-  });
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+    setIsEditing(false);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100">
-      <div className="container mx-auto px-6 py-12">
-        {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          className="mb-6"
-          onClick={() => navigate("/comercial")}
-        >
-          <ArrowLeft size={16} />
-          Voltar
-        </Button>
-
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-6 shadow-lg">
-            <FileText size={32} className="text-white" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
-            Contratos e Propostas
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Gerencie propostas comerciais e contratos de clientes e fornecedores
-          </p>
+    <div className="min-h-screen">
+      <div className="content-wrapper animate-fade-in bg-orange-100/80 rounded-lg shadow-lg m-6 p-8">
+        {/* Navigation Button */}
+        <div className="navigation-button">
+          <button 
+            onClick={() => navigate("/comercial")}
+            className="back-button"
+          >
+            <ArrowLeft size={16} />
+            Voltar
+          </button>
         </div>
 
-        {/* Resumos Financeiros */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-orange-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <DollarSign size={24} className="text-green-600" />
+        {/* Page Header */}
+        <div className="page-header-centered">
+          <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <FileText size={32} className="text-white" />
+          </div>
+          <div>
+            <h1 className="page-title mb-0">Contratos e Propostas</h1>
+            <p className="text-description">Gerencie propostas comerciais e contratos de clientes e fornecedores</p>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-slide-up">
+          <div className="modern-card bg-white border-gray-200">
+            <div className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📄</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {totalContratos}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Total Contratos</h3>
-                <p className="text-2xl font-bold text-green-600">
-                  R$ {totalContratos.toLocaleString('pt-BR')}
-                </p>
+              <div className="text-sm text-gray-600 mb-1">Total de Contratos</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Contratos ativos
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-orange-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <FileText size={24} className="text-blue-600" />
+          <div className="modern-card bg-white border-gray-200">
+            <div className="card-content text-center p-4">
+              <div className="text-3xl mb-2">💼</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {totalPropostas}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Total Propostas</h3>
-                <p className="text-2xl font-bold text-blue-600">
-                  R$ {totalPropostas.toLocaleString('pt-BR')}
-                </p>
+              <div className="text-sm text-gray-600 mb-1">Total de Propostas</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Propostas ativas
               </div>
             </div>
           </div>
@@ -178,7 +253,7 @@ export default function ContratosPropostas() {
             className="flex-1 bg-orange-500 hover:bg-orange-600 text-white h-12"
           >
             <Plus size={20} />
-            Nova Proposta Comercial
+            Nova Proposta
           </Button>
           <Button
             onClick={() => setIsNovoContratoOpen(true)}
@@ -189,17 +264,52 @@ export default function ContratosPropostas() {
           </Button>
         </div>
 
+        {/* Search and Filter Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8 max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <Input
+              type="search"
+              placeholder="Buscar por cliente, empresa ou serviço..."
+              className="w-full md:max-w-md"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setFilterType("todos")}
+                variant={filterType === "todos" ? "default" : "outline"}
+                size="sm"
+              >
+                Todos
+              </Button>
+              <Button
+                onClick={() => setFilterType("contrato")}
+                variant={filterType === "contrato" ? "default" : "outline"}
+                size="sm"
+              >
+                Contratos
+              </Button>
+              <Button
+                onClick={() => setFilterType("proposta")}
+                variant={filterType === "proposta" ? "default" : "outline"}
+                size="sm"
+              >
+                Propostas
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* Lista de Contratos e Propostas */}
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-slate-800 mb-6">Contratos e Propostas</h2>
           <div className="grid gap-4">
-            {todosItens.map((item) => (
+            {filteredItems.map((item) => (
               <div
                 key={`${item.tipo}-${item.id}`}
-                className={`bg-white rounded-xl p-6 shadow-sm border border-orange-200 cursor-pointer transition-all hover:shadow-md ${
-                  (item.status === 'inativa' || item.status === 'inativo') ? 'opacity-50 grayscale' : ''
-                }`}
-                onClick={() => handleVisualizarItem(item)}
+                className="bg-white rounded-xl p-6 shadow-sm border border-orange-200 cursor-pointer transition-all hover:shadow-md"
+                onClick={() => handleView(item)}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
@@ -222,7 +332,7 @@ export default function ContratosPropostas() {
                     <h3 className="text-lg font-semibold text-slate-800 mb-1">
                       {item.cliente}
                     </h3>
-                    <p className="text-slate-600 mb-2">{item.empresa}</p>
+                    <p className="text-slate-600 mb-1">Empresa: {item.empresa}</p>
                     <p className="text-sm text-slate-500">
                       {item.servicos.length} serviço(s) • {new Date(item.data).toLocaleDateString('pt-BR')}
                     </p>
@@ -238,6 +348,18 @@ export default function ContratosPropostas() {
           </div>
         </div>
 
+        {filteredItems.length === 0 && (
+          <div className="text-center py-16">
+            <FileText size={64} className="mx-auto mb-4 text-slate-400" />
+            <h3 className="text-xl font-semibold text-slate-600 mb-2">
+              Nenhum resultado encontrado
+            </h3>
+            <p className="text-slate-500">
+              Tente ajustar os filtros ou termos de busca
+            </p>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="text-center mt-16">
           <p className="text-sm text-slate-500">
@@ -245,6 +367,87 @@ export default function ContratosPropostas() {
           </p>
         </div>
       </div>
+
+      {/* Modal de Visualização */}
+      <Dialog open={isModalOpen} onOpenChange={(open) => {
+        if (!open) {
+          handleCloseModal();
+        }
+      }}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Visualizar {selectedItem?.tipo === "contrato" ? "Contrato" : "Proposta"}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedItem && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Cliente</Label>
+                  <p className="text-slate-700 font-medium">{selectedItem.cliente}</p>
+                </div>
+                <div>
+                  <Label>Empresa</Label>
+                  <p className="text-slate-700 font-medium">{selectedItem.empresa}</p>
+                </div>
+                <div>
+                  <Label>Tipo</Label>
+                  <p className="text-slate-700 font-medium capitalize">{selectedItem.tipo}</p>
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <p className="text-slate-700 font-medium capitalize">{selectedItem.status}</p>
+                </div>
+                {selectedItem.tipo === 'contrato' && 'dataInicio' in selectedItem && (
+                  <>
+                    <div>
+                      <Label>Data de Início</Label>
+                      <p className="text-slate-700 font-medium">
+                        {new Date(selectedItem.dataInicio).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                    <div>
+                      <Label>Duração</Label>
+                      <p className="text-slate-700 font-medium">{selectedItem.duracao}</p>
+                    </div>
+                    <div>
+                      <Label>Aviso Prévio</Label>
+                      <p className="text-slate-700 font-medium">{selectedItem.avisoPrevo} dias</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div>
+                <Label>Serviços</Label>
+                <div className="mt-2 space-y-2">
+                  {selectedItem.servicos.map((servico, index) => (
+                    <div key={index} className="bg-gray-50 p-3 rounded">
+                      <p className="font-medium">{servico.descricao}</p>
+                      <p className="text-sm text-gray-600">
+                        Jornada: {servico.jornada} • Horário: {servico.horario} • 
+                        Valor: R$ {servico.valor.toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <Label className="text-lg font-semibold">Valor Total:</Label>
+                  <span className="text-2xl font-bold text-orange-600">
+                    R$ {selectedItem.valorTotal.toLocaleString('pt-BR')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Modais */}
       <NovaPropostaModal
@@ -258,12 +461,8 @@ export default function ContratosPropostas() {
         onClose={() => setIsNovoContratoOpen(false)}
         onSubmit={handleNovoContrato}
       />
-
-      <VisualizacaoContratoPropostaModal
-        isOpen={isVisualizacaoOpen}
-        onClose={() => setIsVisualizacaoOpen(false)}
-        item={selectedItem}
-      />
     </div>
   );
-}
+};
+
+export default ContratosPropostas;
