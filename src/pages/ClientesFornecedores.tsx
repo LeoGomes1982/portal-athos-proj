@@ -300,57 +300,54 @@ const ClientesFornecedores = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100">
-      <div className="container mx-auto px-6 py-12">
-        {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          className="mb-6"
-          onClick={() => navigate("/comercial")}
-        >
-          <ArrowLeft size={16} />
-          Voltar
-        </Button>
-
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-6 shadow-lg">
-            <Users size={32} className="text-white" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
-            Clientes e Fornecedores
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Gestão completa de clientes e fornecedores da empresa
-          </p>
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-orange-100/80 rounded-lg shadow-lg m-6 p-8">
+        {/* Navigation Button */}
+        <div className="navigation-button">
+          <button 
+            onClick={() => navigate("/comercial")}
+            className="back-button"
+          >
+            <ArrowLeft size={16} />
+            Voltar
+          </button>
         </div>
 
-        {/* Resumos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-orange-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Users size={24} className="text-blue-600" />
+        {/* Page Header */}
+        <div className="page-header-centered">
+          <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <Users size={32} className="text-white" />
+          </div>
+          <div>
+            <h1 className="page-title mb-0">Clientes e Fornecedores</h1>
+            <p className="text-description">Gestão completa de clientes e fornecedores da empresa</p>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-slide-up">
+          <div className="modern-card bg-white border-gray-200">
+            <div className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👥</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {totalClientes}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Total Clientes</h3>
-                <p className="text-2xl font-bold text-blue-600">
-                  {totalClientes}
-                </p>
+              <div className="text-sm text-gray-600 mb-1">Total de Clientes</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Registros ativos
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-orange-200">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <Building size={24} className="text-green-600" />
+          <div className="modern-card bg-white border-gray-200">
+            <div className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🏢</div>
+              <div className="text-2xl font-bold text-gray-700">
+                {totalFornecedores}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Total Fornecedores</h3>
-                <p className="text-2xl font-bold text-green-600">
-                  {totalFornecedores}
-                </p>
+              <div className="text-sm text-gray-600 mb-1">Total de Fornecedores</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Registros ativos
               </div>
             </div>
           </div>
