@@ -56,6 +56,10 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const [showContratoGerado, setShowContratoGerado] = useState(false);
   const [contratoGerado, setContratoGerado] = useState('');
   
+  // Modelo selecionado
+  const [modeloSelecionado, setModeloSelecionado] = useState('');
+  const [modelosContrato, setModelosContrato] = useState<Array<{id: string, nome: string, conteudo: string}>>([]);
+  
   // Novos campos para o template
   const [contratanteNome, setContratanteNome] = useState('');
   const [contratanteCnpj, setContratanteCnpj] = useState('');
@@ -116,6 +120,12 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
         { id: "1", nome: "GA SERVIÇOS" },
         { id: "2", nome: "GOMES E GUIDOTTI" }
       ]);
+    }
+
+    // Carregar modelos de contrato
+    const modelosSalvos = localStorage.getItem('modelosContrato');
+    if (modelosSalvos) {
+      setModelosContrato(JSON.parse(modelosSalvos));
     }
   }, [isOpen]);
 
@@ -179,6 +189,7 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setDataInicio("");
     setDuracao("");
     setAvisoPrevo(30);
+    setModeloSelecionado('');
     // Reset novos campos
     setContratanteNome('');
     setContratanteCnpj('');
@@ -200,6 +211,7 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setShowGerarTemplate(false);
     setShowContratoGerado(false);
     setContratoGerado('');
+    setModeloSelecionado('');
     // Reset novos campos
     setContratanteNome('');
     setContratanteCnpj('');
@@ -217,31 +229,64 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
       return;
     }
 
-    const contratoData: ContratoData = {
-      contratanteNome,
-      contratanteCnpj,
-      contratanteEndereco,
-      contratanteRepresentante,
-      contratanteRepresentanteCpf,
-      contratadaNome,
-      contratadaCnpj,
-      contratadaEndereco,
-      contratadaRepresentante,
-      contratadaRepresentanteCpf,
-      servicoDescricao: servicos[0]?.descricao || '',
-      servicoJornada: servicos[0]?.jornada || '',
-      servicoHorario: servicos[0]?.horario || '',
-      servicoRegime,
-      valorUnitario: servicos[0]?.valor || 0,
-      quantidade,
-      valorMensal: servicos.reduce((acc, servico) => acc + servico.valor, 0) * quantidade,
-      dataInicio,
-      duracao: parseInt(duracao) || 12,
-      avisoPrevo,
-      dataAssinatura: new Date().toLocaleDateString('pt-BR')
-    };
+    let contratoTexto = '';
 
-    const contratoTexto = generateContrato(contratoData);
+    if (modeloSelecionado) {
+      // Usar modelo personalizado
+      const modelo = modelosContrato.find(m => m.id === modeloSelecionado);
+      if (modelo) {
+        contratoTexto = modelo.conteudo
+          .replace(/\{contratanteNome\}/g, contratanteNome)
+          .replace(/\{contratanteCnpj\}/g, contratanteCnpj)
+          .replace(/\{contratanteEndereco\}/g, contratanteEndereco)
+          .replace(/\{contratanteRepresentante\}/g, contratanteRepresentante)
+          .replace(/\{contratanteRepresentanteCpf\}/g, contratanteRepresentanteCpf)
+          .replace(/\{contratadaNome\}/g, contratadaNome)
+          .replace(/\{contratadaCnpj\}/g, contratadaCnpj)
+          .replace(/\{contratadaEndereco\}/g, contratadaEndereco)
+          .replace(/\{contratadaRepresentante\}/g, contratadaRepresentante)
+          .replace(/\{contratadaRepresentanteCpf\}/g, contratadaRepresentanteCpf)
+          .replace(/\{servicoDescricao\}/g, servicos[0]?.descricao || '')
+          .replace(/\{servicoJornada\}/g, servicos[0]?.jornada || '')
+          .replace(/\{servicoHorario\}/g, servicos[0]?.horario || '')
+          .replace(/\{servicoRegime\}/g, servicoRegime)
+          .replace(/\{valorUnitario\}/g, (servicos[0]?.valor || 0).toString())
+          .replace(/\{quantidade\}/g, quantidade.toString())
+          .replace(/\{valorMensal\}/g, (servicos.reduce((acc, servico) => acc + servico.valor, 0) * quantidade).toString())
+          .replace(/\{dataInicio\}/g, dataInicio)
+          .replace(/\{duracao\}/g, duracao)
+          .replace(/\{avisoPrevo\}/g, avisoPrevo.toString())
+          .replace(/\{dataAssinatura\}/g, new Date().toLocaleDateString('pt-BR'));
+      }
+    } else {
+      // Usar modelo padrão
+      const contratoData: ContratoData = {
+        contratanteNome,
+        contratanteCnpj,
+        contratanteEndereco,
+        contratanteRepresentante,
+        contratanteRepresentanteCpf,
+        contratadaNome,
+        contratadaCnpj,
+        contratadaEndereco,
+        contratadaRepresentante,
+        contratadaRepresentanteCpf,
+        servicoDescricao: servicos[0]?.descricao || '',
+        servicoJornada: servicos[0]?.jornada || '',
+        servicoHorario: servicos[0]?.horario || '',
+        servicoRegime,
+        valorUnitario: servicos[0]?.valor || 0,
+        quantidade,
+        valorMensal: servicos.reduce((acc, servico) => acc + servico.valor, 0) * quantidade,
+        dataInicio,
+        duracao: parseInt(duracao) || 12,
+        avisoPrevo,
+        dataAssinatura: new Date().toLocaleDateString('pt-BR')
+      };
+
+      contratoTexto = generateContrato(contratoData);
+    }
+
     setContratoGerado(contratoTexto);
     setShowContratoGerado(true);
   };
@@ -265,6 +310,28 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Seleção do Modelo */}
+            {modelosContrato.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Modelo de Contrato</h3>
+                <div>
+                  <Label htmlFor="modeloSelecionado">Selecione um Modelo</Label>
+                  <Select value={modeloSelecionado} onValueChange={setModeloSelecionado}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Modelo padrão (sem template personalizado)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Modelo padrão</SelectItem>
+                      {modelosContrato.map((modelo) => (
+                        <SelectItem key={modelo.id} value={modelo.id}>
+                          {modelo.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
             {/* Dados do Contratante */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Dados do Contratante</h3>
