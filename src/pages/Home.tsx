@@ -122,8 +122,8 @@ const Home = () => {
       title: "CICAD",
       fullTitle: "Canal Interno de Comunicação Anônima Direta",
       icon: Shield,
-      className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
-      iconColor: "text-green-600",
+      className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
+      iconColor: "text-blue-600",
       onClick: () => {
         markAsChecked();
         navigate("/cicad");
