@@ -61,12 +61,37 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const [contratanteCnpj, setContratanteCnpj] = useState('');
   const [contratanteEndereco, setContratanteEndereco] = useState('');
   const [contratanteRepresentante, setContratanteRepresentante] = useState('');
-  const [contratadaNome, setContratadaNome] = useState('GA Serviços Terceirizados');
+  const [contratadaNome, setContratadaNome] = useState('GA Serviços Terceirizados Ltda');
   const [contratadaCnpj, setContratadaCnpj] = useState('46.784.651/0001-10');
   const [contratadaEndereco, setContratadaEndereco] = useState('Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS');
   const [contratadaRepresentante, setContratadaRepresentante] = useState('Aline Guidotti Furtado Gomes e Silva');
   const [servicoRegime, setServicoRegime] = useState('12x36 noturno de segunda a segunda');
   const [quantidade, setQuantidade] = useState(2);
+
+  const empresasContratadas = [
+    { 
+      nome: 'GA Serviços Terceirizados Ltda', 
+      cnpj: '46.784.651/0001-10',
+      endereco: 'Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS',
+      representante: 'Aline Guidotti Furtado Gomes e Silva'
+    },
+    { 
+      nome: 'Gomes e Guidotti ME Ltda', 
+      cnpj: '21.066.530/0001-02',
+      endereco: 'Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS',
+      representante: 'Aline Guidotti Furtado Gomes e Silva'
+    }
+  ];
+
+  const handleEmpresaChange = (nomeEmpresa: string) => {
+    const empresa = empresasContratadas.find(e => e.nome === nomeEmpresa);
+    if (empresa) {
+      setContratadaNome(empresa.nome);
+      setContratadaCnpj(empresa.cnpj);
+      setContratadaEndereco(empresa.endereco);
+      setContratadaRepresentante(empresa.representante);
+    }
+  };
 
   // Carregar clientes e fornecedores do localStorage
   useEffect(() => {
@@ -260,19 +285,27 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
               <h3 className="text-lg font-semibold">Dados da Contratada</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="contratadaNome">Nome/Razão Social</Label>
-                  <Input 
-                    id="contratadaNome"
-                    value={contratadaNome} 
-                    onChange={(e) => setContratadaNome(e.target.value)}
-                  />
+                  <Label htmlFor="contratadaNome">Empresa Contratada</Label>
+                  <Select value={contratadaNome} onValueChange={handleEmpresaChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a empresa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {empresasContratadas.map((empresa) => (
+                        <SelectItem key={empresa.cnpj} value={empresa.nome}>
+                          {empresa.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="contratadaCnpj">CNPJ</Label>
                   <Input 
                     id="contratadaCnpj"
                     value={contratadaCnpj} 
-                    onChange={(e) => setContratadaCnpj(e.target.value)}
+                    readOnly
+                    className="bg-gray-50"
                   />
                 </div>
               </div>
