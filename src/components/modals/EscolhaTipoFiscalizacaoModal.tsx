@@ -25,8 +25,8 @@ export function EscolhaTipoFiscalizacaoModal({ open, onOpenChange, onSelecionarT
             className="h-auto p-6 flex flex-col items-center justify-center gap-4 hover:bg-muted/50 border-2 hover:border-primary/20"
             onClick={() => onSelecionarTipo('posto_servico')}
           >
-            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Building className="h-6 w-6 text-purple-600" />
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+              <Building className="h-6 w-6 text-green-600" />
             </div>
             <div className="text-center">
               <div className="font-semibold text-lg mb-1">Fiscalização de Posto</div>
@@ -41,8 +41,8 @@ export function EscolhaTipoFiscalizacaoModal({ open, onOpenChange, onSelecionarT
             className="h-auto p-6 flex flex-col items-center justify-center gap-4 hover:bg-muted/50 border-2 hover:border-primary/20"
             onClick={() => onSelecionarTipo('colaborador')}
           >
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <User className="h-6 w-6 text-blue-600" />
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+              <User className="h-6 w-6 text-green-600" />
             </div>
             <div className="text-center">
               <div className="font-semibold text-lg mb-1">Fiscalização de Colaborador</div>
