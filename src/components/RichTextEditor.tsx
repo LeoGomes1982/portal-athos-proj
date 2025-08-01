@@ -68,11 +68,19 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
   const handleContentChange = () => {
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
-      checkForVV();
+    }
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent) => {
+    // Só verificar VV após uma tecla ser liberada, não durante a digitação
+    if (e.key === 'V') {
+      setTimeout(() => checkForVV(), 100);
     }
   };
 
   const checkForVV = () => {
+    if (showVariables) return; // Não verificar se o dropdown já está aberto
+    
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
 
@@ -83,7 +91,7 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
       const text = textNode.textContent || '';
       const cursorPosition = range.startOffset;
       
-      // Verificar se há "VV" antes do cursor
+      // Verificar se há "VV" exatamente antes do cursor
       if (cursorPosition >= 2) {
         const beforeCursor = text.substring(cursorPosition - 2, cursorPosition);
         if (beforeCursor === 'VV') {
@@ -93,24 +101,20 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
             offset: cursorPosition - 2
           });
           
-          // Calcular posição do dropdown
-          const tempRange = document.createRange();
-          tempRange.setStart(textNode, cursorPosition - 2);
-          tempRange.setEnd(textNode, cursorPosition);
-          const rect = tempRange.getBoundingClientRect();
-          
-          setDropdownPosition({
-            x: rect.left,
-            y: rect.bottom + window.scrollY
-          });
+          // Calcular posição do dropdown de forma mais precisa
+          const rect = editorRef.current?.getBoundingClientRect();
+          if (rect) {
+            setDropdownPosition({
+              x: rect.left + 20,
+              y: rect.top + 100
+            });
+          }
           
           setShowVariables(true);
           return;
         }
       }
     }
-    
-    setShowVariables(false);
   };
 
   const handleVariableSelect = (variable: string) => {
@@ -118,21 +122,29 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
     
     const { node, offset } = vvPosition;
     
-    if (node.nodeType === Node.TEXT_NODE) {
-      const textContent = node.textContent || '';
+    if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+      const textContent = node.textContent;
       // Substituir "VV" pela variável selecionada
       const newText = textContent.substring(0, offset) + variable + textContent.substring(offset + 2);
-      node.textContent = newText;
+      
+      // Criar um novo nó de texto para evitar problemas de cursor
+      const newTextNode = document.createTextNode(newText);
+      node.parentNode?.replaceChild(newTextNode, node);
       
       // Posicionar cursor após a variável inserida
       const range = document.createRange();
       const selection = window.getSelection();
-      range.setStart(node, offset + variable.length);
+      range.setStart(newTextNode, offset + variable.length);
       range.collapse(true);
       selection?.removeAllRanges();
       selection?.addRange(range);
       
-      handleContentChange();
+      // Atualizar conteúdo
+      setTimeout(() => {
+        if (editorRef.current) {
+          onChange(editorRef.current.innerHTML);
+        }
+      }, 10);
     }
     
     setShowVariables(false);
@@ -386,6 +398,7 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
         ref={editorRef}
         contentEditable
         onInput={handleContentChange}
+        onKeyUp={handleKeyUp}
         onBlur={handleContentChange}
         className="min-h-[200px] p-4 focus:outline-none"
         style={{ fontFamily: fontFamily, fontSize: fontSize + 'px', color: textColor }}
