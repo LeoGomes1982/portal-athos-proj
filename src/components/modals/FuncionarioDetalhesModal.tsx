@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw, ClipboardList, Edit, Paperclip } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
@@ -116,11 +116,20 @@ const getClassificacaoColor = (classificacao: string) => {
   }
 };
 
-const getClassificacaoIcon = (classificacao: string) => {
-  switch (classificacao) {
-    case "positivo": return "👍";
-    case "negativo": return "👎";
-    default: return "➖";
+const getOrigemIcon = (origem: string, tipo: string) => {
+  // Determinar cor baseada no tipo
+  const colorClass = tipo === 'positivo' ? 'text-green-600' : 
+                     tipo === 'negativo' ? 'text-red-600' : 'text-gray-600';
+  
+  // Escolher ícone baseado na origem
+  switch (origem) {
+    case "fiscalizacao":
+      return <ClipboardList className={`w-4 h-4 ${colorClass}`} />;
+    case "avaliacao":
+      return <Edit className={`w-4 h-4 ${colorClass}`} />;
+    case "manual":
+    default:
+      return <Paperclip className={`w-4 h-4 ${colorClass}`} />;
   }
 };
 
@@ -1446,7 +1455,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <div className="flex items-center justify-center w-5 h-5">{getClassificacaoIcon(registro.tipo)}</div>
+                                <div className="flex items-center justify-center w-5 h-5">{getOrigemIcon(registro.origem || 'manual', registro.tipo)}</div>
                                 <span className="font-medium text-sm capitalize">{registro.tipo}</span>
                                 <span className="text-xs text-gray-500">
                                   {new Date(registro.created_at).toLocaleString('pt-BR')}

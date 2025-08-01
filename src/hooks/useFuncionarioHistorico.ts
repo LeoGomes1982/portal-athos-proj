@@ -15,6 +15,7 @@ export interface HistoricoRegistro {
   arquivo_url?: string;
   arquivo_tipo?: string;
   arquivo_tamanho?: number;
+  origem?: string;
 }
 
 export const useFuncionarioHistorico = (funcionarioId: number | string) => {
