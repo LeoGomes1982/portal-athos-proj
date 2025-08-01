@@ -81,16 +81,16 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const img = document.createElement('img');
-        img.src = e.target?.result as string;
-        img.style.maxWidth = '300px';
-        img.style.height = 'auto';
-        img.style.margin = '10px';
+        const imgHtml = `<img src="${e.target?.result}" style="max-width: 300px; height: auto; margin: 10px; display: inline-block;" />`;
         
-        if (editorRef.current) {
-          editorRef.current.appendChild(img);
-          handleContentChange();
-        }
+        // Focar no editor antes de inserir
+        editorRef.current?.focus();
+        
+        // Inserir a imagem na posição do cursor
+        executeCommand('insertHTML', imgHtml);
+        
+        // Limpar o input para permitir reuploads do mesmo arquivo
+        event.target.value = '';
       };
       reader.readAsDataURL(file);
     }
