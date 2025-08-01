@@ -144,8 +144,8 @@ const Home = () => {
       title: "OPERAÇÕES",
       fullTitle: "Gestão Operacional",
       icon: Settings,
-      className: "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 hover:from-gray-100 hover:to-gray-150",
-      iconColor: "text-gray-600",
+      className: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150",
+      iconColor: "text-green-600",
       onClick: () => navigate("/operacoes")
     },
     {
