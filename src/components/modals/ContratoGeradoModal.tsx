@@ -378,8 +378,9 @@ export default function ContratoGeradoModal({
     const hoje = new Date().toLocaleDateString('pt-BR');
     pdf.text(hoje, margin, currentY);
     
-    // Salvar o PDF
-    const fileName = `Contrato_${nomeCliente.replace(/\s+/g, '_')}.pdf`;
+    // Salvar o PDF com timestamp para forçar um novo download
+    const timestamp = new Date().getTime();
+    const fileName = `Contrato_${nomeCliente.replace(/\s+/g, '_')}_${timestamp}.pdf`;
     pdf.save(fileName);
   };
 
