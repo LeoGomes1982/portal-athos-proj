@@ -63,14 +63,22 @@ export function NovaFiscalizacaoModal({ open, onOpenChange, tipo, onFiscalizacao
     }
   }, [open, tipo]);
 
+  // Resetar formulário quando o tipo mudar ou modal abrir
   useEffect(() => {
-    if (tipo) {
-      setFormData(prev => ({
-        ...prev,
-        titulo: tipo === 'posto_servico' ? 'Fiscalização de Posto de Serviço' : 'Fiscalização de Colaborador'
-      }));
+    if (open && tipo) {
+      setFormData({
+        titulo: tipo === 'posto_servico' ? 'Fiscalização de Posto de Serviço' : 'Fiscalização de Colaborador',
+        data_fiscalizacao: new Date().toISOString().split('T')[0],
+        fiscalizador_nome: '',
+        local: '',
+        colaborador_nome: '',
+        perguntas_marcadas: {},
+        perguntas_descritivas: {},
+        observacoes: ''
+      });
+      setEtapa(1);
     }
-  }, [tipo]);
+  }, [open, tipo]);
 
   const buscarFuncionarios = async () => {
     try {
