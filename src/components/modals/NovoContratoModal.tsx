@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, FileText } from "lucide-react";
 import GerarContratoTemplateModal from "./GerarContratoTemplateModal";
+import ContratoGeradoModal from "./ContratoGeradoModal";
+import { generateContrato, ContratoData } from "@/templates/contratoTemplate";
 
 interface NovoContratoModalProps {
   isOpen: boolean;
@@ -50,6 +53,20 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
   const [showGerarTemplate, setShowGerarTemplate] = useState(false);
   const [clientesFornecedores, setClientesFornecedores] = useState<ClienteFornecedor[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [showContratoGerado, setShowContratoGerado] = useState(false);
+  const [contratoGerado, setContratoGerado] = useState('');
+  
+  // Novos campos para o template
+  const [contratanteNome, setContratanteNome] = useState('');
+  const [contratanteCnpj, setContratanteCnpj] = useState('');
+  const [contratanteEndereco, setContratanteEndereco] = useState('');
+  const [contratanteRepresentante, setContratanteRepresentante] = useState('');
+  const [contratadaNome, setContratadaNome] = useState('GA Serviços Terceirizados');
+  const [contratadaCnpj, setContratadaCnpj] = useState('46.784.651/0001-10');
+  const [contratadaEndereco, setContratadaEndereco] = useState('Avenida Dois. número 105, sala 606, Edifício Flow Work, Parque Una Pelotas, RS');
+  const [contratadaRepresentante, setContratadaRepresentante] = useState('Aline Guidotti Furtado Gomes e Silva');
+  const [servicoRegime, setServicoRegime] = useState('12x36 noturno de segunda a segunda');
+  const [quantidade, setQuantidade] = useState(2);
 
   // Carregar clientes e fornecedores do localStorage
   useEffect(() => {
@@ -130,15 +147,50 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
     setDataInicio("");
     setDuracao("");
     setAvisoPrevo(30);
+    setShowGerarTemplate(false);
+    setShowContratoGerado(false);
+    setContratoGerado('');
+    // Reset novos campos
+    setContratanteNome('');
+    setContratanteCnpj('');
+    setContratanteEndereco('');
+    setContratanteRepresentante('');
+    setServicoRegime('12x36 noturno de segunda a segunda');
+    setQuantidade(2);
     onClose();
   };
 
   const handleGerarComTemplate = () => {
-    if (!cliente || !empresa || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)) {
-      alert("Por favor, preencha todos os campos antes de gerar o contrato.");
+    if (!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !dataInicio) {
+      alert('Por favor, preencha todos os campos obrigatórios antes de gerar o contrato.');
       return;
     }
-    setShowGerarTemplate(true);
+
+    const contratoData: ContratoData = {
+      contratanteNome,
+      contratanteCnpj,
+      contratanteEndereco,
+      contratanteRepresentante,
+      contratadaNome,
+      contratadaCnpj,
+      contratadaEndereco,
+      contratadaRepresentante,
+      servicoDescricao: servicos[0]?.descricao || '',
+      servicoJornada: servicos[0]?.jornada || '',
+      servicoHorario: servicos[0]?.horario || '',
+      servicoRegime,
+      valorUnitario: servicos[0]?.valor || 0,
+      quantidade,
+      valorMensal: servicos.reduce((acc, servico) => acc + servico.valor, 0) * quantidade,
+      dataInicio,
+      duracao: parseInt(duracao) || 12,
+      avisoPrevo,
+      dataAssinatura: new Date().toLocaleDateString('pt-BR')
+    };
+
+    const contratoTexto = generateContrato(contratoData);
+    setContratoGerado(contratoTexto);
+    setShowContratoGerado(true);
   };
 
   const contratoData = {
@@ -160,42 +212,90 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Cliente */}
-            <div className="space-y-2">
-              <Label htmlFor="cliente">Cliente *</Label>
-              <Select value={cliente} onValueChange={setCliente}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um cliente" />
-                </SelectTrigger>
-                <SelectContent>
-                  {clientesFornecedores.map((clienteItem) => (
-                    <SelectItem key={clienteItem.id} value={clienteItem.nome}>
-                      {clienteItem.nome} ({clienteItem.tipo})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Dados do Contratante */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Dados do Contratante</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="contratanteNome">Nome/Razão Social*</Label>
+                  <Input 
+                    id="contratanteNome"
+                    value={contratanteNome} 
+                    onChange={(e) => setContratanteNome(e.target.value)}
+                    placeholder="Nome da empresa contratante"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contratanteCnpj">CNPJ*</Label>
+                  <Input 
+                    id="contratanteCnpj"
+                    value={contratanteCnpj} 
+                    onChange={(e) => setContratanteCnpj(e.target.value)}
+                    placeholder="00.000.000/0001-00"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="contratanteEndereco">Endereço*</Label>
+                <Textarea 
+                  id="contratanteEndereco"
+                  value={contratanteEndereco} 
+                  onChange={(e) => setContratanteEndereco(e.target.value)}
+                  placeholder="Endereço completo"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contratanteRepresentante">Representante Legal*</Label>
+                <Input 
+                  id="contratanteRepresentante"
+                  value={contratanteRepresentante} 
+                  onChange={(e) => setContratanteRepresentante(e.target.value)}
+                  placeholder="Nome do representante legal"
+                />
+              </div>
             </div>
 
-            {/* Empresa Contratada */}
-            <div className="space-y-2">
-              <Label htmlFor="empresa">Empresa Contratada *</Label>
-              <Select value={empresa} onValueChange={setEmpresa}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a empresa" />
-                </SelectTrigger>
-                <SelectContent>
-                  {empresas.map((empresaItem) => (
-                    <SelectItem key={empresaItem.id} value={empresaItem.nome}>
-                      {empresaItem.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Dados da Contratada (GA Serviços) */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Dados da Contratada</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="contratadaNome">Nome/Razão Social</Label>
+                  <Input 
+                    id="contratadaNome"
+                    value={contratadaNome} 
+                    onChange={(e) => setContratadaNome(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contratadaCnpj">CNPJ</Label>
+                  <Input 
+                    id="contratadaCnpj"
+                    value={contratadaCnpj} 
+                    onChange={(e) => setContratadaCnpj(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="contratadaEndereco">Endereço</Label>
+                <Textarea 
+                  id="contratadaEndereco"
+                  value={contratadaEndereco} 
+                  onChange={(e) => setContratadaEndereco(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="contratadaRepresentante">Representante Legal</Label>
+                <Input 
+                  id="contratadaRepresentante"
+                  value={contratadaRepresentante} 
+                  onChange={(e) => setContratadaRepresentante(e.target.value)}
+                />
+              </div>
             </div>
 
             {/* Data de Início e Duração */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="dataInicio">Data de Início *</Label>
                 <Input
@@ -206,103 +306,144 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="duracao">Duração do Contrato *</Label>
+                <Label htmlFor="duracao">Duração (meses) *</Label>
                 <Input
                   id="duracao"
+                  type="number"
                   value={duracao}
                   onChange={(e) => setDuracao(e.target.value)}
-                  placeholder="Ex: 12 meses, 2 anos"
+                  placeholder="12"
+                  min="1"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="avisoPrevo">Aviso Prévio (dias) *</Label>
+                <Input
+                  id="avisoPrevo"
+                  type="number"
+                  value={avisoPrevo}
+                  onChange={(e) => setAvisoPrevo(Number(e.target.value))}
+                  placeholder="30"
+                  min="1"
                 />
               </div>
             </div>
 
-            {/* Aviso Prévio */}
-            <div className="space-y-2">
-              <Label htmlFor="avisoPrevo">Período de Aviso Prévio (dias) *</Label>
-              <Input
-                id="avisoPrevo"
-                type="number"
-                value={avisoPrevo}
-                onChange={(e) => setAvisoPrevo(Number(e.target.value))}
-                placeholder="30"
-                min="1"
-              />
-            </div>
-
             {/* Serviços */}
             <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Serviços</h3>
               <div className="flex items-center justify-between">
-                <Label>Serviços Contratados *</Label>
+                <Label>Configurações de Serviço</Label>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={adicionarServico}
                 >
-                  <Plus size={16} />
+                  <Plus className="mr-2 h-4 w-4" />
                   Adicionar Serviço
                 </Button>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="servicoRegime">Regime de Trabalho</Label>
+                  <Input
+                    id="servicoRegime"
+                    value={servicoRegime}
+                    onChange={(e) => setServicoRegime(e.target.value)}
+                    placeholder="Ex: 12x36 noturno de segunda a segunda"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="quantidade">Quantidade de Pessoas</Label>
+                  <Input
+                    id="quantidade"
+                    type="number"
+                    value={quantidade}
+                    onChange={(e) => setQuantidade(parseInt(e.target.value) || 1)}
+                    min="1"
+                  />
+                </div>
+              </div>
+
               {servicos.map((servico, index) => (
                 <div key={index} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex gap-4 items-start">
-                    <div className="flex-1">
-                      <Label htmlFor={`descricao-${index}`}>Descrição do Serviço *</Label>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Serviço {index + 1}</h4>
+                    {servicos.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removerServico(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor={`descricao-${index}`}>Descrição</Label>
                       <Input
                         id={`descricao-${index}`}
                         value={servico.descricao}
                         onChange={(e) => atualizarServico(index, 'descricao', e.target.value)}
-                        placeholder="Ex: Assessoria Jurídica"
+                        placeholder="Ex: Guarda Patrimonial"
                       />
                     </div>
-                    {servicos.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removerServico(index)}
-                        className="text-red-600 hover:text-red-700 mt-6"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    )}
+
+                    <div>
+                      <Label htmlFor={`valor-${index}`}>Valor Unitário (R$)</Label>
+                      <Input
+                        id={`valor-${index}`}
+                        type="number"
+                        value={servico.valor}
+                        onChange={(e) => atualizarServico(index, 'valor', parseFloat(e.target.value) || 0)}
+                        placeholder="0,00"
+                        step="0.01"
+                        min="0"
+                      />
+                    </div>
                   </div>
-                  
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <Label htmlFor={`jornada-${index}`}>Jornada *</Label>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor={`jornada-${index}`}>Jornada</Label>
                       <Input
                         id={`jornada-${index}`}
                         value={servico.jornada}
                         onChange={(e) => atualizarServico(index, 'jornada', e.target.value)}
-                        placeholder="Ex: 8 horas diárias"
+                        placeholder="Ex: 180h"
                       />
                     </div>
-                    <div className="flex-1">
-                      <Label htmlFor={`horario-${index}`}>Horário *</Label>
+
+                    <div>
+                      <Label htmlFor={`horario-${index}`}>Horário</Label>
                       <Input
                         id={`horario-${index}`}
                         value={servico.horario}
                         onChange={(e) => atualizarServico(index, 'horario', e.target.value)}
-                        placeholder="Ex: 08:00 às 17:00"
-                      />
-                    </div>
-                    <div className="w-32">
-                      <Label htmlFor={`valor-${index}`}>Valor (R$) *</Label>
-                      <Input
-                        id={`valor-${index}`}
-                        type="number"
-                        value={servico.valor || ''}
-                        onChange={(e) => atualizarServico(index, 'valor', e.target.value)}
-                        placeholder="0,00"
-                        min="0"
-                        step="0.01"
+                        placeholder="Ex: das 19:00 às 07:00"
                       />
                     </div>
                   </div>
                 </div>
               ))}
+
+              <div className="text-right space-y-2">
+                <div>
+                  <Label className="text-sm">
+                    Valor Total por Pessoa: R$ {servicos.reduce((acc, servico) => acc + servico.valor, 0).toFixed(2)}
+                  </Label>
+                </div>
+                <div>
+                  <Label className="text-lg font-semibold">
+                    Valor Total Mensal: R$ {(servicos.reduce((acc, servico) => acc + servico.valor, 0) * quantidade).toFixed(2)}
+                  </Label>
+                </div>
+              </div>
             </div>
 
             {/* Valor Total */}
@@ -322,7 +463,7 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
                 type="button"
                 onClick={handleGerarComTemplate}
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                disabled={!cliente || !empresa || servicos.some(s => !s.descricao || !s.jornada || !s.horario || s.valor <= 0)}
+                disabled={!contratanteNome || !contratanteCnpj || !contratanteEndereco || !contratanteRepresentante || !dataInicio}
               >
                 <FileText size={16} />
                 Gerar Contrato com Template
@@ -353,6 +494,13 @@ export default function NovoContratoModal({ isOpen, onClose, onSubmit }: NovoCon
         isOpen={showGerarTemplate}
         onClose={() => setShowGerarTemplate(false)}
         contratoData={contratoData}
+      />
+      
+      <ContratoGeradoModal
+        isOpen={showContratoGerado}
+        onClose={() => setShowContratoGerado(false)}
+        contratoTexto={contratoGerado}
+        nomeCliente={contratanteNome}
       />
     </>
   );
