@@ -99,14 +99,6 @@ export function GestaoServicosExtras() {
   return (
     <div className="min-h-screen">
       <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg m-6 p-8">
-        {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={() => navigate('/operacoes')} className="back-button">
-            <ChevronLeft size={16} />
-            Voltar
-          </button>
-        </div>
-
         {/* Page Header */}
         <div className="page-header-centered">
           <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
