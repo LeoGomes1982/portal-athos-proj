@@ -23,12 +23,41 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
+const VARIAVEIS_DISPONIVEIS = [
+  { key: '{contratanteNome}', label: 'Nome do Contratante' },
+  { key: '{contratanteCnpj}', label: 'CNPJ do Contratante' },
+  { key: '{contratanteEndereco}', label: 'Endereço do Contratante' },
+  { key: '{contratanteRepresentante}', label: 'Representante do Contratante' },
+  { key: '{contratanteRepresentanteCpf}', label: 'CPF do Representante (Contratante)' },
+  { key: '{contratadaNome}', label: 'Nome da Contratada' },
+  { key: '{contratadaCnpj}', label: 'CNPJ da Contratada' },
+  { key: '{contratadaEndereco}', label: 'Endereço da Contratada' },
+  { key: '{contratadaRepresentante}', label: 'Representante da Contratada' },
+  { key: '{contratadaRepresentanteCpf}', label: 'CPF do Representante (Contratada)' },
+  { key: '{servicoDescricao}', label: 'Descrição do Serviço' },
+  { key: '{servicoJornada}', label: 'Jornada do Serviço' },
+  { key: '{servicoHorario}', label: 'Horário do Serviço' },
+  { key: '{servicoRegime}', label: 'Regime de Trabalho' },
+  { key: '{valorUnitario}', label: 'Valor Unitário' },
+  { key: '{quantidade}', label: 'Quantidade' },
+  { key: '{valorMensal}', label: 'Valor Mensal' },
+  { key: '{dataInicio}', label: 'Data de Início' },
+  { key: '{duracao}', label: 'Duração (meses)' },
+  { key: '{avisoPrevo}', label: 'Aviso Prévio (dias)' },
+  { key: '{dataAssinatura}', label: 'Data de Assinatura' }
+];
+
 export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fontSize, setFontSize] = useState('14');
   const [fontFamily, setFontFamily] = useState('Arial');
   const [textColor, setTextColor] = useState('#000000');
+  
+  // Estados para o dropdown de variáveis
+  const [showVariables, setShowVariables] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
+  const [vvPosition, setVvPosition] = useState<{node: Node, offset: number} | null>(null);
 
   useEffect(() => {
     if (editorRef.current && value !== editorRef.current.innerHTML) {
@@ -39,8 +68,90 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
   const handleContentChange = () => {
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
+      checkForVV();
     }
   };
+
+  const checkForVV = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const textNode = range.startContainer;
+    
+    if (textNode.nodeType === Node.TEXT_NODE) {
+      const text = textNode.textContent || '';
+      const cursorPosition = range.startOffset;
+      
+      // Verificar se há "VV" antes do cursor
+      if (cursorPosition >= 2) {
+        const beforeCursor = text.substring(cursorPosition - 2, cursorPosition);
+        if (beforeCursor === 'VV') {
+          // Posição onde "VV" começa
+          setVvPosition({
+            node: textNode,
+            offset: cursorPosition - 2
+          });
+          
+          // Calcular posição do dropdown
+          const tempRange = document.createRange();
+          tempRange.setStart(textNode, cursorPosition - 2);
+          tempRange.setEnd(textNode, cursorPosition);
+          const rect = tempRange.getBoundingClientRect();
+          
+          setDropdownPosition({
+            x: rect.left,
+            y: rect.bottom + window.scrollY
+          });
+          
+          setShowVariables(true);
+          return;
+        }
+      }
+    }
+    
+    setShowVariables(false);
+  };
+
+  const handleVariableSelect = (variable: string) => {
+    if (!vvPosition) return;
+    
+    const { node, offset } = vvPosition;
+    
+    if (node.nodeType === Node.TEXT_NODE) {
+      const textContent = node.textContent || '';
+      // Substituir "VV" pela variável selecionada
+      const newText = textContent.substring(0, offset) + variable + textContent.substring(offset + 2);
+      node.textContent = newText;
+      
+      // Posicionar cursor após a variável inserida
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.setStart(node, offset + variable.length);
+      range.collapse(true);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      
+      handleContentChange();
+    }
+    
+    setShowVariables(false);
+    setVvPosition(null);
+  };
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showVariables && editorRef.current && !editorRef.current.contains(event.target as Node)) {
+        setShowVariables(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showVariables]);
 
   const executeCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -125,7 +236,7 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
   };
 
   return (
-    <div className="border rounded-lg">
+    <div className="border rounded-lg relative">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2 p-3 border-b bg-slate-50">
         {/* Font Family */}
@@ -290,6 +401,33 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
         onChange={handleImageUpload}
         className="hidden"
       />
+
+      {/* Dropdown de Variáveis */}
+      {showVariables && (
+        <div 
+          className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto w-72"
+          style={{
+            left: dropdownPosition.x,
+            top: dropdownPosition.y
+          }}
+        >
+          <div className="p-2 border-b bg-gray-50">
+            <span className="text-sm font-medium text-gray-700">Selecione uma variável:</span>
+          </div>
+          <div className="max-h-48 overflow-y-auto">
+            {VARIAVEIS_DISPONIVEIS.map((variavel) => (
+              <button
+                key={variavel.key}
+                onClick={() => handleVariableSelect(variavel.key)}
+                className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none border-b border-gray-100 last:border-b-0"
+              >
+                <div className="font-mono text-sm text-blue-600">{variavel.key}</div>
+                <div className="text-xs text-gray-500">{variavel.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Helper Text */}
       {!value && (
