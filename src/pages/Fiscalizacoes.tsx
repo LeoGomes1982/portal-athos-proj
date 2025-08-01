@@ -113,7 +113,7 @@ export default function Fiscalizacoes() {
         <div className="navigation-button">
           <button onClick={() => navigate('/operacoes')} className="back-button">
             <ChevronLeft size={16} />
-            Voltar para Operações
+            Voltar
           </button>
         </div>
 
