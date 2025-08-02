@@ -9,8 +9,8 @@ interface GestaoServicosExtrasSubsectionProps {
 
 export function GestaoServicosExtrasSubsection({ onBack }: GestaoServicosExtrasSubsectionProps) {
   return (
-    <div className="app-container">
-      <div className="content-wrapper animate-fade-in">
+    <div className="min-h-screen bg-white p-6">
+      <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg p-8">
         {/* Navigation Button */}
         <Button 
           variant="ghost" 
