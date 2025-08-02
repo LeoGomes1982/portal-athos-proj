@@ -72,8 +72,8 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
-      <div className="content-wrapper animate-fade-in">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={onBack} className="back-button">
