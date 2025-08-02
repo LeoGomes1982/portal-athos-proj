@@ -42,7 +42,7 @@ export function FuncionariosSummaryCards({
       </Card>
 
       <Card className={`modern-card relative ${
-        alertasExperiencia > 0 
+        funcionariosExperiencia > 0 
           ? 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200' 
           : 'bg-white border-gray-200'
       }`}>
@@ -52,18 +52,18 @@ export function FuncionariosSummaryCards({
           )}
           <div className="text-3xl mb-2">⏳</div>
           <div className={`text-2xl font-bold ${
-            alertasExperiencia > 0 ? 'text-orange-600' : 'text-gray-700'
+            funcionariosExperiencia > 0 ? 'text-orange-600' : 'text-gray-700'
           }`}>
             {funcionariosExperiencia}
           </div>
           <div className={`text-sm ${
-            alertasExperiencia > 0 ? 'text-orange-600/80' : 'text-gray-600'
+            funcionariosExperiencia > 0 ? 'text-orange-600/80' : 'text-gray-600'
           }`}>Experiência</div>
         </CardContent>
       </Card>
 
       <Card className={`modern-card relative ${
-        alertasAvisoPrevio > 0 
+        funcionariosAviso > 0 
           ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-200' 
           : 'bg-white border-gray-200'
       }`}>
@@ -73,12 +73,12 @@ export function FuncionariosSummaryCards({
           )}
           <div className="text-3xl mb-2">⚠️</div>
           <div className={`text-2xl font-bold ${
-            alertasAvisoPrevio > 0 ? 'text-red-600' : 'text-gray-700'
+            funcionariosAviso > 0 ? 'text-red-600' : 'text-gray-700'
           }`}>
             {funcionariosAviso}
           </div>
           <div className={`text-sm ${
-            alertasAvisoPrevio > 0 ? 'text-red-600/80' : 'text-gray-600'
+            funcionariosAviso > 0 ? 'text-red-600/80' : 'text-gray-600'
           }`}>Aviso Prévio</div>
         </CardContent>
       </Card>
