@@ -31,7 +31,7 @@ const HighPriorityTasks = ({ compromissos, onSelectCompromisso, onToggleConcluid
   };
 
   return (
-    <Card className="modern-card animate-slide-up bg-gradient-to-br from-red-50 to-orange-50 border-red-200/60 shadow-md h-[500px] flex flex-col">
+    <Card className="modern-card animate-slide-up bg-gradient-to-br from-red-50 to-orange-50 border-red-200/60 shadow-md flex flex-col h-fit min-h-[200px]">
       <CardHeader className="card-header flex-shrink-0">
         <CardTitle className="section-title flex items-center gap-2 mb-0 text-red-700">
           <div className="flex">
