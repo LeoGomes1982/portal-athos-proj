@@ -474,17 +474,6 @@ const Agenda = () => {
             </div>
           </div>
 
-          {/* Daily Schedule - Full Width */}
-          <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
-              <DailySchedule 
-                selectedDate={selectedDate}
-                compromissos={compromissos}
-                onToggleConcluido={toggleConcluido}
-                onSelectCompromisso={handleSelectCompromisso}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
