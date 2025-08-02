@@ -167,11 +167,11 @@ export default function ProcessoSeletivo() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
           {/* Coluna Entrevista */}
           <Card className="modern-card">
-            <CardHeader className="card-header bg-blue-50">
+            <CardHeader className="card-header bg-purple-50">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <UserCheck size={20} className="text-blue-600" />
+                <UserCheck size={20} className="text-purple-600" />
                 Entrevista
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
                   {candidatosEntrevista.length}
                 </span>
               </CardTitle>
@@ -217,11 +217,11 @@ export default function ProcessoSeletivo() {
 
           {/* Coluna Admissão */}
           <Card className="modern-card">
-            <CardHeader className="card-header bg-green-50">
+            <CardHeader className="card-header bg-emerald-50">
               <CardTitle className="section-title flex items-center gap-2 mb-0">
-                <Building size={20} className="text-green-600" />
+                <Building size={20} className="text-emerald-600" />
                 Admissão
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full text-sm font-medium">
                   {candidatosAdmissao.length}
                 </span>
               </CardTitle>
