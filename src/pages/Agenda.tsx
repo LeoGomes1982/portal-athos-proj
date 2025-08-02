@@ -448,16 +448,16 @@ const Agenda = () => {
                   const dayLabel = dayOffset === 0 ? 'Hoje' : dayOffset === 1 ? 'Amanhã' : 'Depois de Amanhã';
                   
                   return (
-                    <div key={dayOffset} className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                      <div className="font-semibold text-blue-800 mb-2">
+                    <div key={dayOffset} className="p-4 bg-green-50 rounded-lg border border-green-100">
+                      <div className="font-semibold text-green-800 mb-2">
                         {dayLabel} - {format(date, 'dd/MM')}
                       </div>
                       {dayCompromissos.length > 0 ? (
                         <div className="space-y-2">
                           {dayCompromissos.map((compromisso) => (
-                            <div key={compromisso.id} className="text-sm p-2 bg-white rounded border-l-2 border-blue-300">
-                              <div className="font-medium text-blue-700">{compromisso.horario}</div>
-                              <div className="text-blue-600">{compromisso.titulo}</div>
+                            <div key={compromisso.id} className="text-sm p-2 bg-white rounded border-l-2 border-green-300">
+                              <div className="font-medium text-green-700">{compromisso.horario}</div>
+                              <div className="text-green-600">{compromisso.titulo}</div>
                               {compromisso.concluido && (
                                 <div className="text-xs text-green-600">✓ Concluído</div>
                               )}
@@ -465,12 +465,118 @@ const Agenda = () => {
                           ))}
                         </div>
                       ) : (
-                        <div className="text-sm text-gray-500">Nenhum compromisso</div>
+                        <div className="text-sm text-green-600">Nenhum compromisso</div>
                       )}
                     </div>
                   );
                 })}
               </div>
+            </div>
+          </div>
+
+          {/* Resumo de Todos os Compromissos */}
+          <div className="w-full">
+            <div className="bg-white rounded-xl shadow-sm border border-green-200 p-6">
+              <h3 className="text-lg font-semibold text-green-600 mb-4 flex items-center gap-2">
+                <Calendar size={20} />
+                Resumo dos Compromissos
+              </h3>
+              
+              {compromissos.length > 0 ? (
+                <div className="space-y-3">
+                  {compromissos
+                    .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+                    .map((compromisso) => {
+                      const isToday = compromisso.data === format(new Date(), 'yyyy-MM-dd');
+                      const isPast = new Date(compromisso.data) < new Date();
+                      const isUrgent = compromisso.prioridade === 'muito-importante';
+                      
+                      return (
+                        <div 
+                          key={compromisso.id} 
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
+                            compromisso.concluido 
+                              ? 'bg-gray-50 opacity-60 border-gray-300' 
+                              : isToday
+                              ? 'bg-green-50 border-green-400 hover:shadow-md'
+                              : isPast && !compromisso.concluido
+                              ? 'bg-red-50 border-red-300 hover:shadow-md'
+                              : isUrgent
+                              ? 'bg-orange-50 border-orange-300 hover:shadow-md'
+                              : 'bg-green-50 border-green-200 hover:shadow-md hover:border-green-400'
+                          }`}
+                          onClick={() => handleSelectCompromisso(compromisso)}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-3 h-3 rounded-full ${
+                                compromisso.concluido 
+                                  ? 'bg-gray-400' 
+                                  : isToday
+                                  ? 'bg-green-500'
+                                  : isPast && !compromisso.concluido
+                                  ? 'bg-red-500'
+                                  : isUrgent
+                                  ? 'bg-orange-500'
+                                  : 'bg-green-400'
+                              }`}></div>
+                              <h4 className="font-semibold text-gray-800">{compromisso.titulo}</h4>
+                              {isUrgent && (
+                                <div className="flex text-yellow-500">
+                                  <span>⭐⭐⭐</span>
+                                </div>
+                              )}
+                              {compromisso.concluido && (
+                                <span className="text-green-600 text-sm">✓ Concluído</span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {format(new Date(compromisso.data), 'dd/MM/yyyy')} - {compromisso.horario}
+                            </div>
+                          </div>
+                          
+                          {compromisso.descricao && (
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                              {compromisso.descricao}
+                            </p>
+                          )}
+                          
+                          <div className="flex items-center gap-4 text-xs">
+                            <div className={`px-2 py-1 rounded-full ${
+                              compromisso.tipo === 'reuniao' ? 'bg-blue-100 text-blue-800' :
+                              compromisso.tipo === 'tarefa' ? 'bg-purple-100 text-purple-800' :
+                              compromisso.tipo === 'evento' ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {compromisso.tipo.charAt(0).toUpperCase() + compromisso.tipo.slice(1)}
+                            </div>
+                            
+                            <div className="flex items-center gap-1 text-gray-500">
+                              <Users size={12} />
+                              {compromisso.participantes.length} participante{compromisso.participantes.length !== 1 ? 's' : ''}
+                            </div>
+                            
+                            <div className="text-gray-500">
+                              Por: {compromisso.criadoPor}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-green-50 rounded-lg border border-green-100">
+                  <div className="w-12 h-12 bg-green-100 border-2 border-green-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <Calendar size={20} className="text-green-500" />
+                  </div>
+                  <p className="text-gray-600 text-sm font-medium">
+                    Nenhum compromisso agendado
+                  </p>
+                  <p className="text-gray-500 text-xs">
+                    Clique em "Novo Compromisso" para começar
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
