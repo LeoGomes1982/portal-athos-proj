@@ -218,7 +218,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   ).length;
 
   return (
-    <div className="min-h-screen p-4" style={{ background: 'white', minHeight: '100vh' }}>
+    <div className="min-h-screen p-6" style={{ background: 'white', minHeight: '100vh' }}>
       <div className="max-w-7xl mx-auto animate-fade-in bg-blue-100/60 rounded-lg shadow-lg p-8">
         <Button variant="ghost" className="mb-6" onClick={onBack}>
           <ArrowLeft size={16} />
