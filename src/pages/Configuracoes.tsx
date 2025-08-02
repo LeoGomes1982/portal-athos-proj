@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Settings, Building2, User, FileText, Bell, Users, Plus, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Settings, Building2, User, FileText, Bell, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { RichTextEditor } from "@/components/RichTextEditor";
 import GerenciarEmpresasModal from "@/components/modals/GerenciarEmpresasModal";
 import { LogsSubsection } from "@/components/subsections/LogsSubsection";
 import { ImportarFuncionariosModal } from "@/components/modals/ImportarFuncionariosModal";
@@ -27,21 +26,11 @@ const Configuracoes = () => {
     autoSalvar: true
   });
 
-  // Estados para modelos de contrato
-  const [modelosContrato, setModelosContrato] = useState<Array<{id: string, nome: string, conteudo: string}>>([]);
-  const [modeloAtual, setModeloAtual] = useState({id: '', nome: '', conteudo: ''});
-  const [modoEdicao, setModoEdicao] = useState(false);
-
   // Carregar configurações do localStorage na inicialização
   useEffect(() => {
     const configSalvas = localStorage.getItem('configuracoes');
     if (configSalvas) {
       setConfiguracoes(JSON.parse(configSalvas));
-    }
-    
-    const modelosSalvos = localStorage.getItem('modelosContrato');
-    if (modelosSalvos) {
-      setModelosContrato(JSON.parse(modelosSalvos));
     }
   }, []);
 
@@ -50,59 +39,8 @@ const Configuracoes = () => {
     localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
   }, [configuracoes]);
 
-  // Salvar modelos no localStorage sempre que mudarem
-  useEffect(() => {
-    localStorage.setItem('modelosContrato', JSON.stringify(modelosContrato));
-  }, [modelosContrato]);
-
   const handleConfigChange = (field: string, value: any) => {
     setConfiguracoes(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSalvarModelo = () => {
-    if (!modeloAtual.nome.trim() || !modeloAtual.conteudo.trim()) {
-      alert('Por favor, preencha o nome e o conteúdo do modelo.');
-      return;
-    }
-
-    if (modoEdicao) {
-      // Atualizar modelo existente
-      setModelosContrato(prev => 
-        prev.map(modelo => 
-          modelo.id === modeloAtual.id 
-            ? { ...modelo, nome: modeloAtual.nome, conteudo: modeloAtual.conteudo }
-            : modelo
-        )
-      );
-    } else {
-      // Criar novo modelo
-      const novoModelo = {
-        id: Date.now().toString(),
-        nome: modeloAtual.nome,
-        conteudo: modeloAtual.conteudo
-      };
-      setModelosContrato(prev => [...prev, novoModelo]);
-    }
-
-    // Reset form
-    setModeloAtual({id: '', nome: '', conteudo: ''});
-    setModoEdicao(false);
-  };
-
-  const handleEditarModelo = (modelo: {id: string, nome: string, conteudo: string}) => {
-    setModeloAtual(modelo);
-    setModoEdicao(true);
-  };
-
-  const handleExcluirModelo = (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este modelo?')) {
-      setModelosContrato(prev => prev.filter(modelo => modelo.id !== id));
-    }
-  };
-
-  const handleNovoModelo = () => {
-    setModeloAtual({id: '', nome: '', conteudo: ''});
-    setModoEdicao(false);
   };
 
   // Se está mostrando a seção de logs, renderizar apenas ela
@@ -284,88 +222,6 @@ const Configuracoes = () => {
                 <Users size={16} className="mr-2" />
                 Adicionar Funcionários em Massa
               </Button>
-            </div>
-          </div>
-
-          {/* Modelos de Contrato */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 lg:col-span-2">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                  <FileText size={20} className="text-white" />
-                </div>
-                <h2 className="text-xl font-semibold text-slate-800">Modelos de Contrato</h2>
-              </div>
-              <Button onClick={handleNovoModelo} variant="outline" size="sm">
-                <Plus size={16} className="mr-2" />
-                Novo Modelo
-              </Button>
-            </div>
-
-            {/* Lista de modelos existentes */}
-            {modelosContrato.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-lg font-medium mb-3">Modelos Salvos</h3>
-                <div className="space-y-2">
-                  {modelosContrato.map((modelo) => (
-                    <div key={modelo.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <span className="font-medium">{modelo.nome}</span>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleEditarModelo(modelo)}
-                          variant="ghost"
-                          size="sm"
-                        >
-                          <Edit size={16} />
-                        </Button>
-                        <Button
-                          onClick={() => handleExcluirModelo(modelo.id)}
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="nomeModelo">Nome do Modelo</Label>
-                <Input
-                  id="nomeModelo"
-                  value={modeloAtual.nome}
-                  onChange={(e) => setModeloAtual(prev => ({...prev, nome: e.target.value}))}
-                  placeholder="Ex: Contrato Padrão de Serviços"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="modeloContrato">Template do Contrato</Label>
-                <p className="text-sm text-slate-600 mb-2">
-                  Use variáveis disponíveis: {"{contratanteNome}"}, {"{contratanteCnpj}"}, {"{contratanteEndereco}"}, {"{contratanteRepresentante}"}, {"{contratanteRepresentanteCpf}"}, {"{contratadaNome}"}, {"{contratadaCnpj}"}, {"{contratadaEndereco}"}, {"{contratadaRepresentante}"}, {"{contratadaRepresentanteCpf}"}, {"{servicoDescricao}"}, {"{servicoJornada}"}, {"{servicoHorario}"}, {"{servicoRegime}"}, {"{valorUnitario}"}, {"{quantidade}"}, {"{valorMensal}"}, {"{dataInicio}"}, {"{duracao}"}, {"{avisoPrevo}"}, {"{dataAssinatura}"}
-                </p>
-                <RichTextEditor
-                  value={modeloAtual.conteudo}
-                  onChange={(value) => setModeloAtual(prev => ({...prev, conteudo: value}))}
-                  placeholder="Digite aqui o modelo do contrato..."
-                />
-              </div>
-              
-              <div className="flex gap-2">
-                <Button onClick={handleSalvarModelo} className="bg-green-600 hover:bg-green-700">
-                  {modoEdicao ? 'Atualizar Modelo' : 'Salvar Modelo'}
-                </Button>
-                {modoEdicao && (
-                  <Button onClick={handleNovoModelo} variant="outline">
-                    Cancelar
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
 
