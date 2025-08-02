@@ -211,7 +211,7 @@ export default function CICAD() {
         <Button 
           variant="ghost" 
           className="mb-6"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/')}
         >
           <ArrowLeft size={16} />
           Voltar
