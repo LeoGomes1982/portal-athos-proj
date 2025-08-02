@@ -8,15 +8,13 @@ import {
   Building2,
   Globe,
   UserPlus,
-  Calendar,
   Briefcase,
   Target,
   Book,
   Shield,
   Bell,
   LogOut,
-  User,
-  Clock
+  User
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
@@ -24,8 +22,6 @@ import { Button } from "@/components/ui/button";
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
-
-
 import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 
 import { useToast } from "@/hooks/use-toast";
