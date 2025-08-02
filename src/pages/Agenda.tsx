@@ -317,76 +317,89 @@ const Agenda = () => {
   const hasUrgentTasks = compromissosUrgentes.length > 0;
 
   return (
-    <div className="app-container">
-      <div className="content-wrapper">
-        {/* Back Button */}
-        <Button variant="ghost" className="mb-6" onClick={() => navigate('/')}>
-          <ArrowLeft size={16} />
-          Voltar
-        </Button>
+    <div className="min-h-screen">
+      <div className="content-wrapper animate-fade-in bg-orange-100/80 rounded-lg shadow-lg m-6 p-8">
+        {/* Navigation Button */}
+        <div className="navigation-button">
+          <button 
+            onClick={() => navigate("/")}
+            className="back-button"
+          >
+            <ArrowLeft size={16} />
+            Voltar
+          </button>
+        </div>
 
-        {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl mb-6 shadow-lg">
+        {/* Page Header */}
+        <div className="page-header-centered">
+          <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <Calendar size={32} className="text-white" />
           </div>
-          <h1 className="page-title text-center">Agenda</h1>
-          <p className="text-description text-center max-w-2xl mx-auto">
-            Gerencie compromissos, reuniões e tarefas importantes
-          </p>
+          <div>
+            <h1 className="page-title mb-0">Agenda</h1>
+            <p className="text-description">Gerencie compromissos, reuniões e tarefas importantes</p>
+          </div>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="card-content text-center p-4">
+          <div className="modern-card bg-white border-orange-200">
+            <div className="card-content text-center p-4">
               <div className="text-3xl mb-2">📅</div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-orange-600">
                 {compromissosHoje.length}
               </div>
-              <div className="text-sm text-blue-600/80">Compromissos Hoje</div>
-            </CardContent>
-          </Card>
+              <div className="text-sm text-orange-600/80 mb-1">Compromissos Hoje</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Agendados para hoje
+              </div>
+            </div>
+          </div>
 
-          <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardContent className="card-content text-center p-4">
+          <div className="modern-card bg-white border-orange-200">
+            <div className="card-content text-center p-4">
               <div className="text-3xl mb-2">✅</div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {compromissosConcluidos}
               </div>
-              <div className="text-sm text-green-600/80">Concluídos</div>
-            </CardContent>
-          </Card>
+              <div className="text-sm text-gray-600 mb-1">Concluídos</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Total realizados
+              </div>
+            </div>
+          </div>
 
-          <Card className="modern-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 relative">
-            <CardContent className="card-content text-center p-4">
+          <div className="modern-card bg-white border-orange-200 relative">
+            <div className="card-content text-center p-4">
               {hasUrgentTasks && (
                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
                   <span className="text-white text-xs font-bold">!</span>
                 </div>
               )}
               <div className="text-3xl mb-2">⏰</div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {proximosCompromissos}
               </div>
-              <div className="text-sm text-purple-600/80">Próximos</div>
-            </CardContent>
-          </Card>
+              <div className="text-sm text-gray-600 mb-1">Próximos</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Pendentes
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-4 mb-8 animate-slide-up">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto">
           <Button 
-            className="primary-btn flex items-center gap-2"
             onClick={() => setShowNovoCompromisso(true)}
+            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white h-12"
           >
             <Plus size={20} />
             Novo Compromisso
           </Button>
           <Button 
-            variant="outline"
-            className="flex items-center gap-2"
             onClick={() => setShowResumoModal(true)}
+            className="flex-1 bg-orange-600 hover:bg-orange-700 text-white h-12"
           >
             <Calendar size={20} />
             Ver Resumo
@@ -394,40 +407,46 @@ const Agenda = () => {
         </div>
 
         {/* Main Content */}
-        <div className="space-y-8 animate-slide-up">
+        <div className="space-y-8 animate-slide-up max-w-6xl mx-auto">
           {/* Calendar and High Priority Tasks - Same Height */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-          <AgendaCalendar 
-            selectedDate={selectedDate} 
-            onSelectDate={setSelectedDate}
-            compromissos={compromissos}
-          />
+              <div className="bg-white rounded-xl shadow-sm border border-orange-200 p-6">
+                <AgendaCalendar 
+                  selectedDate={selectedDate} 
+                  onSelectDate={setSelectedDate}
+                  compromissos={compromissos}
+                />
+              </div>
             </div>
             
             <div className="lg:col-span-1">
-              <HighPriorityTasks 
-                compromissos={compromissosMuitoImportantes}
-                onSelectCompromisso={handleSelectCompromisso}
-                onToggleConcluido={toggleConcluido}
-              />
+              <div className="bg-white rounded-xl shadow-sm border border-orange-200 p-6">
+                <HighPriorityTasks 
+                  compromissos={compromissosMuitoImportantes}
+                  onSelectCompromisso={handleSelectCompromisso}
+                  onToggleConcluido={toggleConcluido}
+                />
+              </div>
             </div>
           </div>
 
           {/* Daily Schedule - Full Width */}
           <div className="w-full">
-            <DailySchedule 
-              selectedDate={selectedDate}
-              compromissos={compromissos}
-              onToggleConcluido={toggleConcluido}
-              onSelectCompromisso={handleSelectCompromisso}
-            />
+            <div className="bg-white rounded-xl shadow-sm border border-orange-200 p-6">
+              <DailySchedule 
+                selectedDate={selectedDate}
+                compromissos={compromissos}
+                onToggleConcluido={toggleConcluido}
+                onSelectCompromisso={handleSelectCompromisso}
+              />
+            </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-16 animate-fade-in">
-          <p className="text-description">
+        <div className="text-center mt-16">
+          <p className="text-sm text-slate-500">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
