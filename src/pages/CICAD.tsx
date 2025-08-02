@@ -205,15 +205,17 @@ export default function CICAD() {
   });
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen bg-white p-6">
+      <div className="content-wrapper animate-fade-in bg-blue-100/40 rounded-lg shadow-lg p-8">
         {/* Back Button */}
-        <div className="navigation-button">
-          <button onClick={() => navigate(-1)} className="back-button">
-            <ArrowLeft size={16} />
-            Voltar
-          </button>
-        </div>
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
 
         {/* Header */}
         <div className="page-header-centered">
