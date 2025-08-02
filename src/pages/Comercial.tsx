@@ -28,17 +28,18 @@ export default function Comercial() {
       title: "Contratos e Propostas",
       description: "Gestão de contratos e propostas",
       icon: FileText,
-      bgColor: "bg-green-100",
-      textColor: "text-green-700",
-      onClick: () => navigate("/comercial/contratos-propostas")
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-500",
+      disabled: true
     },
     {
       id: "estatisticas",
       title: "Estatísticas",
       description: "Análises e relatórios",
       icon: BarChart3,
-      bgColor: "bg-purple-100",
-      textColor: "text-purple-700"
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-500",
+      disabled: true
     }
   ];
 
@@ -73,16 +74,26 @@ export default function Comercial() {
           {subsections.map((subsection) => (
             <div 
               key={subsection.id}
-              className="modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150"
-              onClick={subsection.onClick}
+              className={`modern-card group relative p-8 border-2 transition-all duration-300 ${
+                subsection.disabled 
+                  ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed' 
+                  : 'hover:scale-105 hover:shadow-xl cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:from-orange-100 hover:to-orange-150'
+              }`}
+              onClick={subsection.disabled ? undefined : subsection.onClick}
             >
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+                <div className={`w-16 h-16 ${subsection.bgColor} rounded-xl flex items-center justify-center shadow-sm ${
+                  !subsection.disabled && 'group-hover:shadow-md'
+                } transition-shadow`}>
                   <subsection.icon size={32} className={subsection.textColor} />
                 </div>
                 <div>
-                  <h3 className="subsection-title">{subsection.title}</h3>
-                  <p className="text-description leading-relaxed">{subsection.description}</p>
+                  <h3 className={`subsection-title ${subsection.disabled ? 'text-gray-500' : ''}`}>
+                    {subsection.title}
+                  </h3>
+                  <p className={`leading-relaxed ${subsection.disabled ? 'text-gray-400' : 'text-description'}`}>
+                    {subsection.description}
+                  </p>
                 </div>
               </div>
             </div>
