@@ -117,12 +117,14 @@ export default function Fiscalizacoes() {
     <div className="min-h-screen bg-white p-6">
       <div className="content-wrapper animate-fade-in bg-green-100/80 rounded-lg shadow-lg p-8">
         {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={() => navigate('/operacoes')} className="back-button">
-            <ChevronLeft size={16} />
-            Voltar
-          </button>
-        </div>
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={() => navigate('/operacoes')}
+        >
+          <ChevronLeft size={16} />
+          Voltar
+        </Button>
 
         {/* Page Header */}
         <div className="page-header-centered">
