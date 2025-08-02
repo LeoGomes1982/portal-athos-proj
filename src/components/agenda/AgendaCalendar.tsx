@@ -55,32 +55,32 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
         <CalendarIcon size={20} />
         Calendário
       </h3>
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center bg-white rounded-lg shadow-lg border border-gray-200 p-6">
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={onSelectDate}
           locale={ptBR}
-          className="w-full max-w-full mx-auto scale-110"
+          className="w-full max-w-full mx-auto"
           classNames={{
             months: "w-full",
-            month: "w-full space-y-4",
-            caption: "flex justify-center pt-2 relative items-center mb-6 h-16",
-            caption_label: "text-3xl font-bold text-blue-800",
+            month: "w-full space-y-2",
+            caption: "flex justify-center relative items-center mb-4 h-12",
+            caption_label: "text-2xl font-bold text-gray-800",
             nav: "space-x-1 flex items-center",
-            nav_button: "h-10 w-10 bg-white border-2 border-blue-200 p-0 opacity-70 hover:opacity-100 hover:border-blue-400 rounded-lg transition-all",
+            nav_button: "h-8 w-8 bg-transparent border-0 p-0 opacity-60 hover:opacity-100 hover:bg-gray-100 rounded transition-all",
             nav_button_previous: "absolute left-1",
             nav_button_next: "absolute right-1",
-            table: "w-full border-collapse space-y-2 mt-4",
-            head_row: "flex mb-3",
-            head_cell: "text-blue-600 rounded-md flex-1 h-12 font-bold text-lg flex items-center justify-center",
-            row: "flex w-full mt-1",
-            cell: "relative p-1 text-center focus-within:relative focus-within:z-20 flex-1 border border-gray-300",
-            day: "h-12 w-full p-0 font-bold text-lg aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-blue-300 hover:bg-blue-50 flex items-center justify-center transition-all relative",
-            day_selected: "bg-blue-600/20 text-blue-800 hover:bg-blue-600/30 border-blue-400/50 shadow-md scale-105",
-            day_today: "bg-blue-100 text-blue-900 border-blue-400 font-bold",
-            day_outside: "text-gray-400 opacity-50",
-            day_disabled: "text-gray-300 opacity-30",
+            table: "w-full border-collapse mt-2",
+            head_row: "flex mb-2",
+            head_cell: "text-gray-600 flex-1 h-8 font-medium text-sm flex items-center justify-center uppercase",
+            row: "flex w-full",
+            cell: "relative text-center focus-within:relative focus-within:z-20 flex-1 border border-gray-200 bg-white",
+            day: "h-10 w-full p-0 font-medium text-base aria-selected:opacity-100 hover:bg-gray-100 flex items-center justify-center transition-all relative",
+            day_selected: "bg-blue-500 text-white hover:bg-blue-600",
+            day_today: "bg-red-500 text-white font-bold",
+            day_outside: "text-gray-300 opacity-50",
+            day_disabled: "text-gray-200 opacity-30",
           }}
           modifiers={{
             allCompleted: (date) => getCompromissosStatus(date).allCompleted,
@@ -88,9 +88,9 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
             hasCompromisso: (date) => getCompromissosStatus(date).hasCompromisso && !getCompromissosStatus(date).allCompleted && !getCompromissosStatus(date).hasAvaliacaoDesempenho
           }}
           modifiersClassNames={{
-            allCompleted: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-6 after:h-6 after:bg-gray-500 after:rounded-full after:z-10 after:border-3 after:border-white after:shadow-lg",
-            hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-6 after:h-6 after:bg-blue-600 after:rounded-full after:z-10 after:border-3 after:border-white after:shadow-lg",
-            hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-6 after:h-6 after:bg-red-600 after:rounded-full after:z-10 after:border-3 after:border-white after:shadow-lg"
+            allCompleted: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-gray-500 after:rounded-full after:z-10",
+            hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-blue-600 after:rounded-full after:z-10",
+            hasCompromisso: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-red-600 after:rounded-full after:z-10"
           }}
         />
       </div>
