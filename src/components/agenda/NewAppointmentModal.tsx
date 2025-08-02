@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Star } from 'lucide-react';
+import { Star, Share2 } from 'lucide-react';
 
 interface NewAppointmentData {
   titulo: string;
@@ -15,7 +15,7 @@ interface NewAppointmentData {
   data: string;
   horario: string;
   participantes: string[];
-  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento';
+  tipo: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento' | 'rescisao' | 'audiencia';
   prioridade: 'normal' | 'importante' | 'muito-importante';
 }
 
@@ -36,6 +36,15 @@ const NewAppointmentModal = ({
   usuarios, 
   onCreateAppointment 
 }: NewAppointmentModalProps) => {
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedAgendas, setSelectedAgendas] = useState<string[]>([]);
+
+  const agendas = [
+    'Agenda da Operações',
+    'Agenda do Financeiro', 
+    'Agenda da Gerência',
+    'Agenda Comercial'
+  ];
   const handleParticipanteChange = (usuario: string, checked: boolean) => {
     if (checked) {
       setNovoCompromisso(prev => ({
@@ -48,6 +57,20 @@ const NewAppointmentModal = ({
         participantes: prev.participantes.filter(p => p !== usuario)
       }));
     }
+  };
+
+  const handleAgendaShareChange = (agenda: string, checked: boolean) => {
+    if (checked) {
+      setSelectedAgendas(prev => [...prev, agenda]);
+    } else {
+      setSelectedAgendas(prev => prev.filter(a => a !== agenda));
+    }
+  };
+
+  const handleShareEvent = () => {
+    console.log('Compartilhando evento com agendas:', selectedAgendas);
+    setShowShareModal(false);
+    setSelectedAgendas([]);
   };
 
   const getPriorityDisplay = (prioridade: string) => {
@@ -67,11 +90,12 @@ const NewAppointmentModal = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Novo Compromisso</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Novo Compromisso</DialogTitle>
+          </DialogHeader>
         <div className="space-y-4">
           <div>
             <Label htmlFor="titulo">Título</Label>
@@ -117,7 +141,7 @@ const NewAppointmentModal = ({
               <Label>Tipo</Label>
               <Select
                 value={novoCompromisso.tipo}
-                onValueChange={(value: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento') => 
+                onValueChange={(value: 'reuniao' | 'tarefa' | 'evento' | 'avaliacao' | 'avaliacao_desempenho' | 'vencimento_documento' | 'rescisao' | 'audiencia') => 
                   setNovoCompromisso(prev => ({ ...prev, tipo: value }))
                 }
               >
@@ -129,6 +153,8 @@ const NewAppointmentModal = ({
                   <SelectItem value="tarefa">Tarefa</SelectItem>
                   <SelectItem value="evento">Evento</SelectItem>
                   <SelectItem value="avaliacao">Avaliação</SelectItem>
+                  <SelectItem value="rescisao">Rescisão</SelectItem>
+                  <SelectItem value="audiencia">Audiência</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -174,17 +200,59 @@ const NewAppointmentModal = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
+          <div className="flex justify-between">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowShareModal(true)}
+              className="flex items-center gap-2"
+            >
+              <Share2 size={16} />
+              Compartilhar Evento
             </Button>
-            <Button onClick={onCreateAppointment}>
-              Criar Compromisso
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={onCreateAppointment}>
+                Criar Compromisso
+              </Button>
+            </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Compartilhar Evento</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Label>Selecione as agendas para compartilhar:</Label>
+            <div className="space-y-2">
+              {agendas.map((agenda) => (
+                <div key={agenda} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={agenda}
+                    checked={selectedAgendas.includes(agenda)}
+                    onCheckedChange={(checked) => handleAgendaShareChange(agenda, checked as boolean)}
+                  />
+                  <Label htmlFor={agenda}>{agenda}</Label>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowShareModal(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleShareEvent}>
+                Compartilhar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
