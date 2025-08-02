@@ -320,7 +320,7 @@ const Agenda = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-blue-600 rounded-lg shadow-lg m-6 p-8">
+      <div className="content-wrapper animate-fade-in bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button 
@@ -338,8 +338,8 @@ const Agenda = () => {
             <Calendar size={32} className="text-blue-600" />
           </div>
           <div>
-            <h1 className="page-title mb-0 text-white">Agenda</h1>
-            <p className="text-white/80">Gerencie compromissos, reuniões e tarefas importantes</p>
+            <h1 className="page-title mb-0 text-indigo-800">Agenda</h1>
+            <p className="text-indigo-700">Gerencie compromissos, reuniões e tarefas importantes</p>
           </div>
         </div>
 
@@ -478,7 +478,7 @@ const Agenda = () => {
 
         {/* Footer */}
         <div className="text-center mt-16">
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-indigo-600">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
