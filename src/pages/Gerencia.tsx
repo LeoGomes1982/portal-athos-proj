@@ -79,7 +79,7 @@ export default function Gerencia() {
           onClick={() => navigate("/")}
         >
           <ChevronLeft size={16} />
-          Voltar ao Portal
+          Voltar
         </Button>
 
         {/* Page Header */}
