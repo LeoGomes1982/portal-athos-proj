@@ -27,12 +27,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 const subsections = [
   {
-    id: "vagas-talentos",
-    title: "Vagas e Talentos",
-    description: "Gestão de vagas e processos seletivos",
-    icon: Briefcase,
-    bgColor: "bg-primary/10",
-    textColor: "text-primary"
+    id: "agenda-dp",
+    title: "Agenda do DP e RH",
+    description: "Compromissos e avisos de vencimento",
+    icon: Calendar,
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-700"
+  },
+  {
+    id: "funcionarios",
+    title: "Funcionários",
+    description: "Gestão de funcionários",
+    icon: Users,
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-700"
   },
   {
     id: "processo-seletivo",
@@ -43,12 +51,12 @@ const subsections = [
     textColor: "text-blue-600"
   },
   {
-    id: "funcionarios",
-    title: "Funcionários",
-    description: "Gestão de funcionários",
-    icon: Users,
-    bgColor: "bg-blue-100",
-    textColor: "text-blue-700"
+    id: "vagas-talentos",
+    title: "Vagas e Talentos",
+    description: "Gestão de vagas e processos seletivos",
+    icon: Briefcase,
+    bgColor: "bg-primary/10",
+    textColor: "text-primary"
   },
   {
     id: "geladeira",
@@ -65,14 +73,6 @@ const subsections = [
     icon: Archive,
     bgColor: "bg-red-100",
     textColor: "text-red-700"
-  },
-  {
-    id: "agenda-dp",
-    title: "Agenda do DP e RH",
-    description: "Compromissos e avisos de vencimento",
-    icon: Calendar,
-    bgColor: "bg-purple-100",
-    textColor: "text-purple-700"
   }
 ];
 
