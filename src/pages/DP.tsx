@@ -11,12 +11,14 @@ import {
   Briefcase, 
   UserCheck,
   Shield,
-  Refrigerator
+  Refrigerator,
+  Calendar
 } from "lucide-react";
 import { FuncionariosSubsection } from "@/components/subsections/FuncionariosSubsection";
 import { ArquivoRHSubsection } from "@/components/subsections/ArquivoRHSubsection";
 import { VagasTalentosSubsection } from "@/components/subsections/VagasTalentosSubsection";
 import { GeladeiraSubsection } from "@/components/subsections/GeladeiraSubsection";
+import { AgendaDPSubsection } from "@/components/subsections/AgendaDPSubsection";
 
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
@@ -63,6 +65,14 @@ const subsections = [
     icon: Archive,
     bgColor: "bg-red-100",
     textColor: "text-red-700"
+  },
+  {
+    id: "agenda-dp",
+    title: "Agenda do DP e RH",
+    description: "Compromissos e avisos de vencimento",
+    icon: Calendar,
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-700"
   }
 ];
 
@@ -108,6 +118,10 @@ export default function DP() {
 
   if (activeSubsection === "geladeira") {
     return <GeladeiraSubsection onBack={handleBackToMain} />;
+  }
+
+  if (activeSubsection === "agenda-dp") {
+    return <AgendaDPSubsection onBack={handleBackToMain} />;
   }
 
 
