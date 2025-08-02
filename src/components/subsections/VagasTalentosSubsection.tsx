@@ -239,8 +239,8 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-blue-100/80 rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen p-6" style={{ background: 'white', minHeight: '100vh' }}>
+      <div className="max-w-7xl mx-auto animate-fade-in bg-blue-100/40 rounded-lg shadow-lg p-8">
         {/* Back Button */}
         <Button variant="ghost" className="mb-6" onClick={onBack}>
           <ArrowLeft size={16} />
@@ -260,23 +260,23 @@ export function VagasTalentosSubsection({ onBack }: VagasTalentosSubsectionProps
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 animate-slide-up">
-          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">💼</div>
-              <div className="text-2xl font-bold text-slate-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {vagasAtivas}
               </div>
-              <div className="text-sm text-slate-600/80">Vagas Ativas</div>
+              <div className="text-sm text-gray-600">Vagas Ativas</div>
             </CardContent>
           </Card>
 
-          <Card className="modern-card bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
+          <Card className="modern-card bg-white border-gray-200">
             <CardContent className="card-content text-center p-4">
               <div className="text-3xl mb-2">👥</div>
-              <div className="text-2xl font-bold text-slate-600">
+              <div className="text-2xl font-bold text-gray-700">
                 {totalCandidatos}
               </div>
-              <div className="text-sm text-slate-600/80">Candidatos Inscritos</div>
+              <div className="text-sm text-gray-600">Candidatos Inscritos</div>
             </CardContent>
           </Card>
         </div>
