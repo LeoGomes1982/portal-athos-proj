@@ -404,7 +404,7 @@ const Agenda = () => {
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12"
           >
             <Calendar size={20} />
-            Tarefas e Anotações
+            Tarefas e Anotações 
           </Button>
         </div>
 
