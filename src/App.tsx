@@ -18,7 +18,7 @@ import Configuracoes from "./pages/Configuracoes";
 import EdicaoContratosPropostas from "./pages/EdicaoContratosPropostas";
 import PortalAdmissao from "./pages/PortalAdmissao";
 import PortalVagas from "./pages/PortalVagas";
-import Agenda from "./pages/Agenda";
+
 import Gerencia from "./pages/Gerencia";
 import Manuais from "./pages/Manuais";
 import CICAD from "./pages/CICAD";
@@ -73,11 +73,6 @@ function App() {
               <Route path="/dp" element={
                 <ProtectedRoute>
                   <DP />
-                </ProtectedRoute>
-              } />
-              <Route path="/agenda" element={
-                <ProtectedRoute>
-                  <Agenda />
                 </ProtectedRoute>
               } />
               <Route path="/comercial" element={

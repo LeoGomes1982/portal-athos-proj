@@ -24,10 +24,9 @@ import { Button } from "@/components/ui/button";
 import { NotificationBadge } from "@/components/NotificationBadge";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
-import { useAgendaAlerts } from "@/hooks/useAgendaAlerts";
-import { useCICADAlerts } from "@/hooks/useCICADAlerts";
-import { UrgentTasksModal } from "@/components/modals/UrgentTasksModal";
 
+
+import { useCICADAlerts } from "@/hooks/useCICADAlerts";
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,11 +38,7 @@ const Home = () => {
   const { toast } = useToast();
   const { hasNotifications, checkDocumentosVencendo } = useDocumentNotifications();
   const { hasAvisos } = useAvisoVencimentos();
-  const { hasUrgentTasks, urgentTasks } = useAgendaAlerts();
   const { hasNewDenuncias, markAsChecked } = useCICADAlerts();
-  const [showUrgentTasksModal, setShowUrgentTasksModal] = useState(false);
-  const [showUserTooltip, setShowUserTooltip] = useState(false);
-  const [hasAgendaNotification, setHasAgendaNotification] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   
 
@@ -51,31 +46,6 @@ const Home = () => {
     await signOut();
     navigate('/auth');
   };
-
-  // Verificar se há compromissos para notificar
-  useEffect(() => {
-    const checkAgendaNotifications = async () => {
-      try {
-        const hoje = new Date();
-        const hojeStr = hoje.toISOString().split('T')[0];
-        
-        const { data: compromissos } = await supabase
-          .from('compromissos')
-          .select('*')
-          .eq('data', hojeStr)
-          .eq('concluido', false);
-
-        setHasAgendaNotification(compromissos && compromissos.length > 0);
-      } catch (error) {
-        console.error('Erro ao verificar compromissos:', error);
-      }
-    };
-
-    checkAgendaNotifications();
-    // Verificar a cada minuto
-    const interval = setInterval(checkAgendaNotifications, 60000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Verificar notificações quando o componente monta
   useEffect(() => {
@@ -96,17 +66,6 @@ const Home = () => {
       onClick: () => navigate("/dp"),
       hasNotification: true,
       hasAvisos: true
-    },
-    {
-      id: "agenda",
-      title: "AGENDA",
-      fullTitle: "Gestão de Tarefas e Agendamentos",
-      icon: Calendar,
-      className: "bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 hover:from-indigo-100 hover:to-indigo-150",
-      iconColor: "text-indigo-600",
-      onClick: () => navigate("/agenda"),
-      hasUrgentTasks: true,
-      hasAgendaNotification: true
     },
     {
       id: "gerencia",
@@ -241,7 +200,7 @@ const Home = () => {
                   onClick={() => setShowNotificationModal(true)}
                 >
                   <Bell size={18} className="text-slate-600" />
-                  {(hasNotifications || hasAvisos || hasUrgentTasks || hasNewDenuncias || hasAgendaNotification) && (
+                  {(hasNotifications || hasAvisos || hasNewDenuncias) && (
                     <div className="absolute -top-1 -right-1">
                       <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                     </div>
@@ -295,52 +254,11 @@ const Home = () => {
             <div 
               key={section.id}
               className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${section.className}`}
-              onClick={(e) => {
-                if (section.hasUrgentTasks && hasUrgentTasks && section.id === "agenda") {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const clickY = e.clientY - rect.top;
-                  
-                  if (clickY < rect.height / 2) {
-                    e.preventDefault();
-                    setShowUserTooltip(!showUserTooltip);
-                    return;
-                  }
-                }
-                
-                if (section.onClick) {
-                  section.onClick();
-                }
-              }}
+              onClick={section.onClick}
             >
               {/* Notificação para DP e RH */}
               {section.hasNotification && (
                 <NotificationBadge show={hasNotifications} />
-              )}
-              
-              {/* Aviso de compromissos para Agenda */}
-              {section.hasAgendaNotification && hasAgendaNotification && section.id === "agenda" && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                  <Calendar size={12} className="text-white" />
-                </div>
-              )}
-              
-              {/* Aviso de tarefas urgentes para Agenda */}
-              {section.hasUrgentTasks && hasUrgentTasks && (
-                <>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
-                    <span className="text-white text-xs font-bold">!</span>
-                  </div>
-                  
-                  {/* Tooltip com nome do usuário */}
-                  {showUserTooltip && (
-                    <div className="absolute -top-12 -right-8 bg-white border-2 border-red-200 rounded-lg shadow-lg px-3 py-2 z-20 min-w-max">
-                      <div className="text-xs text-red-600 font-medium">
-                        {urgentTasks.length > 0 && urgentTasks[0].criadoPor}
-                      </div>
-                      <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-red-200"></div>
-                    </div>
-                  )}
-                </>
               )}
               
               {/* Aviso de novas denúncias para CICAD */}
@@ -411,16 +329,9 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Modal de Tarefas Urgentes */}
-      <UrgentTasksModal 
-        open={showUrgentTasksModal}
-        onOpenChange={setShowUrgentTasksModal}
-        compromissosUrgentes={urgentTasks}
-      />
-
       {/* Componente de Notificação */}
       <div className="fixed bottom-4 right-4">
-        <NotificationBadge show={hasNotifications || hasAvisos || hasUrgentTasks || hasNewDenuncias || hasAgendaNotification} />
+        <NotificationBadge show={hasNotifications || hasAvisos || hasNewDenuncias} />
       </div>
     </div>
   );
