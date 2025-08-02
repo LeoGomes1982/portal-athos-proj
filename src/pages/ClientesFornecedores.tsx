@@ -472,9 +472,14 @@ const ClientesFornecedores = () => {
       }}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {selectedClient?.tipo === "cliente" ? <Users className="h-5 w-5" /> : <Building className="h-5 w-5" />}
-              {isEditing ? "Editar" : "Visualizar"} {selectedClient?.tipo === "cliente" ? "Cliente" : "Fornecedor"}
+            <DialogTitle className="flex flex-col items-start gap-3">
+              <div className="flex items-center gap-2 text-lg">
+                {selectedClient?.tipo === "cliente" ? <Users className="h-5 w-5" /> : <Building className="h-5 w-5" />}
+                {isEditing ? "Editar" : "Visualizar"} {selectedClient?.tipo === "cliente" ? "Cliente" : "Fornecedor"}
+              </div>
+              <div className="text-2xl font-bold text-orange-600 border-l-4 border-orange-500 pl-4">
+                {selectedClient?.nome}
+              </div>
             </DialogTitle>
           </DialogHeader>
 
