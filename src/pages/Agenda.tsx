@@ -320,7 +320,7 @@ const Agenda = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="content-wrapper animate-fade-in bg-orange-100/80 rounded-lg shadow-lg m-6 p-8">
+      <div className="content-wrapper animate-fade-in bg-white rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button 
