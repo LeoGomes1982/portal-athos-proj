@@ -111,7 +111,7 @@ export function GestaoServicosExtras() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="modern-card bg-white border-gray-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">💼</div>
             <div className="text-2xl font-bold text-green-700">
@@ -124,7 +124,7 @@ export function GestaoServicosExtras() {
           </CardContent>
         </Card>
 
-        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="modern-card bg-white border-gray-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">⏰</div>
             <div className="text-2xl font-bold text-green-700">
@@ -134,7 +134,7 @@ export function GestaoServicosExtras() {
           </CardContent>
         </Card>
 
-        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="modern-card bg-white border-gray-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">💰</div>
             <div className="text-2xl font-bold text-green-700">
@@ -144,7 +144,7 @@ export function GestaoServicosExtras() {
           </CardContent>
         </Card>
 
-        <Card className="modern-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="modern-card bg-white border-gray-200">
           <CardContent className="card-content text-center p-4">
             <div className="text-3xl mb-2">📅</div>
             <div className="text-2xl font-bold text-green-700">

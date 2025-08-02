@@ -83,21 +83,6 @@ export function CuidadosTreinamentosSubsection({ onBack }: CuidadosTreinamentosS
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 mb-6">
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus size={16} className="mr-2" />
-            Novo Treinamento
-          </Button>
-          <Button variant="outline">
-            <FileText size={16} className="mr-2" />
-            Relatórios
-          </Button>
-          <Button variant="outline">
-            <Users size={16} className="mr-2" />
-            Participantes
-          </Button>
-        </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -150,6 +135,22 @@ export function CuidadosTreinamentosSubsection({ onBack }: CuidadosTreinamentosS
               <p className="text-xs text-muted-foreground">Todos os participantes</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 mb-8 justify-end">
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus size={16} className="mr-2" />
+            Novo Treinamento
+          </Button>
+          <Button variant="outline">
+            <FileText size={16} className="mr-2" />
+            Relatórios
+          </Button>
+          <Button variant="outline">
+            <Users size={16} className="mr-2" />
+            Participantes
+          </Button>
         </div>
 
         {/* Treinamentos List */}
