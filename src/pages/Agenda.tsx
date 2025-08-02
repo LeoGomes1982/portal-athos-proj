@@ -334,7 +334,7 @@ const Agenda = () => {
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <Calendar size={32} className="text-white" />
           </div>
           <div>
@@ -345,20 +345,20 @@ const Agenda = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
-          <div className="modern-card bg-white border-blue-200">
+          <div className="modern-card bg-white border-green-200">
             <div className="card-content text-center p-4">
               <div className="text-3xl mb-2">📅</div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-green-600">
                 {compromissosHoje.length}
               </div>
-              <div className="text-sm text-blue-600/80 mb-1">Compromissos Hoje</div>
+              <div className="text-sm text-green-600/80 mb-1">Compromissos Hoje</div>
               <div className="text-xs text-gray-500 font-medium">
                 Agendados para hoje
               </div>
             </div>
           </div>
 
-          <div className="modern-card bg-white border-blue-200">
+          <div className="modern-card bg-white border-green-200">
             <div className="card-content text-center p-4">
               <div className="text-3xl mb-2">✅</div>
               <div className="text-2xl font-bold text-gray-700">
@@ -371,7 +371,7 @@ const Agenda = () => {
             </div>
           </div>
 
-          <div className="modern-card bg-white border-blue-200 relative">
+          <div className="modern-card bg-white border-green-200 relative">
             <div className="card-content text-center p-4">
               {hasUrgentTasks && (
                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
@@ -394,14 +394,14 @@ const Agenda = () => {
         <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto">
           <Button 
             onClick={() => setShowNovoCompromisso(true)}
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white h-12"
+            className="flex-1 bg-green-500 hover:bg-green-600 text-white h-12"
           >
             <Plus size={20} />
             Novo Compromisso
           </Button>
           <Button 
             onClick={() => setShowTasksNotes(true)}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white h-12"
           >
             <Calendar size={20} />
             Tarefas e Anotações 
@@ -412,7 +412,7 @@ const Agenda = () => {
         <div className="space-y-8 animate-slide-up max-w-6xl mx-auto">
           {/* Calendar - Full Width */}
           <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-green-200 p-6">
               <AgendaCalendar 
                 selectedDate={selectedDate} 
                 onSelectDate={setSelectedDate}
@@ -423,7 +423,7 @@ const Agenda = () => {
 
           {/* High Priority Tasks - Below Calendar */}
           <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-green-200 p-6">
               <HighPriorityTasks 
                 compromissos={compromissosMuitoImportantes}
                 onSelectCompromisso={handleSelectCompromisso}
@@ -434,8 +434,8 @@ const Agenda = () => {
 
           {/* Next 3 Days */}
           <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
-              <h3 className="text-lg font-semibold text-blue-600 mb-4 flex items-center gap-2">
+            <div className="bg-white rounded-xl shadow-sm border border-green-200 p-6">
+              <h3 className="text-lg font-semibold text-green-600 mb-4 flex items-center gap-2">
                 <Calendar size={20} />
                 Próximos 3 Dias
               </h3>

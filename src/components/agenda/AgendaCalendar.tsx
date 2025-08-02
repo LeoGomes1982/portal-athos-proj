@@ -51,7 +51,7 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold text-blue-600 mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-semibold text-green-600 mb-4 flex items-center gap-2">
         <CalendarIcon size={20} />
         Calendário
       </h3>
@@ -77,7 +77,7 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
             row: "flex w-full",
             cell: "relative text-center focus-within:relative focus-within:z-20 flex-1 border border-gray-200 bg-white h-16",
             day: "h-16 w-full p-0 font-medium text-lg aria-selected:opacity-100 hover:bg-gray-100 flex items-center justify-center transition-all relative",
-            day_selected: "bg-blue-500 text-white hover:bg-blue-600",
+            day_selected: "bg-green-500 text-white hover:bg-green-600",
             day_today: "bg-red-500 text-white font-bold",
             day_outside: "text-gray-300 opacity-50",
             day_disabled: "text-gray-200 opacity-30",
@@ -89,7 +89,7 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
           }}
           modifiersClassNames={{
             allCompleted: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-gray-500 after:rounded-full after:z-10",
-            hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-blue-600 after:rounded-full after:z-10",
+            hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-green-600 after:rounded-full after:z-10",
             hasCompromisso: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-red-600 after:rounded-full after:z-10"
           }}
         />
