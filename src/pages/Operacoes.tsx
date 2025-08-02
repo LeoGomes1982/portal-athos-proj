@@ -65,12 +65,14 @@ export default function Operacoes() {
     <div className="app-container">
       <div className="content-wrapper animate-fade-in">
         {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={() => navigate("/")} className="back-button">
-            <ChevronLeft size={16} />
-            Voltar
-          </button>
-        </div>
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={() => navigate("/")}
+        >
+          <ChevronLeft size={16} />
+          Voltar
+        </Button>
 
         {/* Page Header */}
         <div className="page-header-centered">

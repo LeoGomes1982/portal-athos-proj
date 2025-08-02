@@ -63,12 +63,14 @@ export function CuidadosTreinamentosSubsection({ onBack }: CuidadosTreinamentosS
     <div className="app-container">
       <div className="content-wrapper animate-fade-in">
         {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={onBack} className="back-button">
-            <ArrowLeft size={16} />
-            Voltar
-          </button>
-        </div>
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={onBack}
+        >
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
 
         {/* Page Header */}
         <div className="page-header-centered">

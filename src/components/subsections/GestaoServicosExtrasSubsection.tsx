@@ -12,12 +12,14 @@ export function GestaoServicosExtrasSubsection({ onBack }: GestaoServicosExtrasS
     <div className="app-container">
       <div className="content-wrapper animate-fade-in">
         {/* Navigation Button */}
-        <div className="navigation-button">
-          <button onClick={onBack} className="back-button">
-            <ChevronLeft size={16} />
-            Voltar
-          </button>
-        </div>
+        <Button 
+          variant="ghost" 
+          className="mb-6"
+          onClick={onBack}
+        >
+          <ChevronLeft size={16} />
+          Voltar
+        </Button>
 
         {/* Gestão de Serviços Extras Content */}
         <div className="h-full overflow-auto">
