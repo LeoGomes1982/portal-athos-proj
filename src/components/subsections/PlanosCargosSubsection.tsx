@@ -68,17 +68,12 @@ export function PlanosCargosSubsection({ onBack }: PlanosCargosSubsectionProps) 
   };
 
   const getNivelColor = (nivel: string) => {
-    switch(nivel) {
-      case 'I': return 'bg-green-500';
-      case 'II': return 'bg-blue-500';
-      case 'III': return 'bg-purple-500';
-      default: return 'bg-gray-500';
-    }
+    return 'bg-purple-500';
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen bg-white p-6">
+      <div className="content-wrapper animate-fade-in">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button onClick={onBack} className="back-button">
