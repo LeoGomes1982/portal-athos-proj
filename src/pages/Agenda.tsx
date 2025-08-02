@@ -332,7 +332,7 @@ const Agenda = () => {
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <Calendar size={32} className="text-white" />
           </div>
           <div>
@@ -343,20 +343,20 @@ const Agenda = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
-          <div className="modern-card bg-white border-orange-200">
+          <div className="modern-card bg-white border-blue-200">
             <div className="card-content text-center p-4">
               <div className="text-3xl mb-2">📅</div>
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-blue-600">
                 {compromissosHoje.length}
               </div>
-              <div className="text-sm text-orange-600/80 mb-1">Compromissos Hoje</div>
+              <div className="text-sm text-blue-600/80 mb-1">Compromissos Hoje</div>
               <div className="text-xs text-gray-500 font-medium">
                 Agendados para hoje
               </div>
             </div>
           </div>
 
-          <div className="modern-card bg-white border-orange-200">
+          <div className="modern-card bg-white border-blue-200">
             <div className="card-content text-center p-4">
               <div className="text-3xl mb-2">✅</div>
               <div className="text-2xl font-bold text-gray-700">
@@ -369,7 +369,7 @@ const Agenda = () => {
             </div>
           </div>
 
-          <div className="modern-card bg-white border-orange-200 relative">
+          <div className="modern-card bg-white border-blue-200 relative">
             <div className="card-content text-center p-4">
               {hasUrgentTasks && (
                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center z-10">
@@ -392,14 +392,14 @@ const Agenda = () => {
         <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto">
           <Button 
             onClick={() => setShowNovoCompromisso(true)}
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white h-12"
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white h-12"
           >
             <Plus size={20} />
             Novo Compromisso
           </Button>
           <Button 
             onClick={() => setShowResumoModal(true)}
-            className="flex-1 bg-orange-600 hover:bg-orange-700 text-white h-12"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12"
           >
             <Calendar size={20} />
             Ver Resumo
@@ -408,32 +408,73 @@ const Agenda = () => {
 
         {/* Main Content */}
         <div className="space-y-8 animate-slide-up max-w-6xl mx-auto">
-          {/* Calendar and High Priority Tasks - Same Height */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-sm border border-orange-200 p-6">
-                <AgendaCalendar 
-                  selectedDate={selectedDate} 
-                  onSelectDate={setSelectedDate}
-                  compromissos={compromissos}
-                />
-              </div>
+          {/* Calendar - Full Width */}
+          <div className="w-full">
+            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
+              <AgendaCalendar 
+                selectedDate={selectedDate} 
+                onSelectDate={setSelectedDate}
+                compromissos={compromissos}
+              />
             </div>
-            
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm border border-orange-200 p-6">
-                <HighPriorityTasks 
-                  compromissos={compromissosMuitoImportantes}
-                  onSelectCompromisso={handleSelectCompromisso}
-                  onToggleConcluido={toggleConcluido}
-                />
+          </div>
+
+          {/* High Priority Tasks - Below Calendar */}
+          <div className="w-full">
+            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
+              <HighPriorityTasks 
+                compromissos={compromissosMuitoImportantes}
+                onSelectCompromisso={handleSelectCompromisso}
+                onToggleConcluido={toggleConcluido}
+              />
+            </div>
+          </div>
+
+          {/* Next 3 Days */}
+          <div className="w-full">
+            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
+              <h3 className="text-lg font-semibold text-blue-600 mb-4 flex items-center gap-2">
+                <Calendar size={20} />
+                Próximos 3 Dias
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[0, 1, 2].map((dayOffset) => {
+                  const date = new Date();
+                  date.setDate(date.getDate() + dayOffset);
+                  const dateStr = format(date, 'yyyy-MM-dd');
+                  const dayCompromissos = compromissos.filter(c => c.data === dateStr);
+                  const dayLabel = dayOffset === 0 ? 'Hoje' : dayOffset === 1 ? 'Amanhã' : 'Depois de Amanhã';
+                  
+                  return (
+                    <div key={dayOffset} className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                      <div className="font-semibold text-blue-800 mb-2">
+                        {dayLabel} - {format(date, 'dd/MM')}
+                      </div>
+                      {dayCompromissos.length > 0 ? (
+                        <div className="space-y-2">
+                          {dayCompromissos.map((compromisso) => (
+                            <div key={compromisso.id} className="text-sm p-2 bg-white rounded border-l-2 border-blue-300">
+                              <div className="font-medium text-blue-700">{compromisso.horario}</div>
+                              <div className="text-blue-600">{compromisso.titulo}</div>
+                              {compromisso.concluido && (
+                                <div className="text-xs text-green-600">✓ Concluído</div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-gray-500">Nenhum compromisso</div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
 
           {/* Daily Schedule - Full Width */}
           <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-orange-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-blue-200 p-6">
               <DailySchedule 
                 selectedDate={selectedDate}
                 compromissos={compromissos}
