@@ -319,8 +319,8 @@ const Agenda = () => {
   const hasUrgentTasks = compromissosUrgentes.length > 0;
 
   return (
-    <div className="min-h-screen">
-      <div className="content-wrapper animate-fade-in bg-white rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen bg-white">
+      <div className="content-wrapper animate-fade-in bg-blue-600 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
         <div className="navigation-button">
           <button 
@@ -334,12 +334,12 @@ const Agenda = () => {
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <Calendar size={32} className="text-white" />
+          <div className="w-20 h-20 bg-gradient-to-br from-white to-gray-100 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <Calendar size={32} className="text-blue-600" />
           </div>
           <div>
-            <h1 className="page-title mb-0">Agenda</h1>
-            <p className="text-description">Gerencie compromissos, reuniões e tarefas importantes</p>
+            <h1 className="page-title mb-0 text-white">Agenda</h1>
+            <p className="text-white/80">Gerencie compromissos, reuniões e tarefas importantes</p>
           </div>
         </div>
 
@@ -478,7 +478,7 @@ const Agenda = () => {
 
         {/* Footer */}
         <div className="text-center mt-16">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-white/60">
             © 2024 Grupo Athos. Todos os direitos reservados.
           </p>
         </div>
