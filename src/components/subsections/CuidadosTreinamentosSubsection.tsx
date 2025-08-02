@@ -85,54 +85,45 @@ export function CuidadosTreinamentosSubsection({ onBack }: CuidadosTreinamentosS
 
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Treinamentos</CardTitle>
-              <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{treinamentos.length}</div>
-              <p className="text-xs text-muted-foreground">Todos os treinamentos</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">🎓</div>
+              <div className="text-2xl font-bold text-gray-700">{treinamentos.length}</div>
+              <div className="text-sm text-gray-600 mb-1">Total de Treinamentos</div>
+              <div className="text-xs text-gray-500 font-medium">
+                Todos os treinamentos
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ativos</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">✅</div>
+              <div className="text-2xl font-bold text-gray-700">
                 {treinamentos.filter(t => t.status === "Ativo").length}
               </div>
-              <p className="text-xs text-muted-foreground">Em andamento</p>
+              <div className="text-sm text-gray-600">Ativos</div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Agendados</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">📅</div>
+              <div className="text-2xl font-bold text-gray-700">
                 {treinamentos.filter(t => t.status === "Agendado").length}
               </div>
-              <p className="text-xs text-muted-foreground">Próximos treinamentos</p>
+              <div className="text-sm text-gray-600">Agendados</div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Participantes</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+          <Card className="modern-card bg-white border-gray-200">
+            <CardContent className="card-content text-center p-4">
+              <div className="text-3xl mb-2">👥</div>
+              <div className="text-2xl font-bold text-gray-700">
                 {treinamentos.reduce((acc, t) => acc + t.participantes, 0)}
               </div>
-              <p className="text-xs text-muted-foreground">Todos os participantes</p>
+              <div className="text-sm text-gray-600">Total Participantes</div>
             </CardContent>
           </Card>
         </div>
