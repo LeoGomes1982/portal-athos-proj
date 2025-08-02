@@ -86,15 +86,6 @@ const Home = () => {
       hasNewDenuncias: true
     },
     {
-      id: "manuais",
-      title: "MANUAIS",
-      fullTitle: "Manuais e Documentos Normativos",
-      icon: Book,
-      className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
-      iconColor: "text-blue-600",
-      onClick: () => navigate("/manuais")
-    },
-    {
       id: "operacoes",
       title: "OPERAÇÕES",
       fullTitle: "Gestão Operacional",

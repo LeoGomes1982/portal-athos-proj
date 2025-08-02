@@ -18,7 +18,7 @@ export const useNavigationFix = () => {
         '/agenda': 'Agenda - Portal Athos',
         '/gerencia': 'Gerência - Portal Athos',
         '/comercial': 'Comercial - Portal Athos',
-        '/manuais': 'Manuais - Portal Athos',
+        
         '/configuracoes': 'Configurações - Portal Athos',
         '/cicad': 'CICAD - Portal Athos',
         '/processo-seletivo': 'Processo Seletivo - Portal Athos',

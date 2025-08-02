@@ -20,7 +20,7 @@ import PortalAdmissao from "./pages/PortalAdmissao";
 import PortalVagas from "./pages/PortalVagas";
 
 import Gerencia from "./pages/Gerencia";
-import Manuais from "./pages/Manuais";
+
 import CICAD from "./pages/CICAD";
 import CICADFormulario from "./pages/CICADFormulario";
 import PortalMidiaExterna from "./pages/PortalMidiaExterna";
@@ -93,11 +93,6 @@ function App() {
               <Route path="/gerencia" element={
                 <ProtectedRoute>
                   <Gerencia />
-                </ProtectedRoute>
-              } />
-              <Route path="/manuais" element={
-                <ProtectedRoute>
-                  <Manuais />
                 </ProtectedRoute>
               } />
               <Route path="/configuracoes" element={
