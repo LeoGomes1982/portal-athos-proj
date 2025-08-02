@@ -75,7 +75,7 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
             head_row: "flex mb-3",
             head_cell: "text-blue-600 rounded-md flex-1 h-12 font-bold text-lg flex items-center justify-center",
             row: "flex w-full mt-2",
-            cell: "relative p-2 text-center focus-within:relative focus-within:z-20 flex-1",
+            cell: "relative p-2 text-center focus-within:relative focus-within:z-20 flex-1 border border-gray-300",
             day: "h-14 w-full p-0 font-bold text-lg aria-selected:opacity-100 rounded-lg border-2 border-transparent hover:border-blue-300 hover:bg-blue-50 flex items-center justify-center transition-all relative",
             day_selected: "bg-blue-600/20 text-blue-800 hover:bg-blue-600/30 border-blue-400/50 shadow-md scale-105",
             day_today: "bg-blue-100 text-blue-900 border-blue-400 font-bold",
@@ -88,9 +88,9 @@ const AgendaCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaCale
             hasCompromisso: (date) => getCompromissosStatus(date).hasCompromisso && !getCompromissosStatus(date).allCompleted && !getCompromissosStatus(date).hasAvaliacaoDesempenho
           }}
           modifiersClassNames={{
-            allCompleted: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-4 after:h-4 after:bg-gray-500 after:rounded-full after:z-10 after:border-2 after:border-white after:shadow-lg",
-            hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-4 after:h-4 after:bg-blue-600 after:rounded-full after:z-10 after:border-2 after:border-white after:shadow-lg",
-            hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-4 after:h-4 after:bg-red-600 after:rounded-full after:z-10 after:border-2 after:border-white after:shadow-lg"
+            allCompleted: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-6 after:h-6 after:bg-gray-500 after:rounded-full after:z-10 after:border-3 after:border-white after:shadow-lg",
+            hasAvaliacaoDesempenho: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-6 after:h-6 after:bg-blue-600 after:rounded-full after:z-10 after:border-3 after:border-white after:shadow-lg",
+            hasCompromisso: "relative after:content-[''] after:absolute after:-top-1 after:-right-1 after:w-6 after:h-6 after:bg-red-600 after:rounded-full after:z-10 after:border-3 after:border-white after:shadow-lg"
           }}
         />
       </div>

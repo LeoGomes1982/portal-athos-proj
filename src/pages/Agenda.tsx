@@ -12,6 +12,7 @@ import DailySchedule from "@/components/agenda/DailySchedule";
 import HighPriorityTasks from "@/components/agenda/HighPriorityTasks";
 import AgendaSummaryModal from "@/components/agenda/AgendaSummaryModal";
 import NewAppointmentModal from "@/components/agenda/NewAppointmentModal";
+import TasksNotesModal from "@/components/agenda/TasksNotesModal";
 import AppointmentDetailsModal from "@/components/agenda/AppointmentDetailsModal";
 import EditAppointmentModal from "@/components/agenda/EditAppointmentModal";
 
@@ -35,6 +36,7 @@ const Agenda = () => {
   const [showNovoCompromisso, setShowNovoCompromisso] = useState(false);
   const [showDetalhesCompromisso, setShowDetalhesCompromisso] = useState(false);
   const [showEditCompromisso, setShowEditCompromisso] = useState(false);
+  const [showTasksNotes, setShowTasksNotes] = useState(false);
   const [compromissoSelecionado, setCompromissoSelecionado] = useState<Compromisso | null>(null);
   const [compromissos, setCompromissos] = useState<Compromisso[]>([]);
   
@@ -398,11 +400,11 @@ const Agenda = () => {
             Novo Compromisso
           </Button>
           <Button 
-            onClick={() => setShowResumoModal(true)}
+            onClick={() => setShowTasksNotes(true)}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12"
           >
             <Calendar size={20} />
-            Ver Resumo
+            Tarefas e Anotações
           </Button>
         </div>
 
@@ -526,6 +528,11 @@ const Agenda = () => {
           compromisso={compromissoSelecionado}
           onUpdateAppointment={handleUpdateCompromisso}
           usuarios={usuarios}
+        />
+
+        <TasksNotesModal 
+          open={showTasksNotes}
+          onOpenChange={setShowTasksNotes}
         />
       </div>
     </div>
