@@ -196,8 +196,8 @@ export function UniformesSubsection({ onBack }: UniformesSubsectionProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg m-6 p-8">
+    <div className="min-h-screen bg-white p-6">
+      <div className="content-wrapper animate-fade-in bg-purple-100/80 rounded-lg shadow-lg p-8">
         {/* Back Button */}
         <Button variant="ghost" className="mb-6" onClick={onBack}>
           <ArrowLeft size={16} />
