@@ -56,6 +56,9 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
   const { documentosVencendo } = useDocumentNotifications();
 
   useEffect(() => {
+    // Limpar registros de teste da agenda
+    localStorage.removeItem('agenda_dp_compromissos');
+    
     // Carregar compromissos do localStorage
     const savedCompromissos = localStorage.getItem('agenda_dp_compromissos');
     if (savedCompromissos) {
