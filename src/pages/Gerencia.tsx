@@ -36,7 +36,7 @@ export default function Gerencia() {
     },
     {
       id: "resultados-pessoais",
-      title: "Resultados Pessoais",
+      title: "Avaliação de Desempenho",
       icon: TrendingUp,
       description: "Acompanhamento de performance e metas individuais",
       component: ResultadosPessoaisSubsection,
