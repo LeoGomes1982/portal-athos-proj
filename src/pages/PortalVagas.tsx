@@ -281,17 +281,186 @@ const PortalVagas = () => {
 
         {/* Nossa Empresa Section */}
         {activeCard === "nossa-empresa" && (
-          <div className="text-center animate-fade-in">
-            <h2 className="text-3xl font-bold text-slate-800 mb-8">Nossa Empresa</h2>
-            <p className="text-slate-600 text-lg mb-8">
-              Informações sobre nossa empresa serão adicionadas em breve.
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => setActiveCard(null)}
-            >
-              Voltar
-            </Button>
+          <div className="animate-fade-in">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-slate-800">Nossa Empresa</h2>
+              <Button 
+                variant="outline" 
+                onClick={() => setActiveCard(null)}
+              >
+                Voltar
+              </Button>
+            </div>
+
+            {/* Historia da Empresa */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <Card className="modern-card p-8">
+                <CardContent className="p-0">
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-xl mb-4 shadow-lg">
+                      <Building2 size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-800 mb-4">Bem-vindo(a) ao Grupo Athos!</h3>
+                  </div>
+                  
+                  <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed space-y-6">
+                    <p>
+                      Somos uma empresa sólida e em constante crescimento, fundada em 2014 na vibrante cidade de Pelotas, Rio Grande do Sul. 
+                      Desde a nossa origem, nos dedicamos a oferecer serviços de excelência, com um propósito claro e inspirador: 
+                      <strong className="text-primary"> proporcionar Tranquilidade, Segurança e Bem-estar às Pessoas</strong>.
+                    </p>
+                    
+                    <p>
+                      Com uma equipe de mais de <strong>250 colaboradores dedicados</strong>, o Grupo Athos expandiu sua atuação para além das fronteiras gaúchas, 
+                      marcando presença em quatro estados estratégicos do Brasil: <strong>Amapá, Minas Gerais, São Paulo e Rio Grande do Sul</strong>. 
+                      Essa capilaridade reflete nossa capacidade de adaptação e o compromisso em levar soluções de alta qualidade para diversas regiões do país.
+                    </p>
+                    
+                    <p>
+                      Nossa especialidade reside na prestação de serviços essenciais, abrangendo áreas como <strong>segurança patrimonial, 
+                      limpeza e conservação, zeladoria e mão de obra especializada</strong>. Acreditamos que, ao cuidar desses pilares, 
+                      contribuímos diretamente para ambientes mais seguros, produtivos e harmoniosos, tanto para empresas quanto para condomínios e residências.
+                    </p>
+                    
+                    <p>
+                      No Grupo Athos, valorizamos cada membro da nossa equipe. Entendemos que o sucesso da empresa é construído pelo talento e dedicação de cada um. 
+                      Por isso, investimos no desenvolvimento profissional, oferecendo um ambiente de trabalho colaborativo, desafiador e com oportunidades reais de crescimento.
+                    </p>
+                    
+                    <p className="text-primary font-semibold text-xl text-center mt-8">
+                      Se você busca uma empresa que preza pela ética, inovação e pelo impacto positivo na vida das pessoas, o Grupo Athos é o seu lugar. 
+                      Convidamos você a fazer parte da nossa história e a construir um futuro de sucesso conosco.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Galeria de Fotos */}
+            <div className="max-w-6xl mx-auto">
+              <h3 className="text-2xl font-bold text-slate-800 text-center mb-8">Nossos Clientes e Equipe</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Casa Una UDI */}
+                <Card className="modern-card overflow-hidden group hover:scale-105 transition-all duration-300">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/122b4a64-af3b-4aaa-b637-668e7543a443.png" 
+                      alt="Casa Una UDI Uberlândia MG" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">Casa Una UDI</h4>
+                      <p className="text-sm opacity-90">Uberlândia MG</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Fernanda Recepcionista */}
+                <Card className="modern-card overflow-hidden group hover:scale-105 transition-all duration-300">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/481f6873-4c88-4fcc-a019-f16a9c2036ab.png" 
+                      alt="Fernanda - Recepcionista Pelotas RS" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">Fernanda</h4>
+                      <p className="text-sm opacity-90">Recepcionista - Pelotas RS</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Palácio das Águas */}
+                <Card className="modern-card overflow-hidden group hover:scale-105 transition-all duration-300">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/67c146f4-7915-45c6-9d1c-d73d5cea85ab.png" 
+                      alt="Palácio das Águas Macapá AP" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">Palácio das Águas</h4>
+                      <p className="text-sm opacity-90">Macapá AP</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Simone e Leandro */}
+                <Card className="modern-card overflow-hidden group hover:scale-105 transition-all duration-300">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/5b1521c4-ce98-4ab1-8059-da5dd897c0f3.png" 
+                      alt="Simone Macedo e Leandro Gomes - Pelotas RS" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">Simone & Leandro</h4>
+                      <p className="text-sm opacity-90">Equipe Pelotas RS</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Vinícius e Leandro */}
+                <Card className="modern-card overflow-hidden group hover:scale-105 transition-all duration-300">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/a397941b-df94-4c8d-849c-0605727d2895.png" 
+                      alt="Vinícius Costa e Leandro Gomes - Uberlândia MG" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">Vinícius & Leandro</h4>
+                      <p className="text-sm opacity-90">Equipe Uberlândia MG</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* David Macedo */}
+                <Card className="modern-card overflow-hidden group hover:scale-105 transition-all duration-300">
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/01aa7ab3-9379-43d8-b1a4-4ea9992364a1.png" 
+                      alt="David Macedo - 9 anos de empresa" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">David Macedo</h4>
+                      <p className="text-sm opacity-90">9 anos de empresa</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Chimarrão Gaúcho - Destaque Cultural */}
+              <div className="mt-12 text-center">
+                <Card className="modern-card max-w-md mx-auto overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/bcebfaca-0b79-4e27-9a88-f696412adb1a.png" 
+                      alt="Chimarrão gaúcho - Pelotas RS" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h4 className="font-bold text-lg">Tradição Gaúcha</h4>
+                      <p className="text-sm opacity-90">Chimarrão - Pelotas RS</p>
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <p className="text-sm text-slate-600">
+                      Valorizamos nossas raízes e tradições, mantendo viva a cultura gaúcha em todos os nossos escritórios.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         )}
 
