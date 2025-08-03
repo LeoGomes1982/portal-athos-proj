@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Shield, Clock, GraduationCap } from "lucide-react";
+import { ChevronLeft, Shield, Clock, GraduationCap, AlertTriangle, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { FiscalizacoesSubsection } from "@/components/subsections/FiscalizacoesSubsection";
 import { GestaoServicosExtrasSubsection } from "@/components/subsections/GestaoServicosExtrasSubsection";
 import { CuidadosTreinamentosSubsection } from "@/components/subsections/CuidadosTreinamentosSubsection";
+import { SancoesDisciplinaresSubsection } from "@/components/subsections/SancoesDisciplinaresSubsection";
+import { GestaoEscalasSubsection } from "@/components/subsections/GestaoEscalasSubsection";
 
 export default function Operacoes() {
   const navigate = useNavigate();
@@ -41,6 +43,26 @@ export default function Operacoes() {
       bgColor: "bg-white",
       iconColor: "text-green-600",
       cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
+    },
+    {
+      id: "sancoes-disciplinares",
+      title: "Sanções Disciplinares",
+      icon: AlertTriangle,
+      description: "Gestão de advertências, suspensões e sanções",
+      component: SancoesDisciplinaresSubsection,
+      bgColor: "bg-white",
+      iconColor: "text-red-600",
+      cardClass: "bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-150"
+    },
+    {
+      id: "gestao-escalas",
+      title: "Gestão de Escalas",
+      icon: Calendar,
+      description: "Controle de escalas e turnos de trabalho",
+      component: GestaoEscalasSubsection,
+      bgColor: "bg-white",
+      iconColor: "text-blue-600",
+      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
     }
   ];
 

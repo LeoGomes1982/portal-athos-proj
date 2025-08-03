@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw, ClipboardList, Edit, Paperclip } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw, ClipboardList, Edit, Paperclip, ChevronDown, ChevronUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { AdicionarDependenteModal } from "./AdicionarDependenteModal";
 import { AdicionarDocumentoModal } from "./AdicionarDocumentoModal";
@@ -147,6 +148,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [dataFim, setDataFim] = useState("");
   const [activeTab, setActiveTab] = useState("informacoes");
+  
+  // Estados para collapse das seções
+  const [sectionStates, setSectionStates] = useState({
+    profissional: true,
+    pessoal: true,
+    contato: true,
+    documentos: true,
+    dependentes: true,
+    historico: true
+  });
   
   // Estados para o histórico
   const [showNovoRegistro, setShowNovoRegistro] = useState(false);
@@ -408,6 +419,57 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   const statusInfo = statusConfig[statusAtual];
   const isDestaque = statusAtual === 'destaque';
   const currentFuncionario = isEditing ? editedFuncionario : funcionario;
+
+  // Função para toggle das seções
+  const toggleSection = (section: keyof typeof sectionStates) => {
+    setSectionStates(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  // Componente CollapsibleSection
+  const CollapsibleSection = ({ 
+    id, 
+    title, 
+    icon, 
+    children, 
+    defaultOpen = true 
+  }: { 
+    id: keyof typeof sectionStates, 
+    title: string, 
+    icon: string, 
+    children: React.ReactNode,
+    defaultOpen?: boolean 
+  }) => {
+    const isOpen = sectionStates[id];
+    
+    return (
+      <Card className="bg-white border-2 border-blue-200">
+        <Collapsible open={isOpen} onOpenChange={() => toggleSection(id)}>
+          <CardContent className="p-0">
+            <CollapsibleTrigger asChild>
+              <div className="w-full p-6 pb-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
+                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                  {icon} {title}
+                </h3>
+                {isOpen ? (
+                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-6 pb-6">
+                {children}
+              </div>
+            </CollapsibleContent>
+          </CardContent>
+        </Collapsible>
+      </Card>
+    );
+  };
   
   // Verificar se há documentos vencendo
   const temDocumentosVencendo = documentos.some((doc: any) => {
@@ -586,11 +648,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             {/* Cards organizados por seção - correspondentes às abas do formulário de admissão */}
             
             {/* Card Profissional */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  💼 Informações Profissionais
-                </h3>
+            <CollapsibleSection id="profissional" title="Informações Profissionais" icon="💼">
+              <div className="mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
@@ -811,17 +870,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                          </div>
                        </>
                      )}
-                   </div>
-                 </div>
-              </CardContent>
-            </Card>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleSection>
 
             {/* Card Pessoal */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  👤 Informações Pessoais
-                </h3>
+            <CollapsibleSection id="pessoal" title="Informações Pessoais" icon="👤">
+              <div className="mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
@@ -983,15 +1039,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CollapsibleSection>
 
             {/* Card Contato */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                  📞 Informações de Contato
-                </h3>
+            <CollapsibleSection id="contato" title="Informações de Contato" icon="📞">
+              <div className="mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
@@ -1049,17 +1102,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CollapsibleSection>
 
             {/* Card Documentos */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
+            <CollapsibleSection id="documentos" title="Documentos" icon={<FileText className="h-5 w-5" />}>
+              <div className="mt-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Documentos
-                  </h3>
+                  <div></div>
                   <Button
                     variant="outline"
                     size="sm"
@@ -1125,8 +1175,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+                </div>
+              </div>
+            </CollapsibleSection>
 
             {/* Card Dependentes */}
             <Card className="bg-white border-2 border-blue-200">
