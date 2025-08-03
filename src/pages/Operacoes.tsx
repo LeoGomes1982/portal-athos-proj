@@ -51,8 +51,8 @@ export default function Operacoes() {
       description: "Gestão de advertências, suspensões e sanções",
       component: SancoesDisciplinaresSubsection,
       bgColor: "bg-white",
-      iconColor: "text-red-600",
-      cardClass: "bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-150"
+      iconColor: "text-green-600",
+      cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     },
     {
       id: "gestao-escalas",
@@ -61,8 +61,8 @@ export default function Operacoes() {
       description: "Controle de escalas e turnos de trabalho",
       component: GestaoEscalasSubsection,
       bgColor: "bg-white",
-      iconColor: "text-blue-600",
-      cardClass: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150"
+      iconColor: "text-green-600",
+      cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     }
   ];
 
