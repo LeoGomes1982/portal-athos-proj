@@ -64,6 +64,33 @@ export function useFuncionarioSync() {
     }
   };
 
+  const limparRegistrosAgenda = (funcionarioId: number) => {
+    // Carregar compromissos da agenda do DP
+    const savedCompromissos = localStorage.getItem('agenda_dp_compromissos');
+    if (savedCompromissos) {
+      const compromissos = JSON.parse(savedCompromissos);
+      
+      // Filtrar para remover compromissos relacionados a este funcionário
+      const compromissosFiltrados = compromissos.filter((compromisso: any) => {
+        const isMesmoFuncionario = compromisso.funcionarioId === funcionarioId.toString();
+        const isAvisoRelacionado = ['aviso_documento', 'aviso_experiencia', 'aviso_previo'].includes(compromisso.tipo);
+        
+        // Manter o compromisso se NÃO for do mesmo funcionário OU NÃO for um aviso relacionado
+        return !(isMesmoFuncionario && isAvisoRelacionado);
+      });
+      
+      // Salvar compromissos filtrados
+      localStorage.setItem('agenda_dp_compromissos', JSON.stringify(compromissosFiltrados));
+      
+      console.log(`Registros da agenda limpos para funcionário ${funcionarioId}. Removidos: ${compromissos.length - compromissosFiltrados.length} compromissos`);
+      
+      // Emitir evento para que outros componentes possam atualizar suas visualizações
+      window.dispatchEvent(new CustomEvent('agendaLimpa', { 
+        detail: { funcionarioId, removidos: compromissos.length - compromissosFiltrados.length } 
+      }));
+    }
+  };
+
   const setupRealtimeSubscription = () => {
     const channel = supabase
       .channel('funcionarios-changes')
@@ -72,9 +99,22 @@ export function useFuncionarioSync() {
           event: '*', 
           schema: 'public', 
           table: 'funcionarios_sync' 
-        }, 
+        },
         (payload) => {
           console.log('Funcionário atualizado em tempo real:', payload);
+          
+          // Verificar se houve mudança de status para "ativo"
+          if (payload.eventType === 'UPDATE' && payload.new && payload.old) {
+            const statusAnterior = payload.old.status;
+            const statusNovo = payload.new.status;
+            const funcionarioId = payload.new.funcionario_id;
+            
+            if (statusNovo === 'ativo' && (statusAnterior === 'experiencia' || statusAnterior === 'aviso')) {
+              console.log(`Funcionário ${funcionarioId} mudou de ${statusAnterior} para ${statusNovo} - limpando agenda`);
+              limparRegistrosAgenda(funcionarioId);
+            }
+          }
+          
           loadFuncionarios(); // Recarregar dados quando houver mudanças
         }
       )

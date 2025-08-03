@@ -64,6 +64,22 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
     
     // Criar avisos automáticos
     criarAvisosAutomaticos();
+    
+    // Escutar evento de limpeza da agenda
+    const handleAgendaLimpa = (event: CustomEvent) => {
+      console.log('Agenda limpa detectada:', event.detail);
+      // Recarregar compromissos após limpeza
+      const novosCompromissos = localStorage.getItem('agenda_dp_compromissos');
+      if (novosCompromissos) {
+        setCompromissos(JSON.parse(novosCompromissos));
+      }
+    };
+    
+    window.addEventListener('agendaLimpa', handleAgendaLimpa as EventListener);
+    
+    return () => {
+      window.removeEventListener('agendaLimpa', handleAgendaLimpa as EventListener);
+    };
   }, [funcionariosComAvisos, documentosVencendo]);
 
   const criarAvisosAutomaticos = () => {
