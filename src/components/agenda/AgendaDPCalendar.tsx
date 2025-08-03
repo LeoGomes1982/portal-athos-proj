@@ -76,7 +76,7 @@ const AgendaDPCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaDP
             cell: "relative text-center focus-within:relative focus-within:z-20 flex-1 border border-gray-200 bg-white h-16",
             day: "h-16 w-full p-0 font-medium text-lg aria-selected:opacity-100 hover:bg-gray-100 flex items-center justify-center transition-all relative",
             day_selected: "bg-purple-500 text-white hover:bg-purple-600",
-            day_today: "bg-red-500 text-white font-bold",
+            day_today: "bg-blue-500/20 text-blue-800 font-bold",
             day_outside: "text-gray-300 opacity-50",
             day_disabled: "text-gray-200 opacity-30",
           }}
