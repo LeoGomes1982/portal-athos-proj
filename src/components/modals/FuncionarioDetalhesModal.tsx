@@ -156,6 +156,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     contato: true,
     documentos: true,
     dependentes: true,
+    uniformes: true,
     historico: true
   });
   
@@ -438,7 +439,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   }: { 
     id: keyof typeof sectionStates, 
     title: string, 
-    icon: string, 
+    icon: string | React.ReactNode, 
     children: React.ReactNode,
     defaultOpen?: boolean 
   }) => {
@@ -1175,19 +1176,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     ))}
                   </div>
                 )}
-                </div>
               </div>
             </CollapsibleSection>
 
             {/* Card Dependentes */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
+            <CollapsibleSection id="dependentes" title="Dependentes" icon={<Users className="h-5 w-5" />}>
+              <div className="mt-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                      <Users className="h-5 w-5" />
-                      Dependentes
-                    </h3>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -1239,17 +1235,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </CollapsibleSection>
 
             {/* Card Uniformes e EPIs */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
+            <CollapsibleSection id="uniformes" title="Uniformes e EPIs" icon={<Shirt className="h-5 w-5" />}>
+              <div className="mt-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    <Shirt className="h-5 w-5" />
-                    Uniformes e EPIs
-                  </h3>
+                  <div></div>
                   <Button
                     variant="outline"
                     size="sm"
@@ -1369,16 +1362,14 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </CollapsibleSection>
 
             {/* Histórico */}
-            <Card className="bg-white border-2 border-blue-200">
-              <CardContent className="p-6">
+            <CollapsibleSection id="historico" title="Histórico" icon={<FileText className="h-5 w-5" />}>
+              <div className="mt-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    📋 Histórico
-                  </h3>
+                  <div></div>
                   <Button 
                     variant="outline"
                     size="sm"
@@ -1557,8 +1548,8 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     ))
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CollapsibleSection>
 
             {/* Ações */}
             <div className="flex justify-end gap-3 pt-4 border-t-2 border-blue-200">
