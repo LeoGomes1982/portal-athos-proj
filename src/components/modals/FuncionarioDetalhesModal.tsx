@@ -88,6 +88,7 @@ interface Funcionario {
   possuiAuxilioMoradia?: string;
   valorAuxilioMoradia?: string;
   empresaContratante?: string;
+  fiscalResponsavel?: string;
 }
 
 interface FuncionarioDetalhesModalProps {
@@ -618,6 +619,19 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                             {currentFuncionario.setor}
                           </Badge>
                         </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Fiscal responsável</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.fiscalResponsavel || ''}
+                          onChange={(e) => handleInputChange('fiscalResponsavel', e.target.value)}
+                          className="mt-1"
+                          placeholder="Digite o nome do fiscal responsável"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.fiscalResponsavel || '-'}</p>
                       )}
                     </div>
                     {currentFuncionario.salario && (

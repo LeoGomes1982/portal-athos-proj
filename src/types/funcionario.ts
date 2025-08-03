@@ -42,4 +42,5 @@ export interface Funcionario {
   dataInativacao?: string;
   motivoInativacao?: string;
   empresaContratante?: string;
+  fiscalResponsavel?: string;
 }
