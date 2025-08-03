@@ -74,7 +74,7 @@ export function CuidadosTreinamentosSubsection({ onBack }: CuidadosTreinamentosS
 
         {/* Page Header */}
         <div className="page-header-centered">
-          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <GraduationCap className="text-white text-3xl" size={40} />
           </div>
           <div>
@@ -130,7 +130,7 @@ export function CuidadosTreinamentosSubsection({ onBack }: CuidadosTreinamentosS
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 mb-8 justify-end">
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-green-600 hover:bg-green-700">
             <Plus size={16} className="mr-2" />
             Novo Treinamento
           </Button>
