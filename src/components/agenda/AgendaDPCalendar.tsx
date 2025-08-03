@@ -86,9 +86,9 @@ const AgendaDPCalendar = ({ selectedDate, onSelectDate, compromissos }: AgendaDP
             hasCompromisso: (date) => getCompromissosStatus(date).hasCompromisso && !getCompromissosStatus(date).allCompleted && !getCompromissosStatus(date).hasAviso
           }}
           modifiersClassNames={{
-            allCompleted: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-gray-500 after:rounded-full after:z-10",
-            hasAviso: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-red-600 after:rounded-full after:z-10 animate-pulse",
-            hasCompromisso: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-2 after:h-2 after:bg-purple-600 after:rounded-full after:z-10"
+            allCompleted: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-4 after:h-4 after:bg-gray-500 after:rounded-full after:z-10",
+            hasAviso: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-4 after:h-4 after:bg-red-600 after:rounded-full after:z-10 animate-pulse",
+            hasCompromisso: "relative after:content-[''] after:absolute after:top-0 after:right-0 after:w-4 after:h-4 after:bg-blue-600 after:rounded-full after:z-10"
           }}
         />
       </div>

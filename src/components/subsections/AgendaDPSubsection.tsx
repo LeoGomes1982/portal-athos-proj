@@ -275,7 +275,7 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
 
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mb-6 shadow-lg relative">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg relative">
             <Calendar size={32} className="text-white" />
             {compromissosUrgentes.length > 0 && (
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse border-2 border-white flex items-center justify-center">
@@ -365,7 +365,7 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
         <div className="flex justify-center gap-4 mb-8">
           <Button 
             onClick={() => setShowNovoCompromisso(true)}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-blue-600 hover:bg-blue-700"
           >
             <Plus size={20} className="mr-2" />
             Novo Compromisso

@@ -18,7 +18,7 @@ const AgendaHeader = () => {
 
       {/* Page Header */}
       <div className="page-header-centered">
-        <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
           <CalendarIcon size={32} className="text-white" />
         </div>
         <div>
