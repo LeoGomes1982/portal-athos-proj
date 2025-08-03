@@ -60,7 +60,7 @@ export function ResultadosPessoaisSubsection({ onBack }: ResultadosPessoaisSubse
             <span className="text-white text-3xl">📈</span>
           </div>
           <div>
-            <h1 className="page-title mb-0">Resultados Pessoais</h1>
+            <h1 className="page-title mb-0">Avaliações de Desempenho</h1>
             <p className="text-description">Acompanhamento de performance e metas individuais</p>
           </div>
         </div>
