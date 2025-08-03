@@ -50,13 +50,16 @@ export default function Gerencia() {
       icon: Target,
       description: "Ferramentas e processos para tomada de decisão",
       component: TomadaDecisaoSubsection,
-      bgColor: "bg-white",
-      iconColor: "text-green-600",
-      cardClass: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-150"
+      bgColor: "bg-gray-100",
+      iconColor: "text-gray-400",
+      cardClass: "bg-gradient-to-br from-gray-100 to-gray-200 border-gray-300 cursor-not-allowed opacity-60",
+      disabled: true
     }
   ];
 
   const handleSubsectionClick = (subsectionId: string) => {
+    const subsection = subsections.find(s => s.id === subsectionId);
+    if (subsection?.disabled) return;
     setActiveSubsection(subsectionId);
   };
 
@@ -98,7 +101,7 @@ export default function Gerencia() {
           {subsections.map((subsection) => (
             <div 
               key={subsection.id}
-              className={`modern-card group relative p-8 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${subsection.cardClass}`}
+              className={`modern-card group relative p-8 border-2 transition-all duration-300 ${subsection.disabled ? '' : 'hover:scale-105 hover:shadow-xl cursor-pointer'} ${subsection.cardClass}`}
               onClick={() => handleSubsectionClick(subsection.id)}
             >
               <div className="flex flex-col items-center text-center space-y-4">
