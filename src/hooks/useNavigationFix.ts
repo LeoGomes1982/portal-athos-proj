@@ -22,7 +22,7 @@ export const useNavigationFix = () => {
         '/configuracoes': 'Configurações - Portal Athos',
         '/cicad': 'CICAD - Portal Athos',
         '/processo-seletivo': 'Processo Seletivo - Portal Athos',
-        '/portal-midia-externa': 'Portal Mídia Externa - Portal Athos'
+        
       };
 
       document.title = titles[location.pathname] || 'Portal Grupo Athos';

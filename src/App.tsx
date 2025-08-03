@@ -23,7 +23,7 @@ import Gerencia from "./pages/Gerencia";
 
 import CICAD from "./pages/CICAD";
 import CICADFormulario from "./pages/CICADFormulario";
-import PortalMidiaExterna from "./pages/PortalMidiaExterna";
+
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 import { AvaliacaoExterna } from "./pages/AvaliacaoExterna";
 import { GestaoServicosExtras } from "./pages/GestaoServicosExtras";
@@ -108,11 +108,6 @@ function App() {
               <Route path="/portal-admissao" element={
                 <ProtectedRoute>
                   <PortalAdmissao />
-                </ProtectedRoute>
-              } />
-              <Route path="/portal-midia-externa" element={
-                <ProtectedRoute>
-                  <PortalMidiaExterna />
                 </ProtectedRoute>
               } />
               <Route path="/cicad" element={
