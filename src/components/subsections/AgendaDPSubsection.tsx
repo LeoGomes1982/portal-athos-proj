@@ -27,6 +27,8 @@ interface Compromisso {
   resolvido?: boolean;
   funcionarioId?: string;
   funcionarioNome?: string;
+  reagendamentos?: number;
+  dataOriginal?: string;
 }
 
 interface AgendaDPSubsectionProps {
@@ -140,7 +142,9 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
             criadoPor: 'Sistema',
             prioridade: 'muito-importante',
             funcionarioId: funcionario.id.toString(),
-            funcionarioNome: funcionario.nome
+            funcionarioNome: funcionario.nome,
+            reagendamentos: 0,
+            dataOriginal: dataVencimento.toISOString().split('T')[0]
           });
         }
       }
@@ -244,18 +248,24 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
   };
 
   const handleReagendarAviso = (compromisso: Compromisso) => {
-    // Reagendar o aviso para 7 dias à frente (apenas na agenda, sem modificar datas do funcionário)
-    const novaData = new Date();
-    novaData.setDate(novaData.getDate() + 7);
+    // Calcular a nova data baseada na data original + (reagendamentos + 1) * 3 dias
+    const dataOriginal = new Date(compromisso.dataOriginal || compromisso.data);
+    const reagendamentosAtuais = compromisso.reagendamentos || 0;
+    const novaData = new Date(dataOriginal);
+    novaData.setDate(dataOriginal.getDate() + ((reagendamentosAtuais + 1) * 3));
     
     const avisoReagendado: Compromisso = {
       ...compromisso,
       id: `reagendado_${Date.now()}`,
       data: novaData.toISOString().split('T')[0],
-      titulo: `${compromisso.titulo} (Reagendado)`,
-      descricao: `${compromisso.descricao} - Reagendado para acompanhamento`,
+      titulo: compromisso.titulo.includes('(Reagendado)') 
+        ? compromisso.titulo 
+        : `${compromisso.titulo} (Reagendado)`,
+      descricao: `${compromisso.descricao} - Reagendado automaticamente para acompanhamento`,
       resolvido: false,
-      concluido: false
+      concluido: false,
+      reagendamentos: reagendamentosAtuais + 1,
+      dataOriginal: compromisso.dataOriginal || compromisso.data
     };
 
     // Marcar o aviso original como resolvido
@@ -274,7 +284,7 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
       data: new Date().toISOString(),
       usuario: 'DP',
       acao: 'Aviso reagendado',
-      detalhes: `${compromisso.titulo} - ${compromisso.funcionarioNome} reagendado para ${novaData.toLocaleDateString('pt-BR')}`,
+      detalhes: `${compromisso.titulo} - ${compromisso.funcionarioNome} reagendado para ${novaData.toLocaleDateString('pt-BR')} (${reagendamentosAtuais + 1}º reagendamento)`,
       tipo: 'reagendamento_aviso'
     };
     
@@ -288,7 +298,7 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
 
     toast({
       title: "Aviso reagendado",
-      description: `Aviso reagendado para ${novaData.toLocaleDateString('pt-BR')} - dados do funcionário não foram alterados`
+      description: `Aviso reagendado para ${novaData.toLocaleDateString('pt-BR')} (+${(reagendamentosAtuais + 1) * 3} dias da data original)`
     });
   };
 
