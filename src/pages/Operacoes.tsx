@@ -31,7 +31,7 @@ export default function Operacoes() {
       description: "Controle de serviços extras, valores e relatórios",
       component: GestaoServicosExtrasSubsection,
       bgColor: "bg-white",
-      iconColor: "text-green-600",
+      iconColor: "text-blue-600",
       cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     },
     {
@@ -61,7 +61,7 @@ export default function Operacoes() {
       description: "Controle de escalas e turnos de trabalho",
       component: GestaoEscalasSubsection,
       bgColor: "bg-white",
-      iconColor: "text-green-600",
+      iconColor: "text-purple-600",
       cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     }
   ];
