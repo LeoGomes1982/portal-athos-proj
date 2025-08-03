@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Plus, Share2, Bell, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Calendar, Plus, Share2, Bell, CheckCircle2, CalendarClock } from "lucide-react";
 import { useDocumentNotifications } from "@/hooks/useDocumentNotifications";
 import { useAvisoVencimentos } from "@/hooks/useAvisoVencimentos";
 import AgendaDPCalendar from "@/components/agenda/AgendaDPCalendar";
@@ -240,6 +240,55 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
     toast({
       title: "Aviso resolvido",
       description: "Aviso marcado como resolvido e log gerado no sistema"
+    });
+  };
+
+  const handleReagendarAviso = (compromisso: Compromisso) => {
+    // Reagendar o aviso para 7 dias à frente (apenas na agenda, sem modificar datas do funcionário)
+    const novaData = new Date();
+    novaData.setDate(novaData.getDate() + 7);
+    
+    const avisoReagendado: Compromisso = {
+      ...compromisso,
+      id: `reagendado_${Date.now()}`,
+      data: novaData.toISOString().split('T')[0],
+      titulo: `${compromisso.titulo} (Reagendado)`,
+      descricao: `${compromisso.descricao} - Reagendado para acompanhamento`,
+      resolvido: false,
+      concluido: false
+    };
+
+    // Marcar o aviso original como resolvido
+    const compromissosAtualizados = compromissos.map(c => 
+      c.id === compromisso.id ? { ...c, resolvido: true, concluido: true } : c
+    );
+
+    // Adicionar o novo aviso reagendado
+    const novosCompromissos = [...compromissosAtualizados, avisoReagendado];
+    setCompromissos(novosCompromissos);
+    localStorage.setItem('agenda_dp_compromissos', JSON.stringify(novosCompromissos));
+
+    // Gerar log no sistema
+    const log = {
+      id: Date.now().toString(),
+      data: new Date().toISOString(),
+      usuario: 'DP',
+      acao: 'Aviso reagendado',
+      detalhes: `${compromisso.titulo} - ${compromisso.funcionarioNome} reagendado para ${novaData.toLocaleDateString('pt-BR')}`,
+      tipo: 'reagendamento_aviso'
+    };
+    
+    const logsExistentes = localStorage.getItem('sistema_logs') || '[]';
+    const logs = JSON.parse(logsExistentes);
+    logs.push(log);
+    localStorage.setItem('sistema_logs', JSON.stringify(logs));
+
+    setShowResolverModal(false);
+    setCompromissoParaResolver(null);
+
+    toast({
+      title: "Aviso reagendado",
+      description: `Aviso reagendado para ${novaData.toLocaleDateString('pt-BR')} - dados do funcionário não foram alterados`
     });
   };
 
@@ -526,6 +575,15 @@ export const AgendaDPSubsection = ({ onBack }: AgendaDPSubsectionProps) => {
             <Button variant="outline" onClick={() => setShowResolverModal(false)}>
               Cancelar
             </Button>
+            {compromissoParaResolver?.tipo === 'aviso_previo' && (
+              <Button 
+                onClick={() => compromissoParaResolver && handleReagendarAviso(compromissoParaResolver)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <CalendarClock size={16} className="mr-1" />
+                Reagendar
+              </Button>
+            )}
             <Button 
               onClick={() => compromissoParaResolver && handleMarcarResolvido(compromissoParaResolver)}
               className="bg-green-600 hover:bg-green-700"
