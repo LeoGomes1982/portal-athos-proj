@@ -213,7 +213,7 @@ export function GestaoServicosExtras() {
       doc.text(servico.local_servico.substring(0, 15), 70, yPos);
       doc.text(servico.fiscal_responsavel.substring(0, 12), 110, yPos);
       doc.text(servico.motivo_servico.substring(0, 12), 150, yPos);
-      doc.text(servico.chave_pix.substring(0, 20), 190, yPos);
+      doc.text(servico.chave_pix, 190, yPos);
       doc.text(servico.valor ? `R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "R$ 0,00", 240, yPos);
       
       yPos += 8;
