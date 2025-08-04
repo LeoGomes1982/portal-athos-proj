@@ -159,101 +159,72 @@ export function GestaoServicosExtras() {
   };
 
   const gerarRelatorioPDF = (servicos: ServicoExtra[], filtros: FiltrosServicos) => {
-    const doc = new jsPDF();
+    const doc = new jsPDF("landscape");
     
-    // Título centralizado
-    doc.setFontSize(18);
-    doc.text("RELATÓRIO DE SERVIÇOS EXTRAS", 105, 20, { align: "center" });
+    // Título
+    doc.setFontSize(16);
+    doc.text("RELATÓRIO DE SERVIÇOS EXTRAS", 148, 20, { align: "center" });
     
-    // Data do relatório
+    // Data
     doc.setFontSize(10);
     const hoje = new Date().toLocaleDateString("pt-BR");
-    doc.text(`Gerado em: ${hoje}`, 20, 35);
+    doc.text(`Data: ${hoje}`, 20, 35);
     
     let yPos = 50;
     
-    // Lista simplificada de serviços
-    doc.setFontSize(12);
-    doc.text("SERVIÇOS REGISTRADOS", 20, yPos);
-    yPos += 15;
+    // Cabeçalho da tabela
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.text("NOME", 20, yPos);
+    doc.text("LOCAL", 80, yPos);
+    doc.text("FISCAL", 140, yPos);
+    doc.text("SERVIÇO", 180, yPos);
+    doc.text("VALOR A PAGAR", 240, yPos);
     
-    // Dados dos serviços de forma mais simples
-    servicos.forEach((servico, index) => {
-      if (yPos > 260) {
+    // Linha do cabeçalho
+    yPos += 2;
+    doc.line(20, yPos, 280, yPos);
+    yPos += 8;
+    
+    // Dados
+    doc.setFont(undefined, "normal");
+    servicos.forEach((servico) => {
+      if (yPos > 190) {
         doc.addPage();
         yPos = 20;
+        
+        // Repetir cabeçalho na nova página
+        doc.setFont(undefined, "bold");
+        doc.text("NOME", 20, yPos);
+        doc.text("LOCAL", 80, yPos);
+        doc.text("FISCAL", 140, yPos);
+        doc.text("SERVIÇO", 180, yPos);
+        doc.text("VALOR A PAGAR", 240, yPos);
+        yPos += 2;
+        doc.line(20, yPos, 280, yPos);
+        yPos += 8;
+        doc.setFont(undefined, "normal");
       }
       
-      const valorPorHora = servico.valor ? servico.valor / servico.quantidade_horas : 0;
+      // Dados do serviço em uma linha
+      doc.text(servico.nome_pessoa.substring(0, 25), 20, yPos);
+      doc.text(servico.local_servico.substring(0, 20), 80, yPos);
+      doc.text(servico.fiscal_responsavel.substring(0, 15), 140, yPos);
+      doc.text(servico.motivo_servico.substring(0, 20), 180, yPos);
+      doc.text(servico.valor ? `R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "R$ 0,00", 240, yPos);
       
-      // Número do serviço
-      doc.setFontSize(10);
-      doc.text(`${index + 1}.`, 20, yPos);
-      
-      // Nome da pessoa
-      doc.setFontSize(11);
-      doc.text(`Nome: ${servico.nome_pessoa}`, 30, yPos);
-      yPos += 6;
-      
-      // Local e data
-      doc.setFontSize(9);
-      doc.text(`Local: ${servico.local_servico}`, 30, yPos);
-      doc.text(`Data: ${format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}`, 130, yPos);
-      yPos += 6;
-      
-      // Fiscal e horas
-      doc.text(`Fiscal: ${servico.fiscal_responsavel}`, 30, yPos);
-      doc.text(`Horas: ${servico.quantidade_horas}h`, 130, yPos);
-      yPos += 6;
-      
-      // Chave PIX por extenso
-      doc.text(`Chave PIX: ${servico.chave_pix}`, 30, yPos);
-      yPos += 6;
-      
-      // Valores
-      if (servico.valor) {
-        doc.text(`Valor por hora: R$ ${valorPorHora.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, 30, yPos);
-        doc.text(`Valor total: R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, 130, yPos);
-      }
-      
-      yPos += 12;
-      
-      // Linha separadora
-      if (index < servicos.length - 1) {
-        doc.line(20, yPos - 2, 190, yPos - 2);
-        yPos += 5;
-      }
+      yPos += 8;
     });
     
-    // Resumo final
-    const totalHoras = servicos.reduce((acc, s) => acc + s.quantidade_horas, 0);
+    // Linha final
+    yPos += 5;
+    doc.line(20, yPos, 280, yPos);
+    yPos += 10;
+    
+    // Total
     const totalValor = servicos.reduce((acc, s) => acc + (s.valor || 0), 0);
-    
-    yPos += 15;
-    if (yPos > 250) {
-      doc.addPage();
-      yPos = 20;
-    }
-    
-    // Linha separadora final
-    doc.line(20, yPos, 190, yPos);
-    yPos += 10;
-    
-    // Totais
-    doc.setFontSize(12);
-    doc.text("RESUMO GERAL", 20, yPos);
-    yPos += 10;
-    
-    doc.setFontSize(11);
-    doc.text(`Total de serviços: ${servicos.length}`, 20, yPos);
-    yPos += 8;
-    doc.text(`Total de horas trabalhadas: ${totalHoras}h`, 20, yPos);
-    yPos += 8;
-    doc.text(`Valor total a ser pago: R$ ${totalValor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, 20, yPos);
-    
-    // Rodapé
-    doc.setFontSize(8);
-    doc.text("Grupo Athos Brasil - Relatório de Serviços Extras", 105, 285, { align: "center" });
+    doc.setFont(undefined, "bold");
+    doc.text(`TOTAL GERAL: R$ ${totalValor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, 200, yPos);
     
     doc.save("relatorio-servicos-extras.pdf");
   };
