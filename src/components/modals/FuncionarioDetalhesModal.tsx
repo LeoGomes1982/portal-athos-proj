@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw, ClipboardList, Edit, Paperclip, ChevronDown, ChevronUp } from "lucide-react";
+import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw, ClipboardList, Edit, Paperclip, ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
@@ -129,6 +129,10 @@ const getOrigemIcon = (origem: string, tipo: string) => {
       return <ClipboardList className={`w-4 h-4 ${colorClass}`} />;
     case "avaliacao":
       return <Edit className={`w-4 h-4 ${colorClass}`} />;
+    case "treinamento":
+      return <GraduationCap className={`w-4 h-4 ${colorClass}`} />;
+    case "sancao":
+      return <AlertTriangle className={`w-4 h-4 ${colorClass}`} />;
     case "manual":
     default:
       return <Paperclip className={`w-4 h-4 ${colorClass}`} />;
@@ -1368,6 +1372,35 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
             {/* Histórico */}
             <CollapsibleSection id="historico" title="Histórico" icon={<FileText className="h-5 w-5" />}>
               <div className="mt-4">
+                {/* Escala de Símbolos */}
+                <Card className="mb-4 bg-blue-50 border-blue-200">
+                  <CardContent className="p-3">
+                    <h4 className="font-medium text-slate-700 mb-3 text-sm">Legenda dos Símbolos</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <Paperclip className="w-4 h-4 text-gray-600" />
+                        <span>Histórico manual</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Edit className="w-4 h-4 text-gray-600" />
+                        <span>Avaliação de desempenho</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <ClipboardList className="w-4 h-4 text-gray-600" />
+                        <span>Fiscalização</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4 text-gray-600" />
+                        <span>Treinamentos</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-gray-600" />
+                        <span>Sanções disciplinares</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 <div className="flex items-center justify-between mb-4">
                   <div></div>
                   <Button 
