@@ -180,7 +180,7 @@ export function GestaoServicosExtras() {
     doc.text("FISCAL", 110, yPos);
     doc.text("SERVIÇO", 150, yPos);
     doc.text("CHAVE PIX", 190, yPos);
-    doc.text("VALOR A PAGAR", 240, yPos);
+    doc.text("VALOR A PAGAR", 260, yPos);
     
     // Linha do cabeçalho
     yPos += 2;
@@ -201,7 +201,7 @@ export function GestaoServicosExtras() {
         doc.text("FISCAL", 110, yPos);
         doc.text("SERVIÇO", 150, yPos);
         doc.text("CHAVE PIX", 190, yPos);
-        doc.text("VALOR A PAGAR", 240, yPos);
+        doc.text("VALOR A PAGAR", 260, yPos);
         yPos += 2;
         doc.line(20, yPos, 280, yPos);
         yPos += 8;
@@ -214,7 +214,7 @@ export function GestaoServicosExtras() {
       doc.text(servico.fiscal_responsavel.substring(0, 12), 110, yPos);
       doc.text(servico.motivo_servico.substring(0, 12), 150, yPos);
       doc.text(servico.chave_pix, 190, yPos);
-      doc.text(servico.valor ? `R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "R$ 0,00", 240, yPos);
+      doc.text(servico.valor ? `R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "R$ 0,00", 260, yPos);
       
       yPos += 8;
     });
