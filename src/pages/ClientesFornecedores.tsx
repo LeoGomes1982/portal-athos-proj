@@ -303,15 +303,14 @@ const ClientesFornecedores = () => {
     <div className="min-h-screen">
       <div className="content-wrapper animate-fade-in bg-orange-100/80 rounded-lg shadow-lg m-6 p-8">
         {/* Navigation Button */}
-        <div className="navigation-button">
-          <button 
-            onClick={() => navigate("/comercial")}
-            className="back-button"
-          >
-            <ArrowLeft size={16} />
-            Voltar
-          </button>
-        </div>
+        <Button 
+          variant="ghost"
+          onClick={() => navigate("/comercial")}
+          className="mb-6 p-2"
+        >
+          <ArrowLeft size={16} />
+          Voltar
+        </Button>
 
         {/* Page Header */}
         <div className="page-header-centered">
