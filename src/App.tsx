@@ -17,6 +17,7 @@ import Configuracoes from "./pages/Configuracoes";
 import EdicaoContratosPropostas from "./pages/EdicaoContratosPropostas";
 import PortalAdmissao from "./pages/PortalAdmissao";
 import PortalVagas from "./pages/PortalVagas";
+import PortalBPO from "./pages/PortalBPO";
 
 import Gerencia from "./pages/Gerencia";
 
@@ -49,6 +50,7 @@ function App() {
               
               {/* Public routes that don't require authentication */}
               <Route path="/portal-vagas" element={<PortalVagas />} />
+              <Route path="/portal-bpo" element={<PortalBPO />} />
               <Route path="/cicad-formulario" element={<CICADFormulario />} />
               <Route path="/avaliacao-externa/:token" element={<AvaliacaoExterna />} />
               
