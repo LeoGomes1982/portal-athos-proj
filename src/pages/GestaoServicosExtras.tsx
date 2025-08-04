@@ -3,13 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, ChevronLeft, Briefcase, Eye, Calendar, User, MapPin, FileText, Clock, DollarSign } from "lucide-react";
+import { Search, Plus, Filter, Eye, Calendar, User, MapPin, FileText, Clock, DollarSign, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NovoServicoExtraModal } from "@/components/modals/NovoServicoExtraModal";
+import { ServicoExtraDetalhesModal } from "@/components/modals/ServicoExtraDetalhesModal";
+import { FiltrosServicosExtrasModal, FiltrosServicos } from "@/components/modals/FiltrosServicosExtrasModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import jsPDF from "jspdf";
 
 interface ServicoExtra {
   id: string;
@@ -32,6 +35,15 @@ export function GestaoServicosExtras() {
   const [servicosExtras, setServicosExtras] = useState<ServicoExtra[]>([]);
   const [loading, setLoading] = useState(true);
   const [novoServicoModalOpen, setNovoServicoModalOpen] = useState(false);
+  const [detalhesModalOpen, setDetalhesModalOpen] = useState(false);
+  const [filtrosModalOpen, setFiltrosModalOpen] = useState(false);
+  const [servicoSelecionado, setServicoSelecionado] = useState<ServicoExtra | null>(null);
+  const [filtrosAtivos, setFiltrosAtivos] = useState<FiltrosServicos>({
+    periodo: "",
+    fiscal: "",
+    localServico: "",
+    cidade: ""
+  });
 
   useEffect(() => {
     fetchServicosExtras();
@@ -71,23 +83,162 @@ export function GestaoServicosExtras() {
     });
   };
 
-  const filteredServicos = servicosExtras.filter(servico =>
-    servico.nome_pessoa.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    servico.local_servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    servico.motivo_servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    servico.fiscal_responsavel.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const aplicarFiltrosPeriodo = (servicos: ServicoExtra[]) => {
+    if (!filtrosAtivos.periodo) return servicos;
 
-  // Agrupar serviços por pessoa
-  const servicosPorPessoa = filteredServicos.reduce((acc, servico) => {
-    const chave = servico.nome_pessoa;
+    const agora = new Date();
     
-    if (!acc[chave]) {
-      acc[chave] = [];
+    switch (filtrosAtivos.periodo) {
+      case "semana":
+        const inicioSemana = startOfWeek(agora, { locale: ptBR });
+        const fimSemana = endOfWeek(agora, { locale: ptBR });
+        return servicos.filter(servico => 
+          isWithinInterval(new Date(servico.data_servico), { start: inicioSemana, end: fimSemana })
+        );
+      case "mes":
+        const inicioMes = startOfMonth(agora);
+        const fimMes = endOfMonth(agora);
+        return servicos.filter(servico => 
+          isWithinInterval(new Date(servico.data_servico), { start: inicioMes, end: fimMes })
+        );
+      case "personalizado":
+        if (filtrosAtivos.dataInicio && filtrosAtivos.dataFim) {
+          return servicos.filter(servico => 
+            isWithinInterval(new Date(servico.data_servico), { 
+              start: filtrosAtivos.dataInicio!, 
+              end: filtrosAtivos.dataFim! 
+            })
+          );
+        }
+        return servicos;
+      default:
+        return servicos;
     }
-    acc[chave].push(servico);
-    return acc;
-  }, {} as Record<string, ServicoExtra[]>);
+  };
+
+  const filteredServicos = aplicarFiltrosPeriodo(servicosExtras).filter(servico => {
+    const matchesSearch = servico.nome_pessoa.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      servico.local_servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      servico.motivo_servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      servico.fiscal_responsavel.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFiscal = !filtrosAtivos.fiscal || servico.fiscal_responsavel === filtrosAtivos.fiscal;
+    const matchesLocal = !filtrosAtivos.localServico || servico.local_servico === filtrosAtivos.localServico;
+    const matchesCidade = !filtrosAtivos.cidade || 
+      servico.local_servico.toLowerCase().includes(filtrosAtivos.cidade.toLowerCase());
+    
+    return matchesSearch && matchesFiscal && matchesLocal && matchesCidade;
+  });
+
+  const handleAbrirDetalhes = (servico: ServicoExtra) => {
+    setServicoSelecionado(servico);
+    setDetalhesModalOpen(true);
+  };
+
+  const handleAplicarFiltros = (filtros: FiltrosServicos) => {
+    setFiltrosAtivos(filtros);
+  };
+
+  const handleGerarRelatorio = (filtros: FiltrosServicos) => {
+    const servicosFiltrados = aplicarFiltrosPeriodo(servicosExtras).filter(servico => {
+      const matchesFiscal = !filtros.fiscal || servico.fiscal_responsavel === filtros.fiscal;
+      const matchesLocal = !filtros.localServico || servico.local_servico === filtros.localServico;
+      const matchesCidade = !filtros.cidade || 
+        servico.local_servico.toLowerCase().includes(filtros.cidade.toLowerCase());
+      
+      return matchesFiscal && matchesLocal && matchesCidade;
+    });
+
+    gerarRelatorioPDF(servicosFiltrados, filtros);
+  };
+
+  const gerarRelatorioPDF = (servicos: ServicoExtra[], filtros: FiltrosServicos) => {
+    const doc = new jsPDF();
+    
+    // Título
+    doc.setFontSize(20);
+    doc.text('Relatório de Serviços Extras', 20, 20);
+    
+    // Informações dos filtros
+    doc.setFontSize(12);
+    let yPos = 40;
+    
+    if (filtros.periodo) {
+      doc.text(`Período: ${filtros.periodo}`, 20, yPos);
+      yPos += 10;
+    }
+    if (filtros.fiscal) {
+      doc.text(`Fiscal: ${filtros.fiscal}`, 20, yPos);
+      yPos += 10;
+    }
+    if (filtros.localServico) {
+      doc.text(`Local: ${filtros.localServico}`, 20, yPos);
+      yPos += 10;
+    }
+    if (filtros.cidade) {
+      doc.text(`Cidade: ${filtros.cidade}`, 20, yPos);
+      yPos += 10;
+    }
+    
+    yPos += 10;
+    
+    // Cabeçalho da tabela
+    doc.setFontSize(10);
+    doc.text('Nome', 20, yPos);
+    doc.text('Local', 60, yPos);
+    doc.text('Fiscal', 100, yPos);
+    doc.text('PIX', 130, yPos);
+    doc.text('Horas', 170, yPos);
+    doc.text('Valor', 190, yPos);
+    
+    yPos += 5;
+    doc.line(20, yPos, 200, yPos);
+    yPos += 10;
+    
+    // Dados
+    servicos.forEach((servico) => {
+      if (yPos > 270) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      const valorPorHora = servico.valor ? servico.valor / servico.quantidade_horas : 0;
+      
+      doc.text(servico.nome_pessoa.substring(0, 15), 20, yPos);
+      doc.text(servico.local_servico.substring(0, 15), 60, yPos);
+      doc.text(servico.fiscal_responsavel.substring(0, 12), 100, yPos);
+      doc.text(servico.chave_pix.substring(0, 12), 130, yPos);
+      doc.text(`${servico.quantidade_horas}h`, 170, yPos);
+      doc.text(`R$ ${valorPorHora.toFixed(2)}`, 190, yPos);
+      
+      yPos += 8;
+    });
+    
+    // Totais
+    const totalHoras = servicos.reduce((acc, s) => acc + s.quantidade_horas, 0);
+    const totalValor = servicos.reduce((acc, s) => acc + (s.valor || 0), 0);
+    
+    yPos += 10;
+    doc.line(20, yPos, 200, yPos);
+    yPos += 10;
+    doc.setFontSize(12);
+    doc.text(`Total de Horas: ${totalHoras}h`, 20, yPos);
+    doc.text(`Valor Total: R$ ${totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 120, yPos);
+    
+    doc.save('relatorio-servicos-extras.pdf');
+  };
+
+  // Extrair listas únicas para os filtros
+  const fiscaisUnicos = [...new Set(servicosExtras.map(s => s.fiscal_responsavel))].sort();
+  const locaisUnicos = [...new Set(servicosExtras.map(s => s.local_servico))].sort();
+  const cidadesUnicas = [...new Set(servicosExtras.map(s => {
+    // Extrair possíveis cidades dos nomes dos locais
+    const local = s.local_servico.toLowerCase();
+    if (local.includes('brasília') || local.includes('brasilia')) return 'Brasília';
+    if (local.includes('goiânia') || local.includes('goiania')) return 'Goiânia';
+    if (local.includes('anápolis') || local.includes('anapolis')) return 'Anápolis';
+    return 'Outras';
+  }))].sort();
 
   const totalServicos = servicosExtras.length;
   const totalHoras = servicosExtras.reduce((acc, servico) => acc + servico.quantidade_horas, 0);
@@ -155,7 +306,7 @@ export function GestaoServicosExtras() {
         </Card>
       </div>
 
-      {/* Search and Add Section */}
+      {/* Search and Filter Section */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8 animate-slide-up">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-description" size={20} />
@@ -167,6 +318,17 @@ export function GestaoServicosExtras() {
           />
         </div>
         <Button 
+          variant="outline"
+          onClick={() => setFiltrosModalOpen(true)}
+          className="border-primary text-primary hover:bg-primary hover:text-white"
+        >
+          <Filter className="mr-2" size={16} />
+          Filtros
+          {(filtrosAtivos.periodo || filtrosAtivos.fiscal || filtrosAtivos.localServico || filtrosAtivos.cidade) && (
+            <Badge className="ml-2 bg-primary text-white">•</Badge>
+          )}
+        </Button>
+        <Button 
           onClick={handleNovoServico}
           className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
         >
@@ -175,22 +337,24 @@ export function GestaoServicosExtras() {
         </Button>
       </div>
 
-      {/* Serviços List */}
-      <div className="space-y-6 animate-slide-up">
+      {/* Serviços List - Cards Compactos */}
+      <div className="space-y-4 animate-slide-up">
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="text-description mt-2">Carregando serviços extras...</p>
           </div>
-        ) : Object.keys(servicosPorPessoa).length === 0 ? (
+        ) : filteredServicos.length === 0 ? (
           <Card className="modern-card">
             <CardContent className="p-8 text-center">
               <Briefcase className="mx-auto mb-4 text-description" size={48} />
               <h3 className="subsection-title mb-2">Nenhum serviço extra encontrado</h3>
               <p className="text-description mb-4">
-                {searchTerm ? "Tente ajustar os filtros de busca." : "Comece criando seu primeiro serviço extra."}
+                {searchTerm || filtrosAtivos.periodo || filtrosAtivos.fiscal || filtrosAtivos.localServico || filtrosAtivos.cidade
+                  ? "Tente ajustar os filtros de busca." 
+                  : "Comece criando seu primeiro serviço extra."}
               </p>
-              {!searchTerm && (
+              {!searchTerm && !filtrosAtivos.periodo && (
                 <Button onClick={handleNovoServico} variant="outline">
                   <Plus className="mr-2" size={16} />
                   Criar Primeiro Serviço
@@ -199,62 +363,71 @@ export function GestaoServicosExtras() {
             </CardContent>
           </Card>
         ) : (
-          Object.entries(servicosPorPessoa).map(([pessoa, servicos]) => (
-            <Card key={pessoa} className="modern-card">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <User className="text-green-600" size={24} />
-                  <div>
-                    <CardTitle className="text-lg">{pessoa}</CardTitle>
-                    <p className="text-sm text-description">
-                      {servicos.length} serviço{servicos.length !== 1 ? 's' : ''} extra{servicos.length !== 1 ? 's' : ''}
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {servicos.map((servico) => (
-                    <div key={servico.id} className="flex items-center justify-between p-4 bg-background rounded-lg border">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-medium">{servico.motivo_servico}</h4>
-                          <Badge className="bg-green-100 text-green-800 border-green-200">
-                            {servico.quantidade_horas}h
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-description">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            {format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin size={14} />
-                            {servico.local_servico}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <FileText size={14} />
-                            {servico.fiscal_responsavel}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <DollarSign size={14} />
-                            {servico.chave_pix}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        {servico.valor && (
-                          <p className="text-sm font-medium text-green-600">
-                            R$ {servico.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </p>
-                        )}
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredServicos.map((servico) => (
+              <Card 
+                key={servico.id} 
+                className="modern-card cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+                onClick={() => handleAbrirDetalhes(servico)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <User className="text-primary" size={16} />
+                      <h4 className="font-semibold text-sm">{servico.nome_pessoa}</h4>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                    <Badge variant="secondary" className="text-xs">
+                      {servico.quantidade_horas}h
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <FileText size={12} />
+                      <span className="truncate">{servico.motivo_servico}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar size={12} />
+                      <span>{format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin size={12} />
+                      <span className="truncate">{servico.local_servico}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <User size={12} />
+                      <span className="truncate">{servico.fiscal_responsavel}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <DollarSign size={12} />
+                      <span className="truncate font-mono">{servico.chave_pix}</span>
+                    </div>
+                    {servico.valor && (
+                      <span className="text-sm font-semibold text-green-600">
+                        R$ {servico.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full mt-3 text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAbrirDetalhes(servico);
+                    }}
+                  >
+                    <Eye className="mr-1" size={12} />
+                    Ver Detalhes
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
 
@@ -262,6 +435,22 @@ export function GestaoServicosExtras() {
         open={novoServicoModalOpen}
         onOpenChange={setNovoServicoModalOpen}
         onServicoAdicionado={handleServicoAdicionado}
+      />
+
+      <ServicoExtraDetalhesModal
+        servico={servicoSelecionado}
+        open={detalhesModalOpen}
+        onOpenChange={setDetalhesModalOpen}
+      />
+
+      <FiltrosServicosExtrasModal
+        open={filtrosModalOpen}
+        onOpenChange={setFiltrosModalOpen}
+        onAplicarFiltros={handleAplicarFiltros}
+        onGerarRelatorio={handleGerarRelatorio}
+        fiscais={fiscaisUnicos}
+        locais={locaisUnicos}
+        cidades={cidadesUnicas}
       />
     </>
   );
