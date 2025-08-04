@@ -176,9 +176,10 @@ export function GestaoServicosExtras() {
     doc.setFontSize(10);
     doc.setFont(undefined, "bold");
     doc.text("NOME", 20, yPos);
-    doc.text("LOCAL", 80, yPos);
-    doc.text("FISCAL", 140, yPos);
-    doc.text("SERVIÇO", 180, yPos);
+    doc.text("LOCAL", 70, yPos);
+    doc.text("FISCAL", 110, yPos);
+    doc.text("SERVIÇO", 150, yPos);
+    doc.text("CHAVE PIX", 190, yPos);
     doc.text("VALOR A PAGAR", 240, yPos);
     
     // Linha do cabeçalho
@@ -196,9 +197,10 @@ export function GestaoServicosExtras() {
         // Repetir cabeçalho na nova página
         doc.setFont(undefined, "bold");
         doc.text("NOME", 20, yPos);
-        doc.text("LOCAL", 80, yPos);
-        doc.text("FISCAL", 140, yPos);
-        doc.text("SERVIÇO", 180, yPos);
+        doc.text("LOCAL", 70, yPos);
+        doc.text("FISCAL", 110, yPos);
+        doc.text("SERVIÇO", 150, yPos);
+        doc.text("CHAVE PIX", 190, yPos);
         doc.text("VALOR A PAGAR", 240, yPos);
         yPos += 2;
         doc.line(20, yPos, 280, yPos);
@@ -207,10 +209,11 @@ export function GestaoServicosExtras() {
       }
       
       // Dados do serviço em uma linha
-      doc.text(servico.nome_pessoa.substring(0, 25), 20, yPos);
-      doc.text(servico.local_servico.substring(0, 20), 80, yPos);
-      doc.text(servico.fiscal_responsavel.substring(0, 15), 140, yPos);
-      doc.text(servico.motivo_servico.substring(0, 20), 180, yPos);
+      doc.text(servico.nome_pessoa.substring(0, 15), 20, yPos);
+      doc.text(servico.local_servico.substring(0, 15), 70, yPos);
+      doc.text(servico.fiscal_responsavel.substring(0, 12), 110, yPos);
+      doc.text(servico.motivo_servico.substring(0, 12), 150, yPos);
+      doc.text(servico.chave_pix.substring(0, 20), 190, yPos);
       doc.text(servico.valor ? `R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "R$ 0,00", 240, yPos);
       
       yPos += 8;
