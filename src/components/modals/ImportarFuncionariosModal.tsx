@@ -112,10 +112,27 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
           const linha = dados[i];
           
           // Extrair dados das 4 colunas obrigatórias (com variações de nomes)
-          const nome = linha.nome || linha.Nome || linha.NOME || '';
-          const cargo = linha.cargo || linha.Cargo || linha.CARGO || '';
-          const setor = linha.setor || linha.Setor || linha.SETOR || '';
-          const empresaContratante = linha.empresaContratante || linha['empresa contratante'] || linha.EmpresaContratante || linha['Empresa Contratante'] || linha.EMPRESACONTRATANTE || '';
+          // Normalizar chaves do objeto removendo espaços e convertendo para lowercase
+          const normalizedLine: any = {};
+          Object.keys(linha).forEach(key => {
+            const normalizedKey = key.toLowerCase().trim().replace(/\s+/g, '');
+            normalizedLine[normalizedKey] = linha[key];
+          });
+
+          const nome = linha.nome || linha.Nome || linha.NOME || normalizedLine.nome || '';
+          const cargo = linha.cargo || linha.Cargo || linha.CARGO || normalizedLine.cargo || '';
+          const setor = linha.setor || linha.Setor || linha.SETOR || normalizedLine.setor || '';
+          const empresaContratante = linha.empresaContratante || 
+                                   linha['empresa contratante'] || 
+                                   linha.EmpresaContratante || 
+                                   linha['Empresa Contratante'] || 
+                                   linha.EMPRESACONTRATANTE ||
+                                   linha['Empresa contratante'] ||
+                                   linha['EMPRESA CONTRATANTE'] ||
+                                   normalizedLine.empresacontratante ||
+                                   normalizedLine.empresacontrat ||
+                                   normalizedLine.empresa || 
+                                   '';
 
           // Validações básicas
           if (!nome || !cargo || !setor || !empresaContratante) {
