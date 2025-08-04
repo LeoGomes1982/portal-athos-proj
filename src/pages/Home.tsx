@@ -147,6 +147,18 @@ const Home = () => {
         window.open(url, "_blank", "noopener,noreferrer");
       }
     },
+    {
+      id: "portal-bpo",
+      title: "PORTAL DO BPO",
+      fullTitle: "Portal de Business Process Outsourcing",
+      icon: Building2,
+      className: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-150",
+      iconColor: "text-blue-600",
+      onClick: () => {
+        const url = `${window.location.origin}/portal-bpo`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+    },
   ];
 
   return (
