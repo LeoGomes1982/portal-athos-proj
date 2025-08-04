@@ -6,6 +6,7 @@ import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhe
 import { InativacaoFuncionarioModal } from "@/components/modals/InativacaoFuncionarioModal";
 import { FuncionarioCard } from "@/components/funcionarios/FuncionarioCard";
 import { FuncionariosSummaryCards } from "@/components/funcionarios/FuncionariosSummaryCards";
+import { FuncionariosFiltros } from "@/components/filtros/FuncionariosFiltros";
 import { Funcionario } from "@/types/funcionario";
 import { isProximoDoFim, dataJaPassou } from "@/utils/funcionarioUtils";
 import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
@@ -20,6 +21,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInativacaoModalOpen, setIsInativacaoModalOpen] = useState(false);
   const [funcionarioParaInativar, setFuncionarioParaInativar] = useState<Funcionario | null>(null);
+  const [funcionariosFiltrados, setFuncionariosFiltrados] = useState<Funcionario[]>([]);
   
   // Usar o hook de sincronização
   const { funcionarios, setFuncionarios, updateFuncionario, isLoading } = useFuncionarioSync();
@@ -56,7 +58,10 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return () => clearInterval(interval);
   }, [setFuncionarios]);
 
-  const filteredFuncionarios = funcionariosList.filter(funcionario =>
+  // Usar funcionários filtrados ou todos se não há filtros ativos
+  const baseList = funcionariosFiltrados.length > 0 ? funcionariosFiltrados : funcionariosList;
+  
+  const filteredFuncionarios = baseList.filter(funcionario =>
     funcionario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
     funcionario.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     funcionario.setor.toLowerCase().includes(searchTerm.toLowerCase())
@@ -241,7 +246,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           alertasAvisoPrevio={alertasAvisoPrevio}
         />
 
-        <div className="flex justify-center mb-8 animate-slide-up">
+        <div className="flex justify-center gap-4 mb-8 animate-slide-up">
           <div className="relative w-full max-w-md">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary w-5 h-5" />
             <Input
@@ -251,6 +256,10 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
               className="pl-12 h-12 bg-white border-primary/20 shadow-lg rounded-xl text-lg font-medium focus:border-primary"
             />
           </div>
+          <FuncionariosFiltros 
+            funcionarios={funcionariosList}
+            onFiltrosChange={setFuncionariosFiltrados}
+          />
         </div>
 
         {isLoading ? (

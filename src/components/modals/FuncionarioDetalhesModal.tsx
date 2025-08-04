@@ -666,7 +666,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                       )}
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-600">Setor</label>
+                      <label className="text-sm font-medium text-slate-600">Local de Serviço</label>
                       {isEditing ? (
                         <Input
                           value={editedFuncionario.setor}
