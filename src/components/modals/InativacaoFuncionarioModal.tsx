@@ -25,7 +25,9 @@ const motivosInativacao = [
   "Demissão normal sem aviso prévio",
   "Demissão por justa causa",
   "Acordo entre empresa e empregado",
-  "Pedido de demissão"
+  "Pedido de demissão",
+  "Erro de sistema",
+  "Duplicação do funcionário"
 ];
 
 export function InativacaoFuncionarioModal({ 
