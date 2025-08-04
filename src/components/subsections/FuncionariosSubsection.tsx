@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ArrowLeft, Users } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, ArrowLeft, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { FuncionarioDetalhesModal } from "@/components/modals/FuncionarioDetalhesModal";
 import { InativacaoFuncionarioModal } from "@/components/modals/InativacaoFuncionarioModal";
 import { FuncionarioCard } from "@/components/funcionarios/FuncionarioCard";
@@ -22,6 +23,10 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   const [isInativacaoModalOpen, setIsInativacaoModalOpen] = useState(false);
   const [funcionarioParaInativar, setFuncionarioParaInativar] = useState<Funcionario | null>(null);
   const [funcionariosFiltrados, setFuncionariosFiltrados] = useState<Funcionario[]>([]);
+  
+  // Estados para paginação
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [itensPorPagina, setItensPorPagina] = useState(30);
   
   // Usar o hook de sincronização
   const { funcionarios, setFuncionarios, updateFuncionario, isLoading } = useFuncionarioSync();
@@ -134,6 +139,14 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     return a.nome.localeCompare(b.nome);
   });
 
+  // Calcular funcionários para a página atual
+  const totalFuncionarios = funcionariosOrdenados.length;
+  const totalPaginas = itensPorPagina === -1 ? 1 : Math.ceil(totalFuncionarios / itensPorPagina);
+  
+  const funcionariosPaginados = itensPorPagina === -1 
+    ? funcionariosOrdenados 
+    : funcionariosOrdenados.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
+
   const handleFuncionarioClick = (funcionario: Funcionario) => {
     setSelectedFuncionario(funcionario);
     setIsModalOpen(true);
@@ -214,6 +227,11 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
     setSelectedFuncionario(funcionarioAtualizado);
   };
 
+  // Resetar página quando filtros ou busca mudam
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [searchTerm, funcionariosFiltrados]);
+
   const alertasExperiencia = funcionariosAtivos.filter(f => 
     f.status === 'experiencia' && f.dataFimExperiencia && isProximoDoFim(f.dataFimExperiencia)
   ).length;
@@ -271,7 +289,7 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 animate-slide-up">
-              {funcionariosOrdenados.map((funcionario) => (
+              {funcionariosPaginados.map((funcionario) => (
               <FuncionarioCard
                 key={funcionario.id}
                 funcionario={funcionario}
@@ -290,6 +308,102 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-bold text-gray-600 mb-2">Nenhum funcionário encontrado</h3>
                 <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+              </div>
+            )}
+
+            {/* Controles de Paginação */}
+            {funcionariosOrdenados.length > 0 && (
+              <div className="mt-8 flex flex-col items-center gap-4 animate-fade-in">
+                {/* Seletor de itens por página */}
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-600">Mostrar:</span>
+                  <Select
+                    value={itensPorPagina.toString()}
+                    onValueChange={(value) => {
+                      setItensPorPagina(value === "-1" ? -1 : parseInt(value));
+                      setPaginaAtual(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="30">30</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                      <SelectItem value="100">100</SelectItem>
+                      <SelectItem value="-1">Todos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-sm text-gray-600">
+                    {itensPorPagina === -1 
+                      ? `Mostrando todos os ${totalFuncionarios} funcionários`
+                      : `Mostrando ${Math.min((paginaAtual - 1) * itensPorPagina + 1, totalFuncionarios)} - ${Math.min(paginaAtual * itensPorPagina, totalFuncionarios)} de ${totalFuncionarios} funcionários`
+                    }
+                  </span>
+                </div>
+
+                {/* Navegação de páginas */}
+                {itensPorPagina !== -1 && totalPaginas > 1 && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
+                      disabled={paginaAtual === 1}
+                    >
+                      <ChevronLeft size={16} />
+                      Anterior
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+                        let pageNumber;
+                        if (totalPaginas <= 5) {
+                          pageNumber = i + 1;
+                        } else if (paginaAtual <= 3) {
+                          pageNumber = i + 1;
+                        } else if (paginaAtual >= totalPaginas - 2) {
+                          pageNumber = totalPaginas - 4 + i;
+                        } else {
+                          pageNumber = paginaAtual - 2 + i;
+                        }
+
+                        return (
+                          <Button
+                            key={pageNumber}
+                            variant={paginaAtual === pageNumber ? "default" : "outline"}
+                            size="sm"
+                            className="w-8 h-8 p-0"
+                            onClick={() => setPaginaAtual(pageNumber)}
+                          >
+                            {pageNumber}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
+                      disabled={paginaAtual === totalPaginas}
+                    >
+                      Próxima
+                      <ChevronRight size={16} />
+                    </Button>
+                  </div>
+                )}
+
+                {/* Botão Mostrar Mais (alternativa à paginação) */}
+                {itensPorPagina !== -1 && paginaAtual < totalPaginas && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setPaginaAtual(prev => prev + 1)}
+                    className="mt-4"
+                  >
+                    Mostrar Mais Funcionários
+                  </Button>
+                )}
               </div>
             )}
           </>
