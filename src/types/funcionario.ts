@@ -43,4 +43,9 @@ export interface Funcionario {
   motivoInativacao?: string;
   empresaContratante?: string;
   fiscalResponsavel?: string;
+  // Dados bancários
+  banco?: string;
+  agencia?: string;
+  contaBancaria?: string;
+  chavePix?: string;
 }

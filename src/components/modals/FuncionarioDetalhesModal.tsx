@@ -90,6 +90,11 @@ interface Funcionario {
   valorAuxilioMoradia?: string;
   empresaContratante?: string;
   fiscalResponsavel?: string;
+  // Dados bancários
+  banco?: string;
+  agencia?: string;
+  contaBancaria?: string;
+  chavePix?: string;
 }
 
 interface FuncionarioDetalhesModalProps {
@@ -156,6 +161,7 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   // Estados para collapse das seções
   const [sectionStates, setSectionStates] = useState({
     profissional: true,
+    bancarios: true,
     pessoal: true,
     contato: true,
     documentos: true,
@@ -876,9 +882,73 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                        </>
                      )}
                     </div>
+                 </div>
+               </div>
+              </CollapsibleSection>
+
+            {/* Card Dados Bancários */}
+            <CollapsibleSection id="bancarios" title="Dados Bancários" icon="🏦">
+              <div className="mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Banco</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.banco || ''}
+                          onChange={(e) => handleInputChange('banco', e.target.value)}
+                          placeholder="Ex: Banco do Brasil, Itaú, Caixa..."
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.banco || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Agência</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.agencia || ''}
+                          onChange={(e) => handleInputChange('agencia', e.target.value)}
+                          placeholder="0000"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.agencia || '-'}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Conta Bancária</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.contaBancaria || ''}
+                          onChange={(e) => handleInputChange('contaBancaria', e.target.value)}
+                          placeholder="00000-0"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.contaBancaria || '-'}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600">Chave PIX</label>
+                      {isEditing ? (
+                        <Input
+                          value={editedFuncionario.chavePix || ''}
+                          onChange={(e) => handleInputChange('chavePix', e.target.value)}
+                          placeholder="CPF, e-mail, telefone ou chave aleatória"
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-md font-medium text-slate-700">{currentFuncionario.chavePix || '-'}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </CollapsibleSection>
+              </div>
+            </CollapsibleSection>
 
             {/* Card Pessoal */}
             <CollapsibleSection id="pessoal" title="Informações Pessoais" icon="👤">

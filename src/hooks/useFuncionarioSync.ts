@@ -167,7 +167,12 @@ export function useFuncionarioSync() {
     possuiAuxilioMoradia: dbRecord.possui_auxilio_moradia,
     valorAuxilioMoradia: dbRecord.valor_auxilio_moradia,
     dataInativacao: dbRecord.data_inativacao,
-    motivoInativacao: dbRecord.motivo_inativacao
+    motivoInativacao: dbRecord.motivo_inativacao,
+    // Dados bancários
+    banco: dbRecord.banco,
+    agencia: dbRecord.agencia,
+    contaBancaria: dbRecord.conta_bancaria,
+    chavePix: dbRecord.chave_pix
   });
 
   const formatToDatabase = (funcionario: Funcionario) => ({
@@ -212,7 +217,12 @@ export function useFuncionarioSync() {
     possui_auxilio_moradia: funcionario.possuiAuxilioMoradia,
     valor_auxilio_moradia: funcionario.valorAuxilioMoradia,
     data_inativacao: funcionario.dataInativacao,
-    motivo_inativacao: funcionario.motivoInativacao
+    motivo_inativacao: funcionario.motivoInativacao,
+    // Dados bancários
+    banco: funcionario.banco,
+    agencia: funcionario.agencia,
+    conta_bancaria: funcionario.contaBancaria,
+    chave_pix: funcionario.chavePix
   });
 
   const updateFuncionario = async (funcionario: Funcionario) => {
