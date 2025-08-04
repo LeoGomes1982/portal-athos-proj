@@ -93,7 +93,7 @@ export function FuncionariosFiltros({ funcionarios, onFiltrosChange }: Funcionar
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="relative">
+        <Button variant="outline" className="relative h-12">
           <Filter size={16} className="mr-2" />
           Filtrar
           {temFiltrosAtivos && (
