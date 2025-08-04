@@ -377,87 +377,49 @@ export function GestaoServicosExtras() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {filteredServicos.map((servico, index) => {
-                  const valorPorHora = servico.valor ? servico.valor / servico.quantidade_horas : 0;
-                  
-                  return (
-                    <div key={servico.id} className="border rounded-lg p-4 bg-card hover:bg-muted/50 transition-colors cursor-pointer"
-                         onClick={() => handleAbrirDetalhes(servico)}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">#{index + 1}</Badge>
-                          <h4 className="font-semibold flex items-center gap-2">
-                            <User size={16} />
-                            {servico.nome_pessoa}
-                          </h4>
-                        </div>
-                        <Badge variant="secondary">
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {filteredServicos.map((servico, index) => (
+                  <div key={servico.id} className="border rounded-lg p-3 bg-card hover:bg-muted/50 transition-colors cursor-pointer"
+                       onClick={() => handleAbrirDetalhes(servico)}>
+                    
+                    {/* Primeira linha - Nome e Horas */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">#{index + 1}</Badge>
+                        <h4 className="font-semibold flex items-center gap-2 text-sm">
+                          <User size={14} />
+                          {servico.nome_pessoa}
+                        </h4>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
                           {servico.quantidade_horas}h
                         </Badge>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <Calendar size={14} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">Data:</span>
-                            <span className="font-medium">
-                              {format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <MapPin size={14} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">Local:</span>
-                            <span className="font-medium">{servico.local_servico}</span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <FileText size={14} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">Fiscal:</span>
-                            <span className="font-medium">{servico.fiscal_responsavel}</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <DollarSign size={14} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">PIX:</span>
-                            <span className="font-mono text-xs">{servico.chave_pix}</span>
-                          </div>
-                          
-                          {servico.valor && (
-                            <>
-                              <div className="flex items-center gap-2">
-                                <DollarSign size={14} className="text-muted-foreground" />
-                                <span className="text-muted-foreground">Valor/Hora:</span>
-                                <span className="font-semibold text-green-600">
-                                  R$ {valorPorHora.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                </span>
-                              </div>
-                              
-                              <div className="flex items-center gap-2">
-                                <DollarSign size={14} className="text-muted-foreground" />
-                                <span className="text-muted-foreground">Total:</span>
-                                <span className="font-semibold text-green-600">
-                                  R$ {servico.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                </span>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="mt-3 pt-3 border-t">
-                        <div className="flex items-start gap-2">
-                          <span className="text-muted-foreground text-sm">Motivo:</span>
-                          <span className="text-sm flex-1">{servico.motivo_servico}</span>
-                        </div>
+                        {servico.valor && (
+                          <span className="text-sm font-semibold text-green-600">
+                            R$ {servico.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                        )}
                       </div>
                     </div>
-                  );
-                })}
+
+                    {/* Segunda linha - Data, Local e Motivo */}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        <span>{format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin size={12} />
+                        <span className="truncate max-w-[150px]">{servico.local_servico}</span>
+                      </div>
+                      <div className="flex items-center gap-1 flex-1">
+                        <FileText size={12} />
+                        <span className="truncate">{servico.motivo_servico}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
