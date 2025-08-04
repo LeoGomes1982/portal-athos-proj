@@ -20,7 +20,7 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
   const { toast } = useToast();
 
   const baixarModelo = () => {
-    // Criar dados de exemplo apenas com 4 colunas
+    // Criar dados de exemplo com nome obrigatório e outros opcionais
     const dadosExemplo = [
       {
         nome: "João Silva",
@@ -134,17 +134,17 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
                                    normalizedLine.empresa || 
                                    '';
 
-          // Validações básicas
-          if (!nome || !cargo || !setor || !empresaContratante) {
-            throw new Error(`Linha ${i + 2}: Nome, cargo, setor e empresa contratante são obrigatórios`);
+          // Validações básicas - apenas nome é obrigatório
+          if (!nome) {
+            throw new Error(`Linha ${i + 2}: Nome é obrigatório`);
           }
 
           const funcionario = {
             id: Date.now() + i, // ID único baseado em timestamp
             nome: nome.trim(),
-            cargo: cargo.trim(),
-            setor: setor.trim(),
-            empresaContratante: empresaContratante.trim(),
+            cargo: cargo ? cargo.trim() : "A definir",
+            setor: setor ? setor.trim() : "Geral",
+            empresaContratante: empresaContratante ? empresaContratante.trim() : "Empresa Padrão",
             dataAdmissao: new Date().toISOString().split('T')[0], // Data atual
             telefone: "",
             email: "",
@@ -246,14 +246,14 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
                   )}
                 </div>
 
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-yellow-800 mb-2">Campos obrigatórios:</h4>
-                  <ul className="text-sm text-yellow-700 space-y-1">
-                    <li>• Nome</li>
-                    <li>• Cargo</li>
-                    <li>• Setor</li>
-                    <li>• Empresa Contratante</li>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-2">Campo obrigatório:</h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• Nome (obrigatório)</li>
                   </ul>
+                  <p className="text-sm text-green-600 mt-2">
+                    Outros campos como cargo, setor e empresa contratante são opcionais e receberão valores padrão se não informados.
+                  </p>
                 </div>
               </div>
 
