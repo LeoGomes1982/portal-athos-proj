@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -61,13 +62,25 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
 
   useEffect(() => {
     if (editorRef.current && value !== editorRef.current.innerHTML) {
-      editorRef.current.innerHTML = value;
+      // Sanitize HTML content before setting it
+      const sanitizedValue = DOMPurify.sanitize(value, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'div', 'span', 'img'],
+        ALLOWED_ATTR: ['style', 'src', 'alt', 'border', 'width', 'height', 'class'],
+        ALLOW_DATA_ATTR: false
+      });
+      editorRef.current.innerHTML = sanitizedValue;
     }
   }, [value]);
 
   const handleContentChange = () => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      // Sanitize content before passing it to onChange
+      const sanitizedContent = DOMPurify.sanitize(editorRef.current.innerHTML, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'div', 'span', 'img'],
+        ALLOWED_ATTR: ['style', 'src', 'alt', 'border', 'width', 'height', 'class'],
+        ALLOW_DATA_ATTR: false
+      });
+      onChange(sanitizedContent);
     }
   };
 

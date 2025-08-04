@@ -799,6 +799,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_role_change_allowed: {
+        Args: { old_role: string; new_role: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

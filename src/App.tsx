@@ -5,9 +5,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { useAuth } from '@/hooks/useAuth';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { useNavigationFix } from '@/hooks/useNavigationFix';
 
 import Home from "./pages/Home";
 import DP from "./pages/DP";
@@ -32,12 +31,6 @@ import Operacoes from "./pages/Operacoes";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
-
-// Protected Route Component - Temporariamente desabilitado para evitar carregamento infinito
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  useNavigationFix(); // Aplicar correções de navegação
-  return <>{children}</>;
-};
 
 function App() {
   return (
