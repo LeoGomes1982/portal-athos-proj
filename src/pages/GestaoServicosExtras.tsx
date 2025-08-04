@@ -325,14 +325,6 @@ export function GestaoServicosExtras() {
           </div>
           <Button 
             variant="outline"
-            onClick={() => handleAbrirDetalhes()}
-            className="border-blue-500 text-blue-600 hover:bg-blue-50"
-          >
-            <Eye className="mr-2" size={16} />
-            Ver Todos em Lista
-          </Button>
-          <Button 
-            variant="outline"
             onClick={() => setFiltrosModalOpen(true)}
             className="border-primary text-primary hover:bg-primary hover:text-white"
           >
@@ -351,7 +343,7 @@ export function GestaoServicosExtras() {
           </Button>
         </div>
 
-      {/* Serviços List - Cards Compactos */}
+      {/* Serviços List - Formato Lista */}
       <div className="space-y-4 animate-slide-up">
         {loading ? (
           <div className="text-center py-8">
@@ -377,71 +369,98 @@ export function GestaoServicosExtras() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredServicos.map((servico) => (
-              <Card 
-                key={servico.id} 
-                className="modern-card cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
-                onClick={() => handleAbrirDetalhes(servico)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <User className="text-primary" size={16} />
-                      <h4 className="font-semibold text-sm">{servico.nome_pessoa}</h4>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {servico.quantidade_horas}h
-                    </Badge>
-                  </div>
+          <Card className="modern-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="text-primary" size={20} />
+                Lista de Serviços Extras ({filteredServicos.length} registros)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {filteredServicos.map((servico, index) => {
+                  const valorPorHora = servico.valor ? servico.valor / servico.quantidade_horas : 0;
                   
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <FileText size={12} />
-                      <span className="truncate">{servico.motivo_servico}</span>
+                  return (
+                    <div key={servico.id} className="border rounded-lg p-4 bg-card hover:bg-muted/50 transition-colors cursor-pointer"
+                         onClick={() => handleAbrirDetalhes(servico)}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">#{index + 1}</Badge>
+                          <h4 className="font-semibold flex items-center gap-2">
+                            <User size={16} />
+                            {servico.nome_pessoa}
+                          </h4>
+                        </div>
+                        <Badge variant="secondary">
+                          {servico.quantidade_horas}h
+                        </Badge>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Calendar size={14} className="text-muted-foreground" />
+                            <span className="text-muted-foreground">Data:</span>
+                            <span className="font-medium">
+                              {format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <MapPin size={14} className="text-muted-foreground" />
+                            <span className="text-muted-foreground">Local:</span>
+                            <span className="font-medium">{servico.local_servico}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <FileText size={14} className="text-muted-foreground" />
+                            <span className="text-muted-foreground">Fiscal:</span>
+                            <span className="font-medium">{servico.fiscal_responsavel}</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <DollarSign size={14} className="text-muted-foreground" />
+                            <span className="text-muted-foreground">PIX:</span>
+                            <span className="font-mono text-xs">{servico.chave_pix}</span>
+                          </div>
+                          
+                          {servico.valor && (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <DollarSign size={14} className="text-muted-foreground" />
+                                <span className="text-muted-foreground">Valor/Hora:</span>
+                                <span className="font-semibold text-green-600">
+                                  R$ {valorPorHora.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <DollarSign size={14} className="text-muted-foreground" />
+                                <span className="text-muted-foreground">Total:</span>
+                                <span className="font-semibold text-green-600">
+                                  R$ {servico.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t">
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground text-sm">Motivo:</span>
+                          <span className="text-sm flex-1">{servico.motivo_servico}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar size={12} />
-                      <span>{format(new Date(servico.data_servico), "dd/MM/yyyy", { locale: ptBR })}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin size={12} />
-                      <span className="truncate">{servico.local_servico}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <User size={12} />
-                      <span className="truncate">{servico.fiscal_responsavel}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <DollarSign size={12} />
-                      <span className="truncate font-mono">{servico.chave_pix}</span>
-                    </div>
-                    {servico.valor && (
-                      <span className="text-sm font-semibold text-green-600">
-                        R$ {servico.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full mt-3 text-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAbrirDetalhes(servico);
-                    }}
-                  >
-                    <Eye className="mr-1" size={12} />
-                    Ver Detalhes
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 
