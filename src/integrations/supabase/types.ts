@@ -433,6 +433,7 @@ export type Database = {
           descricao: string
           funcionario_id: number
           id: string
+          origem: string | null
           tipo: string
           titulo: string
           updated_at: string
@@ -447,6 +448,7 @@ export type Database = {
           descricao: string
           funcionario_id: number
           id?: string
+          origem?: string | null
           tipo: string
           titulo: string
           updated_at?: string
@@ -461,6 +463,7 @@ export type Database = {
           descricao?: string
           funcionario_id?: number
           id?: string
+          origem?: string | null
           tipo?: string
           titulo?: string
           updated_at?: string
