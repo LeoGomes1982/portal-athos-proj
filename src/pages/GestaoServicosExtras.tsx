@@ -37,7 +37,7 @@ export function GestaoServicosExtras() {
   const [novoServicoModalOpen, setNovoServicoModalOpen] = useState(false);
   const [detalhesModalOpen, setDetalhesModalOpen] = useState(false);
   const [filtrosModalOpen, setFiltrosModalOpen] = useState(false);
-  const [servicoSelecionado, setServicoSelecionado] = useState<ServicoExtra | null>(null);
+  const [servicosSelecionados, setServicosSelecionados] = useState<ServicoExtra[]>([]);
   const [filtrosAtivos, setFiltrosAtivos] = useState<FiltrosServicos>({
     periodo: "",
     fiscal: "",
@@ -130,8 +130,14 @@ export function GestaoServicosExtras() {
     return matchesSearch && matchesFiscal && matchesLocal && matchesCidade;
   });
 
-  const handleAbrirDetalhes = (servico: ServicoExtra) => {
-    setServicoSelecionado(servico);
+  const handleAbrirDetalhes = (servico?: ServicoExtra) => {
+    if (servico) {
+      // Se um serviço específico foi clicado, mostrar apenas ele
+      setServicosSelecionados([servico]);
+    } else {
+      // Se não foi especificado, mostrar todos os serviços filtrados
+      setServicosSelecionados(filteredServicos);
+    }
     setDetalhesModalOpen(true);
   };
 
@@ -307,35 +313,43 @@ export function GestaoServicosExtras() {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8 animate-slide-up">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-description" size={20} />
-          <Input
-            placeholder="Buscar por pessoa, local, motivo ou fiscal responsável..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 animate-slide-up">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-description" size={20} />
+            <Input
+              placeholder="Buscar por pessoa, local, motivo ou fiscal responsável..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button 
+            variant="outline"
+            onClick={() => handleAbrirDetalhes()}
+            className="border-blue-500 text-blue-600 hover:bg-blue-50"
+          >
+            <Eye className="mr-2" size={16} />
+            Ver Todos em Lista
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setFiltrosModalOpen(true)}
+            className="border-primary text-primary hover:bg-primary hover:text-white"
+          >
+            <Filter className="mr-2" size={16} />
+            Filtros
+            {(filtrosAtivos.periodo || filtrosAtivos.fiscal || filtrosAtivos.localServico || filtrosAtivos.cidade) && (
+              <Badge className="ml-2 bg-primary text-white">•</Badge>
+            )}
+          </Button>
+          <Button 
+            onClick={handleNovoServico}
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <Plus className="mr-2" size={16} />
+            Novo Serviço Extra
+          </Button>
         </div>
-        <Button 
-          variant="outline"
-          onClick={() => setFiltrosModalOpen(true)}
-          className="border-primary text-primary hover:bg-primary hover:text-white"
-        >
-          <Filter className="mr-2" size={16} />
-          Filtros
-          {(filtrosAtivos.periodo || filtrosAtivos.fiscal || filtrosAtivos.localServico || filtrosAtivos.cidade) && (
-            <Badge className="ml-2 bg-primary text-white">•</Badge>
-          )}
-        </Button>
-        <Button 
-          onClick={handleNovoServico}
-          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <Plus className="mr-2" size={16} />
-          Novo Serviço Extra
-        </Button>
-      </div>
 
       {/* Serviços List - Cards Compactos */}
       <div className="space-y-4 animate-slide-up">
@@ -438,7 +452,7 @@ export function GestaoServicosExtras() {
       />
 
       <ServicoExtraDetalhesModal
-        servico={servicoSelecionado}
+        servicos={servicosSelecionados}
         open={detalhesModalOpen}
         onOpenChange={setDetalhesModalOpen}
       />
