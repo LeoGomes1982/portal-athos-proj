@@ -12,7 +12,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 export interface FiltrosServicos {
-  periodo: "semana" | "mes" | "personalizado" | "";
+  periodo: "semana" | "mes" | "personalizado" | "todos";
   dataInicio?: Date;
   dataFim?: Date;
   fiscal: string;
@@ -40,9 +40,9 @@ export function FiltrosServicosExtrasModal({
   cidades
 }: FiltrosServicosExtrasModalProps) {
   const [filtros, setFiltros] = useState<FiltrosServicos>({
-    periodo: "",
-    fiscal: "",
-    localServico: "",
+    periodo: "todos",
+    fiscal: "todos",
+    localServico: "todos",
     cidade: ""
   });
 
@@ -57,9 +57,9 @@ export function FiltrosServicosExtrasModal({
 
   const handleLimparFiltros = () => {
     setFiltros({
-      periodo: "",
-      fiscal: "",
-      localServico: "",
+      periodo: "todos",
+      fiscal: "todos",
+      localServico: "todos",
       cidade: ""
     });
   };
@@ -83,7 +83,7 @@ export function FiltrosServicosExtrasModal({
                 <SelectValue placeholder="Selecione o período" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os períodos</SelectItem>
+                <SelectItem value="todos">Todos os períodos</SelectItem>
                 <SelectItem value="semana">Esta semana</SelectItem>
                 <SelectItem value="mes">Este mês</SelectItem>
                 <SelectItem value="personalizado">Período personalizado</SelectItem>
@@ -157,7 +157,7 @@ export function FiltrosServicosExtrasModal({
                   <SelectValue placeholder="Todos os fiscais" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os fiscais</SelectItem>
+                  <SelectItem value="todos">Todos os fiscais</SelectItem>
                   {fiscais.map((fiscal) => (
                     <SelectItem key={fiscal} value={fiscal}>{fiscal}</SelectItem>
                   ))}
@@ -172,7 +172,7 @@ export function FiltrosServicosExtrasModal({
                   <SelectValue placeholder="Todos os locais" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os locais</SelectItem>
+                  <SelectItem value="todos">Todos os locais</SelectItem>
                   {locais.map((local) => (
                     <SelectItem key={local} value={local}>{local}</SelectItem>
                   ))}

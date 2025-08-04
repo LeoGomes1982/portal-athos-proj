@@ -39,9 +39,9 @@ export function GestaoServicosExtras() {
   const [filtrosModalOpen, setFiltrosModalOpen] = useState(false);
   const [servicosSelecionados, setServicosSelecionados] = useState<ServicoExtra[]>([]);
   const [filtrosAtivos, setFiltrosAtivos] = useState<FiltrosServicos>({
-    periodo: "",
-    fiscal: "",
-    localServico: "",
+    periodo: "todos",
+    fiscal: "todos",
+    localServico: "todos",
     cidade: ""
   });
 
@@ -84,7 +84,7 @@ export function GestaoServicosExtras() {
   };
 
   const aplicarFiltrosPeriodo = (servicos: ServicoExtra[]) => {
-    if (!filtrosAtivos.periodo) return servicos;
+    if (!filtrosAtivos.periodo || filtrosAtivos.periodo === "todos") return servicos;
 
     const agora = new Date();
     
@@ -122,8 +122,8 @@ export function GestaoServicosExtras() {
       servico.motivo_servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
       servico.fiscal_responsavel.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesFiscal = !filtrosAtivos.fiscal || servico.fiscal_responsavel === filtrosAtivos.fiscal;
-    const matchesLocal = !filtrosAtivos.localServico || servico.local_servico === filtrosAtivos.localServico;
+    const matchesFiscal = filtrosAtivos.fiscal === "todos" || servico.fiscal_responsavel === filtrosAtivos.fiscal;
+    const matchesLocal = filtrosAtivos.localServico === "todos" || servico.local_servico === filtrosAtivos.localServico;
     const matchesCidade = !filtrosAtivos.cidade || 
       servico.local_servico.toLowerCase().includes(filtrosAtivos.cidade.toLowerCase());
     
@@ -147,8 +147,8 @@ export function GestaoServicosExtras() {
 
   const handleGerarRelatorio = (filtros: FiltrosServicos) => {
     const servicosFiltrados = aplicarFiltrosPeriodo(servicosExtras).filter(servico => {
-      const matchesFiscal = !filtros.fiscal || servico.fiscal_responsavel === filtros.fiscal;
-      const matchesLocal = !filtros.localServico || servico.local_servico === filtros.localServico;
+      const matchesFiscal = filtros.fiscal === "todos" || servico.fiscal_responsavel === filtros.fiscal;
+      const matchesLocal = filtros.localServico === "todos" || servico.local_servico === filtros.localServico;
       const matchesCidade = !filtros.cidade || 
         servico.local_servico.toLowerCase().includes(filtros.cidade.toLowerCase());
       
@@ -330,7 +330,7 @@ export function GestaoServicosExtras() {
           >
             <Filter className="mr-2" size={16} />
             Filtros
-            {(filtrosAtivos.periodo || filtrosAtivos.fiscal || filtrosAtivos.localServico || filtrosAtivos.cidade) && (
+            {(filtrosAtivos.periodo !== "todos" || filtrosAtivos.fiscal !== "todos" || filtrosAtivos.localServico !== "todos" || filtrosAtivos.cidade) && (
               <Badge className="ml-2 bg-primary text-white">•</Badge>
             )}
           </Button>
@@ -356,11 +356,11 @@ export function GestaoServicosExtras() {
               <Briefcase className="mx-auto mb-4 text-description" size={48} />
               <h3 className="subsection-title mb-2">Nenhum serviço extra encontrado</h3>
               <p className="text-description mb-4">
-                {searchTerm || filtrosAtivos.periodo || filtrosAtivos.fiscal || filtrosAtivos.localServico || filtrosAtivos.cidade
+                {searchTerm || filtrosAtivos.periodo !== "todos" || filtrosAtivos.fiscal !== "todos" || filtrosAtivos.localServico !== "todos" || filtrosAtivos.cidade
                   ? "Tente ajustar os filtros de busca." 
                   : "Comece criando seu primeiro serviço extra."}
               </p>
-              {!searchTerm && !filtrosAtivos.periodo && (
+              {!searchTerm && filtrosAtivos.periodo === "todos" && (
                 <Button onClick={handleNovoServico} variant="outline">
                   <Plus className="mr-2" size={16} />
                   Criar Primeiro Serviço
