@@ -32,7 +32,7 @@ interface AdicionarDocumentoModalProps {
 }
 
 export function AdicionarDocumentoModal({ isOpen, onClose, onSave, funcionarioId }: AdicionarDocumentoModalProps) {
-  console.log("AdicionarDocumentoModal renderizado - isOpen:", isOpen);
+  // Removido console.log que causava re-renders desnecessários
   
   const [nome, setNome] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);

@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -194,6 +194,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   // Estados para edição inline
   const [isEditing, setIsEditing] = useState(false);
   const [editedFuncionario, setEditedFuncionario] = useState<Funcionario>(funcionario);
+  
+  // Ref para manter o foco no input
+  const fiscalInputRef = useRef<HTMLInputElement>(null);
 
   // Reset do estado de edição quando o modal for fechado ou funcionário mudar
   useEffect(() => {
@@ -396,10 +399,26 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const handleInputChange = useCallback((field: keyof Funcionario, value: string) => {
     console.log('handleInputChange chamado:', field, value); // Debug log
-    setEditedFuncionario(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    
+    // Manter referência do elemento ativo para restaurar foco
+    const activeElement = document.activeElement as HTMLInputElement;
+    const cursorPosition = activeElement?.selectionStart || 0;
+    
+    setEditedFuncionario(prev => {
+      if (prev[field] === value) return prev; // Evitar update se valor igual
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
+    
+    // Restaurar foco e posição do cursor após render
+    requestAnimationFrame(() => {
+      if (activeElement && activeElement.tagName === 'INPUT') {
+        activeElement.focus();
+        activeElement.setSelectionRange(cursorPosition, cursorPosition);
+      }
+    });
   }, []);
 
   // REMOVIDO: useEffect que causava re-renderizações desnecessárias
@@ -722,11 +741,22 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     <div>
                       <label className="text-sm font-medium text-slate-600">Fiscal responsável</label>
                       {isEditing ? (
-                        <Input
+                        <input
+                          ref={fiscalInputRef}
+                          type="text"
                           value={editedFuncionario.fiscalResponsavel || ''}
                           onChange={(e) => handleInputChange('fiscalResponsavel', e.target.value)}
-                          className="mt-1"
+                          className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                           placeholder="Digite o nome do fiscal responsável"
+                          onFocus={(e) => {
+                            // Manter o cursor na posição atual
+                            const pos = e.target.selectionStart;
+                            setTimeout(() => {
+                              if (e.target === document.activeElement) {
+                                e.target.setSelectionRange(pos, pos);
+                              }
+                            }, 0);
+                          }}
                         />
                       ) : (
                         <p className="text-md font-medium text-slate-700">{currentFuncionario.fiscalResponsavel || '-'}</p>
