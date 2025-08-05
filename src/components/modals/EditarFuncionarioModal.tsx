@@ -178,7 +178,7 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
         }));
       }
     }
-  }, [isOpen, funcionario]);
+  }, [isOpen, funcionario.id]); // Mudança crítica: usar funcionario.id para evitar re-renders desnecessários
 
   // Calcular progresso baseado nos campos preenchidos
   const calculateProgress = () => {
