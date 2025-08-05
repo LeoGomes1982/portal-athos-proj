@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, AlertTriangle, X, User, Plus, MessageSquare, Download, Eye, Trash2, FileText, Users, Shirt, Info, Check, Sun, RefreshCw, ClipboardList, Edit, Paperclip, ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
+import { InputComFoco } from "./InputComFoco";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
@@ -399,26 +400,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const handleInputChange = useCallback((field: keyof Funcionario, value: string) => {
     console.log('handleInputChange chamado:', field, value); // Debug log
-    
-    // Manter referência do elemento ativo para restaurar foco
-    const activeElement = document.activeElement as HTMLInputElement;
-    const cursorPosition = activeElement?.selectionStart || 0;
-    
-    setEditedFuncionario(prev => {
-      if (prev[field] === value) return prev; // Evitar update se valor igual
-      return {
-        ...prev,
-        [field]: value
-      };
-    });
-    
-    // Restaurar foco e posição do cursor após render
-    requestAnimationFrame(() => {
-      if (activeElement && activeElement.tagName === 'INPUT') {
-        activeElement.focus();
-        activeElement.setSelectionRange(cursorPosition, cursorPosition);
-      }
-    });
+    setEditedFuncionario(prev => ({
+      ...prev,
+      [field]: value
+    }));
   }, []);
 
   // REMOVIDO: useEffect que causava re-renderizações desnecessárias
@@ -741,22 +726,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     <div>
                       <label className="text-sm font-medium text-slate-600">Fiscal responsável</label>
                       {isEditing ? (
-                        <input
-                          ref={fiscalInputRef}
-                          type="text"
+                        <InputComFoco
                           value={editedFuncionario.fiscalResponsavel || ''}
-                          onChange={(e) => handleInputChange('fiscalResponsavel', e.target.value)}
-                          className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          onChange={(value) => handleInputChange('fiscalResponsavel', value)}
                           placeholder="Digite o nome do fiscal responsável"
-                          onFocus={(e) => {
-                            // Manter o cursor na posição atual
-                            const pos = e.target.selectionStart;
-                            setTimeout(() => {
-                              if (e.target === document.activeElement) {
-                                e.target.setSelectionRange(pos, pos);
-                              }
-                            }, 0);
-                          }}
+                          className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       ) : (
                         <p className="text-md font-medium text-slate-700">{currentFuncionario.fiscalResponsavel || '-'}</p>
