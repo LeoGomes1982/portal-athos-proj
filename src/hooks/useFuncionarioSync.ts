@@ -92,9 +92,6 @@ export function useFuncionarioSync() {
   };
 
   const setupRealtimeSubscription = () => {
-    // Configurar tabela para realtime
-    supabase.from('funcionarios_sync').on('*', () => {}).subscribe();
-    
     const channel = supabase
       .channel('funcionarios-changes')
       .on('postgres_changes', 
@@ -118,7 +115,7 @@ export function useFuncionarioSync() {
             }
           }
           
-          // Forçar reload completo dos dados
+          // Forçar reload completo dos dados após pequeno delay
           setTimeout(() => {
             loadFuncionarios();
           }, 500);
