@@ -203,10 +203,12 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
   }, [formData]);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Salvar no localStorage
-    const novoFormData = { ...formData, [field]: value };
-    localStorage.setItem(`funcionario_edicao_${funcionario.id}`, JSON.stringify(novoFormData));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      // Salvar no localStorage usando os dados atualizados
+      localStorage.setItem(`funcionario_edicao_${funcionario.id}`, JSON.stringify(newData));
+      return newData;
+    });
   };
 
   const handleFileUpload = (field: keyof FormData, event: React.ChangeEvent<HTMLInputElement>) => {
