@@ -197,9 +197,15 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   // Reset do estado de edição quando o modal for fechado ou funcionário mudar
   useEffect(() => {
+    console.log('FuncionarioDetalhesModal - resetando estado:', { isOpen, funcionarioId: funcionario.id, isEditing });
     setIsEditing(false);
     setEditedFuncionario(funcionario);
   }, [isOpen, funcionario.id]);
+
+  // Log para debug quando isEditing mudar
+  useEffect(() => {
+    console.log('FuncionarioDetalhesModal - isEditing mudou para:', isEditing);
+  }, [isEditing]);
 
   // Estados para modais de dependentes e documentos
   const [showDependenteModal, setShowDependenteModal] = useState(false);

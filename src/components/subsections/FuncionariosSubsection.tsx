@@ -223,8 +223,8 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
       prev.map(f => f.id === funcionarioAtualizado.id ? funcionarioAtualizado : f)
     );
     
-    // Atualizar funcionário selecionado
-    setSelectedFuncionario(funcionarioAtualizado);
+    // REMOVIDO: setSelectedFuncionario(funcionarioAtualizado) que causava re-renders desnecessários
+    // O modal já tem os dados atualizados através do useEffect que monitora funcionario.id
   };
 
   // Resetar página quando filtros ou busca mudam
@@ -418,9 +418,12 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
 
       {selectedFuncionario && (
         <FuncionarioDetalhesModal
-          funcionario={selectedFuncionario}
+          funcionario={funcionarios.find(f => f.id === selectedFuncionario.id) || selectedFuncionario}
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedFuncionario(null);
+          }}
           onStatusChange={handleStatusChange}
           onFuncionarioUpdate={handleFuncionarioUpdate}
         />

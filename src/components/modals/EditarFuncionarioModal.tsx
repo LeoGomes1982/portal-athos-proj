@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,6 +101,7 @@ interface FormData {
 }
 
 export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }: EditarFuncionarioModalProps) {
+  console.log('EditarFuncionarioModal render:', { isOpen, funcionarioId: funcionario?.id }); // Log para debug
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profissional");
   const [progress, setProgress] = useState(0);
@@ -181,7 +182,7 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
   }, [isOpen, funcionario.id]); // Mudança crítica: usar funcionario.id para evitar re-renders desnecessários
 
   // Calcular progresso baseado nos campos preenchidos
-  const calculateProgress = () => {
+  const calculateProgress = useCallback(() => {
     const totalFields = 30;
     let filledFields = 0;
     
@@ -195,21 +196,28 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
     
     const newProgress = Math.min((filledFields / totalFields) * 100, 100);
     setProgress(newProgress);
-  };
+  }, [formData]);
 
-  // Atualizar progresso apenas quando necessário
+  // Atualizar progresso apenas quando os dados mudarem, mas com debounce
   useEffect(() => {
-    calculateProgress();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      calculateProgress();
+    }, 100); // Debounce de 100ms
+    
+    return () => clearTimeout(timeoutId);
+  }, [calculateProgress]);
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
+  const handleInputChange = useCallback((field: keyof FormData, value: string) => {
+    console.log('handleInputChange called:', field, value); // Log para debug
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      // Salvar no localStorage usando os dados atualizados
-      localStorage.setItem(`funcionario_edicao_${funcionario.id}`, JSON.stringify(newData));
+      // Salvar no localStorage de forma assíncrona para não bloquear o render
+      setTimeout(() => {
+        localStorage.setItem(`funcionario_edicao_${funcionario.id}`, JSON.stringify(newData));
+      }, 0);
       return newData;
     });
-  };
+  }, [funcionario.id]);
 
   const handleFileUpload = (field: keyof FormData, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
