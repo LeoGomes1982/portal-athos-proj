@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { VisualizarAvaliacaoModal } from "@/components/modals/VisualizarAvaliacaoModal";
 import { useToast } from "@/hooks/use-toast";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function VisualizarAvaliacao() {
   const { avaliacaoId } = useParams();
@@ -69,10 +70,12 @@ export function VisualizarAvaliacao() {
   }
 
   return (
-    <VisualizarAvaliacaoModal
-      open={true}
-      onOpenChange={handleClose}
-      avaliacaoId={avaliacaoId}
-    />
+    <ErrorBoundary>
+      <VisualizarAvaliacaoModal
+        open={true}
+        onOpenChange={handleClose}
+        avaliacaoId={avaliacaoId}
+      />
+    </ErrorBoundary>
   );
 }

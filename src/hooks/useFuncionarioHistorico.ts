@@ -152,12 +152,14 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
     }
   };
 
-  // Escutar mudanças em tempo real
+  // Escutar mudanças em tempo real com debounce
   useEffect(() => {
     if (!funcionarioId) return;
 
+    let timeoutId: NodeJS.Timeout;
+    
     const channel = supabase
-      .channel('funcionario-historico-changes')
+      .channel(`funcionario-historico-${funcionarioId}`)
       .on(
         'postgres_changes',
         {
@@ -167,12 +169,17 @@ export const useFuncionarioHistorico = (funcionarioId: number | string) => {
           filter: `funcionario_id=eq.${parseInt(funcionarioId.toString())}`
         },
         () => {
-          carregarHistorico();
+          // Debounce para evitar múltiplas execuções
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            carregarHistorico();
+          }, 300);
         }
       )
       .subscribe();
 
     return () => {
+      clearTimeout(timeoutId);
       supabase.removeChannel(channel);
     };
   }, [funcionarioId]);

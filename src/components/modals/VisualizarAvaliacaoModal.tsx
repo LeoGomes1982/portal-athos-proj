@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -90,15 +90,9 @@ export function VisualizarAvaliacaoModal({ open, onOpenChange, avaliacaoId }: Vi
     }
   };
 
-  useEffect(() => {
-    if (open && avaliacaoId) {
-      carregarAvaliacao();
-    }
-  }, [open, avaliacaoId]);
+  const carregarAvaliacao = useCallback(async () => {
+    if (!avaliacaoId || !open) return;
 
-  const carregarAvaliacao = async () => {
-    if (!avaliacaoId) return;
-    
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -137,7 +131,13 @@ export function VisualizarAvaliacaoModal({ open, onOpenChange, avaliacaoId }: Vi
     } finally {
       setLoading(false);
     }
-  };
+  }, [avaliacaoId, open, toast]);
+
+  useEffect(() => {
+    if (open && avaliacaoId) {
+      carregarAvaliacao();
+    }
+  }, [carregarAvaliacao]);
 
   if (!avaliacao && !loading) {
     return null;

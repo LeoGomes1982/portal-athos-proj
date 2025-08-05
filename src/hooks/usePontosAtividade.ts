@@ -95,19 +95,27 @@ export const usePontosAtividade = (funcionarioId: number) => {
   };
 
   useEffect(() => {
-    if (funcionarioId) {
-      calcularPontosAtividade();
-    }
+    if (!funcionarioId) return;
+    
+    let mounted = true;
+    
+    const calcularPontos = async () => {
+      if (mounted) {
+        await calcularPontosAtividade();
+      }
+    };
+    
+    calcularPontos();
 
     // Escutar eventos de nova avaliação e novo registro de histórico
     const handleAvaliacaoAdicionada = (event: CustomEvent) => {
-      if (event.detail.funcionarioId === funcionarioId.toString()) {
+      if (mounted && event.detail.funcionarioId === funcionarioId.toString()) {
         calcularPontosAtividade();
       }
     };
 
     const handleRegistroHistoricoAdicionado = (event: CustomEvent) => {
-      if (event.detail.funcionarioId === funcionarioId.toString()) {
+      if (mounted && event.detail.funcionarioId === funcionarioId.toString()) {
         calcularPontosAtividade();
       }
     };
@@ -116,6 +124,7 @@ export const usePontosAtividade = (funcionarioId: number) => {
     window.addEventListener('registroHistoricoAdicionado', handleRegistroHistoricoAdicionado as EventListener);
 
     return () => {
+      mounted = false;
       window.removeEventListener('avaliacaoAdicionada', handleAvaliacaoAdicionada as EventListener);
       window.removeEventListener('registroHistoricoAdicionado', handleRegistroHistoricoAdicionado as EventListener);
     };

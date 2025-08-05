@@ -132,7 +132,19 @@ export function useSupabaseDocumentos(funcionarioId: number) {
   };
 
   useEffect(() => {
-    carregarDocumentos();
+    let mounted = true;
+    
+    const loadDocumentos = async () => {
+      if (mounted) {
+        await carregarDocumentos();
+      }
+    };
+    
+    loadDocumentos();
+    
+    return () => {
+      mounted = false;
+    };
   }, [funcionarioId]);
 
   return {

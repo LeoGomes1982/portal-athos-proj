@@ -329,7 +329,12 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   // useEffect removido - histórico agora vem do Supabase
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    
+    let mounted = true;
+    
+    const loadData = async () => {
+      if (!mounted) return;
       
       // Carregar uniformes
       const uniformesSalvos = localStorage.getItem(`uniformes_funcionario_${funcionario.id}`);
@@ -338,7 +343,13 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
       } else {
         setUniformes([]);
       }
-    }
+    };
+    
+    loadData();
+    
+    return () => {
+      mounted = false;
+    };
   }, [isOpen, funcionario.id]);
 
   const getTipoIcon = (tipo: string) => {
