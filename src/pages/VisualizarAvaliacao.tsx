@@ -23,7 +23,7 @@ export function VisualizarAvaliacao() {
           .from('avaliacoes_desempenho')
           .select('id')
           .eq('id', avaliacaoId)
-          .single();
+          .maybeSingle();
 
         if (error || !data) {
           toast({
