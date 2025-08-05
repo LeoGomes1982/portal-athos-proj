@@ -990,9 +990,9 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
                     <div>
                       <label className="text-sm font-medium text-slate-600">Nome Completo</label>
                       {isEditing ? (
-                        <Input
+                        <InputComFoco
                           value={editedFuncionario.nome}
-                          onChange={(e) => handleInputChange('nome', e.target.value)}
+                          onChange={(value) => handleInputChange('nome', value)}
                           className="mt-1"
                         />
                       ) : (

@@ -29,8 +29,23 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
   const [itensPorPagina, setItensPorPagina] = useState(30);
   
   // Usar o hook de sincronização
-  const { funcionarios, setFuncionarios, updateFuncionario, isLoading } = useFuncionarioSync();
+  const { funcionarios, setFuncionarios, updateFuncionario, migrarDadosLocalParaSupabase, isLoading } = useFuncionarioSync();
   const funcionariosList = funcionarios;
+
+  // Verificar se existem dados no localStorage para migrar
+  const [funcionariosImportados, setFuncionariosImportados] = useState(0);
+  
+  useEffect(() => {
+    const funcionariosLocal = JSON.parse(localStorage.getItem('funcionarios') || '[]');
+    setFuncionariosImportados(funcionariosLocal.length);
+  }, []);
+
+  const handleMigrarDados = async () => {
+    if (window.confirm(`Deseja migrar ${funcionariosImportados} funcionários do arquivo importado para o banco de dados?`)) {
+      await migrarDadosLocalParaSupabase();
+      setFuncionariosImportados(0);
+    }
+  };
 
   // Verificar automaticamente as datas e atualizar status
   useEffect(() => {
@@ -256,6 +271,21 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
           <p className="text-description text-center max-w-2xl mx-auto">
             Controle completo da equipe e colaboradores
           </p>
+          
+          {funcionariosImportados > 0 && (
+            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800 mb-3">
+                📁 {funcionariosImportados} funcionários importados encontrados no arquivo local
+              </p>
+              <Button 
+                onClick={handleMigrarDados}
+                variant="outline"
+                className="bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200"
+              >
+                Migrar para Banco de Dados
+              </Button>
+            </div>
+          )}
         </div>
 
         <FuncionariosSummaryCards 

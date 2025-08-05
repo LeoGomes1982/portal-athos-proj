@@ -228,6 +228,44 @@ export function useFuncionarioSync() {
     chave_pix: funcionario.chavePix || ''
   });
 
+  const migrarDadosLocalParaSupabase = async () => {
+    try {
+      const funcionariosImportados = JSON.parse(localStorage.getItem('funcionarios') || '[]');
+      
+      if (funcionariosImportados.length === 0) {
+        console.log('Nenhum funcionário para migrar');
+        return;
+      }
+
+      console.log(`Iniciando migração de ${funcionariosImportados.length} funcionários para Supabase...`);
+      
+      const dadosParaMigrar = funcionariosImportados.map(formatToDatabase);
+      
+      const { data, error } = await supabase
+        .from('funcionarios_sync')
+        .upsert(dadosParaMigrar, { 
+          onConflict: 'funcionario_id' 
+        })
+        .select();
+
+      if (error) {
+        console.error('Erro ao migrar funcionários:', error);
+        return;
+      }
+
+      console.log(`${data?.length || 0} funcionários migrados com sucesso!`);
+      
+      // Limpar localStorage após migração bem-sucedida
+      localStorage.removeItem('funcionarios');
+      
+      // Recarregar dados para refletir a migração
+      loadFuncionarios();
+      
+    } catch (error) {
+      console.error('Erro durante migração:', error);
+    }
+  };
+
   const updateFuncionario = async (funcionario: Funcionario) => {
     console.log('updateFuncionario chamado com:', funcionario.nome, funcionario.id, 'Status:', funcionario.status);
     try {
@@ -274,6 +312,7 @@ export function useFuncionarioSync() {
     funcionarios,
     setFuncionarios,
     updateFuncionario,
+    migrarDadosLocalParaSupabase,
     isLoading
   };
 }

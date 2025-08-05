@@ -170,6 +170,9 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
         
         // Disparar evento para atualizar outras partes da aplicação
         window.dispatchEvent(new Event('funcionariosUpdated'));
+        
+        // Adicionar sugestão para migrar para o banco de dados
+        detalhes.push(`\n💡 Dica: Vá para "Gestão de Funcionários" para migrar estes dados para o banco de dados e evitar perda de dados.`);
       }
 
       setResultados({ sucesso, erro, detalhes });
