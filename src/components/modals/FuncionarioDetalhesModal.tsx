@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -198,8 +198,10 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
   // Reset do estado de edição quando o modal for fechado ou funcionário mudar
   useEffect(() => {
     console.log('FuncionarioDetalhesModal - resetando estado:', { isOpen, funcionarioId: funcionario.id, isEditing });
-    setIsEditing(false);
-    setEditedFuncionario(funcionario);
+    if (isOpen) {
+      setIsEditing(false);
+      setEditedFuncionario(funcionario);
+    }
   }, [isOpen, funcionario.id]);
 
   // Log para debug quando isEditing mudar
@@ -381,17 +383,16 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
     setIsEditing(false);
   };
 
-  const handleInputChange = (field: keyof Funcionario, value: string) => {
+  const handleInputChange = useCallback((field: keyof Funcionario, value: string) => {
+    console.log('handleInputChange chamado:', field, value); // Debug log
     setEditedFuncionario(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
 
-  // Atualizar funcionário editado quando o funcionário original mudar
-  useEffect(() => {
-    setEditedFuncionario(funcionario);
-  }, [funcionario]);
+  // REMOVIDO: useEffect que causava re-renderizações desnecessárias
+  // O editedFuncionario já é inicializado e resetado no useEffect principal
 
   // Funções para uniformes
   const handleSalvarUniforme = () => {
@@ -441,7 +442,11 @@ export function FuncionarioDetalhesModal({ funcionario, isOpen, onClose, onStatu
 
   const statusInfo = statusConfig[statusAtual];
   const isDestaque = statusAtual === 'destaque';
-  const currentFuncionario = isEditing ? editedFuncionario : funcionario;
+  
+  // Memoizar currentFuncionario para evitar re-renderizações desnecessárias
+  const currentFuncionario = useMemo(() => {
+    return isEditing ? editedFuncionario : funcionario;
+  }, [isEditing, editedFuncionario, funcionario]);
 
   // Função para toggle das seções
   const toggleSection = (section: keyof typeof sectionStates) => {
