@@ -26,6 +26,7 @@ import CICADFormulario from "./pages/CICADFormulario";
 
 import ProcessoSeletivo from "./pages/ProcessoSeletivo";
 import { AvaliacaoExterna } from "./pages/AvaliacaoExterna";
+import { VisualizarAvaliacao } from "./pages/VisualizarAvaliacao";
 import { GestaoServicosExtras } from "./pages/GestaoServicosExtras";
 import Fiscalizacoes from "./pages/Fiscalizacoes";
 import Operacoes from "./pages/Operacoes";
@@ -53,6 +54,7 @@ function App() {
               <Route path="/portal-bpo" element={<PortalBPO />} />
               <Route path="/cicad-formulario" element={<CICADFormulario />} />
               <Route path="/avaliacao-externa/:token" element={<AvaliacaoExterna />} />
+              <Route path="/avaliacao/:avaliacaoId" element={<VisualizarAvaliacao />} />
               
               {/* Protected routes */}
               <Route path="/" element={
