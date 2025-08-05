@@ -197,10 +197,10 @@ export function EditarFuncionarioModal({ funcionario, isOpen, onClose, onSave }:
     setProgress(newProgress);
   };
 
-  // Atualizar progresso quando formData mudar
+  // Atualizar progresso apenas quando necessário
   useEffect(() => {
     calculateProgress();
-  }, [formData]);
+  }, []);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => {
