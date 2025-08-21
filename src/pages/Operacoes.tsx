@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Shield, Clock, GraduationCap, AlertTriangle, Calendar } from "lucide-react";
+import { ChevronLeft, Shield, Clock, GraduationCap, AlertTriangle, Calendar, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { FiscalizacoesSubsection } from "@/components/subsections/FiscalizacoesSubsection";
 import { GestaoServicosExtrasSubsection } from "@/components/subsections/GestaoServicosExtrasSubsection";
@@ -63,12 +63,24 @@ export default function Operacoes() {
       bgColor: "bg-white",
       iconColor: "text-purple-600",
       cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
+    },
+    {
+      id: "atas-supervisao",
+      title: "Atas da Supervisão",
+      icon: ClipboardList,
+      description: "Registro de atas semanais e ocorrências de supervisão",
+      component: null,
+      bgColor: "bg-white",
+      iconColor: "text-emerald-600",
+      cardClass: "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-150"
     }
   ];
 
   const handleSubsectionClick = (subsectionId: string) => {
     if (subsectionId === "fiscalizacoes") {
       navigate('/fiscalizacoes');
+    } else if (subsectionId === "atas-supervisao") {
+      navigate('/operacoes/atas-supervisao');
     } else {
       setActiveSubsection(subsectionId);
     }

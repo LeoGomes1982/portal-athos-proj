@@ -30,6 +30,7 @@ import { VisualizarAvaliacao } from "./pages/VisualizarAvaliacao";
 import { GestaoServicosExtras } from "./pages/GestaoServicosExtras";
 import Fiscalizacoes from "./pages/Fiscalizacoes";
 import Operacoes from "./pages/Operacoes";
+import AtasSupervisao from "./pages/AtasSupervisao";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
@@ -130,6 +131,11 @@ function App() {
               <Route path="/fiscalizacoes" element={
                 <ProtectedRoute>
                   <Fiscalizacoes />
+                </ProtectedRoute>
+              } />
+              <Route path="/operacoes/atas-supervisao" element={
+                <ProtectedRoute>
+                  <AtasSupervisao />
                 </ProtectedRoute>
               } />
               
