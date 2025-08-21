@@ -18,26 +18,29 @@ export const InputComFoco: React.FC<InputComFocoProps> = ({
   type = "text"
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastValueRef = useRef<string>(value);
   const cursorPositionRef = useRef<number>(0);
-  const shouldRestoreCursor = useRef<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target;
     const newValue = input.value;
     
-    // Salvar posição atual do cursor
+    // Salvar posição do cursor antes de chamar onChange
     cursorPositionRef.current = input.selectionStart || 0;
-    shouldRestoreCursor.current = true;
+    lastValueRef.current = newValue;
     
     onChange(newValue);
   };
 
-  // Restaurar cursor apenas quando necessário
+  // Apenas restaurar cursor se o valor mudou externamente (não pelo usuário)
   useEffect(() => {
-    if (shouldRestoreCursor.current && inputRef.current && document.activeElement === inputRef.current) {
-      const position = Math.min(cursorPositionRef.current, inputRef.current.value.length);
-      inputRef.current.setSelectionRange(position, position);
-      shouldRestoreCursor.current = false;
+    if (inputRef.current && value !== lastValueRef.current) {
+      // Valor foi alterado externamente, restaurar foco se o input estava focado
+      if (document.activeElement === inputRef.current) {
+        const position = Math.min(cursorPositionRef.current, inputRef.current.value.length);
+        inputRef.current.setSelectionRange(position, position);
+      }
+      lastValueRef.current = value;
     }
   }, [value]);
 
