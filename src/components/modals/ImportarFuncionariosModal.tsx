@@ -53,7 +53,10 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
   };
 
   const processarArquivo = async () => {
+    console.log("Iniciando processamento de arquivo:", arquivo?.name);
+    
     if (!arquivo) {
+      console.log("Erro: Nenhum arquivo selecionado");
       toast({
         title: "Erro",
         description: "Por favor, selecione um arquivo",
@@ -68,12 +71,15 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
       let dados: any[] = [];
       
       // Verificar se é arquivo Excel ou CSV
+      console.log("Tipo de arquivo:", arquivo.name);
       if (arquivo.name.endsWith('.xlsx') || arquivo.name.endsWith('.xls')) {
         // Processar arquivo Excel
+        console.log("Processando arquivo Excel...");
         const arrayBuffer = await arquivo.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         dados = XLSX.utils.sheet_to_json(firstSheet);
+        console.log("Dados extraídos do Excel:", dados.length, "linhas");
       } else if (arquivo.name.endsWith('.csv')) {
         // Processar arquivo CSV
         const texto = await arquivo.text();
@@ -99,9 +105,11 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
       }
 
       if (dados.length === 0) {
+        console.log("Erro: Arquivo não contém dados válidos");
         throw new Error('Arquivo não contém dados válidos');
       }
 
+      console.log("Processando", dados.length, "linhas de dados");
       const funcionarios = [];
       const detalhes = [];
       let sucesso = 0;
@@ -164,12 +172,15 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
 
       // Salvar funcionários no localStorage
       if (funcionarios.length > 0) {
+        console.log("Salvando", funcionarios.length, "funcionários no localStorage");
         const funcionariosExistentes = JSON.parse(localStorage.getItem('funcionarios') || '[]');
         const todosFuncionarios = [...funcionariosExistentes, ...funcionarios];
         localStorage.setItem('funcionarios', JSON.stringify(todosFuncionarios));
+        console.log("Funcionários salvos. Total agora:", todosFuncionarios.length);
         
         // Disparar evento para atualizar outras partes da aplicação
         window.dispatchEvent(new Event('funcionariosUpdated'));
+        console.log("Evento 'funcionariosUpdated' disparado");
         
         // Adicionar sugestão para migrar para o banco de dados
         detalhes.push(`\n💡 Dica: Vá para "Gestão de Funcionários" para migrar estes dados para o banco de dados e evitar perda de dados.`);
@@ -183,6 +194,7 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
       });
 
     } catch (error) {
+      console.error("Erro durante a importação:", error);
       toast({
         title: "Erro na importação",
         description: error instanceof Error ? error.message : "Erro desconhecido",
