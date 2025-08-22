@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ClipboardList, Plus, Filter, Calendar, FileText, ChevronDown, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { NovaAtaModal } from "@/components/modals/NovaAtaModal";
 
 interface Ata {
   id: string;
@@ -26,9 +27,8 @@ export default function AtasSupervisao() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filtrosAberto, setFiltrosAberto] = useState(false);
-
-  // Mock data
-  const atas: Ata[] = [
+  const [novaAtaModalOpen, setNovaAtaModalOpen] = useState(false);
+  const [atas, setAtas] = useState<Ata[]>([
     {
       id: "1",
       data: "14/01/2024",
@@ -56,7 +56,11 @@ export default function AtasSupervisao() {
       descricao: "Ata de supervisão do aeroporto com 2 respostas registradas.",
       replicas: []
     }
-  ];
+  ]);
+
+  const handleSaveAta = (novaAta: Ata) => {
+    setAtas(prev => [...prev, novaAta]);
+  };
 
   const atasAtivas = atas.filter(ata => ata.status === 'ativa');
   const atasEncerradas = atas.filter(ata => ata.status === 'encerrada');
@@ -150,7 +154,10 @@ export default function AtasSupervisao() {
               className="pl-10"
             />
           </div>
-          <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+          <Button 
+            onClick={() => setNovaAtaModalOpen(true)}
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+          >
             <Plus size={16} className="mr-2" />
             Nova Ata
           </Button>
@@ -288,7 +295,7 @@ export default function AtasSupervisao() {
                   {searchTerm ? "Tente ajustar os filtros de busca." : "Comece criando sua primeira ata de supervisão."}
                 </p>
                 {!searchTerm && (
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={() => setNovaAtaModalOpen(true)}>
                     <Plus className="mr-2" size={16} />
                     Criar Primeira Ata
                   </Button>
@@ -297,6 +304,12 @@ export default function AtasSupervisao() {
             </Card>
           )}
         </div>
+
+        <NovaAtaModal 
+          open={novaAtaModalOpen}
+          onOpenChange={setNovaAtaModalOpen}
+          onSave={handleSaveAta}
+        />
       </div>
     </div>
   );
