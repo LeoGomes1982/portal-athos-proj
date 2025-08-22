@@ -11,12 +11,14 @@ import { FuncionariosFiltros } from "@/components/filtros/FuncionariosFiltros";
 import { Funcionario } from "@/types/funcionario";
 import { isProximoDoFim, dataJaPassou } from "@/utils/funcionarioUtils";
 import { useFuncionarioSync } from "@/hooks/useFuncionarioSync";
+import { useToast } from "@/hooks/use-toast";
 
 interface FuncionariosSubsectionProps {
   onBack: () => void;
 }
 
 export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFuncionario, setSelectedFuncionario] = useState<Funcionario | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -214,16 +216,36 @@ export function FuncionariosSubsection({ onBack }: FuncionariosSubsectionProps) 
       motivoInativacao: motivo
     };
 
-    // Atualizar no Supabase
-    await updateFuncionario(funcionarioInativado);
-    
-    // Atualizar estado local
-    setFuncionarios(prev => 
-      prev.map(func => func.id === funcionarioParaInativar.id ? funcionarioInativado : func)
-    );
+    try {
+      // Atualizar no Supabase
+      await updateFuncionario(funcionarioInativado);
+      
+      // Atualizar estado local
+      setFuncionarios(prev => 
+        prev.map(func => func.id === funcionarioParaInativar.id ? funcionarioInativado : func)
+      );
 
-    // Fechar modal
-    setFuncionarioParaInativar(null);
+      // Fechar modal
+      setFuncionarioParaInativar(null);
+      
+      // Forçar recarregamento para garantir sincronização
+      setTimeout(() => {
+        window.dispatchEvent(new Event('funcionariosUpdated'));
+      }, 500);
+      
+      toast({
+        title: "Funcionário Inativado",
+        description: `${funcionarioParaInativar.nome} foi inativado e movido para o Arquivo de RH.`,
+      });
+      
+    } catch (error) {
+      console.error('Erro ao inativar funcionário:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao inativar funcionário. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleFuncionarioUpdate = async (funcionarioAtualizado: Funcionario) => {

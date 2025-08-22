@@ -134,8 +134,8 @@ export function ImportarFuncionariosModal({ isOpen, onClose }: ImportarFuncionar
                                    normalizedLine.empresa || 
                                    '';
 
-          // Validações básicas - apenas nome é obrigatório
-          if (!nome) {
+          // Validação - apenas nome é obrigatório
+          if (!nome || nome.trim() === '') {
             throw new Error(`Linha ${i + 2}: Nome é obrigatório`);
           }
 

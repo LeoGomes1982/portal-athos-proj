@@ -296,6 +296,14 @@ export function useFuncionarioSync() {
           localStorage.setItem('funcionarios_list', JSON.stringify(updated));
           return updated;
         });
+        
+        // Persistir também no localStorage como backup
+        const funcionariosLocal = JSON.parse(localStorage.getItem('funcionarios') || '[]');
+        const index = funcionariosLocal.findIndex((f: Funcionario) => f.id === funcionario.id);
+        if (index !== -1) {
+          funcionariosLocal[index] = funcionario;
+          localStorage.setItem('funcionarios', JSON.stringify(funcionariosLocal));
+        }
       }
     } catch (error) {
       console.error('Erro ao conectar com Supabase:', error);
